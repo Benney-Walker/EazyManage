@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox alignment="TOP_CENTER" spacing="25" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.AddResultsController"
+      style="-fx-background-color: linear-gradient(to bottom, #f093fb 0%, #f5576c 100%);">
+    <padding>
+        <Insets bottom="50.0" left="40.0" right="40.0" top="40.0"/>
+    </padding>
+
+    <!-- Header -->
+    <VBox alignment="CENTER" spacing="10">
+        <Label text="📝" style="-fx-font-size: 48px;"/>
+        <Label text="ADD SUBJECT RESULTS" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Label text="Enter scores for your subject" style="-fx-font-size: 13px; -fx-text-fill: #ffffff;"/>
+    </VBox>
+
+    <!-- Search Form -->
+    <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 35;" maxWidth="950">
+        <effect>
+            <javafx.scene.effect.DropShadow color="#00000040" radius="20" offsetY="5"/>
+        </effect>
+
+        <Label text="Subject Information" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #f5576c;"/>
+
+        <Separator/>
+
+        <!-- Subject Code Input -->
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="Subject Code *" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                <TextField fx:id="subjectCodeField" promptText="Enter subject code (e.g., MATH101)"
+                           style="-fx-padding: 12; -fx-font-size: 14px; -fx-background-radius: 8; -fx-border-color: #dcdde1; -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+            </VBox>
+
+            <VBox spacing="8">
+                <Label text=" " style="-fx-font-size: 13px;"/> <!-- Spacer -->
+                <Button text="🔍 Load Students" onAction="#handleLoadStudents"
+                        style="-fx-background-color: #f5576c; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 25 12 25; -fx-background-radius: 8; -fx-cursor: hand;">
+                    <effect>
+                        <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                    </effect>
+                </Button>
+            </VBox>
+        </HBox>
+
+        <!-- Subject Info Display (Hidden by default) -->
+        <HBox fx:id="subjectInfoBox" spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
+              style="-fx-background-color: #e8f4f8; -fx-background-radius: 8; -fx-padding: 15;">
+            <Label text="📚" style="-fx-font-size: 28px;"/>
+            <VBox spacing="3">
+                <Label fx:id="subjectNameLabel" text=" " style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                <Label fx:id="subjectCodeLabel" text=" " style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <!-- No Students Message (Hidden by default) -->
+        <VBox fx:id="noStudentsBox" spacing="10" alignment="CENTER" visible="false" managed="false"
+              style="-fx-background-color: #fff3cd; -fx-background-radius: 8; -fx-padding: 20;">
+            <Label text="⚠️" style="-fx-font-size: 32px;"/>
+            <Label text="No Students Found" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #856404;"/>
+            <Label text="No students are taking this subject or subject code is invalid" style="-fx-font-size: 12px; -fx-text-fill: #856404;"/>
+        </VBox>
+
+        <Separator fx:id="separator1" visible="false" managed="false" style="-fx-padding: 10 0 10 0;"/>
+
+        <!-- Students Results Table (Hidden by default) -->
+        <ScrollPane fx:id="resultsTableContainer" visible="false" managed="false" fitToWidth="true"
+                    style="-fx-background: transparent; -fx-background-color: transparent;">
+
+            <!-- Single VBox as ScrollPane's content -->
+            <VBox spacing="15">
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="📋 Enter Scores" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="💡 Max Class Score: 40 | Max Exam Score: 60"
+                           style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d; -fx-background-color: #f8f9fa; -fx-padding: 5 10 5 10; -fx-background-radius: 5;"/>
+                </HBox>
+
+                <!-- Editable Table -->
+                <TableView fx:id="studentsScoresTable" editable="true" style="-fx-background-color: transparent;" prefHeight="400">
+                    <columns>
+                        <TableColumn text="Student ID" prefWidth="120" fx:id="studentIdColumn" editable="false"/>
+                        <TableColumn text="Student Name" prefWidth="250" fx:id="studentNameColumn" editable="false"/>
+                        <TableColumn text="Class Score (40)" prefWidth="150" fx:id="classScoreColumn"/>
+                        <TableColumn text="Exam Score (60)" prefWidth="150" fx:id="examScoreColumn"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="No students loaded" style="-fx-text-fill: #95a5a6;"/>
+                    </placeholder>
+                </TableView>
+
+                <Separator style="-fx-padding: 10 0 10 0;"/>
+
+                <!-- Action Buttons -->
+                <HBox spacing="15" alignment="CENTER">
+                    <Button fx:id="saveScores" text="💾 Save All Scores" onAction="#handleSaveScores"
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 30 12 30; -fx-background-radius: 8; -fx-cursor: hand;">
+                        <effect>
+                            <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                        </effect>
+                    </Button>
+
+                    <Button text="🔄 Clear Scores" onAction="#handleClearScores"
+                            style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 12 25 12 25; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                </HBox>
+
+                <!-- Help Text -->
+                <VBox spacing="5" style="-fx-background-color: #fff3cd; -fx-background-radius: 8; -fx-padding: 15;">
+                    <Label text="💡 Instructions:" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #856404;"/>
+                    <Label text="• Click on any score cell to edit it directly"
+                           style="-fx-font-size: 11px; -fx-text-fill: #856404;"/>
+                    <Label text="• Total score and grade are calculated automatically"
+                           style="-fx-font-size: 11px; -fx-text-fill: #856404;"/>
+                    <Label text="• Click 'Save All Scores' when done to save all results"
+                           style="-fx-font-size: 11px; -fx-text-fill: #856404;"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </VBox>
+</VBox>

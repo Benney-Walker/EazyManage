@@ -1,0 +1,937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Controller.PrincipalController"
+            style="-fx-background-color: #f5f7fa;">
+
+    <!-- LEFT SIDEBAR - Navigation -->
+    <left>
+        <VBox spacing="0" style="-fx-background-color: #2c3e50; -fx-min-width: 250; -fx-pref-width: 250;">
+
+            <!-- Header -->
+            <VBox alignment="CENTER" spacing="5" style="-fx-padding: 30 20 30 20; -fx-background-color: #1a252f;">
+                <Label text="🎓" style="-fx-font-size: 40px;"/>
+                <Label text="EAZY MANAGE" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Principal Portal" style="-fx-font-size: 12px; -fx-text-fill: #95a5a6;"/>
+            </VBox>
+
+            <Separator style="-fx-background-color: #34495e;"/>
+
+            <!-- Navigation Menu -->
+            <VBox spacing="5" style="-fx-padding: 20 10 20 10;">
+
+                <!-- Main Dashboard Button -->
+                <Button fx:id="mainDashboardBtn" text="📊 Main Dashboard" onAction="#showMainDashboard"
+                        maxWidth="Infinity" alignment="CENTER_LEFT"
+                        style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 15 20 15 20; -fx-background-radius: 8; -fx-cursor: hand;">
+                </Button>
+
+                <!-- Staff Dashboard Button -->
+                <Button fx:id="staffDashboardBtn" text="👥 Staff Dashboard" onAction="#showStaffDashboard"
+                        maxWidth="Infinity" alignment="CENTER_LEFT"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-padding: 15 20 15 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: transparent;">
+                </Button>
+
+                <!-- Finance Dashboard Button -->
+                <Button fx:id="financeDashboardBtn" text="💰 Finance Dashboard" onAction="#showFinanceDashboard"
+                        maxWidth="Infinity" alignment="CENTER_LEFT"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-padding: 15 20 15 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: transparent;">
+                </Button>
+
+                <!-- Student Dashboard Button -->
+                <Button fx:id="studentDashboardBtn" text="🎒 Student Dashboard" onAction="#showStudentDashboard"
+                        maxWidth="Infinity" alignment="CENTER_LEFT"
+                        style="-fx-background-color: transparent; -fx-text-fill: #ecf0f1; -fx-font-size: 14px; -fx-padding: 15 20 15 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-border-color: transparent;">
+                </Button>
+            </VBox>
+
+            <!-- Spacer to push logout to bottom -->
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- User Info & Logout -->
+            <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: #1a252f;">
+                <Separator style="-fx-background-color: #34495e;"/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="👤" style="-fx-font-size: 24px;"/>
+                    <VBox spacing="2">
+                        <Label fx:id="institutionNameLabel" text="School Name" style="-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                        <Label fx:id="principalNameLabel" text="Principal Name" style="-fx-text-fill: #95a5a6; -fx-font-size: 11px;"/>
+                    </VBox>
+                </HBox>
+
+                <Button fx:id="logoutButton" text="🚪 Logout" onAction="#handleLogout" maxWidth="Infinity"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 10; -fx-background-radius: 5; -fx-cursor: hand;">
+                </Button>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- RIGHT CONTENT AREA -->
+    <center>
+        <StackPane fx:id="contentArea" style="-fx-background-color: #f5f7fa;">
+
+            <!-- MAIN DASHBOARD VIEW (Default) -->
+            <ScrollPane fx:id="mainDashboardView" fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;">
+                <VBox spacing="25" style="-fx-padding: 30;">
+
+                    <!-- Header -->
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox spacing="5">
+                            <Label text="Main Dashboard" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                            <Label fx:id="dateTimeLabel" text="Monday, November 25, 2025 | 2:30 PM" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Statistics Cards -->
+                    <GridPane hgap="20" vgap="20">
+
+                        <!-- Total Students Card -->
+                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              GridPane.columnIndex="0" GridPane.rowIndex="0" minWidth="200">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="🎓" style="-fx-font-size: 36px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Total Students" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="totalStudentsLabel" text="0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Enrolled students" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;"/>
+                        </VBox>
+
+                        <!-- Total Staff Card -->
+                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="200">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="👥" style="-fx-font-size: 36px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Total Staff" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="totalStaffLabel" text="0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Active staff members" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;"/>
+                        </VBox>
+
+                        <!-- Total Semester Fees Card -->
+                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              GridPane.columnIndex="0" GridPane.rowIndex="1" minWidth="200">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="💵" style="-fx-font-size: 36px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Semester Fees" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="semesterFeesLabel" text="GH₵ 0.00" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Total expected fees" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;"/>
+                        </VBox>
+
+                        <!-- Total Fees Paid Card -->
+                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              GridPane.columnIndex="1" GridPane.rowIndex="1" minWidth="200">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="✅" style="-fx-font-size: 36px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Fees Paid" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="feesPaidLabel" text="GH₵ 0.00" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                                </VBox>
+                            </HBox>
+                            <ProgressBar fx:id="feesProgressBar" progress="0.0" maxWidth="Infinity" style="-fx-accent: #27ae60;"/>
+                        </VBox>
+                    </GridPane>
+
+                    <!-- Recently Added Students Section -->
+                    <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="📋 Recently Added Students" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="View All" onAction="#viewAllStudents"
+                                    style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 15 8 15; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                        </HBox>
+
+                        <Separator/>
+
+                        <!-- Students Table -->
+                        <TableView fx:id="recentStudentsTable" style="-fx-background-color: transparent;">
+                            <columns>
+                                <TableColumn text="Student ID" prefWidth="120" fx:id="studentIdColumn"/>
+                                <TableColumn text="Name" prefWidth="200" fx:id="studentNameColumn"/>
+                                <TableColumn text="Level" prefWidth="100" fx:id="studentLevelColumn"/>
+                                <TableColumn text="Date Added" prefWidth="150" fx:id="dateAddedColumn"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="No recent students" style="-fx-text-fill: #95a5a6;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+
+
+            <!--
+            PRINCIPAL FINANCE DASHBOARD
+            -->
+            <ScrollPane fx:id="financeDashboardView" visible="false" managed="false" fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;">
+                <VBox spacing="25" style="-fx-padding: 30;">
+
+                    <!-- Header -->
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox spacing="5">
+                            <Label text="Finance Dashboard" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                            <Label text="Monitor fees and payment records" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Financial Summary Cards -->
+                    <HBox spacing="20">
+                        <!-- Total Semester Fees Card -->
+                        <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              HBox.hgrow="ALWAYS">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="💵" style="-fx-font-size: 40px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Total Semester Fees" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="totalSemesterFeesLabel" text="GH₵ 0.00" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Expected revenue for current semester" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;"/>
+                        </VBox>
+
+                        <!-- Amount Paid Card -->
+                        <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              HBox.hgrow="ALWAYS">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="✅" style="-fx-font-size: 40px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Amount Paid" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="amountPaidLabel" text="GH₵ 0.00" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                                </VBox>
+                            </HBox>
+                            <VBox spacing="8">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label fx:id="collectionPercentageLabel" text="0%" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                                    <Label text="collected" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;"/>
+                                </HBox>
+                                <ProgressBar fx:id="collectionProgressBar" progress="0.0" maxWidth="Infinity" style="-fx-accent: #27ae60;"/>
+                            </VBox>
+                        </VBox>
+
+                        <!-- Outstanding Balance Card -->
+                        <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              HBox.hgrow="ALWAYS">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="⏳" style="-fx-font-size: 40px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Outstanding" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="outstandingBalanceLabel" text="GH₵ 0.00" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Pending payments" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Student Fee Report Search Section -->
+                    <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                        <Label text="🔍 Student Fee Report" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                        <Separator/>
+
+                        <!-- Search Filters -->
+                        <GridPane hgap="15" vgap="15">
+
+                            <!-- Student ID Search -->
+                            <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label text="Student ID" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                <TextField fx:id="studentIdSearchField" promptText="Enter Student ID"
+                                           style="-fx-padding: 12; -fx-font-size: 14px; -fx-background-radius: 8; -fx-border-color: #dcdde1; -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                            </VBox>
+
+                            <!-- Semester Selection -->
+                            <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label text="Semester" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                <ComboBox fx:id="semesterComboBox" promptText="Select Semester" maxWidth="Infinity"
+                                          style="-fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <!-- Class/Level Selection -->
+                            <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <Label text="Class/Level" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                <ComboBox fx:id="classLevelComboBox" promptText="Select Class" maxWidth="Infinity"
+                                          style="-fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <!-- Search Button -->
+                            <VBox spacing="8" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                <Label text=" " style="-fx-font-size: 13px;"/> <!-- Spacer -->
+                                <Button fx:id="searchFeesHistoryBtn" text="🔍 Search" onAction="#handleSearchStudentFees"
+                                        style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 25 12 25; -fx-background-radius: 8; -fx-cursor: hand;">
+                                    <effect>
+                                        <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                                    </effect>
+                                </Button>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- Quick Filter Buttons -->
+                        <HBox spacing="10">
+                            <Label text="Quick Filters:" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-padding: 5 5 0 0;"/>
+                            <Button text="Fully Paid" onAction="#showFullyPaid"
+                                    style="-fx-background-color: #d4edda; -fx-text-fill: #155724; -fx-font-size: 11px; -fx-padding: 5 12 5 12; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                            <Button text="Partial Payment" onAction="#showPartialPayment"
+                                    style="-fx-background-color: #fff3cd; -fx-text-fill: #856404; -fx-font-size: 11px; -fx-padding: 5 12 5 12; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                            <Button text="Not Paid" onAction="#showNotPaid"
+                                    style="-fx-background-color: #f8d7da; -fx-text-fill: #721c24; -fx-font-size: 11px; -fx-padding: 5 12 5 12; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                        </HBox>
+
+                        <!-- Filtered Students Table (Hidden by default) -->
+                        <VBox fx:id="filteredStudentsPanel" spacing="15" visible="false" managed="false"
+                              style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 20; -fx-border-color: #667eea; -fx-border-width: 2; -fx-border-radius: 10;">
+
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label fx:id="filterTitleLabel" text="Filtered Students" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Label fx:id="filteredCountLabel" text="0 students found" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                            </HBox>
+
+                            <Separator/>
+
+                            <!-- Filtered Students Table -->
+                            <TableView fx:id="filteredStudentsTable" style="-fx-background-color: transparent;" maxHeight="400">
+                                <columns>
+                                    <TableColumn text="Student ID" prefWidth="120" fx:id="filteredStudentIdColumn"/>
+                                    <TableColumn text="Student Name" prefWidth="180" fx:id="filteredStudentNameColumn"/>
+                                    <TableColumn text="Class" prefWidth="100" fx:id="filteredStudentClassColumn"/>
+                                    <TableColumn text="Total Fees" prefWidth="110" fx:id="filteredTotalFeesColumn"/>
+                                    <TableColumn text="Amount Paid" prefWidth="120" fx:id="filteredAmountPaidColumn"/>
+                                    <TableColumn text="Balance" prefWidth="110" fx:id="filteredBalanceColumn"/>
+                                </columns>
+                                <placeholder>
+                                    <Label text="No students match this filter" style="-fx-text-fill: #95a5a6;"/>
+                                </placeholder>
+                            </TableView>
+
+                            <HBox spacing="15" alignment="CENTER_RIGHT">
+                                <Button text="Clear Filter" onAction="#handleClearFilter"
+                                        style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 15 8 15; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                                <Button text="📥 Export Filtered List" onAction="#handleExportFilteredList"
+                                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 15 8 15; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Student Fee Report Result (Hidden by default) -->
+                        <VBox fx:id="feeReportPanel" spacing="20" visible="false" managed="false"
+                              style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 25; -fx-border-color: #667eea; -fx-border-width: 2; -fx-border-radius: 10;">
+
+                            <!-- Student Info Header -->
+                            <HBox alignment="CENTER_LEFT" spacing="20">
+                                <Label text="🎓" style="-fx-font-size: 36px;"/>
+                                <VBox spacing="5">
+                                    <Label fx:id="studentNameLabel" text="Student Name" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    <HBox spacing="15">
+                                        <Label fx:id="studentIdDisplayLabel" text=" " style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                        <Label text="•" style="-fx-text-fill: #7f8c8d;"/>
+                                        <Label fx:id="studentClassLabel" text="Class: Form 1A" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                        <Label text="•" style="-fx-text-fill: #7f8c8d;"/>
+                                        <Label fx:id="studentSemesterLabel" text="Semester: 1st" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+
+                            <Separator/>
+
+                            <!-- Fee Breakdown -->
+                            <GridPane hgap="20" vgap="15">
+
+                                <!-- Total Fees -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label text="Total Fees" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="studentTotalFeesLabel" text="GH₵ 0.00" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                </VBox>
+
+                                <!-- Amount Paid -->
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label text="Amount Paid" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="studentAmountPaidLabel" text="GH₵ 0.00" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                                </VBox>
+
+                                <!-- Balance -->
+                                <VBox spacing="5" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                    <Label text="Balance" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="studentBalanceLabel" text="GH₵ 0.00" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;"/>
+                                </VBox>
+                            </GridPane>
+
+                            <!-- Progress Bar -->
+                            <VBox spacing="8">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <Label text="Payment Progress:" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="studentPaymentPercentageLabel" text="0%" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                                </HBox>
+                                <ProgressBar fx:id="studentPaymentProgressBar" progress="0.0" maxWidth="Infinity" style="-fx-accent: #27ae60; -fx-pref-height: 15;"/>
+                            </VBox>
+
+                            <!-- Payment History Table -->
+                            <VBox spacing="10">
+                                <Label text="Payment History" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                <TableView fx:id="paymentHistoryTable" style="-fx-background-color: transparent;" maxHeight="200">
+                                    <columns>
+                                        <TableColumn text="Date" prefWidth="120" fx:id="paymentDateColumn"/>
+                                        <TableColumn text="Amount Paid" prefWidth="120" fx:id="paymentAmountColumn"/>
+                                        <TableColumn text="Payment Person" prefWidth="130" fx:id="paymentPersonColumn"/>
+                                        <TableColumn text="Contact Info" prefWidth="120" fx:id="paymentPersonContactColumn"/>
+                                    </columns>
+                                    <placeholder>
+                                        <Label text="No payment records" style="-fx-text-fill: #95a5a6;"/>
+                                    </placeholder>
+                                </TableView>
+                            </VBox>
+
+                            <!-- Actions -->
+                            <HBox spacing="15" alignment="CENTER_RIGHT">
+                                <Button text="📄 Print Report" onAction="#handlePrintReport"
+                                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 10 20 10 20; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- No Student Found Message (Hidden by default) -->
+                        <VBox fx:id="noStudentFoundPanel" spacing="10" alignment="CENTER" visible="false" managed="false"
+                              style="-fx-background-color: #fff3cd; -fx-background-radius: 8; -fx-padding: 20; -fx-border-color: #ffc107; -fx-border-width: 2; -fx-border-radius: 8;">
+                            <Label text="⚠️" style="-fx-font-size: 32px;"/>
+                            <Label text="No Student Found" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #856404;"/>
+                            <Label text="Please check your search criteria and try again" style="-fx-font-size: 12px; -fx-text-fill: #856404;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- All Students Fee Summary Table -->
+                    <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="📊 Fee Summary by Class" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="📥 Export to Excel" onAction="#handleExportToExcel"
+                                    style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 15 8 15; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                        </HBox>
+
+                        <Separator/>
+
+                        <!-- Summary Table -->
+                        <TableView fx:id="classSummaryTable" style="-fx-background-color: transparent;">
+                            <columns>
+                                <TableColumn text="Grade/Level" prefWidth="150" fx:id="summaryClassColumn"/>
+                                <TableColumn text="Total Students" prefWidth="120" fx:id="summaryStudentCountColumn"/>
+                                <TableColumn text="Expected Fees" prefWidth="140" fx:id="summaryExpectedFeesColumn"/>
+                                <TableColumn text="Amount Paid" prefWidth="140" fx:id="summaryAmountPaidColumn"/>
+                                <TableColumn text="Outstanding" prefWidth="140" fx:id="summaryOutstandingColumn"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="No data available" style="-fx-text-fill: #95a5a6;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+
+
+            <!--
+            PRINCIPAL STUDENT DASHBOARD
+            -->
+            <ScrollPane fx:id="studentDashboardView" visible="false" managed="false" fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;">
+                <VBox spacing="25" style="-fx-padding: 30;">
+
+                    <!-- Header -->
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox spacing="5">
+                            <Label text="Student Dashboard" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                            <Label text="Manage students and view academic records" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Quick Stats & Actions Row -->
+                    <HBox spacing="20">
+                        <!-- Total Students Card -->
+                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              HBox.hgrow="ALWAYS">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="🎓" style="-fx-font-size: 36px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Total Students" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="totalStudentsCountLabel" text="0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Enrolled students" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;"/>
+                        </VBox>
+
+                        <!-- Print Student List Section -->
+                        <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                            <Label text="🖨️ Print Class Student List" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                            <Separator/>
+
+                            <HBox spacing="15" alignment="CENTER_LEFT">
+                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <Label text="Select Class/Level" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                    <ComboBox fx:id="printStudentClassComboBox" promptText="Select Class" maxWidth="Infinity"
+                                              style="-fx-font-size: 14px;"/>
+                                </VBox>
+
+                                <VBox spacing="8">
+                                    <Label text=" " style="-fx-font-size: 13px;"/> <!-- Spacer -->
+                                    <Button fx:id="printStudentDataBtn" text="🖨️ Print Student Data" onAction="#handlePrintStudentData"
+                                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 25 12 25; -fx-background-radius: 8; -fx-cursor: hand;">
+                                        <effect>
+                                            <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                                        </effect>
+                                    </Button>
+                                </VBox>
+                            </HBox>
+
+                            <Label text="💡 This will generate a list of all students in the selected class with their Student IDs for easy reference."
+                                   style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d; -fx-wrap-text: true;"/>
+                        </VBox>
+
+                        <!-- Add Student Button Card -->
+                        <VBox spacing="10" alignment="CENTER" style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2); -fx-cursor: hand;"
+                              HBox.hgrow="ALWAYS" onMouseClicked="#openAddStudentPage">
+                            <Label text="➕" style="-fx-font-size: 36px;"/>
+                            <Label text="Add New Student" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                            <Label text="Enroll student" style="-fx-font-size: 12px; -fx-text-fill: #e0e0e0;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Search Student by ID Section -->
+                    <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                        <Label text="🔍 Find Student" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                        <Separator/>
+
+                        <!-- Search Bar -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Student ID" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                <TextField fx:id="searchStudentIdField" promptText="Enter Student ID to search"
+                                           style="-fx-padding: 12; -fx-font-size: 14px; -fx-background-radius: 8; -fx-border-color: #dcdde1; -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label text=" " style="-fx-font-size: 13px;"/> <!-- Spacer -->
+                                <Button text="🔍 Search" onAction="#handleSearchStudent"
+                                        style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 25 12 25; -fx-background-radius: 8; -fx-cursor: hand;">
+                                    <effect>
+                                        <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                                    </effect>
+                                </Button>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Student Details Panel (Hidden by default) -->
+                        <VBox fx:id="studentDetailsPanel" spacing="20" visible="false" managed="false"
+                              style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 25; -fx-border-color: #667eea; -fx-border-width: 2; -fx-border-radius: 10;">
+
+                            <!-- Student Info Header -->
+                            <HBox alignment="CENTER_LEFT" spacing="20">
+                                <Label text="🎓" style="-fx-font-size: 36px;"/>
+                                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                    <Label fx:id="studentFullNameLabel" text="Student Name" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    <HBox spacing="15">
+                                        <Label fx:id="studentIdLabelDisplay" text="ID: STU001" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                        <Label text="•" style="-fx-text-fill: #7f8c8d;"/>
+                                        <Label fx:id="studentClassLabelDisplay" text="Class: Form 1A" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                        <Label text="•" style="-fx-text-fill: #7f8c8d;"/>
+                                    </HBox>
+                                </VBox>
+                                <Button text="✏️ Edit" onAction="#handleEditStudent"
+                                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 15 8 15; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                            </HBox>
+
+                            <Separator/>
+
+                            <!-- Student Information Grid -->
+                            <GridPane hgap="20" vgap="15">
+
+                                <!-- Personal Info Column -->
+                                <VBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label text="Personal Information" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #667eea;"/>
+
+                                    <HBox spacing="10">
+                                        <Label text="Gender:" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-min-width: 80;"/>
+                                        <Label fx:id="studentGenderLabel" text="Male" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    </HBox>
+
+                                    <HBox spacing="10">
+                                        <Label text="Date of Birth:" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-min-width: 80;"/>
+                                        <Label fx:id="studentDOBLabel" text="2005-01-15" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    </HBox>
+                                </VBox>
+
+                                <!-- Contact Info Column -->
+                                <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label text="Guardian Contact Information" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #667eea;"/>
+
+                                    <HBox spacing="10">
+                                        <Label text="Guardian Name:" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-min-width: 80;"/>
+                                        <Label fx:id="studentGuardianNameLabel" text="0241234567" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    </HBox>
+
+                                    <HBox spacing="10">
+                                        <Label text="Contact:" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-min-width: 80;"/>
+                                        <Label fx:id="guardianPhoneLabel" text="Parent Name" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    </HBox>
+                                </VBox>
+                            </GridPane>
+                        </VBox>
+
+                        <!-- No Student Found Panel (Hidden by default) -->
+                        <VBox fx:id="noStudentFoundPanelStudent" spacing="10" alignment="CENTER" visible="false" managed="false"
+                              style="-fx-background-color: #fff3cd; -fx-background-radius: 8; -fx-padding: 20; -fx-border-color: #ffc107; -fx-border-width: 2; -fx-border-radius: 8;">
+                            <Label text="⚠️" style="-fx-font-size: 32px;"/>
+                            <Label text="Student Not Found" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #856404;"/>
+                            <Label text="No student exists with this ID" style="-fx-font-size: 12px; -fx-text-fill: #856404;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Search Student Results Section -->
+                    <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                        <Label text="📈 Student Academic Results" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                        <Separator/>
+
+                        <!-- Search Filters -->
+                        <GridPane hgap="15" vgap="15">
+
+                            <!-- Student ID Search -->
+                            <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                <Label text="Student ID" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                <TextField fx:id="resultsSearchIdField" promptText="Enter Student ID"
+                                           style="-fx-padding: 12; -fx-font-size: 14px; -fx-background-radius: 8; -fx-border-color: #dcdde1; -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                            </VBox>
+
+                            <!-- Semester Selection -->
+                            <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                <Label text="Semester" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                <ComboBox fx:id="resultsSemesterComboBox" promptText="Select Semester" maxWidth="Infinity"
+                                          style="-fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <!-- Class Selection -->
+                            <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                <Label text="Class/Level" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                <ComboBox fx:id="resultsClassComboBox" promptText="Select Class" maxWidth="Infinity"
+                                          style="-fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <!-- Search Button -->
+                            <VBox spacing="8" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                                <Label text=" " style="-fx-font-size: 13px;"/> <!-- Spacer -->
+                                <Button text="🔍 Search" onAction="#handleSearchResults"
+                                        style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 25 12 25; -fx-background-radius: 8; -fx-cursor: hand;">
+                                    <effect>
+                                        <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                                    </effect>
+                                </Button>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- Results Display Panel (Hidden by default) -->
+                        <VBox fx:id="resultsDisplayPanel" spacing="20" visible="false" managed="false"
+                              style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 25; -fx-border-color: #667eea; -fx-border-width: 2; -fx-border-radius: 10;">
+
+                            <!-- Results Header -->
+                            <HBox alignment="CENTER_LEFT" spacing="20">
+                                <Label text="📊" style="-fx-font-size: 32px;"/>
+                                <VBox spacing="5">
+                                    <Label fx:id="resultsStudentNameLabel" text="Student Name" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    <HBox spacing="15">
+                                        <Label fx:id="resultsStudentIdLabel" text="ID: STU001" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                        <Label text="•" style="-fx-text-fill: #7f8c8d;"/>
+                                        <Label fx:id="resultsClassLabel" text="Class: Form 1A" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                        <Label text="•" style="-fx-text-fill: #7f8c8d;"/>
+                                        <Label fx:id="resultsSemesterLabel" text="Semester: 1st" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+
+                            <Separator/>
+
+                            <!-- Overall Performance Summary -->
+                            <HBox spacing="30">
+                                <VBox spacing="5" alignment="CENTER">
+                                    <Label text="Total Score" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="totalScoreLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                </VBox>
+
+                                <VBox spacing="5" alignment="CENTER">
+                                    <Label text="Average Score" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="averageScoreLabel" text="0%" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+                                </VBox>
+
+                                <VBox spacing="5" alignment="CENTER">
+                                    <Label text="Position" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="positionLabel" text="1st" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #3498db;"/>
+                                </VBox>
+                            </HBox>
+
+                            <!-- Subjects Results Table -->
+                            <VBox spacing="10">
+                                <Label text="Subject Breakdown" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                <TableView fx:id="subjectResultsTable" style="-fx-background-color: transparent;">
+                                    <columns>
+                                        <TableColumn text="Subject" prefWidth="200" fx:id="subjectNameColumn"/>
+                                        <TableColumn text="Score" prefWidth="100" fx:id="subjectScoreColumn"/>
+                                        <TableColumn text="Grade" prefWidth="100" fx:id="subjectGradeColumn"/>
+                                        <TableColumn text="Remark" prefWidth="150" fx:id="subjectRemarkColumn"/>
+                                    </columns>
+                                    <placeholder>
+                                        <Label text="No results available" style="-fx-text-fill: #95a5a6;"/>
+                                    </placeholder>
+                                </TableView>
+                            </VBox>
+
+                            <!-- Actions -->
+                            <HBox spacing="15" alignment="CENTER_RIGHT">
+                                <Button text="📄 Print Report Card" onAction="#handlePrintReportCard"
+                                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 10 20 10 20; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                                </HBox>
+                        </VBox>
+
+                        <!-- No Results Found Panel (Hidden by default) -->
+                        <VBox fx:id="noResultsFoundPanel" spacing="10" alignment="CENTER" visible="false" managed="false"
+                              style="-fx-background-color: #fff3cd; -fx-background-radius: 8; -fx-padding: 20; -fx-border-color: #ffc107; -fx-border-width: 2; -fx-border-radius: 8;">
+                            <Label text="⚠️" style="-fx-font-size: 32px;"/>
+                            <Label text="No Results Found" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #856404;"/>
+                            <Label text="No academic records found for the selected criteria" style="-fx-font-size: 12px; -fx-text-fill: #856404;"/>
+                        </VBox>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+
+
+            <!--
+            PRINCIPAL STAFF DASHBOARD
+            -->
+            <ScrollPane fx:id="staffDashboardView" visible="false" managed="false" fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;">
+                <VBox spacing="25" style="-fx-padding: 30;">
+
+                    <!-- Header -->
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox spacing="5">
+                            <Label text="Staff Dashboard" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                            <Label text="Manage staff members" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Quick Actions Row -->
+                    <HBox spacing="20">
+                        <!-- Total Staff Card -->
+                        <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);"
+                              HBox.hgrow="ALWAYS">
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="👥" style="-fx-font-size: 36px;"/>
+                                <VBox spacing="5">
+                                    <Label text="Total Staff" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                    <Label fx:id="totalStaffCountLabel" text="0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Active staff members" style="-fx-font-size: 11px; -fx-text-fill: #95a5a6;"/>
+                        </VBox>
+
+                        <!-- Add Class Button Card -->
+                        <VBox spacing="10" alignment="CENTER" style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2); -fx-cursor: hand;"
+                              HBox.hgrow="ALWAYS" onMouseClicked="#openAddClassPage">
+                            <Label text="➕" style="-fx-font-size: 36px;"/>
+                            <Label text="Add New Class" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                            <Label text="Assign Instructors" style="-fx-font-size: 12px; -fx-text-fill: #e0e0e0;"/>
+                        </VBox>
+                        <!-- Add Semester Button Card -->
+                        <VBox spacing="10" alignment="CENTER" style="-fx-background-color: linear-gradient(to right, #f093fb, #f5576c); -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2); -fx-cursor: hand;"
+                              HBox.hgrow="ALWAYS" onMouseClicked="#openAddSemesterPage">
+                            <Label text="📅" style="-fx-font-size: 36px;"/>
+                            <Label text="Add Semester" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                            <Label text="Create new semester" style="-fx-font-size: 12px; -fx-text-fill: #e0e0e0;"/>
+                        </VBox>
+                        <!-- Add Subject Button Card -->
+                        <VBox spacing="10" alignment="CENTER" style="-fx-background-color: linear-gradient(to right, #4facfe, #00f2fe); -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2); -fx-cursor: hand;"
+                              HBox.hgrow="ALWAYS" onMouseClicked="#openAddSubjectPage">
+                            <Label text="📚" style="-fx-font-size: 36px;"/>
+                            <Label text="Add Subject" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                            <Label text="Create new subject" style="-fx-font-size: 12px; -fx-text-fill: #e0e0e0;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Search & Update Section -->
+                    <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                        <Label text="🔍 Find and Update Staff" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+
+                        <Separator/>
+
+                        <!-- Search Bar -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Staff ID" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                                <TextField fx:id="searchStaffIdField" promptText="Enter Staff ID to search"
+                                           style="-fx-padding: 12; -fx-font-size: 14px; -fx-background-radius: 8; -fx-border-color: #dcdde1; -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label text=" " style="-fx-font-size: 13px;"/> <!-- Spacer -->
+                                <HBox spacing="10">
+                                    <Button text="🔍 Search" onAction="#handleSearchStaff"
+                                            style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 25 12 25; -fx-background-radius: 8; -fx-cursor: hand;">
+                                        <effect>
+                                            <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                                        </effect>
+                                    </Button>
+
+                                    <Button text="🔑 Recover Password" onAction="#handleRecoverPassword"
+                                            style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 12 25 12 25; -fx-background-radius: 8; -fx-cursor: hand;">
+                                        <effect>
+                                            <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                                        </effect>
+                                    </Button>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Search Result / Staff Details Panel (Hidden by default) -->
+                        <VBox fx:id="staffDetailsPanel" spacing="20" visible="false" managed="false"
+                              style="-fx-background-color: #f8f9fa; -fx-background-radius: 10; -fx-padding: 25; -fx-border-color: #667eea; -fx-border-width: 2; -fx-border-radius: 10;">
+
+                            <!-- Staff Info Header -->
+                            <HBox alignment="CENTER_LEFT" spacing="15">
+                                <Label text="👤" style="-fx-font-size: 32px;"/>
+                                <VBox spacing="3">
+                                    <Label fx:id="staffFullNameLabel" text="Staff Name" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                                    <Label fx:id="staffRoleLabel" text="Role" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+                                </VBox>
+                            </HBox>
+
+                            <Separator/>
+
+                            <!-- Editable Staff Information -->
+                            <GridPane hgap="15" vgap="15">
+
+                                <!-- First Name -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                    <Label text="First Name *" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                                    <TextField fx:id="editFirstNameField"
+                                               style="-fx-padding: 10; -fx-font-size: 13px; -fx-background-radius: 5; -fx-border-color: #dcdde1; -fx-border-radius: 5;"/>
+                                </VBox>
+
+                                <!-- Last Name -->
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                    <Label text="Last Name *" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                                    <TextField fx:id="editLastNameField"
+                                               style="-fx-padding: 10; -fx-font-size: 13px; -fx-background-radius: 5; -fx-border-color: #dcdde1; -fx-border-radius: 5;"/>
+                                </VBox>
+
+                                <!-- Email -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                    <Label text="Email *" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                                    <TextField fx:id="editEmailField"
+                                               style="-fx-padding: 10; -fx-font-size: 13px; -fx-background-radius: 5; -fx-border-color: #dcdde1; -fx-border-radius: 5;"/>
+                                </VBox>
+
+                                <!-- Phone Number -->
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <Label text="Phone Number *" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                                    <TextField fx:id="editPhoneField"
+                                               style="-fx-padding: 10; -fx-font-size: 13px; -fx-background-radius: 5; -fx-border-color: #dcdde1; -fx-border-radius: 5;"/>
+                                </VBox>
+
+                                <!-- Date of Birth -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                                    <Label text="Date of Birth *" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                                    <DatePicker fx:id="editDateOfBirthPicker" style="-fx-font-size: 13px;"/>
+                                </VBox>
+
+                                <!-- Gender -->
+                                <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                    <Label text="Gender *" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                                    <HBox spacing="15">
+                                        <RadioButton fx:id="editMaleRadio" text="Male" style="-fx-font-size: 12px;">
+                                            <toggleGroup>
+                                                <ToggleGroup fx:id="editGenderGroup"/>
+                                            </toggleGroup>
+                                        </RadioButton>
+                                        <RadioButton fx:id="editFemaleRadio" text="Female" toggleGroup="$editGenderGroup" style="-fx-font-size: 12px;"/>
+                                    </HBox>
+                                </VBox>
+
+                                <!-- Role -->
+                                <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                                    <Label text="Role *" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 12px;"/>
+                                    <ComboBox fx:id="editRoleComboBox" maxWidth="Infinity" style="-fx-font-size: 13px;"/>
+                                </VBox>
+                            </GridPane>
+
+                            <!-- Error/Success Message -->
+                            <Label fx:id="staffUpdateMessageLabel" wrapText="true" style="-fx-font-size: 12px; -fx-padding: 5;" visible="false"/>
+
+                            <!-- Action Buttons -->
+                            <HBox spacing="15" alignment="CENTER_RIGHT">
+                                <Button text="Cancel" onAction="#handleCancelUpdate"
+                                        style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-size: 13px; -fx-padding: 10 20 10 20; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                                <Button text="💾 Save Changes" onAction="#handleUpdateStaff"
+                                        style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10 20 10 20; -fx-background-radius: 5; -fx-cursor: hand;">
+                                    <effect>
+                                        <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                                    </effect>
+                                </Button>
+                            </HBox>
+                        </VBox>
+
+                        <!-- No Staff Found Message (Hidden by default) -->
+                        <VBox fx:id="noStaffFoundPanel" spacing="10" alignment="CENTER" visible="false" managed="false"
+                              style="-fx-background-color: #fff3cd; -fx-background-radius: 8; -fx-padding: 20; -fx-border-color: #ffc107; -fx-border-width: 2; -fx-border-radius: 8;">
+                            <Label text="⚠️" style="-fx-font-size: 32px;"/>
+                            <Label text="Staff Not Found" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #856404;"/>
+                            <Label text="No staff member exists with this ID" style="-fx-font-size: 12px; -fx-text-fill: #856404;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- All Staff List Section -->
+                    <VBox spacing="15" style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 25; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="📋 Staff List" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="🔄 Refresh" onAction="#refreshStaffList"
+                                    style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 15 8 15; -fx-background-radius: 5; -fx-cursor: hand;"/>
+                        </HBox>
+
+                        <Separator/>
+
+                        <!-- Staff Table -->
+                        <TableView fx:id="allStaffTable" style="-fx-background-color: transparent;">
+                            <columns>
+                                <TableColumn text="Staff ID" prefWidth="120" fx:id="staffIdColumn"/>
+                                <TableColumn text="Full Name" prefWidth="200" fx:id="staffNameColumn"/>
+                                <TableColumn text="Assigned Grade" prefWidth="200" fx:id="staffGradeColumn"/>
+                                <TableColumn text="Assigned Subject" prefWidth="130" fx:id="staffSubjectColumn"/>
+                            </columns>
+                            <placeholder>
+                                <Label text="No staff members found" style="-fx-text-fill: #95a5a6;"/>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+        </StackPane>
+    </center>
+
+</BorderPane>

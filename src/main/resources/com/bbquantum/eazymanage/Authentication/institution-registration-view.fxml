@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Controller.SubscriptionController"
+            fitToWidth="true" fitToHeight="true"
+            style="-fx-background: linear-gradient(to bottom, #667eea 0%, #764ba2 100%); -fx-background-color: linear-gradient(to bottom, #667eea 0%, #764ba2 100%);">
+
+    <VBox alignment="CENTER" spacing="25.0"
+          style="-fx-background-color: transparent;">
+        <padding>
+            <Insets bottom="50.0" left="40.0" right="40.0" top="50.0"/>
+        </padding>
+
+        <!-- Header Section -->
+        <VBox alignment="CENTER" spacing="10">
+            <Label text="🎓" style="-fx-font-size: 48px;"/>
+            <Label text="EAZY MANAGE" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Label text="School Management System" style="-fx-font-size: 16px; -fx-text-fill: #e0e0e0;"/>
+            <Label text="Subscribe Your Institution" style="-fx-font-size: 14px; -fx-text-fill: #ffffff; -fx-padding: 10 0 0 0;"/>
+        </VBox>
+
+        <!-- Subscription Form -->
+        <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 40;" maxWidth="500">
+            <effect>
+                <javafx.scene.effect.DropShadow color="#00000040" radius="20" offsetY="5"/>
+            </effect>
+
+            <!-- School Name Field -->
+            <VBox spacing="8">
+                <Label text="School/Institution Name" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                <TextField fx:id="schoolNameField" promptText="Enter your institution's full name"
+                           style="-fx-padding: 12; -fx-font-size: 14px; -fx-background-radius: 8; -fx-border-color: #dcdde1; -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+            </VBox>
+
+            <!-- Subscription Code Field -->
+            <VBox spacing="8">
+                <Label text="Subscription Code" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-font-size: 13px;"/>
+                <TextField fx:id="subscriptionCodeField" promptText="Enter the subscription code provided"
+                           style="-fx-padding: 12; -fx-font-size: 14px; -fx-background-radius: 8; -fx-border-color: #dcdde1; -fx-border-radius: 8; -fx-border-width: 1.5;"/>
+                <Label text="💡 Contact BBQuantum to get your subscription code"
+                       style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d; -fx-padding: 5 0 0 0;"/>
+            </VBox>
+
+            <!-- Error/Success Message Label -->
+            <Label fx:id="messageLabel" wrapText="true" style="-fx-font-size: 13px; -fx-padding: 5;" visible="false"/>
+
+            <!-- Subscribe Button -->
+            <Button fx:id="subscribeButton" text="Activate Subscription" onAction="#handleSubscribe" maxWidth="Infinity"
+                    style="-fx-background-color: linear-gradient(to right, #667eea, #764ba2); -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold; -fx-padding: 15; -fx-background-radius: 8; -fx-cursor: hand;">
+                <effect>
+                    <javafx.scene.effect.DropShadow color="#00000030" radius="5" offsetY="2"/>
+                </effect>
+            </Button>
+
+            <Separator style="-fx-padding: 10 0 10 0;"/>
+
+            <!-- Success Panel (Hidden by default) -->
+            <VBox fx:id="successPanel" spacing="15" alignment="CENTER" visible="false"
+                  style="-fx-background-color: #d4edda; -fx-background-radius: 10; -fx-padding: 20; -fx-border-color: #28a745; -fx-border-radius: 10; -fx-border-width: 2;">
+
+                <Label text="✅ Subscription Successful!" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #155724;"/>
+
+                <VBox spacing="5" alignment="CENTER">
+                    <Label text="Your Institution ID:" style="-fx-font-size: 13px; -fx-text-fill: #155724;"/>
+                    <Label fx:id="institutionIdLabel" text=""
+                           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #155724; -fx-background-color: white; -fx-padding: 10 20 10 20; -fx-background-radius: 5;"/>
+                    <Label text="⚠️ Save this ID - you'll need it for principal enrollment"
+                           style="-fx-font-size: 11px; -fx-text-fill: #155724; -fx-padding: 5 0 0 0; -fx-font-style: italic;"/>
+                </VBox>
+
+                <Hyperlink fx:id="enrollPrincipalLink" text="👉 Enroll Principal Now" onAction="#handleEnrollPrincipal"
+                           style="-fx-font-size: 14px; -fx-text-fill: #007bff; -fx-font-weight: bold; -fx-underline: true;"/>
+            </VBox>
+
+            <!-- Back to Login Link -->
+            <Hyperlink fx:id="backToLogin" text="← Back to Login" onAction="#handleBackToLogin"
+                       style="-fx-text-fill: #667eea; -fx-font-size: 12px; -fx-alignment: center;"/>
+        </VBox>
+
+        <!-- Footer -->
+        <Label text="© 2025 BBQuantum | Empowering Education"
+               style="-fx-font-size: 11px; -fx-text-fill: white;">
+            <padding>
+                <Insets top="20"/>
+            </padding>
+        </Label>
+    </VBox>
+</ScrollPane>

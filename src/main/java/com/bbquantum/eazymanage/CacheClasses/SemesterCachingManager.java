@@ -1,0 +1,51 @@
+package com.bbquantum.eazymanage.CacheClasses;
+
+import com.bbquantum.eazymanage.DTO.Academics.SemesterCaching;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
+public class SemesterCachingManager {
+    private static SemesterCachingManager instance;
+
+    private List<SemesterCaching> cachedSemesters;
+
+    private LocalDateTime lastUpdatedTime;
+
+    private static final long CACHE_TTL_MINUTES = 60;
+
+    private SemesterCachingManager() {}
+
+    public static SemesterCachingManager getInstance() {
+        if (instance == null) {
+            instance = new SemesterCachingManager();
+        }
+        return instance;
+    }
+
+    public boolean isSemesterCacheValid() {
+        if (cachedSemesters == null || lastUpdatedTime == null) {
+            return false;
+        }
+
+        long minutesElapsed = ChronoUnit.MINUTES.between(lastUpdatedTime, LocalDateTime.now());
+        return minutesElapsed < CACHE_TTL_MINUTES;
+    }
+
+    public List<SemesterCaching> getCachedSemesters() {
+        if (isSemesterCacheValid()) {
+            return cachedSemesters;
+        }
+        return null;
+    }
+
+    public void setCachedSemesters(List<SemesterCaching> cachedSemesters) {
+        this.cachedSemesters = cachedSemesters;
+        this.lastUpdatedTime = LocalDateTime.now();
+    }
+
+    public void clearCache() {
+        cachedSemesters.clear();
+    }
+}
