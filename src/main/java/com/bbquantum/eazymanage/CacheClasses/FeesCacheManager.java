@@ -1,6 +1,7 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
 import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
+import com.bbquantum.eazymanage.DTO.Finance.RecentPaymentTable;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -10,6 +11,8 @@ public class FeesCacheManager {
     private static FeesCacheManager instance;
 
     private List<ClassFeesSummary> cachedClassFeesSummaryList;
+
+    private List<RecentPaymentTable> cachedRecentPaymentList;
 
     private LocalDateTime lastUpdateTime;
 
@@ -25,8 +28,17 @@ public class FeesCacheManager {
     }
 
     //Check if the cache is stale
-    public boolean isCacheValid() {
+    public boolean isCachedClassFeesValid() {
         if (cachedClassFeesSummaryList == null || lastUpdateTime == null) {
+            return false;
+        }
+
+        long minutesElapsed = ChronoUnit.MINUTES.between(lastUpdateTime, LocalDateTime.now());
+        return minutesElapsed < CACHE_TTL_MINUTES;
+    }
+
+    public boolean isCachedRecentPaymentValid() {
+        if (cachedRecentPaymentList == null || lastUpdateTime == null) {
             return false;
         }
 
@@ -36,14 +48,36 @@ public class FeesCacheManager {
 
     //Retrieves the cached list
     public List<ClassFeesSummary> getClassFeesSummaryCache() {
-        if (isCacheValid()) {
+        if (isCachedClassFeesValid()) {
             return cachedClassFeesSummaryList;
         }
         return null;
     }
 
-    public void setGradeCache(List<ClassFeesSummary> cachedClassFeesSummaryList) {
+    public List<RecentPaymentTable> getRecentPaymentCache() {
+        if (isCachedRecentPaymentValid()) {
+            return cachedRecentPaymentList;
+        }
+        return null;
+    }
+
+    public void setClassFeesSummaryCache(List<ClassFeesSummary> cachedClassFeesSummaryList) {
         this.cachedClassFeesSummaryList = cachedClassFeesSummaryList;
+        this.lastUpdateTime = LocalDateTime.now();
+    }
+
+    public void setRecentPaymentCache(List<RecentPaymentTable> cachedRecentPaymentList) {
+        this.cachedRecentPaymentList = cachedRecentPaymentList;
+        this.lastUpdateTime = LocalDateTime.now();
+    }
+
+    public void clearRecentPaymentCache() {
+        this.cachedRecentPaymentList = null;
+        this.lastUpdateTime = LocalDateTime.now();
+    }
+
+    public void clearClassFeesSummaryCache() {
+        this.cachedClassFeesSummaryList = null;
         this.lastUpdateTime = LocalDateTime.now();
     }
 

@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.DTO;
+package com.bbquantum.eazymanage.DTO.Institution;
 
 public class RecentStudentView {
     private String studentId;
@@ -9,11 +9,15 @@ public class RecentStudentView {
 
     private String dateOfRegistration;
 
-    public RecentStudentView(String studentId, String studentName, String studentGrade, String dateOfRegistration) {
+    private String status;
+
+    public RecentStudentView(String studentId, String studentName, String studentGrade, String dateOfRegistration,
+                             String status) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.studentGrade = studentGrade;
         this.dateOfRegistration = dateOfRegistration;
+        this.status = status;
     }
 
     public String getStudentId() {
@@ -46,5 +50,13 @@ public class RecentStudentView {
 
     public void setDateOfRegistration(String dateOfRegistration) {
         this.dateOfRegistration = dateOfRegistration;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

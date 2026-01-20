@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller;
 
-import com.bbquantum.eazymanage.DTO.EnrollmentResponse;
+import com.bbquantum.eazymanage.DTO.Institution.EnrollmentResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,6 +29,7 @@ public class EnrollStaffController {
     private final Gson gson = new Gson();
 
     // Personal Info
+    @FXML private VBox formPanel;
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
     @FXML private RadioButton maleRadio;
@@ -43,37 +44,37 @@ public class EnrollStaffController {
     // Account Info
     @FXML private TextField institutionIdField;
     @FXML private ComboBox<String> roleComboBox;
-    @FXML private PasswordField passwordField;
+    @FXML private PasswordField enrollmentPasswordField;
     @FXML private PasswordField confirmPasswordField;
 
     // Message and Success Panel
-    @FXML private Label messageLabel;
+    @FXML private Label enrollmentMessageLabel;
     @FXML private Button enrollButton;
     @FXML private VBox successPanel;
     @FXML private Label staffIdLabel;
-    @FXML private Label passwordDisplayLabel;
     @FXML private Hyperlink backToLoginLink;
-
-    private String presetInstitutionId = null;
 
     /**
      * Initialize method
      */
     @FXML
     public void initialize() {
-        // Populate role dropdown
-        roleComboBox.getItems().addAll("Principal", "Teaching Staff", "Accountant", "General Staff");
+        roleComboBox.getItems().addAll(
+                "Principal",
+                "Teaching Staff",
+                "Accountant",
+                "General Staff"
+        );
 
-        // Hide success panel initially
         successPanel.setVisible(false);
         successPanel.setManaged(false);
+        enrollmentMessageLabel.setVisible(false);
     }
 
     /**
      * Set institution ID from subscription (called from SubscriptionController)
      */
     public void setInstitutionId(String institutionId) {
-        this.presetInstitutionId = institutionId;
         institutionIdField.setText(institutionId);
         institutionIdField.setDisable(true); // Lock it so user can't change
     }
@@ -91,31 +92,23 @@ public class EnrollStaffController {
      */
     @FXML
     private void handleEnrollStaff() {
-        // Hide previous messages
-        messageLabel.setVisible(false);
+        clearMessage();
 
-        // Validate inputs
-        if (!validateInputs()) {
-            return;
-        }
+        if (!validateInputs()) return;
 
-        // Get values
-        String firstName = firstNameField.getText().trim();
-        String lastName = lastNameField.getText().trim();
-        String gender = maleRadio.isSelected() ? "Male" : "Female";
-        LocalDate dateOfBirth = dateOfBirthPicker.getValue();
-        String email = emailField.getText().trim();
-        String phoneNumber = phoneNumberField.getText().trim();
-        String institutionId = institutionIdField.getText().trim();
-        String role = roleComboBox.getValue();
-        String password = passwordField.getText();
+        setLoadingState(true);
 
-        // Disable button
-        enrollButton.setDisable(true);
-        enrollButton.setText("Enrolling...");
-
-        // Call backend
-        enrollToBackend(firstName, lastName, gender, dateOfBirth, email, phoneNumber, institutionId, role, password);
+        enrollToBackend(
+                firstNameField.getText().trim(),
+                lastNameField.getText().trim(),
+                getSelectedGender(),
+                dateOfBirthPicker.getValue(),
+                emailField.getText().trim(),
+                phoneNumberField.getText().trim(),
+                institutionIdField.getText().trim(),
+                roleComboBox.getValue(),
+                enrollmentPasswordField.getText()
+        );
     }
 
     /**
@@ -176,7 +169,7 @@ public class EnrollStaffController {
         }
 
         // Password
-        String password = passwordField.getText();
+        String password = enrollmentPasswordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
         if (password.isEmpty()) {
@@ -236,7 +229,8 @@ public class EnrollStaffController {
                         .build();
 
                 // Send request
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                HttpResponse<String> response =
+                        httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
                 // Parse response based on your backend structure
                 if (response.statusCode() == 200) {
@@ -245,48 +239,32 @@ public class EnrollStaffController {
                     String status = jsonResponse.get("status").getAsString();
                     String message = jsonResponse.get("message").getAsString();
 
-                    if (status.equals("success")) {
-                        // Success - message contains the staffId
-                        return new EnrollmentResponse(true, message, "Enrollment successful", password);
-                    } else {
-                        // Failed - message contains the error
-                        return new EnrollmentResponse(false, null, message, null);
-                    }
+                    return new EnrollmentResponse(true, message, "Enrollment successful", password);
+
                 } else {
-                    return new EnrollmentResponse(false, null, "Server error: " + response.statusCode(), null);
+                    return new EnrollmentResponse(false, null, response.body(), null);
                 }
             }
         };
 
         // Handle success
         task.setOnSucceeded(event -> {
+            setLoadingState(false);
             EnrollmentResponse response = task.getValue();
-            enrollButton.setDisable(false);
-            enrollButton.setText("Enroll Staff");
 
-            if (response.isSuccess()) {
-                showSuccess(response.getStaffId(), response.getPassword());
-            } else {
-                System.out.println(response.getMessage());
+            if (!response.isSuccess()) {
                 showError(response.getMessage());
+                return;
             }
+
+            showSuccess(response.getStaffId());
         });
 
         // Handle failure
-        task.setOnFailed(event -> {
-            enrollButton.setDisable(false);
-            enrollButton.setText("Enroll Staff");
-
-            Throwable exception = task.getException();
-
-            if (exception.getMessage().contains("Connection refused") ||
-                    exception.getMessage().contains("ConnectException")) {
-                showError("Cannot connect to server. Please make sure the backend is running.");
-            } else {
-                showError("Error: " + exception.getMessage());
-            }
-
-            exception.printStackTrace();
+        task.setOnFailed(e -> {
+            setLoadingState(false);
+            showError("Cannot connect to server. Please try again.");
+            task.getException().printStackTrace();
         });
 
         // Run task in background
@@ -296,31 +274,51 @@ public class EnrollStaffController {
     /**
      * Show success panel with staff ID and password
      */
-    private void showSuccess(String staffId, String password) {
-        // Hide form
-        firstNameField.getParent().setVisible(false);
-        firstNameField.getParent().setManaged(false);
+    private void showSuccess(String staffId) {
+        formPanel.setVisible(false);
+        formPanel.setManaged(false);
 
-        // Show success panel
         staffIdLabel.setText(staffId);
-        passwordDisplayLabel.setText(password);
         successPanel.setVisible(true);
-        successPanel.setManaged(true);
-
-        // Show success message
-        messageLabel.setText("✅ Staff enrolled successfully!");
-        messageLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
-        messageLabel.setVisible(true);
+        successPanel.setManaged(true);;
     }
+
 
     /**
      * Show error message
      */
     private void showError(String message) {
-        messageLabel.setText("❌ " + message);
-        messageLabel.setStyle("-fx-text-fill: #dc3545; -fx-font-weight: bold;");
-        messageLabel.setVisible(true);
+        setMessage("message-error", "❌ " + message);
     }
+
+    private void setMessage(String style, String text) {
+        enrollmentMessageLabel.getStyleClass().removeAll(
+                "message-success", "message-error"
+        );
+        enrollmentMessageLabel.getStyleClass().add(style);
+        enrollmentMessageLabel.setText(text);
+        enrollmentMessageLabel.setVisible(true);
+        enrollmentMessageLabel.setManaged(true);
+    }
+
+    private void clearMessage() {
+        enrollmentMessageLabel.setVisible(false);
+        enrollmentMessageLabel.setManaged(false);
+    }
+
+    private void setLoadingState(boolean loading) {
+        enrollButton.setDisable(loading);
+        enrollButton.setText(loading ? "Enrolling..." : "Enroll Staff");
+    }
+
+    private boolean isEmpty(TextField field) {
+        return field.getText().trim().isEmpty();
+    }
+
+    private String getSelectedGender() {
+        return maleRadio.isSelected() ? "Male" : "Female";
+    }
+
 
     /**
      * Handle back to login
@@ -328,12 +326,16 @@ public class EnrollStaffController {
     @FXML
     private void handleBackToLogin() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/login-view.fxml"));
-            Scene scene = new Scene(loader.load(), 400, 680);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/auth-container.fxml"));
+            Scene scene = new Scene(loader.load());
 
             Stage stage = (Stage) backToLoginLink.getScene().getWindow();
+
+            stage.setTitle("EAZY MANAGE - Authentication");
             stage.setScene(scene);
-            stage.setTitle("EAZY MANAGE - Login");
+            stage.sizeToScene();
+            stage.centerOnScreen();
+            stage.setResizable(false);
 
         } catch (IOException e) {
             showError("Error loading login page: " + e.getMessage());

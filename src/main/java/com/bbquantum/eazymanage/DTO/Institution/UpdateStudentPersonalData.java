@@ -1,6 +1,4 @@
-package com.bbquantum.eazymanage.DTO;
-
-import java.time.LocalDate;
+package com.bbquantum.eazymanage.DTO.Institution;
 
 public class UpdateStudentPersonalData {
     private String studentId;
@@ -19,9 +17,11 @@ public class UpdateStudentPersonalData {
 
     private String gradeName;
 
+    private String status;
+
     public UpdateStudentPersonalData(String studentId, String firstName, String lastName,
                                      String gender, String dateOfBirth, String parentName,
-                                     String parentPhoneNumber, String gradeName) {
+                                     String parentPhoneNumber, String gradeName, String status) {
         this.studentId = studentId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -30,6 +30,7 @@ public class UpdateStudentPersonalData {
         this.parentName = parentName;
         this.parentPhoneNumber = parentPhoneNumber;
         this.gradeName = gradeName;
+        this.status = status;
     }
 
     public String getStudentId() {
@@ -94,5 +95,13 @@ public class UpdateStudentPersonalData {
 
     public void setGradeName(String gradeName) {
         this.gradeName = gradeName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

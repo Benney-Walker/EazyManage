@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.RecentStudentView;
+import com.bbquantum.eazymanage.DTO.Institution.RecentStudentView;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -47,6 +47,11 @@ public class RecentStudentCacheManager {
 
     public void setCachedStudents(List<RecentStudentView> cachedStudents) {
         this.cachedStudents = cachedStudents;
+        this.lastUpdatedTime = LocalDateTime.now();
+    }
+
+    public void clearCachedStudents() {
+        this.cachedStudents = null;
         this.lastUpdatedTime = LocalDateTime.now();
     }
 }

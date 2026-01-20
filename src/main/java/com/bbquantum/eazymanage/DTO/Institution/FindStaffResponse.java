@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.DTO;
+package com.bbquantum.eazymanage.DTO.Institution;
 
 import java.time.LocalDate;
 

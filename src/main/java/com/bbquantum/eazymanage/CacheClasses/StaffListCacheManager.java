@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.RecentStaffView;
+import com.bbquantum.eazymanage.DTO.Institution.RecentStaffView;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -33,7 +33,7 @@ public class StaffListCacheManager {
         return minutesElapsed < CACHE_TTL_MINUTES;
     }
 
-    public List<RecentStaffView> getCachedList() {
+    public List<RecentStaffView> getCachedStaffList() {
         if (isCacheValid()) {
             return cachedStaffList;
         }
@@ -42,6 +42,11 @@ public class StaffListCacheManager {
 
     public void setStaffList(List<RecentStaffView> staffCachingList) {
         cachedStaffList = staffCachingList;
+        this.lastUpdatedTime = LocalDateTime.now();
+    }
+
+    public void clearCachedStaffList() {
+        this.cachedStaffList = null;
         this.lastUpdatedTime = LocalDateTime.now();
     }
 }

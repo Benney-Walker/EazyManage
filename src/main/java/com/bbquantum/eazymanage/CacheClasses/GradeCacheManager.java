@@ -52,6 +52,7 @@ public class GradeCacheManager {
     }
 
     public void clearCache() {
-        cachedGrade.clear();
+        this.cachedGrade = null;
+        this.lastUpdateTime = LocalDateTime.now();
     }
 }

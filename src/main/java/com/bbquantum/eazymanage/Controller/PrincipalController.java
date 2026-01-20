@@ -1,35 +1,27 @@
 package com.bbquantum.eazymanage.Controller;
 
-import com.bbquantum.eazymanage.DTO.*;
-import com.bbquantum.eazymanage.DTO.Academics.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Academics.SemesterCaching;
-import com.bbquantum.eazymanage.DTO.Academics.StudentResults;
-import com.bbquantum.eazymanage.DTO.Academics.StudentResultsSubject;
+import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
 import com.bbquantum.eazymanage.DTO.Finance.FeesSummaryTable;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
 import com.bbquantum.eazymanage.DTO.Finance.StudentPaymentHistory;
+import com.bbquantum.eazymanage.DTO.Institution.*;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.http.HttpClient;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import com.google.gson.Gson;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -39,9 +31,6 @@ public class PrincipalController implements Initializable {
 
     private UtilityClass utilityClass;
 
-    public final HttpClient httpClient = HttpClient.newHttpClient();
-    public final Gson gson = new Gson();
-
     //Store staff Data from backend
     String institutionName;
     String principalName;
@@ -49,10 +38,21 @@ public class PrincipalController implements Initializable {
     //Store logged in staff Id from login
     public String currentStaffId;
 
-    //Store studentData for Update
+    //Store student Data for Update
     public UpdateStudentPersonalData updateStudentPersonalData;
+    //Store staff Data for Update
+    public FindStaffResponse findStaffResponse;
+    //Get refreshed staff list
+    public List<RecentStaffView> refreshedStaffViewList;
+    //Store fees filter
+    public List<FeesSummaryTable> feesSummaryTable;
+
+    public PasswordRecoveryDTO passwordRecoveryDTO;
+
+    public List<GenerateStudentReport> generateStudentReport;
 
     //LEFT SIDEBAR - Navigation side
+    @FXML public StackPane notification;
     @FXML private Button mainDashboardBtn;
     @FXML private Button staffDashboardBtn;
     @FXML private Button financeDashboardBtn;
@@ -79,13 +79,15 @@ public class PrincipalController implements Initializable {
     @FXML private TableColumn<RecentStudentView, String> studentNameColumn;
     @FXML private TableColumn<RecentStudentView, String> studentLevelColumn;
     @FXML private TableColumn<RecentStudentView, String> dateAddedColumn;
+    @FXML private TableColumn<RecentStudentView, String> statusColumn;
 
     //STAFF DASHBOARD VIEW
     @FXML private ScrollPane staffDashboardView;
     @FXML private Label totalStaffCountLabel;
     @FXML private TextField searchStaffIdField;
-    @FXML
-    public VBox staffDetailsPanel;
+    @FXML private VBox newPasswordBox;
+    @FXML private TextField newPasswordField;
+    @FXML public VBox staffDetailsPanel;
     @FXML private Label staffFullNameLabel;
     @FXML private Label staffRoleLabel;
     @FXML private TextField editFirstNameField;
@@ -98,15 +100,16 @@ public class PrincipalController implements Initializable {
     @FXML private ToggleGroup editGenderGroup;
     @FXML private ComboBox<String> editRoleComboBox;
     @FXML private Label staffUpdateMessageLabel;
+    @FXML private Button searchStaffBtn;
+    @FXML private Button passwordResetBtn;
+    @FXML private Button refreshStaffListBtn;
     @FXML
     public VBox noStaffFoundPanel;
     @FXML
     public TableView<RecentStaffView> allStaffTable;
     @FXML private TableColumn<RecentStaffView, String> staffIdColumn;
     @FXML private TableColumn<RecentStaffView, String> staffNameColumn;
-    @FXML private TableColumn<RecentStaffView, String> staffRoleColumn;
     @FXML private TableColumn<RecentStaffView, String> staffGradeColumn;
-    @FXML private TableColumn<RecentStaffView, String> staffSubjectColumn;
 
     //FINANCE DASHBOARD VIEW
     @FXML private ScrollPane financeDashboardView;
@@ -118,6 +121,9 @@ public class PrincipalController implements Initializable {
     @FXML private Label outstandingBalanceLabel;
     @FXML private TextField studentIdSearchField;
     @FXML private Button searchFeesHistoryBtn;
+    @FXML private Button fullyPaidBtn;
+    @FXML private Button partiallyPaidBtn;
+    @FXML private Button notPaidBtn;
     @FXML
     public ComboBox<SemesterCaching> semesterComboBox;
     @FXML
@@ -164,10 +170,13 @@ public class PrincipalController implements Initializable {
     @FXML private ScrollPane studentDashboardView;
     @FXML private Label totalStudentsCountLabel;
     @FXML private TextField searchStudentIdField;
+    @FXML private Button findStudent;
+    @FXML private Button getResultsBtn;
     @FXML private VBox studentDetailsPanel;
     @FXML private Label studentFullNameLabel;
     @FXML private Label studentIdLabelDisplay;
     @FXML private Label studentClassLabelDisplay;
+    @FXML private Label statusField;
     @FXML private Label studentGenderLabel;
     @FXML private Label studentDOBLabel;
     @FXML private Label guardianPhoneLabel;
@@ -195,6 +204,79 @@ public class PrincipalController implements Initializable {
     @FXML private TableColumn<StudentResultsSubject, String> subjectGradeColumn;
     @FXML private TableColumn<StudentResultsSubject, String> subjectRemarkColumn;
 
+    // ADD STUDENT VIEW
+    @FXML private ScrollPane addNewStudentView;
+    @FXML private TextField firstNameField;
+    @FXML private TextField lastNameField;
+    @FXML private ComboBox<String> genderComboBox;
+    @FXML private DatePicker dateOfBirthPicker;
+    @FXML private TextField homeTownField;
+    @FXML private TextField parentNameField;
+    @FXML private TextField parentPhoneField;
+    @FXML private ComboBox<GradeCaching> classComboBox;
+    @FXML private Button saveAndCloseBtn;
+    @FXML private Button saveAndClearBtn;
+
+    //ADD SUBJECT VIEW
+    @FXML private ScrollPane addNewSubjectView;
+    @FXML private TextField subjectNameField;
+    @FXML private ComboBox<GradeCaching> gradeComboBox;
+    @FXML private ComboBox<SemesterCaching> subjectSemesterComboBox;
+    @FXML private Button saveSubjectBtn;
+
+    //ADD SEMESTER PAGE
+    @FXML private ScrollPane addSemesterView;
+    @FXML private TextField semesterNameField;
+    @FXML private DatePicker startDatePicker;
+    @FXML private DatePicker endDatePicker;
+    @FXML private TextField academicYearField;
+    @FXML private Button saveSemesterBtn;
+
+    //ADD GRADES CRITERIA PAGE
+    @FXML private ScrollPane addGradesView;
+    @FXML private TextField gradeCriteriaField;
+    @FXML private TextField lowerRangeField;
+    @FXML private TextField upperRangeField;
+    @FXML private TextField gradeRemarksField;
+    @FXML private Button saveGradeBtn;
+
+    //ADD CLASS PAGE
+    @FXML private ScrollPane addNewClassView;
+    @FXML private TextField classNameField;
+    @FXML private ComboBox<StaffCaching> staffComboBox;
+    @FXML private Button saveClassBtn;
+
+    //MANAGE RESULTS PAGE
+    @FXML private ScrollPane manageResultsView;
+    @FXML private ComboBox<SemesterCaching> classResultsSemesterComboBox;
+    @FXML private ComboBox<GradeCaching> classResultsGradeComboBox;
+    @FXML private Button loadClassResultsBtn;
+    @FXML private HBox resultsInfoBox;
+    @FXML private Label gradeNameLabel;
+    @FXML private Label semesterNameLabel;
+    @FXML private VBox noResultsBox;
+    @FXML private VBox classResultsTableContainer;
+    @FXML private TableView<GenerateStudentReport> classResultsTable;
+    @FXML private TableColumn<GenerateStudentReport, String> studentResultIdColumn;
+    @FXML private TableColumn<GenerateStudentReport, String> studentResultNameColumn;
+    @FXML private TableColumn<GenerateStudentReport, String> classNameColumn;
+    @FXML private TableColumn<GenerateStudentReport, String> semesterNameColumn;
+    @FXML private TableColumn<GenerateStudentReport, String> totalScoreColumn;
+    @FXML private TableColumn<GenerateStudentReport, String> averageScoreColumn;
+    @FXML private TableColumn<GenerateStudentReport, String> positionColumn;
+    @FXML private VBox studentDetailsBox;
+    @FXML private TableView<SubjectReportDTO> subjectBreakdownTable;
+    @FXML private TableColumn<SubjectReportDTO, String> subjectNameCol;
+    @FXML private TableColumn<SubjectReportDTO, String> classScoreCol;
+    @FXML private TableColumn<SubjectReportDTO, String> examScoreCol;
+    @FXML private TableColumn<SubjectReportDTO, String> totalCol;
+    @FXML private TableColumn<SubjectReportDTO, String> gradeCol;
+    @FXML private TableColumn<SubjectReportDTO, String> remarkCol;
+
+    //SPINNER
+    @FXML private VBox loadingOverlay;
+    @FXML private ProgressIndicator loadingSpinner;
+
     @Override
     public void initialize(URL url,  ResourceBundle resourceBundle) {
         studentIdColumn.setCellValueFactory(cellData ->
@@ -208,6 +290,12 @@ public class PrincipalController implements Initializable {
 
         dateAddedColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getDateOfRegistration()));
+
+        statusColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(String.valueOf(cellData.getValue().getStatus())));
+
+
+
 
         paymentDateColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getDateOfPayment()));
@@ -266,39 +354,116 @@ public class PrincipalController implements Initializable {
         subjectRemarkColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getRemark()));
 
-        //Set current date and Time
-        updateDateTime();
+        staffIdColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStaffId()));
 
-        setActiveButton(mainDashboardBtn);
+        staffNameColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStaffName()));
 
+        staffGradeColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getAssignedLevel()));
+
+
+        studentResultIdColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStudentId()));
+
+        studentResultNameColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStudentName()));
+
+        classNameColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassName()));
+
+        semesterNameColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getSemesterName()));
+
+        totalScoreColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTotal()));
+
+        averageScoreColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getAverage()));
+
+        positionColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassPosition()));
+
+        subjectNameCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getSubjectName()));
+
+        classScoreCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassScore()));
+
+        examScoreCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getExamScore()));
+
+        totalCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTotal()));
+
+        gradeCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getGrade()));
+
+        remarkCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDescription()));
+
+
+        classResultsTable.setRowFactory(tableView -> {
+            TableRow<GenerateStudentReport> row = new TableRow<>();
+
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty()) {
+                    GenerateStudentReport report = row.getItem();
+                    List<SubjectReportDTO> clicked = report.getSubjects();
+
+                    if (studentDetailsBox.isVisible() && subjectBreakdownTable.getUserData() == clicked) {
+                        studentDetailsBox.setVisible(false);
+                        studentDetailsBox.setManaged(false);
+
+                        subjectBreakdownTable.getItems().clear();
+                        subjectBreakdownTable.setUserData(null);
+                    } else {
+                        subjectBreakdownTable.setItems(
+                                FXCollections.observableArrayList(clicked)
+                        );
+                        subjectBreakdownTable.setUserData(clicked);
+
+                        studentDetailsBox.setVisible(true);
+                        studentDetailsBox.setManaged(true);
+                    }
+                }
+            });
+            return row;
+        });
 
     }
 
     @FXML
     private void showMainDashboard() {
-        loadMainDashboardData();
+        utilityClass.loadPrincipalData(currentStaffId, notification,
+                () -> {
+                    //On Success
+                    Platform.runLater(() -> {
+                        loadMainDashboardData();
+
+                        hideLoading();
+                    });
+                });
+
         switchView(mainDashboardView, mainDashboardBtn);
     }
 
     @FXML
-    public void viewAllStudents() {
-
-        utilityClass.showError("Feature not yet implemented");
-    }
-
-    @FXML
     public void handleLogout() throws IOException {
+        utilityClass.clearSession();
         // Close the login window
         Stage principalDashboard = (Stage) logoutButton.getScene().getWindow();
 
         // Load the appropriate dashboard
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/login-view.fxml"));
-        Scene scene = new Scene(loader.load(), 400, 680);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/auth-container.fxml"));
+        Scene scene = new Scene(loader.load());
 
         // Create new stage for dashboard
         Stage loginStage = new Stage();
-        loginStage.setTitle("EazyManage - Login");
+        loginStage.setTitle("EazyManage - Authentication");
         loginStage.setScene(scene);
+        loginStage.sizeToScene();
         loginStage.setResizable(false);
 
         // Close login and show dashboard
@@ -311,8 +476,6 @@ public class PrincipalController implements Initializable {
         switchView(staffDashboardView, staffDashboardBtn);
 
         loadStaffDashboardData();
-
-
     }
 
     @FXML
@@ -357,28 +520,86 @@ public class PrincipalController implements Initializable {
 
     @FXML
     public void openAddClassPage() {
-        utilityClass.showAddClassDialog();
+        List<StaffCaching> staffCaching = utilityClass.staffCacheManager.getCachedStaffList();
+        if (staffCaching != null && !staffCaching.isEmpty()) {
+            if (staffComboBox.getItems().isEmpty()) {
+                staffComboBox.getItems().addAll(staffCaching);
+            }
+        }
+
+        switchView(addNewClassView, staffDashboardBtn);
+    }
+
+    public void openClassResultsView() {
+        List<GradeCaching> cachedGrades = utilityClass.gradeCacheManager.getGradeCache();
+        if (cachedGrades != null && !cachedGrades.isEmpty()) {
+            if (classResultsGradeComboBox.getItems().isEmpty()) {
+                classResultsGradeComboBox.getItems().addAll(cachedGrades);
+            }
+        }
+
+        List<SemesterCaching> semesterCaching = utilityClass.semesterCachingManager.getCachedSemesters();
+        if (semesterCaching != null && !semesterCaching.isEmpty()) {
+            if (classResultsSemesterComboBox.getItems().isEmpty()) {
+                classResultsSemesterComboBox.getItems().addAll(semesterCaching);
+            }
+        }
+
+        switchView(manageResultsView, staffDashboardBtn);
     }
 
     @FXML
-    public void handleRecoverPassword() {
+    public void handleResetPassword() {
         String staffId = searchStaffIdField.getText().trim();
-
         if (staffId.isEmpty()) {
-            utilityClass.showError("Please enter a staff id!");
+            utilityClass.showError(notification, "Please enter a staff id!");
             return;
         }
+
+        if (!newPasswordBox.isVisible()) {
+            newPasswordBox.setVisible(true);
+            newPasswordBox.setManaged(true);
+        }
+
+        String newPassword = newPasswordField.getText();
+        if (newPassword.isEmpty()) {
+            utilityClass.showError(notification, "Please enter a new password!");
+            return;
+        }
+
+        utilityClass.processingButton(passwordResetBtn);
 
         // Confirm action
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Recover Password");
-        confirmAlert.setHeaderText("Recover password for Staff ID: " + staffId);
-        confirmAlert.setContentText("This will retrieve the staff member's password. Continue?");
+        confirmAlert.setTitle("Reset Password");
+        confirmAlert.setHeaderText("Reset password for Staff ID: " + staffId);
+        confirmAlert.setContentText("New Password: " + newPassword);
 
         if (confirmAlert.showAndWait().get() != ButtonType.OK) {
+            utilityClass.notProcessingButton(passwordResetBtn, "Recover Password");
             return;
         }
-        utilityClass.recoverPassword(staffId);
+        utilityClass.recoverPassword(staffId, newPassword,
+                () -> {
+            //On Success
+                    Platform.runLater( () -> {
+                        utilityClass.notProcessingButton(passwordResetBtn, "Recover password");
+                        utilityClass.showSuccess(notification, passwordRecoveryDTO.getMessage());
+                    });
+                },
+                () -> {
+            //On Failure
+                    Platform.runLater( () -> {
+                        utilityClass.notProcessingButton(passwordResetBtn, "Recover Password");
+                        utilityClass.showError(notification, passwordRecoveryDTO.getMessage());
+                    });
+                }, () -> {
+            //On Network Issue
+                    Platform.runLater( () -> {
+                        utilityClass.notProcessingButton(passwordResetBtn, "Recover password");
+                        utilityClass.showError(notification, "Network error! Check your internet and try again");
+                    });
+                });
     }
 
     @FXML
@@ -391,33 +612,41 @@ public class PrincipalController implements Initializable {
         staffDetailsPanel.setVisible(false);
         staffDetailsPanel.setManaged(false);
 
-        utilityClass.showError("Feature not yet implemented");
+        utilityClass.showError(notification, "Feature not yet implemented");
     }
 
     @FXML
     public void handleExportToExcel() {
 
-        utilityClass.showError("Feature not yet implemented");
+        utilityClass.showError(notification, "Feature not yet implemented");
     }
 
     @FXML
     public void handleSearchStudentFees() {
         //Extract studentId from textField
         String studentId = studentIdSearchField.getText().trim();
+        if (studentId.isEmpty()) {
+            utilityClass.showError(notification, "Please enter a student id!");
+            return;
+        }
 
         //Get selected class from combo box
         GradeCaching selectedGrade = classLevelComboBox.getSelectionModel().getSelectedItem();
         String gradeId = null;
-        if (selectedGrade != null) {
-            gradeId = selectedGrade.getLevelId();
+        if (selectedGrade == null) {
+            utilityClass.showError(notification, "Please select Grade");
+            return;
         }
+        gradeId = selectedGrade.getLevelId();
 
         //Get selected semester from combo box
         SemesterCaching selectedSemester = semesterComboBox.getSelectionModel().getSelectedItem();
         String semesterId = null;
-        if (selectedSemester != null) {
-            semesterId = selectedSemester.getSemesterId();
+        if (selectedSemester == null) {
+            utilityClass.showError(notification, "Please select Semester");
+            return;
         }
+        semesterId = selectedSemester.getSemesterId();
         utilityClass.processingButton(searchFeesHistoryBtn);
 
         utilityClass.searchFeesReport(studentId, semesterId, gradeId,
@@ -425,14 +654,20 @@ public class PrincipalController implements Initializable {
                     // On success
                     Platform.runLater(() -> {
                         displayFeeReport(utilityClass.report);
-                        utilityClass.notProcessingButton(searchFeesHistoryBtn, "🔍 Search");
+                        utilityClass.notProcessingButton(searchFeesHistoryBtn, "Search Report");
                     });
                 },
                 () -> {
                     // On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchFeesHistoryBtn, "🔍 Search");
-                        utilityClass.showError("Could not fetch data, check student Id and try again");
+                        utilityClass.notProcessingButton(searchFeesHistoryBtn, "Search Report");
+                        utilityClass.showError(notification,"Could not fetch data, check student Id and try again");
+                    });
+                }, () -> {
+            //On Network Issue
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(searchFeesHistoryBtn, "Search Report");
+                        utilityClass.showError(notification,"Network error! Check your internet and try again");
                     });
                 });
     }
@@ -442,7 +677,24 @@ public class PrincipalController implements Initializable {
         String ownUrl = "/fully-paid-students/" + currentStaffId;
         String filter = "FULLY PAID STUDENTS";
 
-        utilityClass.getFeesFilterData(ownUrl, filter);
+        utilityClass.getFeesFilterData(ownUrl,
+                () -> {
+            //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(fullyPaidBtn, "Fully Paid");
+                        String size = String.valueOf(feesSummaryTable.size());
+                        displayFilteredFeesTable(feesSummaryTable, filter, size);
+                    });
+                },
+                () -> {
+            //On failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(fullyPaidBtn, "Fully Paid");
+                        filteredStudentsPanel.setVisible(false);
+                        filteredStudentsPanel.setManaged(false);
+                        utilityClass.showError(notification, "Failed to load payment filter. Try again!");
+                    });
+                });
     }
 
     @FXML
@@ -450,7 +702,24 @@ public class PrincipalController implements Initializable {
         String ownUrl = "/partially-paid-students/" + currentStaffId;
         String filter = "PARTIALLY PAID STUDENTS";
 
-        utilityClass.getFeesFilterData(ownUrl, filter);
+        utilityClass.getFeesFilterData(ownUrl,
+                () -> {
+                    //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(partiallyPaidBtn, "Partial Payment");
+                        String size = String.valueOf(feesSummaryTable.size());
+                        displayFilteredFeesTable(feesSummaryTable, filter, size);
+                    });
+                },
+                () -> {
+                    //On failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(notPaidBtn, "Not Paid");
+                        filteredStudentsPanel.setVisible(false);
+                        filteredStudentsPanel.setManaged(false);
+                        utilityClass.showError(notification, "Failed to load payment filter. Try again!");
+                    });
+                });
     }
 
     @FXML
@@ -458,7 +727,24 @@ public class PrincipalController implements Initializable {
         String ownUrl = "/not-paid-students/" + currentStaffId;
         String filter = "NOT PAID STUDENTS";
 
-        utilityClass.getFeesFilterData(ownUrl, filter);
+        utilityClass.getFeesFilterData(ownUrl,
+                () -> {
+                    //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(fullyPaidBtn, "Fully Paid");
+                        String size = String.valueOf(feesSummaryTable.size());
+                        displayFilteredFeesTable(feesSummaryTable, filter, size);
+                    });
+                },
+                () -> {
+                    //On failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(fullyPaidBtn, "Fully Paid");
+                        filteredStudentsPanel.setVisible(false);
+                        filteredStudentsPanel.setManaged(false);
+                        utilityClass.showError(notification, "Failed to load payment filter. Try again!");
+                    });
+                });
     }
 
     @FXML
@@ -470,53 +756,80 @@ public class PrincipalController implements Initializable {
     @FXML
     public void handleExportFilteredList() {
 
-        utilityClass.showError("Feature not yet implemented");
+        utilityClass.showError(notification, "Feature not yet implemented");
     }
 
     @FXML
     public void handlePrintReport() {
 
-        utilityClass.showError("Feature not yet implemented");
+        utilityClass.showError(notification, "Feature not yet implemented");
     }
 
     @FXML
     public void refreshStaffList() {
-        utilityClass.loadAllStaffList();
+        utilityClass.processingButton(refreshStaffListBtn);
+        utilityClass.refreshAllStaffList(
+                () -> {
+                    //on Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(refreshStaffListBtn, "Refresh List");
+                        allStaffTable.getItems().setAll(refreshedStaffViewList);
+                    });
+                },
+                () -> {
+                    //On failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(refreshStaffListBtn, "Refresh List");
+                        utilityClass.showError(notification, "Could not refresh staff list");
+                    });
+                });
     }
 
     @FXML
-    public void openAddStudentPage(MouseEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Staff/add-student.fxml"));
-            Parent root = loader.load();
-
-            AddStudentController controller = loader.getController();
-            controller.setStaffId(currentStaffId);
-
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle("Add New Student");
-
-            // Make it modal
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(((Node) event.getSource()).getScene().getWindow());
-
-            // Set a FIXED SIZE - this enables scrolling!
-            Scene scene = new Scene(root, 700, 600);  // width: 700, height: 600
-            dialogStage.setScene(scene);
-
-            dialogStage.setResizable(false);
-            dialogStage.showAndWait();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            utilityClass.showError("Could not open add student page. Try again");
+    public void openAddStudentPage() {
+        // Populate gender ComboBox
+        if (genderComboBox.getItems().isEmpty()) {
+            genderComboBox.getItems().addAll("Male", "Female");
         }
+
+        // Populate class ComboBox from cache
+        List<GradeCaching> grades = utilityClass.gradeCacheManager.getGradeCache();
+        if (grades != null && !grades.isEmpty()) {
+            if (classComboBox.getItems().isEmpty()) {
+                classComboBox.getItems().addAll(grades);
+            }
+        }
+        switchView(addNewStudentView, studentDashboardBtn);
+    }
+
+    @FXML
+    public void backToStudentPage() {
+        switchView(studentDashboardView, studentDashboardBtn);
     }
 
     @FXML
     public void handleSearchStudent() {
         String studentId = searchStudentIdField.getText().trim();
-        utilityClass.searchStudentData(studentId);
+        if (studentId.isEmpty()) {
+            utilityClass.showError(notification, "Please enter student id");
+            return;
+        }
+        utilityClass.processingButton(findStudent);
+        utilityClass.searchStudentData(studentId,
+                () -> {
+            //On Success
+            Platform.runLater(() -> {
+                utilityClass.notProcessingButton(findStudent, "Find Student");
+                displayStudentPersonalInfo(updateStudentPersonalData);
+            });
+                },
+                () -> {
+            //On failure
+            Platform.runLater(() -> {
+                utilityClass.notProcessingButton(findStudent, "Find Student");
+                utilityClass.showError(notification, "Could not find student with id " + studentId);
+            });
+                });
     }
 
     @FXML
@@ -526,26 +839,50 @@ public class PrincipalController implements Initializable {
             return;
         }
 
-        utilityClass.showUpdateStudentDataDialog();
+        utilityClass.showUpdateStudentDataDialog(notification);
     }
 
     @FXML
     public void handleSearchResults() {
         String studentId = resultsSearchIdField.getText().trim();
+        if (studentId.isEmpty()) {
+            utilityClass.showError(notification, "Please enter student id");
+            return;
+        }
         //Get selected grade/class
         GradeCaching selectedGrade = resultsClassComboBox.getSelectionModel().getSelectedItem();
         String classId = null;
-        if (selectedGrade != null) {
-            classId = selectedGrade.getLevelId();
+        if (selectedGrade == null) {
+            utilityClass.showError(notification, "No grade selected");
+            return;
         }
+        classId = selectedGrade.getLevelId();
 
         SemesterCaching selectedSemester = resultsSemesterComboBox.getSelectionModel().getSelectedItem();
         String semesterId = null;
-        if (selectedSemester != null) {
-            semesterId = selectedSemester.getSemesterId();
+        if (selectedSemester == null) {
+            utilityClass.showError(notification, "No semester selected");
+            return;
         }
+        semesterId = selectedSemester.getSemesterId();
+        utilityClass.processingButton(getResultsBtn);
 
-        utilityClass.SearchStudentResults(studentId, classId, semesterId);
+        utilityClass.SearchStudentResults(studentId, classId, semesterId,
+                () -> {
+            //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(getResultsBtn, "Search Results");
+                        displayStudentResultsPanel(utilityClass.studentResults);
+                    });
+                },
+                () -> {
+            //On failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(getResultsBtn, "Search Results");
+                        noResultsFoundPanel.setVisible(true);
+                        noResultsFoundPanel.setManaged(true);
+                    });
+                });
     }
 
     @FXML
@@ -553,45 +890,77 @@ public class PrincipalController implements Initializable {
         String staffId = searchStaffIdField.getText().trim();
 
         if (staffId.isEmpty()) {
-            utilityClass.showError("Enter Staff ID");
+            utilityClass.showError(notification, "Enter Staff ID");
             return;
         }
 
-        utilityClass.searchStaffData(staffId);
+        utilityClass.searchStaffData(staffId,
+                () -> {
+            //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(searchStaffBtn, "Find Staff");
+                        displayStaffDetails(findStaffResponse);
+                    });
+                },
+                () -> {
+            //On failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(searchStaffBtn, "Find Staff");
+                        staffDetailsPanel.setVisible(false);
+                        staffDetailsPanel.setManaged(false);
+                        noStaffFoundPanel.setVisible(true);
+                        noStaffFoundPanel.setManaged(true);
+                    });
+                });
     }
 
     @FXML
     public void handlePrintReportCard() {
 
-        utilityClass.showError("Feature not yet implemented");
+        utilityClass.showError(notification, "Feature not yet implemented");
     }
 
     @FXML
     public void initializeAfterLogin() {
-        utilityClass = new UtilityClass(this);
-        // Load dashboard data
-        loadMainDashboardData();
-
+        setActiveButton(mainDashboardBtn);
         loadPrincipalInfo();
+        showLoading();
+
+        utilityClass = new UtilityClass(this);
+        utilityClass.loadPrincipalData(currentStaffId, notification,
+                () -> {
+            //On Success
+                    Platform.runLater(() -> {
+                        loadMainDashboardData();
+
+                        hideLoading();
+                    });
+                });
     }
 
     @FXML
     public void openAddSemesterPage() {
-        // Show dialog to add new semester
-        utilityClass.showAddSemesterDialog(currentStaffId);
+        switchView(addSemesterView, staffDashboardBtn);
     }
 
     @FXML
     public void openAddSubjectPage() {
+
+        List<GradeCaching> gradeCachings = utilityClass.gradeCacheManager.getGradeCache();
+        if (gradeCachings != null && !gradeCachings.isEmpty()) {
+            if (gradeComboBox.getItems().isEmpty()) {
+                gradeComboBox.getItems().addAll(gradeCachings);
+            }
+        }
         // Show dialog to add new subject
-        utilityClass.showAddSubjectDialog();
+        switchView(addNewSubjectView, staffDashboardBtn);
     }
 
     @FXML
     public void handlePrintStudentData() {
         GradeCaching selectedGrade = printStudentClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) {
-            utilityClass.showError("Please select a class first");
+            utilityClass.showError(notification, "Please select a class first");
             return;
         }
 
@@ -610,6 +979,415 @@ public class PrincipalController implements Initializable {
                     });
                 }
         );
+    }
+
+    @FXML
+    public void handleSaveAndClose() {
+        if (!validateForm()) return;
+
+        utilityClass.processingButton(saveAndCloseBtn);
+        saveStudent(() -> {
+            // On Success
+            Platform.runLater(() -> {
+                utilityClass.notProcessingButton(saveAndCloseBtn, "Save and Close");
+                utilityClass.showSuccess(notification, "Student saved successfully! ID: " + utilityClass.studentId);
+                Stage stage = (Stage) firstNameField.getScene().getWindow();
+                stage.close();
+            });
+        }, () -> {
+            // On Failure
+            Platform.runLater(() -> {
+                utilityClass.notProcessingButton(saveAndCloseBtn, "Save and Close");
+                utilityClass.showError(notification, "Could not save student");
+            });
+        }, () -> {
+            // On Network Failure
+            Platform.runLater(() -> {
+                utilityClass.notProcessingButton(saveAndCloseBtn, "Save and Close");
+                utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+            });
+        });
+    }
+
+    @FXML
+    public void handleSaveAndClear() {
+        if (!validateForm()) return;
+
+        utilityClass.processingButton(saveAndCloseBtn);
+        saveStudent(() -> {
+            // On Success
+            Platform.runLater(() -> {
+                clearForm();
+                utilityClass.notProcessingButton(saveAndClearBtn, "Save and Close");
+                utilityClass.showSuccess(notification, "Student saved successfully! ID: " + utilityClass.studentId);
+            });
+        }, () -> {
+            // On Failure
+            Platform.runLater(() -> {
+                utilityClass.notProcessingButton(saveAndClearBtn, "Save and Close");
+                utilityClass.showError(notification, "Could not save student");
+            });
+        }, () -> {
+            // On Network Failure
+            Platform.runLater(() -> {
+                utilityClass.notProcessingButton(saveAndCloseBtn, "Save and Close");
+                utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+            });
+        });
+    }
+
+    @FXML
+    public void handleAddSubject() {
+        String subjectName = subjectNameField.getText();
+        if (subjectName.isEmpty()) {
+            utilityClass.showError(notification, "Please enter subjectName");
+            return;
+        }
+
+        GradeCaching grade = gradeComboBox.getSelectionModel().getSelectedItem();
+        if (grade == null) {
+            utilityClass.showError(notification, "Please select a grade");
+            return;
+        }
+        String gradeId = grade.getLevelId();
+
+        utilityClass.processingButton(saveSubjectBtn);
+
+        AssignSubject assignSubject = new AssignSubject(
+                subjectName, gradeId
+        );
+
+        utilityClass.addNewSubject(assignSubject,
+                () -> {
+                    //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveSubjectBtn, "Save Subject");
+                        utilityClass.showSuccess(notification, "Successfully saved subject");
+                    });
+                }, () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveSubjectBtn, "Save Subject");
+                        utilityClass.showError(notification, "Could not save subject! Try again");
+                    });
+                }, () -> {
+                    //On Network Issue
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveSubjectBtn, "Save Subject");
+                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                    });
+                });
+    }
+
+    @FXML
+    public void handleBackToStaffDashboard() {
+        switchView(staffDashboardView, staffDashboardBtn);
+    }
+
+    @FXML
+    public void handleSaveSemester() {
+        String semesterName = semesterNameField.getText().trim();
+        LocalDate startDate = startDatePicker.getValue();
+        LocalDate endDate = endDatePicker.getValue();
+        String academicYear = academicYearField.getText().trim();
+
+        if (semesterName.isEmpty()) {
+            utilityClass.showError(notification, "Semester name is required");
+            return;
+        }
+
+        if (!semesterName.contains("_") || semesterName.contains(" ")
+                || semesterName.contains("-")) {
+            utilityClass.showError(notification, "Semester name must contain '_' eg. First_Term");
+            return;
+        }
+
+        if (startDate == null || endDate == null) {
+            utilityClass.showError(notification, "Start and end dates are required");
+            return;
+        }
+        if (endDate.isBefore(startDate)) {
+            utilityClass.showError(notification, "End date cannot be before start date");
+            return;
+        }
+        if (academicYear.isEmpty()) {
+            utilityClass.showError(notification, "Academic year is required");
+            return;
+        }
+
+        utilityClass.processingButton(saveSemesterBtn);
+        utilityClass.addNewSemester(semesterName, startDate, endDate, academicYear, currentStaffId,
+                () -> {
+            //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveSemesterBtn, "Save Semester");
+                        clearSemesterForm();
+                        utilityClass.showSuccess(notification, "Successfully saved semester");
+                    });
+                }, () -> {
+            //On Failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveSemesterBtn, "Save Semester");
+                        utilityClass.showError(notification, "Could not save semester! Try again");
+                    });
+                }, () -> {
+            //On Network Issue
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveSemesterBtn, "Save Semester");
+                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                    });
+                });
+
+    }
+
+    @FXML
+    public void backToDashboard() {
+        showStaffDashboard();
+    }
+
+    @FXML
+    public void openAddGrades() {
+        switchView(addGradesView, staffDashboardBtn);
+    }
+
+    @FXML void handleSaveGrade() {
+        String gradeCriteria = gradeCriteriaField.getText();
+        Double lowerRange = Double.parseDouble(lowerRangeField.getText());
+        Double upperRange = Double.parseDouble(upperRangeField.getText());
+        String remarks = gradeRemarksField.getText();
+
+        if (gradeCriteria.isEmpty()) {
+            utilityClass.showError(notification, "Grade criteria is required");
+            return;
+        }
+
+        if (lowerRange.isNaN() || upperRange.isNaN()) {
+            utilityClass.showError(notification, "Please enter grade criteria marks");
+            return;
+        }
+
+        if (lowerRange > upperRange) {
+            utilityClass.showError(notification, "Lower range cannot be greater than upper range");
+            return;
+        }
+
+        if (remarks.isEmpty()) {
+            utilityClass.showError(notification, "Remarks is required");
+            return;
+        }
+
+        utilityClass.processingButton(saveGradeBtn);
+        GradingCriteria gradingCriteria = new GradingCriteria(
+                lowerRange, upperRange, gradeCriteria, remarks
+        );
+
+        utilityClass.saveGradingCriteria(gradingCriteria, currentStaffId,
+                () -> {
+            //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveGradeBtn, "Save Grade");
+                        utilityClass.showSuccess(notification, "Successfully saved grading criteria");
+                    });
+                },
+                () -> {
+            //On Failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveGradeBtn, "Save Grade");
+                        utilityClass.showError(notification, "Could not save grading criteria! Try again");
+                    });
+                }, () -> {
+            //On Network Issue
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveGradeBtn, "Save Grade");
+                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                    });
+                });
+
+    }
+
+    @FXML
+    public void handleAddClass() {
+        String className = classNameField.getText();
+        if (className.isEmpty()) {
+            utilityClass.showError(notification, "Class name is required");
+            return;
+        }
+
+        if (!className.contains("_") || className.contains(" ")) {
+            utilityClass.showError(notification, "Class name must contain '_' eg.Grade_1");
+            return;
+        }
+
+        StaffCaching staffCaching = staffComboBox.getSelectionModel().getSelectedItem();
+        if (staffCaching == null) {
+            utilityClass.showError(notification, "Please select a staff cache");
+            return;
+        }
+
+        String staffId = staffCaching.getStaffId();
+
+        utilityClass.processingButton(saveClassBtn);
+        utilityClass.addNewGrade(className, staffId,
+                () -> {
+            //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveClassBtn, "Add Class");
+                        utilityClass.showSuccess(notification, "Successfully added class");
+                    });
+                }, () -> {
+            //On Failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveClassBtn, "Add Class");
+                        utilityClass.showError(notification, "Could not add class! Try again");
+                    });
+                }, () -> {
+            //On Network Issue
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveClassBtn, "Add Class");
+                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                    });
+                });
+    }
+
+    @FXML
+    public void handleLoadClassResults() {
+        SemesterCaching semesterCaching = classResultsSemesterComboBox.getSelectionModel().getSelectedItem();
+        if (semesterCaching == null) {
+            utilityClass.showError(notification, "Select Semester to Load Results");
+            return;
+        }
+
+        GradeCaching gradeCaching = classResultsGradeComboBox.getSelectionModel().getSelectedItem();
+        if (gradeCaching == null) {
+            utilityClass.showError(notification, "Select Grade to Load Results");
+            return;
+        }
+
+        String gradeId = gradeCaching.getLevelId();
+        String semesterId = semesterCaching.getSemesterId();
+
+        utilityClass.processingButton(loadClassResultsBtn);
+        utilityClass.loadClassResultsPrincipal(gradeId, semesterId,
+                () -> {
+                    //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(loadClassResultsBtn, "Fetch Results");
+                        utilityClass.showSuccess(notification, "Results successfully loaded");
+                        populateClassResults(generateStudentReport);
+                    });
+                },
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(loadClassResultsBtn, "Fetch Results");
+                        utilityClass.showError(notification, "Could not fetch results");
+
+                        resultsInfoBox.setVisible(false);
+                        resultsInfoBox.setManaged(false);
+                        classResultsTableContainer.setVisible(false);
+                        classResultsTableContainer.setManaged(false);
+
+                        noResultsBox.setVisible(true);
+                        noResultsBox.setManaged(true);
+                    });
+                }, () -> {
+                    //On Network Issue
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(loadClassResultsBtn, "Fetch Results");
+                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                    });
+                });
+    }
+
+    private void populateClassResults(List<GenerateStudentReport> generateStudentReports) {
+        gradeNameLabel.setText(generateStudentReports.getFirst().getClassName());
+        semesterNameLabel.setText(generateStudentReports.getFirst().getSemesterName());
+
+        classResultsTable.getItems().setAll(generateStudentReports);
+
+        resultsInfoBox.setVisible(true);
+        resultsInfoBox.setManaged(true);
+
+        classResultsTableContainer.setVisible(true);
+        classResultsTableContainer.setManaged(true);
+    }
+
+    private void clearSemesterForm() {
+        semesterNameField.clear();
+        startDatePicker.setValue(null);
+        endDatePicker.setValue(null);
+        academicYearField.clear();
+    }
+
+    private void showLoading() {
+        loadingOverlay.setVisible(true);
+        loadingOverlay.setManaged(true);
+
+        contentArea.setDisable(true);
+    }
+
+    private void hideLoading() {
+        loadingOverlay.setVisible(false);
+        loadingOverlay.setManaged(false);
+
+        contentArea.setDisable(false);
+    }
+
+    private void saveStudent(Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        // Get values
+        String firstName = firstNameField.getText().trim();
+        String lastName = lastNameField.getText().trim();
+        String gender = genderComboBox.getValue();
+        LocalDate dob = dateOfBirthPicker.getValue();
+        String homeTown = homeTownField.getText().trim();
+        String parentName = parentNameField.getText().trim();
+        String parentPhone = parentPhoneField.getText().trim();
+
+        GradeCaching selectedClass = classComboBox.getSelectionModel().getSelectedItem();
+        String selectedGradeId;
+        if (selectedClass == null) {
+            utilityClass.showError(notification, "No grade selected!");
+            return;
+        }
+        selectedGradeId = selectedClass.getLevelId();
+
+        utilityClass.enrollNewStudent(firstName, lastName, selectedGradeId, gender,
+                dob, homeTown, parentName, parentPhone, currentStaffId, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    private void clearForm() {
+        firstNameField.clear();
+        lastNameField.clear();
+        genderComboBox.getSelectionModel().clearSelection();
+        dateOfBirthPicker.setValue(null);
+        homeTownField.clear();
+        parentNameField.clear();
+        parentPhoneField.clear();
+        classComboBox.getSelectionModel().clearSelection();
+    }
+
+    private boolean validateForm() {
+        if (firstNameField.getText().trim().isEmpty()) {
+            utilityClass.showError(notification, "First name is required");
+            return false;
+        }
+        if (lastNameField.getText().trim().isEmpty()) {
+            utilityClass.showError(notification, "Last name is required");
+            return false;
+        }
+        if (genderComboBox.getValue() == null) {
+            utilityClass.showError(notification, "Please select a gender");
+            return false;
+        }
+        if (dateOfBirthPicker.getValue() == null) {
+            utilityClass.showError(notification, "Date of birth is required");
+            return false;
+        }
+        if (classComboBox.getValue() == null) {
+            utilityClass.showError(notification, "Please select a class");
+            return false;
+        }
+        return true;
     }
 
     public void displayFilteredFeesTable(List<FeesSummaryTable> feesSummaryTable,
@@ -635,6 +1413,8 @@ public class PrincipalController implements Initializable {
     //Load staff Dashboard data on open
     private void loadStaffDashboardData() {
         totalStaffCountLabel.setText(String.valueOf(utilityClass.totalStaffFromBackend));
+        List<RecentStaffView> staffList = utilityClass.staffListCacheManager.getCachedStaffList();
+        allStaffTable.getItems().setAll(staffList);
     }
 
     //Load finance Dashboard Data on open
@@ -678,6 +1458,9 @@ public class PrincipalController implements Initializable {
     }
 
     public void loadMainDashboardData() {
+
+        updateDateTime();
+
         //Load total students
         totalStudentsLabel.setText(String.valueOf(utilityClass.totalStudentsFromBackend));
 
@@ -701,7 +1484,7 @@ public class PrincipalController implements Initializable {
             feesProgressBar.setProgress(utilityClass.feesProgressBarFromBackend);
         } catch (Exception e) {
             feesProgressBar.setProgress(0.0);
-            utilityClass.showError("Couldn't get fees Progress");
+            utilityClass.showError(notification, "Couldn't get fees Progress");
         }
 
         List<RecentStudentView> cachedStudents = utilityClass.cacheManager.getCachedStudents();
@@ -725,6 +1508,24 @@ public class PrincipalController implements Initializable {
 
         studentDashboardView.setVisible(false);
         studentDashboardView.setManaged(false);
+
+        addNewStudentView.setVisible(false);
+        addNewStudentView.setManaged(false);
+
+        addNewSubjectView.setVisible(false);
+        addNewSubjectView.setManaged(false);
+
+        addSemesterView.setVisible(false);
+        addSemesterView.setManaged(false);
+
+        addGradesView.setVisible(false);
+        addGradesView.setManaged(false);
+
+        addNewClassView.setVisible(false);
+        addNewClassView.setManaged(false);
+
+        manageResultsView.setVisible(false);
+        manageResultsView.setManaged(false);
 
         viewToShow.setVisible(true);
         viewToShow.setManaged(true);
@@ -832,6 +1633,7 @@ public class PrincipalController implements Initializable {
         studentDOBLabel.setText(updateStudentPersonalData.getDateOfBirth());
         studentGuardianNameLabel.setText(updateStudentPersonalData.getParentName());
         guardianPhoneLabel.setText(updateStudentPersonalData.getParentPhoneNumber());
+        statusField.setText(updateStudentPersonalData.getStatus());
 
         //Display info Panel
         studentDetailsPanel.setVisible(true);

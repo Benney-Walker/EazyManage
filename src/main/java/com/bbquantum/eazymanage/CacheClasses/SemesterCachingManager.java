@@ -45,7 +45,8 @@ public class SemesterCachingManager {
         this.lastUpdatedTime = LocalDateTime.now();
     }
 
-    public void clearCache() {
-        cachedSemesters.clear();
+    public void clearCachedSemesters() {
+        this.cachedSemesters = null;
+        this.lastUpdatedTime = LocalDateTime.now();
     }
 }

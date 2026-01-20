@@ -6,7 +6,7 @@
 
     <groupId>com.BBQuantum</groupId>
     <artifactId>EazyManage</artifactId>
-    <version>1.0.1</version>
+    <version>2.0.2</version>
     <name>EazyManage</name>
     <description>School Management System</description>
 
@@ -122,22 +122,31 @@
                                         <argument>--type</argument>
                                         <argument>exe</argument>
 
-                                        <argument>--win-console</argument>
-
                                         <argument>--runtime-image</argument>
                                         <argument>${project.build.directory}/eazymanage-runtime</argument>
+
                                         <argument>--module</argument>
                                         <argument>${main.class}</argument>
+
                                         <argument>--name</argument>
                                         <argument>${app.name}</argument>
+
                                         <argument>--app-version</argument>
                                         <argument>${project.version}</argument>
+
                                         <argument>--vendor</argument>
                                         <argument>${app.vendor}</argument>
+
                                         <argument>--description</argument>
                                         <argument>School Management System</argument>
+
                                         <argument>--dest</argument>
                                         <argument>${project.build.directory}/installer</argument>
+
+                                        <argument>--win-upgrade-uuid</argument>
+                                        <argument>e310d6af-7066-4f74-91c9-293055bd7e7f</argument>
+
+
                                         <argument>--win-dir-chooser</argument>
                                         <argument>--win-menu</argument>
                                         <argument>--win-shortcut</argument>

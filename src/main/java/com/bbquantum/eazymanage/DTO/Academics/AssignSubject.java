@@ -5,12 +5,9 @@ public class AssignSubject {
 
     private String gradeId;
 
-    private String semesterId;
-
-    public AssignSubject(String subjectName, String gradeId, String semesterId) {
+    public AssignSubject(String subjectName, String gradeId) {
         this.subjectName = subjectName;
         this.gradeId = gradeId;
-        this.semesterId = semesterId;
     }
 
     public String getSubjectName() {
@@ -27,13 +24,5 @@ public class AssignSubject {
 
     public void setGradeId(String gradeId) {
         this.gradeId = gradeId;
-    }
-
-    public String getSemesterId() {
-        return semesterId;
-    }
-
-    public void setSemesterId(String semesterId) {
-        this.semesterId = semesterId;
     }
 }

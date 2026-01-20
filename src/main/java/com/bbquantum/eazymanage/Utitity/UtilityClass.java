@@ -2,11 +2,12 @@ package com.bbquantum.eazymanage.Utitity;
 
 import com.bbquantum.eazymanage.CacheClasses.*;
 import com.bbquantum.eazymanage.Controller.*;
-import com.bbquantum.eazymanage.DTO.*;
 import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
 import com.bbquantum.eazymanage.DTO.Finance.FeesSummaryTable;
+import com.bbquantum.eazymanage.DTO.Finance.RecentPaymentTable;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
+import com.bbquantum.eazymanage.DTO.Institution.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -14,8 +15,8 @@ import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -28,6 +29,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +40,11 @@ public class UtilityClass {
     private final PrincipalController principalController;
     private final FinanceController financeController;
     private final StaffController staffController;
-    private final AddStudentController addStudentController;
-    private final AddResultsController addResultsController;
+
+    //Counter for loading Dashboards
+    int counter = 0;
+
+    public String errorMessageContainer;
 
     // OWN HttpClient and Gson - don't rely on controllers
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
@@ -53,6 +58,10 @@ public class UtilityClass {
 
     // Stores retrieved fees report from backend
     public StudentFeesPaymentDisplay report;
+    // Store student results
+    public StudentResults studentResults;
+    // Store Student Id
+    public String studentId;
 
     // Cache Managers
     public final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
@@ -61,6 +70,7 @@ public class UtilityClass {
     public final FeesCacheManager feesCacheManager = FeesCacheManager.getInstance();
     public final SemesterCachingManager semesterCachingManager = SemesterCachingManager.getInstance();
     public final StaffListCacheManager staffListCacheManager = StaffListCacheManager.getInstance();
+    public final GradeStudentsCacheManager gradeStudentsCacheManager = GradeStudentsCacheManager.getInstance();
 
     // Controller own variables
     public Long totalStudentsFromBackend = 0L;
@@ -74,9 +84,6 @@ public class UtilityClass {
         this.principalController = principalController;
         this.financeController = null;
         this.staffController = null;
-        this.addStudentController = null;
-        this.addResultsController = null;
-        loadPrincipalData();
     }
 
     // FINANCE CONSTRUCTOR
@@ -84,9 +91,6 @@ public class UtilityClass {
         this.financeController = financeController;
         this.principalController = null;
         this.staffController = null;
-        this.addStudentController = null;
-        this.addResultsController = null;
-        loadFinanceData();
     }
 
     // STAFF CONSTRUCTOR
@@ -94,71 +98,87 @@ public class UtilityClass {
         this.staffController = staffController;
         this.principalController = null;
         this.financeController = null;
-        this.addStudentController = null;
-        this.addResultsController = null;
-        loadStaffData();
     }
 
-    // ADD STUDENT CONSTRUCTOR
-    public UtilityClass(AddStudentController addStudentController) {
-        this.addStudentController = addStudentController;
-        this.principalController = null;
-        this.financeController = null;
-        this.staffController = null;
-        this.addResultsController = null;
+    public void loadPrincipalData(String principalId, StackPane notification, Runnable onSuccess) {
+        loadTotalFeesPaid(principalId, notification, onSuccess);
+
+        loadTotalSemesterFees(principalId, notification, onSuccess);
+
+        loadTotalStaff(principalId, notification, onSuccess);
+
+        loadTotalStudents(principalId, notification, onSuccess);
+
+        loadRecentlyAddedStudents(principalId, notification, onSuccess);
+
+        loadCachedStaffList(principalId, notification, onSuccess);
+
+        loadGradesFromBackend(principalId, notification, onSuccess);
+
+        loadSemestersFromBackend(principalId, notification, onSuccess);
+
+        loadClassSummaryFees(principalId, notification, onSuccess);
+
+        loadAllStaffList(principalId, notification, onSuccess);
     }
 
-    // ADD RESULTS CONSTRUCTOR
-    public UtilityClass(AddResultsController addResultsController) {
-        this.addResultsController = addResultsController;
-        this.principalController = null;
-        this.financeController = null;
-        this.staffController = null;
-        this.addStudentController = null;
-    }
-
-    // Helper to get current staff ID based on which controller is active
-    private String getCurrentStaffId() {
-        if (principalController != null) {
-            return principalController.currentStaffId;
+    private void checkCounter(int counter, Runnable onSuccess) {
+        if (principalController != null && financeController == null && staffController == null) {
+            int initialCounter = 10;
+            if (counter == initialCounter) {
+                onSuccess.run();
+                this.counter = 0;
+            }
+        } else if (principalController == null && financeController != null && staffController == null) {
+            int initialCounter = 5;
+            if (counter == initialCounter) {
+                onSuccess.run();
+                this.counter = 0;
+            }
+        } else if (principalController == null && financeController == null && staffController != null) {
+            int initialCounter = 4;
+            if (counter == initialCounter) {
+                onSuccess.run();
+                this.counter = 0;
+            }
         }
-        // Add other controller staff ID getters as needed
-        return null;
     }
 
-    private void loadPrincipalData() {
-        loadTotalFeesPaid(principalController.currentStaffId);
-        loadTotalSemesterFees(principalController.currentStaffId);
-        loadTotalStaff();
-        loadTotalStudents();
-        loadRecentlyAddedStudents();
-        loadCachedStaffList();
-        loadGradesFromBackend(principalController.currentStaffId);
-        loadSemestersFromBackend(principalController.currentStaffId);
-        loadClassSummaryFees();
+    public void loadFinanceDashboardData(String financeId, StackPane notification, Runnable onSuccess) {
+        loadTotalFeesPaid(financeId, notification, onSuccess);
+
+        loadTotalSemesterFees(financeId, notification, onSuccess);
+
+        loadGradesFromBackend(financeId, notification, onSuccess);
+
+        loadSemestersFromBackend(financeId, notification, onSuccess);
+
+        fetchRecentFeesTransactions(financeId, notification, onSuccess);
     }
 
-    private void loadFinanceData() {
-        loadTotalFeesPaid(financeController.accountantId);
-        loadTotalSemesterFees(financeController.accountantId);
-        loadGradesFromBackend(financeController.accountantId);
-        loadSemestersFromBackend(financeController.accountantId);
-    }
+    public void loadStaffDashboardData(String staffId, StackPane notification, Runnable onSuccess) {
+        loadGradesFromBackend(staffId, notification, onSuccess);
 
-    private void loadStaffData() {
-        loadGradesFromBackend(staffController.staffId);
-        loadSemestersFromBackend(staffController.staffId);
+        loadSemestersFromBackend(staffId, notification, onSuccess);
+
+        loadGradeStudents(staffId, notification, onSuccess);
+
+        loadGradeNameAndSize(staffId, notification, onSuccess);
     }
 
     // ==================== PRINCIPAL METHODS ====================
 
-    public void loadTotalStudents() {
-        if (principalController == null) return;
+    public void loadTotalStudents(String staffId, StackPane notification, Runnable onSuccess) {
+        if (totalStudentsFromBackend != 0) {
+            counter++;
+            checkCounter(counter, onSuccess);
+            return;
+        }
 
         Task<Long> task = new Task<>() {
             @Override
             protected Long call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/total-students/" + principalController.currentStaffId;
+                String url = BASE_URL + API_BASE_URL + "/total-students/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url)).GET().build();
@@ -168,37 +188,40 @@ public class UtilityClass {
             }
         };
 
-        task.setOnSucceeded(event -> totalStudentsFromBackend = task.getValue());
+        task.setOnSucceeded(event -> {
+            totalStudentsFromBackend = task.getValue();
+            counter ++;
+            checkCounter(counter, onSuccess);
+        });
 
         task.setOnFailed(event -> {
-            principalController.totalStudentsLabel.setText("0");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
-            System.err.println("Error: " + task.getException().getMessage());
         });
 
         new Thread(task).start();
     }
 
-    public void loadTotalStaff() {
-        if (principalController == null) return;
+    public void loadTotalStaff(String staffId,  StackPane notification, Runnable onSuccess) {
+        if (totalStaffFromBackend != 0) {
+            counter++;
+            checkCounter(counter, onSuccess);
+            return;
+        }
 
         Task<Long> task = new Task<>() {
             @Override
             protected Long call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/total-staffs/" + principalController.currentStaffId;
+                String url = BASE_URL + API_BASE_URL + "/total-staffs/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -206,35 +229,45 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                return Long.parseLong(response.body());
+                if (response.statusCode() ==  200) {
+                    return Long.parseLong(response.body());
+                }
+
+                System.out.println(response.body());
+                return 0L;
             }
         };
 
-        task.setOnSucceeded(event -> totalStaffFromBackend = task.getValue());
+        task.setOnSucceeded(event -> {
+            totalStaffFromBackend = task.getValue();
+            counter ++;
+            checkCounter(counter, onSuccess);
+        });
 
         task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            String msg = ex.getMessage();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
+            } else {
+                showError(notification, "Unexpected error occurred. Please try again later.");
             }
-
             principalController.totalStaffLabel.setText("0");
-            System.err.println("Error: " + task.getException().getMessage());
         });
 
         new Thread(task).start();
     }
 
-    public void loadTotalSemesterFees(String staffId) {
+    public void loadTotalSemesterFees(String staffId, StackPane notification, Runnable onSuccess) {
+        if (totalSemesterFeesFromBackend != 0) {
+            counter ++;
+            checkCounter(counter, onSuccess);
+            return;
+        }
 
         Task<Double> task = new Task<>() {
             @Override
@@ -251,32 +284,35 @@ public class UtilityClass {
             }
         };
 
-        task.setOnSucceeded(event ->
-                totalSemesterFeesFromBackend = task.getValue());
+        task.setOnSucceeded(event -> {
+            totalSemesterFeesFromBackend = task.getValue();
+            counter ++;
+            checkCounter(counter, onSuccess);
+        });
 
         task.setOnFailed(event -> {
-            principalController.totalSemesterFeesLabel.setText("0");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
-            System.err.println("Error: " + task.getException().getMessage());
         });
 
         new Thread(task).start();
     }
 
-    public void loadTotalFeesPaid(String staffId) {
+    public void loadTotalFeesPaid(String staffId, StackPane notification, Runnable onSuccess) {
+        if (feesPaidFromBackend != 0) {
+            counter ++;
+            checkCounter(counter, onSuccess);
+            return;
+        }
 
         Task<Double> task = new Task<>() {
             @Override
@@ -293,37 +329,40 @@ public class UtilityClass {
             }
         };
 
-        task.setOnSucceeded(event -> feesPaidFromBackend = task.getValue());
+        task.setOnSucceeded(event -> {
+            feesPaidFromBackend = task.getValue();
+            counter ++;
+            checkCounter(counter, onSuccess);
+        });
 
         task.setOnFailed(event -> {
             principalController.feesPaidLabel.setText("0");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet connection.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred. Please try again later.");
             }
-            System.err.println("Error: " + task.getException().getMessage());
         });
 
         new Thread(task).start();
     }
 
-    public void loadRecentlyAddedStudents() {
-        if (principalController == null) return;
+    public void loadRecentlyAddedStudents(String staffId, StackPane notification, Runnable onSuccess) {
 
         List<RecentStudentView> cachedStudents = cacheManager.getCachedStudents();
         if (cachedStudents != null && !cachedStudents.isEmpty()) {
-            principalController.recentStudentsTable.getItems().setAll(cachedStudents);
-            return;
+            if (cacheManager.isCacheValid()) {
+                principalController.recentStudentsTable.getItems().setAll(cachedStudents);
+                counter ++;
+                checkCounter(counter, onSuccess);
+                return;
+            }
         }
 
         Type studentListType = new TypeToken<List<RecentStudentView>>() {}.getType();
@@ -331,8 +370,7 @@ public class UtilityClass {
         Task<List<RecentStudentView>> task = new Task<>() {
             @Override
             protected List<RecentStudentView> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/recently-added-students/" + principalController.currentStaffId;
-                System.out.println("Recently Added Students: " + principalController.currentStaffId);
+                String url = BASE_URL + API_BASE_URL + "/recently-added-students/" + staffId;
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .GET()
@@ -343,48 +381,47 @@ public class UtilityClass {
 
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), studentListType);
-                } else {
-                    throw new Exception("Error: " + response.body());
                 }
+
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             List<RecentStudentView> students = task.getValue();
-            System.out.println("Recently Added Students: " + students);
+
             if (students != null && !students.isEmpty()) {
                 cacheManager.setCachedStudents(students);
-                principalController.recentStudentsTable.getItems().setAll(students);
-            } else {
-                principalController.recentStudentsTable.getItems().clear();
             }
+            counter ++;
+            checkCounter(counter, onSuccess);
         });
 
         task.setOnFailed(event -> {
-            showError("Error: Could not load recently added students");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
-            System.out.println(task.getException().getMessage());
         });
 
         new Thread(task).start();
     }
 
-    public void loadCachedStaffList() {
-        if (staffCacheManager.isCacheValid()) {
-            return;
+    public void loadCachedStaffList(String staffId, StackPane notification, Runnable onSuccess) {
+        List<StaffCaching> staffCachings = staffCacheManager.getCachedStaffList();
+        if (staffCachings != null && !staffCachings.isEmpty()) {
+            if (staffCacheManager.isCacheValid()) {
+                counter ++;
+                checkCounter(counter, onSuccess);
+                return;
+            }
         }
 
         Type staffListType = new TypeToken<List<StaffCaching>>() {}.getType();
@@ -392,7 +429,7 @@ public class UtilityClass {
         Task<List<StaffCaching>> task = new Task<>() {
             @Override
             protected List<StaffCaching> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/load-staffs-info/" + principalController.currentStaffId;
+                String url = BASE_URL + API_BASE_URL + "/load-staffs-info/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -403,9 +440,9 @@ public class UtilityClass {
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), staffListType);
-                } else {
-                    throw new Exception("Error: " + response.body());
                 }
+
+                return null;
             }
         };
 
@@ -414,35 +451,37 @@ public class UtilityClass {
             if (staffs != null) {
                 staffCacheManager.setStaffList(staffs);
             }
+            counter ++;
+            checkCounter(counter, onSuccess);
         });
 
         task.setOnFailed(event -> {
-            System.out.println(task.getException().getMessage());
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
         });
 
         new Thread(task).start();
     }
 
-    public void loadGradesFromBackend(String staffId) {
+    public void loadGradesFromBackend(String staffId, StackPane notification, Runnable onSuccess) {
 
         List<GradeCaching> cachedGrades = gradeCacheManager.getGradeCache();
-        if (cachedGrades != null) {
+        if (cachedGrades != null && !cachedGrades.isEmpty() && gradeCacheManager.isCacheValid()) {
+            counter++;
+            System.out.println("1 " + counter);
+            checkCounter(counter, onSuccess);
             return;
         }
+
 
         Type classListType = new TypeToken<List<GradeCaching>>() {}.getType();
 
@@ -461,48 +500,48 @@ public class UtilityClass {
                 if (response.statusCode() == 200) {
                     System.out.println(response.body());
                     return gson.fromJson(response.body(), classListType);
-                } else {
-                    throw new Exception("Failed to fetch classes");
                 }
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             List<GradeCaching> gradesList = task.getValue();
-            System.out.println(gradesList);
-            if (gradesList != null) {
+
+            if (gradesList != null && !gradesList.isEmpty()) {
                 gradeCacheManager.setGradeCache(gradesList);
             }
-
+            counter ++;
+            checkCounter(counter, onSuccess);
         });
 
         task.setOnFailed(event -> {
-            System.err.println("Error: " + task.getException().getMessage());
-            showError("Error: Could not load grades from backend");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
         });
 
         new Thread(task).start();
     }
 
-    public void loadSemestersFromBackend(String staffId) {
+    public void loadSemestersFromBackend(String staffId, StackPane notification, Runnable onSuccess) {
 
         List<SemesterCaching> semesterCaching = semesterCachingManager.getCachedSemesters();
-        if (semesterCaching != null) {
-            return;
+        if (semesterCaching != null && !semesterCaching.isEmpty()) {
+            if (semesterCachingManager.isSemesterCacheValid()) {
+                counter++;
+                System.out.println("2 " + counter);
+                checkCounter(counter, onSuccess);
+                return;
+            }
         }
 
         Type semesterListType = new TypeToken<ArrayList<SemesterCaching>>() {}.getType();
@@ -520,47 +559,46 @@ public class UtilityClass {
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), semesterListType);
-                } else {
-                    throw new Exception("Failed: " + response.statusCode() + " " + response.body());
                 }
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             List<SemesterCaching> semesterCachingList = task.getValue();
-            if (semesterCachingList != null) {
+            if (semesterCachingList != null && !semesterCachingList.isEmpty()) {
                 semesterCachingManager.setCachedSemesters(semesterCachingList);
             }
+            counter ++;
+            checkCounter(counter, onSuccess);
         });
 
         task.setOnFailed(event -> {
-            System.err.println("Error: " + task.getException().getMessage());
-            showError("Error: Could not load semesters from backend");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
         });
 
         new Thread(task).start();
     }
 
-    public void loadClassSummaryFees() {
-        if (principalController == null) return;
+    public void loadClassSummaryFees(String staffId, StackPane notification, Runnable onSuccess) {
 
-        List<ClassFeesSummary> cachedClassfees = feesCacheManager.getClassFeesSummaryCache();
-        if (cachedClassfees != null) {
-            return;
+        List<ClassFeesSummary> cachedClassFees = feesCacheManager.getClassFeesSummaryCache();
+        if (cachedClassFees != null && !cachedClassFees.isEmpty()) {
+            if (feesCacheManager.isCachedClassFeesValid()) {
+                counter++;
+                checkCounter(counter, onSuccess);
+                return;
+            }
         }
 
         Type classFeesList = new TypeToken<ArrayList<ClassFeesSummary>>() {}.getType();
@@ -568,7 +606,7 @@ public class UtilityClass {
         Task<List<ClassFeesSummary>> task = new Task<>() {
             @Override
             protected List<ClassFeesSummary> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/class-summary-fees/" + principalController.currentStaffId;
+                String url = BASE_URL + API_BASE_URL + "/class-summary-fees/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -586,26 +624,24 @@ public class UtilityClass {
 
         task.setOnSucceeded(event -> {
             List<ClassFeesSummary> classFeesSummaryList = task.getValue();
-            if (classFeesSummaryList != null) {
-                feesCacheManager.setGradeCache(classFeesSummaryList);
+            if (classFeesSummaryList != null && !classFeesSummaryList.isEmpty()) {
+                feesCacheManager.setClassFeesSummaryCache(classFeesSummaryList);
             }
+            counter ++;
+            checkCounter(counter, onSuccess);
         });
 
         task.setOnFailed(event -> {
-            System.err.println("Failed to fetch class-summary-fees data.");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
         });
 
@@ -614,69 +650,76 @@ public class UtilityClass {
 
     // ==================== STAFF CONTROLLER METHODS ====================
 
-    public void loadGradeNameAndSize(String staffId) {
-        if (staffController == null) return;
+    public void loadGradeNameAndSize(String staffId, StackPane notification, Runnable onSuccess) {
+        if (staffController.getGradeName() != null && staffController.getGradeNumber() != null
+                && staffController.getGradeSize() != null) {
+            counter++;
+            System.out.println("4 " + counter);
+            checkCounter(counter, onSuccess);
+            return;
+        }
 
-        Task<String> task = new Task<>() {
+        Task<GradeInfoResponse> task = new Task<>() {
             @Override
-            protected String call() throws Exception {
+            protected GradeInfoResponse call() throws Exception {
                 String url = BASE_URL + API_BASE_URL + "/load-grade-and-size/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .GET()
+                        .header("Accept", "application/json")
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    System.out.println(response.body());
-                    return gson.fromJson(response.body(), String.class);
-                } else {
-                    throw new Exception("Failed: " + response.body());
+                    return gson.fromJson(response.body(), GradeInfoResponse.class);
                 }
+
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            String response = task.getValue();
-            if (response != null) {
-                String[] responseSplit = response.split("_");
-                if (responseSplit.length == 2) {
-                    String className = responseSplit[0];
-                    String classSize = responseSplit[1];
-                    staffController.setGradeName(className);
-                    staffController.setGradeSize(classSize);
+            GradeInfoResponse gradeInfoResponse = task.getValue();
+            if (gradeInfoResponse != null) {
+                staffController.setGradeNumber(gradeInfoResponse.getGradeNumber());
+                staffController.setGradeName(gradeInfoResponse.getGradeName());
+                staffController.setGradeSize(gradeInfoResponse.getGradeSize());
             }
 
-            } else {
-                showError("Error loading grade name and size");
-            }
+            counter ++;
+            checkCounter(counter, onSuccess);
         });
 
         task.setOnFailed(event -> {
-            task.getException().printStackTrace();
-            showError("Error loading grade name and size");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
         });
 
         new Thread(task).start();
     }
 
-    public void loadGradeStudents(String staffId) {
-        if (staffController == null) return;
+    public void loadGradeStudents(String staffId, StackPane notification, Runnable onSuccess) {
+
+        List<GradeStudentsDisplayDTO> gradeStudentsLists = gradeStudentsCacheManager.getCachedGradeStudents();
+        if (gradeStudentsLists != null && !gradeStudentsLists.isEmpty() && gradeStudentsCacheManager.isCacheValid()) {
+
+            Platform.runLater(() -> staffController.studentsTable.getItems().setAll(gradeStudentsLists));
+
+            counter++;
+            System.out.println("3 " + counter);
+            checkCounter(counter, onSuccess);
+            return;
+        }
 
         Type studentList = new TypeToken<ArrayList<GradeStudentsDisplayDTO>>() {}.getType();
 
@@ -694,34 +737,32 @@ public class UtilityClass {
                 if (response.statusCode() == 200) {
                     System.out.println(response.body());
                     return gson.fromJson(response.body(), studentList);
-                } else {
-                    throw new Exception("Could not fetch students");
                 }
+
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             List<GradeStudentsDisplayDTO> gradeStudentsDisplayDTOS = task.getValue();
-            // Use the new method that actually populates the table
-            staffController.populateStudentsTable(gradeStudentsDisplayDTOS);
+            if (gradeStudentsDisplayDTOS != null) {
+                gradeStudentsCacheManager.setCachedGradeStudents(gradeStudentsDisplayDTOS);
+            }
+            counter ++;
+            checkCounter(counter, onSuccess);
         });
 
         task.setOnFailed(event -> {
-            task.getException().printStackTrace();
-            showError(task.getException().getMessage());
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
         });
 
@@ -730,7 +771,7 @@ public class UtilityClass {
 
     public void enrollNewStudent(String firstName, String lastName, String levelId, String gender,
                                  LocalDate dateOfBirth, String hometown, String parentName, String guardianContact,
-                                 String staffId, Runnable onSuccess, Runnable onFailure) {
+                                 String staffId, Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -766,49 +807,40 @@ public class UtilityClass {
                         return responseBody.get("message").getAsString();
                     }
                 } else {
-                    return null;
+                    return response.body();
                 }
             }
         };
 
         task.setOnSucceeded(event -> {
-            String studentId = task.getValue();
-            if (addStudentController != null && studentId != null) {
-                addStudentController.setStudentId(studentId);
-                if (onSuccess != null) {
-                    onSuccess.run();
-                }
+            String response = task.getValue();
+            if (response != null) {
+                studentId = response;
+                onSuccess.run();
+                return;
             }
+            onFailure.run();
         });
 
         task.setOnFailed(event -> {
-            task.getException().printStackTrace();
-            showError("Could not save student data");
-            if (onFailure != null) {
-                onFailure.run();
-            }
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            String msg = ex.getMessage();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onNetworkIssue.run();
             }
         });
 
         new Thread(task).start();
     }
 
-    public void loadSubjectStudents(String subjectId) {
-        if (addResultsController == null) return;
+    public void loadSubjectStudents(String subjectId,
+                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         Task<SubjectScores> task = new Task<>() {
             @Override
@@ -821,49 +853,51 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                return gson.fromJson(response.body(), SubjectScores.class);
+                System.out.println("Received: " + response.body());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), SubjectScores.class);
+                }
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            SubjectScores subjectScores = task.getValue();
-            if (subjectScores != null) {
-                addResultsController.displaySubjectStudents(subjectScores);
-            } else {
-                addResultsController.noStudentsFound();
+            staffController.subjectScores = task.getValue();
+            if (staffController.subjectScores == null) {
+                onFailure.run();
+                return;
             }
+            onSuccess.run();
         });
 
         task.setOnFailed(event -> {
-            task.getException().printStackTrace();
-            showError("Could not load students");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onNetworkIssue.run();
             }
         });
 
         new Thread(task).start();
     }
 
-    public void saveStudentScores(String studentId, String classScore, String examScore, String subjectId,
-                                  Runnable onSuccess, Runnable onFailure) {
+    public void saveStudentScores(String staffId, String studentId, String subjectId, String classScore, String examScore,
+                                  String semesterId,
+                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
                 String url = BASE_URL + API_BASE_URL + "/save-student-scores" +
-                        "?studentId=" + studentId +
+                        "?staffId=" + staffId +
+                        "&studentId=" + studentId +
                         "&subjectId=" + subjectId +
+                        "&semesterId=" + semesterId +
                         "&classScore=" + classScore +
                         "&examScore=" + examScore;
 
@@ -873,102 +907,42 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonObject responseBody = gson.fromJson(response.body(), JsonObject.class);
-                return responseBody.get("status").getAsString();
+                if (response.statusCode() == 200) {
+                    return "success";
+                }
+                return response.body();
             }
         };
 
         task.setOnSucceeded(event -> {
             String status = task.getValue();
-            if ("success".equals(status) && onSuccess != null) {  // Safer null check
-                Platform.runLater(onSuccess);  // Run on JavaFX thread
-            } else if (onFailure != null) {
-                Platform.runLater(onFailure);
+            if ("success".equals(status)) {  // Safer null check
+                onSuccess.run(); // Run on JavaFX thread
+                return;
             }
+
+            onFailure.run();
         });
 
         task.setOnFailed(event -> {
-            if (onFailure != null) {
-                Platform.runLater(onFailure);
-            }
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onNetworkIssue.run();
             }
         });
 
         new Thread(task).start();
     }
 
-
-    public void showAddClassDialog() {
-        List<StaffCaching> staffList = staffCacheManager.getCachedList();
-        if (staffList == null || staffList.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Cannot add class: Staff list is not available. Please try again later.");
-            alert.showAndWait();
-            return;
-        }
-
-        Dialog<GradeAssignment> dialog = new Dialog<>();
-        dialog.setTitle("Add New Class and Assign Instructor");
-
-        ButtonType addButtonType = new ButtonType("Add Class", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        TextField classNameField = new TextField();
-        classNameField.setPromptText("eg. Grade_1");
-
-        ComboBox<StaffCaching> staffComboBox = new ComboBox<>();
-        staffComboBox.setPromptText("Select Instructor");
-        staffComboBox.getItems().addAll(staffList);
-
-        grid.add(new Label("Class name:"), 0, 0);
-        grid.add(classNameField, 1, 0);
-        grid.add(new Label("Instructor id:"), 0, 1);
-        grid.add(staffComboBox, 1, 1);
-
-        dialog.getDialogPane().setContent(grid);
-
-        Node addButton = dialog.getDialogPane().lookupButton(addButtonType);
-        addButton.setDisable(true);
-
-        classNameField.textProperty().addListener((observable, oldValue, newValue) -> {
-            addButton.setDisable(newValue.trim().isEmpty() || staffComboBox.getSelectionModel().isEmpty());
-        });
-
-        staffComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            addButton.setDisable(classNameField.getText().trim().isEmpty() || newValue == null);
-        });
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == addButtonType) {
-                StaffCaching selectedStaff = staffComboBox.getSelectionModel().getSelectedItem();
-                return new GradeAssignment(classNameField.getText().trim(), selectedStaff.getStaffId());
-            }
-            return null;
-        });
-
-        dialog.showAndWait().ifPresent(assignment -> {
-            addNewGrade(assignment.getGradeName(), assignment.getStaffId());
-        });
-    }
-
-    private void addNewGrade(String gradeName, String instructorId) {
+    public void addNewGrade(String gradeName, String instructorId,
+                             Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -990,39 +964,38 @@ public class UtilityClass {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if ("success".equals(status)) {
-                showSuccess("Grade Added Successfully");
+                onSuccess.run();
                 gradeCacheManager.clearCache();
             } else {
-                showError(status);
+                onFailure.run();
             }
         });
 
         task.setOnFailed(event -> {
-            showError("Error: " + task.getException().getMessage());
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onNetworkIssue.run();
             }
         });
 
         new Thread(task).start();
     }
 
-    public void recoverPassword(String staffId) {
-        Task<String> task = new Task<>() {
+    public void recoverPassword(String staffId, String newPassword,
+                                Runnable onSuccess,
+                                Runnable onFailure, Runnable onNetworkIssue) {
+        Task<PasswordRecoveryDTO> task = new Task<>() {
             @Override
-            protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/recover-staff-password/" + staffId;
+            protected PasswordRecoveryDTO call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/reset-staff-password/" +
+                        staffId + "/" + newPassword;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1030,52 +1003,44 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
 
-                String status = jsonResponse.get("status").getAsString();
-                String message = jsonResponse.get("message").getAsString();
-
-                if ("success".equals(status)) {
-                    return message;
-                } else {
-                    throw new Exception("Failed to recover password");
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), PasswordRecoveryDTO.class);
                 }
+
+                return gson.fromJson(response.body(), PasswordRecoveryDTO.class);
             }
         };
 
         task.setOnSucceeded(event -> {
-            String password = task.getValue();
-            Alert passwordAlert = new Alert(Alert.AlertType.INFORMATION);
-            passwordAlert.setTitle("Password Recovery");
-            passwordAlert.setHeaderText("Password for Staff ID: " + staffId);
-            passwordAlert.setContentText("Password: " + password + "\n\nPlease save this password securely.");
-            passwordAlert.showAndWait();
+            principalController.passwordRecoveryDTO = task.getValue();
+            if (principalController.passwordRecoveryDTO.getStatus().equals("failed")
+                    || principalController.passwordRecoveryDTO == null ) {
+                onFailure.run();
+                return;
+            }
+            onSuccess.run();
         });
 
         task.setOnFailed(event -> {
-            showError("Failed to recover password");
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onNetworkIssue.run();
             }
-            task.getException().printStackTrace();
         });
 
         new Thread(task).start();
     }
 
     public void searchFeesReport(String studentId, String semesterId, String gradeId,
-                                 Runnable onSuccess, Runnable onFailure) {
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<StudentFeesPaymentDisplay> task = new Task<>() {
             @Override
             protected StudentFeesPaymentDisplay call() throws Exception {
@@ -1099,38 +1064,31 @@ public class UtilityClass {
 
         task.setOnSucceeded(event -> {
             report = task.getValue();
-            if (report != null && onSuccess != null) {
+            if (report != null) {
                 onSuccess.run();
-            } else if (onFailure != null) {
-                onFailure.run();
             }
+            onFailure.run();
         });
 
         task.setOnFailed(event -> {
-            task.getException().printStackTrace();
-            if (onFailure != null) {
-                onFailure.run();
-            }
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onNetworkIssue.run();
             }
         });
 
         new Thread(task).start();
     }
 
-    public void getFeesFilterData(String ownUrl, String filterName) {
+    public void getFeesFilterData(String ownUrl,
+                                  Runnable onSuccess, Runnable onFailure) {
         if (principalController == null) return;
 
         Type fullYPaidList = new TypeToken<List<FeesSummaryTable>>() {}.getType();
@@ -1155,40 +1113,91 @@ public class UtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            List<FeesSummaryTable> feesSummaryTable = task.getValue();
-            String size = String.valueOf(feesSummaryTable.size());
-            principalController.displayFilteredFeesTable(feesSummaryTable, filterName, size);
+            principalController.feesSummaryTable = task.getValue();
+            if (principalController.feesSummaryTable != null) {
+                onSuccess.run();
+            } else {
+                onFailure.run();
+            }
         });
 
         task.setOnFailed(event -> {
-            principalController.filteredStudentsPanel.setVisible(false);
-            principalController.filteredStudentsPanel.setManaged(false);
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onFailure.run();
+            } else {
+                onFailure.run();
             }
-            showError("Failed to load not-paid students! Try again!");
         });
 
         new Thread(task).start();
     }
 
-    public void loadAllStaffList() {
-        if (principalController == null) return;
+    public void loadAllStaffList(String staffId, StackPane notification, Runnable onSuccess) {
 
-        List<RecentStaffView> staffList = staffListCacheManager.getCachedList();
-        if (staffList != null) {
-            Platform.runLater(() -> principalController.allStaffTable.getItems().setAll(staffList));
-            return;
+        List<RecentStaffView> staffList = staffListCacheManager.getCachedStaffList();
+        if (staffList != null && !staffList.isEmpty()) {
+            if (staffListCacheManager.isCacheValid()) {
+                counter ++;
+                checkCounter(counter, onSuccess);
+                return;
+            }
         }
+
+        Type staffListList = new TypeToken<ArrayList<RecentStaffView>>() {}.getType();
+
+        Task<List<RecentStaffView>> task = new Task<>() {
+            @Override
+            protected List<RecentStaffView> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/staff-list/" + staffId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    System.out.println(response.body());
+                    return gson.fromJson(response.body(), staffListList);
+                } else {
+                    throw new Exception("Failed to fetch staff-list data.");
+                }
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<RecentStaffView> staffViewList = task.getValue();
+            if (staffViewList != null && !staffViewList.isEmpty()) {
+                staffListCacheManager.setStaffList(staffViewList);
+            }
+            counter ++;
+            checkCounter(counter, onSuccess);
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
+            } else {
+                showError(notification, "Unexpected error occurred.");
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void refreshAllStaffList(Runnable onSuccess, Runnable onFailure) {
 
         Type staffListList = new TypeToken<ArrayList<RecentStaffView>>() {}.getType();
 
@@ -1212,31 +1221,33 @@ public class UtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            List<RecentStaffView> staffViewList = task.getValue();
-            staffListCacheManager.setStaffList(staffViewList);
-            principalController.allStaffTable.getItems().setAll(staffViewList);
+            principalController.refreshedStaffViewList = task.getValue();
+            if (principalController.refreshedStaffViewList != null) {
+                onSuccess.run();
+            } else  {
+                onFailure.run();
+            }
         });
 
         task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onFailure.run();
+            } else {
+                onFailure.run();
             }
-            showError("Could not fetch staff-list data.");
         });
 
         new Thread(task).start();
     }
 
-    public void searchStaffData(String staffId) {
+    public void searchStaffData(String staffId,
+                                Runnable onSuccess, Runnable onFailure) {
         if (principalController == null) return;
 
         Task<FindStaffResponse> task = new Task<>() {
@@ -1255,42 +1266,32 @@ public class UtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            FindStaffResponse staff = task.getValue();
-            if (staff != null) {
-                principalController.displayStaffDetails(staff);
+            principalController.findStaffResponse = task.getValue();
+            if (principalController.findStaffResponse != null) {
+                onSuccess.run();
             } else {
-                principalController.staffDetailsPanel.setVisible(false);
-                principalController.staffDetailsPanel.setManaged(false);
-                principalController.noStaffFoundPanel.setVisible(true);
-                principalController.noStaffFoundPanel.setManaged(true);
+                onFailure.run();
             }
         });
 
         task.setOnFailed(event -> {
-            showError("Error searching for staff. Please try again later.");
-            task.getException().printStackTrace();
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onFailure.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onFailure.run();
             }
-            System.out.println("Error: " + task.getException().getMessage());
         });
 
         new Thread(task).start();
     }
 
-    public void searchStudentData(String studentId) {
-        if (principalController == null) return;
+    public void searchStudentData(String studentId, Runnable onSuccess, Runnable onFailure) {
 
         Task<UpdateStudentPersonalData> task = new Task<>() {
             @Override
@@ -1315,36 +1316,30 @@ public class UtilityClass {
         task.setOnSucceeded(event -> {
             principalController.updateStudentPersonalData = task.getValue();
             if(principalController.updateStudentPersonalData != null) {
-                System.out.println(principalController.updateStudentPersonalData);
-                principalController.displayStudentPersonalInfo(principalController.updateStudentPersonalData);
+                onSuccess.run();
+            } else {
+                onFailure.run();
             }
         });
 
         task.setOnFailed(event -> {
-            showError("Error searching for student. Please try again later.");
-            principalController.noStudentFoundPanel.setVisible(true);
-            principalController.noStudentFoundPanel.setManaged(true);
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onFailure.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onFailure.run();
             }
-            System.out.println("Error: " + task.getException().getMessage());
         });
 
         new Thread(task).start();
     }
 
-    public void showUpdateStudentDataDialog() {
+    public void showUpdateStudentDataDialog(StackPane notification) {
         if (principalController == null || principalController.updateStudentPersonalData == null) return;
 
         Dialog<UpdateStudentPersonalData> dialog = new Dialog<>();
@@ -1377,17 +1372,23 @@ public class UtilityClass {
         grid.add(new Label("Gender (Editable):"), 0, 4);
         grid.add(genderComboBox, 1, 4);
 
+        ComboBox<String> statusComboBox = new ComboBox<>();
+        statusComboBox.getItems().addAll("ACTIVE", "INACTIVE", "COMPLETED");
+        statusComboBox.setValue(principalController.updateStudentPersonalData.getStatus());
+        grid.add(new Label("Status (Editable):"), 0, 5);
+        grid.add(genderComboBox, 1, 5);
+
         DatePicker dobPicker = new DatePicker(LocalDate.parse(principalController.updateStudentPersonalData.getDateOfBirth()));
-        grid.add(new Label("Date of Birth (Editable):"), 0, 5);
-        grid.add(dobPicker, 1, 5);
+        grid.add(new Label("Date of Birth (Editable):"), 0, 6);
+        grid.add(dobPicker, 1, 6);
 
         TextField guardianNameField = new TextField(principalController.updateStudentPersonalData.getParentName());
-        grid.add(new Label("Guardian Name (Editable):"), 0, 6);
-        grid.add(guardianNameField, 1, 6);
+        grid.add(new Label("Guardian Name (Editable):"), 0, 7);
+        grid.add(guardianNameField, 1, 7);
 
         TextField guardianPhoneField = new TextField(principalController.updateStudentPersonalData.getParentPhoneNumber());
-        grid.add(new Label("Contact (Editable):"), 0, 7);
-        grid.add(guardianPhoneField, 1, 7);
+        grid.add(new Label("Contact (Editable):"), 0, 8);
+        grid.add(guardianPhoneField, 1, 8);
 
         dialog.getDialogPane().setContent(grid);
         Platform.runLater(genderComboBox::requestFocus);
@@ -1402,16 +1403,20 @@ public class UtilityClass {
                         dobPicker.getValue().toString(),
                         guardianNameField.getText(),
                         guardianPhoneField.getText(),
-                        principalController.updateStudentPersonalData.getGradeName()
+                        principalController.updateStudentPersonalData.getGradeName(),
+                        principalController.updateStudentPersonalData.getStatus()
                 );
             }
             return null;
         });
 
-        dialog.showAndWait().ifPresent(this::updateStudentPersonalData);
+        dialog.showAndWait().ifPresent(update -> {
+            updateStudentPersonalData(update, notification);
+        });
     }
 
-    private void updateStudentPersonalData(UpdateStudentPersonalData updateStudentPersonalData) {
+    private void updateStudentPersonalData(UpdateStudentPersonalData updateStudentPersonalData,
+                                           StackPane notification) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -1423,6 +1428,7 @@ public class UtilityClass {
                 requestBody.addProperty("dateOfBirth", updateStudentPersonalData.getDateOfBirth().toString());
                 requestBody.addProperty("guardianName", updateStudentPersonalData.getParentName());
                 requestBody.addProperty("guardianContact", updateStudentPersonalData.getParentPhoneNumber());
+                requestBody.addProperty("status", updateStudentPersonalData.getStatus());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1443,35 +1449,31 @@ public class UtilityClass {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if ("success".equals(status)) {
-                showSuccess("Student data updated successfully!");
-                searchStudentData(updateStudentPersonalData.getStudentId());
+                showSuccess(notification, "Student data updated successfully.");
             } else {
-                showError("Failed to update student data");
+                showError(notification, "Error: " + status);
             }
         });
 
         task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                showError(notification, "Unexpected error occurred.");
             }
-            showError("Error updating student details for " + updateStudentPersonalData.getFirstName());
         });
 
         new Thread(task).start();
     }
 
-    public void SearchStudentResults(String studentId, String semesterId, String classId) {
+    public void SearchStudentResults(String studentId, String semesterId, String classId,
+                                     Runnable onSuccess, Runnable onFailure) {
         if (principalController == null) return;
 
         Task<StudentResults> task = new Task<>() {
@@ -1497,40 +1499,33 @@ public class UtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            StudentResults studentResults = task.getValue();
+            studentResults = task.getValue();
             if (studentResults != null) {
-                showSuccess("Results found for " + studentResults.getStudentName());
-                principalController.displayStudentResultsPanel(studentResults);
+                onSuccess.run();
             } else {
-                principalController.noResultsFoundPanel.setVisible(true);
-                principalController.noResultsFoundPanel.setManaged(true);
+                onFailure.run();
             }
         });
 
         task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onFailure.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onFailure.run();
             }
-            showError("Error searching student results for " + studentId);
-            principalController.noResultsFoundPanel.setVisible(true);
-            principalController.noResultsFoundPanel.setManaged(true);
         });
 
         new Thread(task).start();
     }
 
-    public void addNewFees(String gradeId, String semesterId, String feesAmount) {
+    public void addNewFees(String gradeId, String semesterId, String feesAmount,
+                           Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -1546,220 +1541,41 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    JsonObject responseBody = gson.fromJson(response.body(), JsonObject.class);
-                    return responseBody.get("message").getAsString();
-                }
-                throw new Exception("Could not add new fees");
-            }
-        };
-
-        task.setOnSucceeded(event -> showSuccess(task.getValue()));
-        task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
-
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
-            } else {
-                showError("Connection error. Please check if the backend is running.");
-            }
-            showError("Error: " + task.getException().getMessage());
-        });
-
-        new Thread(task).start();
-    }
-
-    /*public void addNewFeePayment(String studentId, String semesterId, String gradeId, String amountPaid,
-                                 String payer, String payerContact) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/add-payment";
-
-                JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("studentId", studentId);
-                requestBody.addProperty("semesterId", semesterId);
-                requestBody.addProperty("gradeId", gradeId);
-                requestBody.addProperty("amountPaid", amountPaid);
-                requestBody.addProperty("payer", payer);
-                requestBody.addProperty("payerContact", payerContact);
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    JsonObject responseBody = gson.fromJson(response.body(), JsonObject.class);
-                    return responseBody.get("message").getAsString();
-                } else {
                     return response.body();
                 }
+                return response.body();
             }
         };
 
-        task.setOnSucceeded(event -> showSuccess(task.getValue()));
+        task.setOnSucceeded(event -> {
+            String result = task.getValue();
+            if (result.equals("success")) {
+                onSuccess.run();
+                return;
+            }
+            onFailure.run();
+        });
 
         task.setOnFailed(event -> {
-            task.getException().printStackTrace();
-            showError("Error adding payment for " + studentId);
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
         });
 
         new Thread(task).start();
-    }*/
-
-    public void showAddSemesterDialog(String staffId) {
-        Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Add New Semester");
-        dialog.setHeaderText("Create a new semester");
-
-        ButtonType addButtonType = new ButtonType("Add Semester", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        TextField semesterNameField = new TextField();
-        semesterNameField.setPromptText("e.g., First Semester");
-
-        DatePicker startDatePicker = new DatePicker();
-        startDatePicker.setPromptText("Start Date");
-
-        DatePicker endDatePicker = new DatePicker();
-        endDatePicker.setPromptText("End Date");
-
-        TextField academicYearField = new TextField();
-        academicYearField.setPromptText("e.g., 2024/2025");
-
-        grid.add(new Label("Semester Name:"), 0, 0);
-        grid.add(semesterNameField, 1, 0);
-        grid.add(new Label("Start Date:"), 0, 1);
-        grid.add(startDatePicker, 1, 1);
-        grid.add(new Label("End Date:"), 0, 2);
-        grid.add(endDatePicker, 1, 2);
-        grid.add(new Label("Academic Year:"), 0, 3);
-        grid.add(academicYearField, 1, 3);
-
-        dialog.getDialogPane().setContent(grid);
-
-        Node addButton = dialog.getDialogPane().lookupButton(addButtonType);
-        addButton.setDisable(true);
-
-        Runnable validateFields = () -> {
-            boolean isValid = !semesterNameField.getText().trim().isEmpty() &&
-                    startDatePicker.getValue() != null &&
-                    endDatePicker.getValue() != null &&
-                    !academicYearField.getText().trim().isEmpty();
-            addButton.setDisable(!isValid);
-        };
-
-        semesterNameField.textProperty().addListener((obs, oldVal, newVal) -> validateFields.run());
-        startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> validateFields.run());
-        endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> validateFields.run());
-        academicYearField.textProperty().addListener((obs, oldVal, newVal) -> validateFields.run());
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == addButtonType) {
-                return semesterNameField.getText().trim();
-            }
-            return null;
-        });
-
-        dialog.showAndWait().ifPresent(semesterName -> {
-            LocalDate startDate = startDatePicker.getValue();
-            LocalDate endDate = endDatePicker.getValue();
-            String academicYear = academicYearField.getText().trim();
-
-            if (endDate.isBefore(startDate)) {
-                showError("End date cannot be before start date!");
-                return;
-            }
-
-            addNewSemester(semesterName, startDate, endDate, academicYear, staffId);
-        });
     }
 
-    public void showAddSubjectDialog() {
-        Dialog<AssignSubject> dialog = new Dialog<>();
-        dialog.setTitle("Add New Subject");
-        dialog.setHeaderText("Create a new subject");
-
-        ButtonType addButtonType = new ButtonType("Add Subject", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(addButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        TextField subjectNameField = new TextField();
-        subjectNameField.setPromptText("e.g., Mathematics");
-
-        ComboBox<GradeCaching> gradeComboBox = new ComboBox<>();
-        gradeComboBox.setPromptText("Select Class/Grade");
-        List<GradeCaching> grades = gradeCacheManager.getGradeCache();
-        if (grades != null) {
-            gradeComboBox.getItems().addAll(grades);
-        }
-
-        ComboBox<SemesterCaching> semesterComboBox = new ComboBox<>();
-        semesterComboBox.setPromptText("Select Semester");
-        List<SemesterCaching> semesters = semesterCachingManager.getCachedSemesters();
-        if (semesters != null) {
-            semesterComboBox.getItems().addAll(semesters);
-        }
-
-        grid.add(new Label("Subject Name:"), 0, 0);
-        grid.add(subjectNameField, 1, 0);
-        grid.add(new Label("Assign Grade:"), 0, 1);
-        grid.add(gradeComboBox, 1, 1);
-        grid.add(new Label("Select Semester:"), 0, 2);
-        grid.add(semesterComboBox, 1, 2);
-
-        dialog.getDialogPane().setContent(grid);
-
-        Node addButton = dialog.getDialogPane().lookupButton(addButtonType);
-        addButton.setDisable(true);
-
-        Runnable validateFields = () -> {
-            boolean isValid = !subjectNameField.getText().trim().isEmpty() &&
-                    gradeComboBox.getValue() != null &&
-                    semesterComboBox.getValue() != null;
-            addButton.setDisable(!isValid);
-        };
-
-        subjectNameField.textProperty().addListener((obs, oldVal, newVal) -> validateFields.run());
-        gradeComboBox.valueProperty().addListener((obs, oldVal, newVal) -> validateFields.run());
-        semesterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> validateFields.run());
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == addButtonType) {
-                GradeCaching selectedGrade = gradeComboBox.getSelectionModel().getSelectedItem();
-                SemesterCaching selectedSemester = semesterComboBox.getSelectionModel().getSelectedItem();
-                return new AssignSubject(
-                        subjectNameField.getText().trim(),
-                        selectedGrade.getLevelId(),
-                        selectedSemester.getSemesterId()
-                );
-            }
-            return null;
-        });
-
-        dialog.showAndWait().ifPresent(this::addNewSubject);
-    }
-
-    private void addNewSemester(String semesterName, LocalDate startDate,
-                                LocalDate endDate, String academicYear, String currentStaffId) {
+    public void addNewSemester(String semesterName, LocalDate startDate,
+                                LocalDate endDate, String academicYear, String currentStaffId,
+                                Runnable onSuccess,  Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -1787,19 +1603,32 @@ public class UtilityClass {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if ("success".equals(status)) {
-                showSuccess("Semester '" + semesterName + "' added successfully!");
-                semesterCachingManager.clearCache();
+                onSuccess.run();
+                semesterCachingManager.clearCachedSemesters();
             } else {
-                showError("Failed to add semester: " + status);
+                onFailure.run();
             }
         });
 
-        task.setOnFailed(event -> showError("Error adding semester: " + task.getException().getMessage()));
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
 
         new Thread(task).start();
     }
 
-    private void addNewSubject(AssignSubject assignment) {
+    public void addNewSubject(AssignSubject assignment,
+                               Runnable onSuccess,  Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -1808,8 +1637,6 @@ public class UtilityClass {
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("subjectName", assignment.getSubjectName());
                 requestBody.addProperty("gradeId", assignment.getGradeId());
-                requestBody.addProperty("semesterId", assignment.getSemesterId());
-                System.out.println(assignment.getSemesterId());
                 System.out.println(assignment.getGradeId());
 
                 HttpRequest request = HttpRequest.newBuilder()
@@ -1827,34 +1654,32 @@ public class UtilityClass {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if ("success".equals(status)) {
-                showSuccess("Subject '" + assignment.getSubjectName() + "' added successfully!");
+                onSuccess.run();
             } else {
-                showError("Failed to add subject: " + status);
+                onFailure.run();
             }
         });
 
         task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
             }
-            showError("Error adding subject");
-            task.getException().printStackTrace();
         });
 
         new Thread(task).start();
     }
 
     public void addNewFeesPayment(String studentId, String semesterId, String gradeId,
-                                  String amountPaid, String payerName, String payerPhone) {
+                                  String amountPaid, String payerName, String payerPhone,
+                                  Runnable onSuccess,  Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -1892,28 +1717,25 @@ public class UtilityClass {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if (status.equals("failed")) {
-                showError("Failed to add fees payment: " + status);
+                onFailure.run();
+                return;
             }
 
-            showSuccess(status);
+            onSuccess.run();
         });
 
         task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onNetworkIssue.run();
             }
-            showError("Error adding fees payment: " + task.getException().getMessage());
         });
 
         new Thread(task).start();
@@ -1946,8 +1768,7 @@ public class UtilityClass {
         task.setOnSucceeded(event -> {
             List<StudentListPrint> students = task.getValue();
             if (students == null || students.isEmpty()) {
-                showError("No students found in this class");
-                if (onFailure != null) onFailure.run();
+                onFailure.run();
                 return;
             }
 
@@ -1967,40 +1788,692 @@ public class UtilityClass {
                 if (file != null) {
                     try {
                         saveStudentListToFile(students, file, levelName);
-                        showSuccess("Student list saved successfully!");
-                        if (onSuccess != null) onSuccess.run();
+                        onSuccess.run();
                     } catch (Exception e) {
-                        showError("Failed to save file: " + e.getMessage());
-                        if (onFailure != null) onFailure.run();
+                        onFailure.run();
                     }
                 } else {
-                    if (onFailure != null) onFailure.run();
+                    onFailure.run();
                 }
             });
         });
 
         task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            String errorMessage = exception != null ? exception.getMessage() : null;
+            Throwable ex = task.getException();
+            ex.printStackTrace();
 
-            if (exception instanceof java.net.ConnectException) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null &&
-                    (errorMessage.contains("Connection refused") ||
-                            errorMessage.contains("ConnectException"))) {
-                showError("Check your internet connection and try again.");
-            } else if (errorMessage != null) {
-                showError("Error: " + errorMessage);
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onFailure.run();
             } else {
-                showError("Connection error. Please check if the backend is running.");
+                onFailure.run();
             }
-
-            task.getException().printStackTrace();
-            showError("Failed to fetch student list");
-            if (onFailure != null) onFailure.run();
         });
 
         new Thread(task).start();
+    }
+
+    public void refreshRecentFeesTransactions(String staffId,
+                                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        feesCacheManager.clearRecentPaymentCache();
+
+        Type listType = new TypeToken<List<RecentPaymentTable>>() {}.getType();
+
+        Task<List<RecentPaymentTable>> task = new Task<>() {
+            @Override
+            protected List<RecentPaymentTable> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/recent-fees-transactions/" + staffId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .header("Accept", "application/json")
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), listType);
+                } else {
+                    System.out.println(response.body());
+                    return null;
+                }
+
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<RecentPaymentTable> recentPayments = task.getValue();
+            if (recentPayments == null || recentPayments.isEmpty()) {
+                onFailure.run();
+                return;
+            }
+
+            feesCacheManager.setRecentPaymentCache(recentPayments);
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void fetchRecentFeesTransactions(String staffId, StackPane notification, Runnable onSuccess) {
+
+            List<RecentPaymentTable> recentPaymentsTable = feesCacheManager.getRecentPaymentCache();
+            if (recentPaymentsTable != null && !recentPaymentsTable.isEmpty()) {
+                if (feesCacheManager.isCachedRecentPaymentValid()) {
+                    counter++;
+                    checkCounter(counter, onSuccess);
+                    return;
+                }
+            }
+
+        Type listType = new TypeToken<List<RecentPaymentTable>>() {}.getType();
+
+        Task<List<RecentPaymentTable>> task = new Task<>() {
+            @Override
+            protected List<RecentPaymentTable> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/recent-fees-transactions/" + staffId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .header("Accept", "application/json")
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), listType);
+                }
+
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<RecentPaymentTable> recentPayments = task.getValue();
+            if (recentPayments != null || !recentPayments.isEmpty()) {
+                feesCacheManager.setRecentPaymentCache(recentPayments);
+            }
+
+            counter ++;
+            checkCounter(counter, onSuccess);
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                showError(notification, "Cannot connect to server. Check your internet.");
+            } else {
+                showError(notification, "Unexpected error occurred. Please try again later.");
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void saveGradingCriteria(GradingCriteria gradingCriteria, String staffId,
+                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/set-grades";
+
+                JsonObject responseBody = new JsonObject();
+                responseBody.addProperty("staffId", staffId);
+                responseBody.addProperty("lowerRange", gradingCriteria.getLowerRange());
+                responseBody.addProperty("upperRange", gradingCriteria.getUpperRange());
+                responseBody.addProperty("grade", gradingCriteria.getGrade());
+                responseBody.addProperty("gradeDescription", gradingCriteria.getGradeDescription());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .POST(HttpRequest.BodyPublishers.ofString(responseBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                return responseBody.toString();
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String responseBody = task.getValue();
+            if (responseBody != null) {
+                onSuccess.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void downloadStudentReport(String staffId, String semesterId, String promotionGradeId,
+                                      Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<byte[]> task = new Task<>() {
+            @Override
+            protected byte[] call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/generate-class-report/" +
+                        staffId + "/" + semesterId + "/" + promotionGradeId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<byte[]> response = httpClient
+                        .send(request, HttpResponse.BodyHandlers.ofByteArray());
+
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            byte[] pdfBytes = task.getValue();
+            if (pdfBytes == null) {
+                onFailure.run();
+                return;
+            }
+
+            Platform.runLater(() -> {
+                try {
+                    FileChooser chooser = new FileChooser();
+                    chooser.setTitle("Save Student Report");
+                    chooser.getExtensionFilters().add(
+                            new FileChooser.ExtensionFilter("PDF", "*.pdf")
+                    );
+
+                    chooser.setInitialFileName("Students Report.pdf");
+
+                    File file = chooser.showSaveDialog(null);
+
+                    if (file != null) {
+                        Files.write(file.toPath(), pdfBytes);
+                        onSuccess.run();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    onFailure.run();
+                }
+            });
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void loadClassResults(String staffId, String semesterId,
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Type listType = new TypeToken<List<GenerateStudentReport>>() {}.getType();
+        Task<List<GenerateStudentReport>> task = new Task<>() {
+            @Override
+            protected List<GenerateStudentReport> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/view-class-results/"
+                        + staffId + "/" + semesterId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), listType);
+                }
+
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            staffController.generateStudentReports = task.getValue();
+            if (staffController.generateStudentReports != null) {
+                onSuccess.run();
+                return;
+            }
+
+            onFailure.run();
+
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void loadClassResultsPrincipal(String levelId, String semesterId,
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Type listType = new TypeToken<List<GenerateStudentReport>>() {}.getType();
+
+        Task<List<GenerateStudentReport>> task = new Task<>() {
+            @Override
+            protected List<GenerateStudentReport> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/principal-view-class-results/"
+                        + levelId + "/" + semesterId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), listType);
+                }
+
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            principalController.generateStudentReport = task.getValue();
+            if (principalController.generateStudentReport != null) {
+                onSuccess.run();
+                return;
+            }
+
+            onFailure.run();
+
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void movePassedStudents(String staffId, String semesterId, String passTotalScore, String nextLevelId,
+                                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/generate-and-move-students/" +
+                        "staffId=" + staffId +
+                        "&semesterId=" + semesterId +
+                        "&passTotalScore=" + passTotalScore +
+                        "&nextLevelId=" + nextLevelId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .POST(HttpRequest.BodyPublishers.noBody())
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                return response.body();
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            staffController.passedResponse = task.getValue();
+            if (staffController.passedResponse == null) {
+                onFailure.run();
+                return;
+            }
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void loadStudentsForAttendance(String levelId, String date,
+                                          Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        if (staffController == null) return;
+
+        Type listType = new TypeToken<List<StudentAttendance>>() {}.getType();
+
+        Task<List<StudentAttendance>> task = new Task<>() {
+            @Override
+            protected List<StudentAttendance> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/load-students-for-attendance/" +
+                        levelId + "/" + date;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), listType);
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            staffController.studentAttendances = task.getValue();
+            if (staffController.studentAttendances == null) {
+                onFailure.run();
+                return;
+            }
+
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void markStudentAttendance(String studentId, String staffId, String levelId, String status,
+                                      Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/mark-attendance";
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("studentId", studentId);
+                requestBody.addProperty("staffId", staffId);
+                requestBody.addProperty("levelId", levelId);
+                requestBody.addProperty("status", status);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                System.out.println(errorMessageContainer);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) {
+                onFailure.run();
+                return;
+            }
+
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void updateAttendance(String studentId, String staffId, String levelId, String status, String dateMarked,
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/update-attendance?" +
+                        "studentId=" + studentId +
+                        "&staffId=" + staffId +
+                        "&levelId=" + levelId +
+                        "&status=" + status +
+                        "&dateMarked=" + dateMarked;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .PUT(HttpRequest.BodyPublishers.noBody())
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+                errorMessageContainer = response.body();
+                System.out.println(errorMessageContainer);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) {
+                onFailure.run();
+                return;
+            }
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+            } else {
+                onNetworkIssue.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    public void printSubjectList(String levelId, String levelName,
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Type listType = new TypeToken<List<PrintLevelSubjects>>() {}.getType();
+
+        Task<List<PrintLevelSubjects>> task = new Task<List<PrintLevelSubjects>>() {
+            @Override
+            protected List<PrintLevelSubjects> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL + "/print-subjects/" + levelId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), listType);
+                }
+
+                throw new Exception("Unexpected response code: " + response.statusCode());
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<PrintLevelSubjects> response = task.getValue();
+            if (response == null || response.isEmpty()) {
+                onFailure.run();
+                return;
+            }
+
+            Platform.runLater(() -> {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save Subject List");
+                fileChooser.setInitialFileName(levelName + "_Subject_List.csv");
+                fileChooser.getExtensionFilters().addAll(
+                        new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
+                        new FileChooser.ExtensionFilter("Text Files", "*.txt")
+                );
+
+                Stage stage = (Stage) staffController.printSubjectDataBtn.getScene().getWindow();
+                File file = fileChooser.showSaveDialog(stage);
+
+                if (file != null) {
+                    try {
+                        saveSubjectListToFile(response, file, levelName);
+                        onSuccess.run();
+                    } catch (Exception e) {
+                        onFailure.run();
+                    }
+                } else {
+                    onFailure.run();
+                }
+            });
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onFailure.run();
+            } else {
+                onFailure.run();
+            }
+        });
+
+        new Thread(task).start();
+    }
+
+    private void saveSubjectListToFile(List<PrintLevelSubjects> subjects, File file, String levelName) throws Exception {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+            // Header
+            writer.println("========================================");
+            writer.println("         SUBJECT LIST - " + levelName);
+            writer.println("========================================");
+            writer.println();
+            writer.println(String.format("%-5s | %-20s | %-30s", "No.", "Student ID", "Full Name"));
+            writer.println("---------------------------------------------------");
+
+            // Data rows
+            int count = 1;
+            for (PrintLevelSubjects subject : subjects) {
+                writer.println(String.format("%-5d | %-20s | %-30s",
+                        count++,
+                        subject.getSubjectId(),
+                        subject.getSubjectName()));
+            }
+
+            writer.println();
+            writer.println("---------------------------------------------------");
+            writer.println("Total Subjects: " + subjects.size());
+            writer.println("Generated on: " + LocalDate.now());
+        }
     }
 
     private void saveStudentListToFile(List<StudentListPrint> students, File file, String levelName) throws Exception {
@@ -2031,21 +2504,15 @@ public class UtilityClass {
 
     // ==================== UTILITY METHODS ====================
 
-    public void showError(String message) {
+    public void showError(StackPane notification, String message) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setContentText(message);
-            alert.showAndWait();
+            NotificationUtil.showError(notification, message);
         });
     }
 
-    public void showSuccess(String message) {
+    public void showSuccess(StackPane notification, String message) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Success");
-            alert.setContentText(message);
-            alert.showAndWait();
+            NotificationUtil.showSuccess(notification, message);
         });
     }
 
@@ -2058,4 +2525,29 @@ public class UtilityClass {
         button.setText(buttonText);
         button.setDisable(false);
     }
+
+    public void clearSession() {
+
+        // Clear cached backend data
+        feesCacheManager.clearClassFeesSummaryCache();
+        feesCacheManager.clearRecentPaymentCache();
+
+        gradeCacheManager.clearCache();
+        gradeStudentsCacheManager.clearCachedGradeStudents();
+        cacheManager.clearCachedStudents();
+        semesterCachingManager.clearCachedSemesters();
+        staffCacheManager.clearCachedStaffList();
+        staffListCacheManager.clearCachedStaffList();
+
+        // Clear dashboard numbers
+        totalStudentsFromBackend = 0L;
+        totalStaffFromBackend = 0L;
+        totalSemesterFeesFromBackend = 0.0;
+        feesPaidFromBackend = 0.0;
+        feesProgressBarFromBackend = 0.0;
+
+        // Clear reports / temp objects
+        report = null;
+    }
+
 }
