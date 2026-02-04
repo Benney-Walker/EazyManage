@@ -15,13 +15,17 @@ public class UpdateStudentPersonalData {
 
     private String parentPhoneNumber;
 
-    private String gradeName;
+    private String gradeId;
 
     private String status;
 
+    private String homeTown;
+
+    public UpdateStudentPersonalData() {}
+
     public UpdateStudentPersonalData(String studentId, String firstName, String lastName,
                                      String gender, String dateOfBirth, String parentName,
-                                     String parentPhoneNumber, String gradeName, String status) {
+                                     String parentPhoneNumber, String gradeId, String status, String homeTown) {
         this.studentId = studentId;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -29,8 +33,9 @@ public class UpdateStudentPersonalData {
         this.dateOfBirth = dateOfBirth;
         this.parentName = parentName;
         this.parentPhoneNumber = parentPhoneNumber;
-        this.gradeName = gradeName;
+        this.gradeId = gradeId;
         this.status = status;
+        this.homeTown = homeTown;
     }
 
     public String getStudentId() {
@@ -89,12 +94,12 @@ public class UpdateStudentPersonalData {
         this.parentPhoneNumber = parentPhoneNumber;
     }
 
-    public String getGradeName() {
-        return gradeName;
+    public String getGradeId() {
+        return gradeId;
     }
 
-    public void setGradeName(String gradeName) {
-        this.gradeName = gradeName;
+    public void setGradeId(String gradeId) {
+        this.gradeId = gradeId;
     }
 
     public String getStatus() {
@@ -103,5 +108,13 @@ public class UpdateStudentPersonalData {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getHomeTown() {
+        return homeTown;
+    }
+
+    public void setHomeTown(String homeTown) {
+        this.homeTown = homeTown;
     }
 }

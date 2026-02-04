@@ -3,10 +3,7 @@ package com.bbquantum.eazymanage.Utitity;
 import com.bbquantum.eazymanage.CacheClasses.*;
 import com.bbquantum.eazymanage.Controller.*;
 import com.bbquantum.eazymanage.DTO.Academics.*;
-import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
-import com.bbquantum.eazymanage.DTO.Finance.FeesSummaryTable;
-import com.bbquantum.eazymanage.DTO.Finance.RecentPaymentTable;
-import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
+import com.bbquantum.eazymanage.DTO.Finance.*;
 import com.bbquantum.eazymanage.DTO.Institution.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,12 +11,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,12 +25,15 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UtilityClass {
+
+    public String applicationVersion = "V 2.1.0";
 
     // Controllers - only one will be set at a time
     private final PrincipalController principalController;
@@ -44,7 +43,17 @@ public class UtilityClass {
     //Counter for loading Dashboards
     int counter = 0;
 
-    public String errorMessageContainer;
+    //Holds class information for update
+    public FindAndUpdateClassInfo findAndUpdateClassInfo;
+
+    //Holds semester information for update
+    public FindSemester semester;
+
+    //Contains students results
+    public List<ViewClassSemesterReport> viewClassSemesterReports;
+
+    public String errorMessageContainer = "";
+    public String successMessageContainer = "";
 
     // OWN HttpClient and Gson - don't rely on controllers
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
@@ -53,15 +62,16 @@ public class UtilityClass {
             .create();
 
     // Backend Configuration
-    public final String BASE_URL = "https://schoolmanagementsystem-production-afae.up.railway.app/";
-    public final String API_BASE_URL = "api/v1";
+    public final String BASE_URL = "http://localhost:8080/";
+    public final String API_BASE_URL_V1 = "api/v1";
+    public final String API_BASE_URL_V2 = "api/v2";
 
     // Stores retrieved fees report from backend
     public StudentFeesPaymentDisplay report;
     // Store student results
     public StudentResults studentResults;
-    // Store Student Id
-    public String studentId;
+    // Stores student information for update
+    public UpdateStudentPersonalData updateStudentPersonalData;
 
     // Cache Managers
     public final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
@@ -70,7 +80,7 @@ public class UtilityClass {
     public final FeesCacheManager feesCacheManager = FeesCacheManager.getInstance();
     public final SemesterCachingManager semesterCachingManager = SemesterCachingManager.getInstance();
     public final StaffListCacheManager staffListCacheManager = StaffListCacheManager.getInstance();
-    public final GradeStudentsCacheManager gradeStudentsCacheManager = GradeStudentsCacheManager.getInstance();
+    public final GradeInfoCacheManager gradeInfoCacheManager = GradeInfoCacheManager.getInstance();
 
     // Controller own variables
     public Long totalStudentsFromBackend = 0L;
@@ -101,33 +111,96 @@ public class UtilityClass {
     }
 
     public void loadPrincipalData(String principalId, StackPane notification, Runnable onSuccess) {
-        loadTotalFeesPaid(principalId, notification, onSuccess);
+        loadTotalFeesPaid(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadTotalSemesterFees(principalId, notification, onSuccess);
+        loadTotalSemesterFees(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadTotalStaff(principalId, notification, onSuccess);
+        loadTotalStaff(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadTotalStudents(principalId, notification, onSuccess);
+        loadTotalStudents(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadRecentlyAddedStudents(principalId, notification, onSuccess);
+        loadAbsentStudents(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadCachedStaffList(principalId, notification, onSuccess);
+        loadCachedStaffList(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadGradesFromBackend(principalId, notification, onSuccess);
+        loadGradesFromBackend(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadSemestersFromBackend(principalId, notification, onSuccess);
+        loadSemestersFromBackend(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadClassSummaryFees(principalId, notification, onSuccess);
+        loadClassSummaryFees(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadAllStaffList(principalId, notification, onSuccess);
+        loadAllStaffList(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
     }
 
-    private void checkCounter(int counter, Runnable onSuccess) {
+    private void checkCounter(int counter, Runnable onSuccess, Runnable onFailure) {
         if (principalController != null && financeController == null && staffController == null) {
             int initialCounter = 10;
             if (counter == initialCounter) {
                 onSuccess.run();
                 this.counter = 0;
+            }
+            if (onFailure != null) {
+                onFailure.run();
             }
         } else if (principalController == null && financeController != null && staffController == null) {
             int initialCounter = 5;
@@ -135,63 +208,124 @@ public class UtilityClass {
                 onSuccess.run();
                 this.counter = 0;
             }
+            if (onFailure != null) {
+                onFailure.run();
+            }
         } else if (principalController == null && financeController == null && staffController != null) {
-            int initialCounter = 4;
+            int initialCounter = 3;
             if (counter == initialCounter) {
                 onSuccess.run();
                 this.counter = 0;
+            }
+            if (onFailure != null) {
+                onFailure.run();
             }
         }
     }
 
     public void loadFinanceDashboardData(String financeId, StackPane notification, Runnable onSuccess) {
-        loadTotalFeesPaid(financeId, notification, onSuccess);
+        loadTotalFeesPaid(financeId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadTotalSemesterFees(financeId, notification, onSuccess);
+        loadTotalSemesterFees(financeId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadGradesFromBackend(financeId, notification, onSuccess);
+        loadGradesFromBackend(financeId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadSemestersFromBackend(financeId, notification, onSuccess);
+        loadSemestersFromBackend(financeId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        fetchRecentFeesTransactions(financeId, notification, onSuccess);
+        fetchRecentFeesTransactions(financeId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
     }
 
     public void loadStaffDashboardData(String staffId, StackPane notification, Runnable onSuccess) {
-        loadGradesFromBackend(staffId, notification, onSuccess);
+        loadGradesFromBackend(staffId, notification, onSuccess,
+                () -> {
+            //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadSemestersFromBackend(staffId, notification, onSuccess);
+        loadSemestersFromBackend(staffId, notification, onSuccess,
+                () -> {
+            //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
 
-        loadGradeStudents(staffId, notification, onSuccess);
-
-        loadGradeNameAndSize(staffId, notification, onSuccess);
+        loadStaffGrades(staffId, notification, onSuccess,
+                () -> {
+            //On Failure
+                    Platform.runLater(() -> {
+                        showError(notification, errorMessageContainer);
+                    });
+                });
     }
 
     // ==================== PRINCIPAL METHODS ====================
 
-    public void loadTotalStudents(String staffId, StackPane notification, Runnable onSuccess) {
-        if (totalStudentsFromBackend != 0) {
-            counter++;
-            checkCounter(counter, onSuccess);
-            return;
-        }
+    public void loadTotalStudents(String staffId, StackPane notification,
+                                  Runnable onSuccess, Runnable onFailure) {
 
-        Task<Long> task = new Task<>() {
+        Task<String> task = new Task<>() {
             @Override
-            protected Long call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/total-students/" + staffId;
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/total-students/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url)).GET().build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                return Long.parseLong(response.body());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            totalStudentsFromBackend = task.getValue();
+            String response = task.getValue();
+            if (response != null) {
+                totalStudentsFromBackend = Long.parseLong(response);
+                counter++;
+                checkCounter(counter, onSuccess, null);
+                return;
+            }
+
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -203,25 +337,25 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onFailure, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadTotalStaff(String staffId,  StackPane notification, Runnable onSuccess) {
-        if (totalStaffFromBackend != 0) {
-            counter++;
-            checkCounter(counter, onSuccess);
-            return;
-        }
+    public void loadTotalStaff(String staffId,  StackPane notification,
+                               Runnable onSuccess, Runnable onFailure) {
 
-        Task<Long> task = new Task<>() {
+        Task<String> task = new Task<>() {
             @Override
-            protected Long call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/total-staffs/" + staffId;
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/total-staffs/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -230,18 +364,26 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() ==  200) {
-                    return Long.parseLong(response.body());
+                    return response.body();
                 }
 
-                System.out.println(response.body());
-                return 0L;
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            totalStaffFromBackend = task.getValue();
+            String response = task.getValue();
+            if (response != null) {
+                totalStaffFromBackend = Long.parseLong(response);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
+            }
+
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -253,26 +395,25 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred. Please try again later.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
-            principalController.totalStaffLabel.setText("0");
+
+            counter ++;
+            checkCounter(counter, onFailure, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadTotalSemesterFees(String staffId, StackPane notification, Runnable onSuccess) {
-        if (totalSemesterFeesFromBackend != 0) {
-            counter ++;
-            checkCounter(counter, onSuccess);
-            return;
-        }
+    public void loadTotalSemesterFees(String staffId, StackPane notification,
+                                      Runnable onSuccess, Runnable onFailure) {
 
-        Task<Double> task = new Task<>() {
+        Task<String> task = new Task<>() {
             @Override
-            protected Double call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/total-fees/" + staffId;
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/total-fees/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -280,14 +421,27 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                return Double.parseDouble(response.body());
+                if (response.statusCode() ==  200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            totalSemesterFeesFromBackend = task.getValue();
+            String response = task.getValue();
+            if (response != null) {
+                totalSemesterFeesFromBackend = Double.parseDouble(response);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
+            }
+
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -299,25 +453,25 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadTotalFeesPaid(String staffId, StackPane notification, Runnable onSuccess) {
-        if (feesPaidFromBackend != 0) {
-            counter ++;
-            checkCounter(counter, onSuccess);
-            return;
-        }
+    public void loadTotalFeesPaid(String staffId, StackPane notification,
+                                  Runnable onSuccess, Runnable onFailure) {
 
-        Task<Double> task = new Task<>() {
+        Task<String> task = new Task<>() {
             @Override
-            protected Double call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/fees-paid/" + staffId;
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/fees-paid/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -325,18 +479,30 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                return Double.parseDouble(response.body());
+                if (response.statusCode() ==  200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            feesPaidFromBackend = task.getValue();
+            String response = task.getValue();
+            if (response != null) {
+                feesPaidFromBackend =  Double.parseDouble(response);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
+            }
+
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
-            principalController.feesPaidLabel.setText("0");
             Throwable ex = task.getException();
             ex.printStackTrace();
 
@@ -345,32 +511,36 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet connection.");
-            } else {
-                showError(notification, "Unexpected error occurred. Please try again later.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadRecentlyAddedStudents(String staffId, StackPane notification, Runnable onSuccess) {
+    public void loadAbsentStudents(String staffId, StackPane notification,
+                                   Runnable onSuccess, Runnable onFailure) {
 
-        List<RecentStudentView> cachedStudents = cacheManager.getCachedStudents();
+        List<AbsenteesView> cachedStudents = cacheManager.getCachedAbsenteeStudents();
         if (cachedStudents != null && !cachedStudents.isEmpty()) {
             if (cacheManager.isCacheValid()) {
-                principalController.recentStudentsTable.getItems().setAll(cachedStudents);
                 counter ++;
-                checkCounter(counter, onSuccess);
+                checkCounter(counter, onSuccess, null);
                 return;
             }
         }
 
-        Type studentListType = new TypeToken<List<RecentStudentView>>() {}.getType();
+        Type studentListType = new TypeToken<List<AbsenteesView>>() {}.getType();
 
-        Task<List<RecentStudentView>> task = new Task<>() {
+        Task<List<AbsenteesView>> task = new Task<>() {
             @Override
-            protected List<RecentStudentView> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/recently-added-students/" + staffId;
+            protected List<AbsenteesView> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/absent-students/" + staffId;
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .GET()
@@ -383,18 +553,30 @@ public class UtilityClass {
                     return gson.fromJson(response.body(), studentListType);
                 }
 
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            List<RecentStudentView> students = task.getValue();
-
-            if (students != null && !students.isEmpty()) {
-                cacheManager.setCachedStudents(students);
+            List<AbsenteesView> students = task.getValue();
+            if (students == null) {
+                counter ++;
+                checkCounter(counter, onSuccess, onFailure);
+                return;
             }
+
+            if (students.isEmpty()) {
+                successMessageContainer = "Today's attendance not recorded";
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
+            }
+
+            cacheManager.setCachedAbsenteeStudents(students);
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -406,20 +588,25 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadCachedStaffList(String staffId, StackPane notification, Runnable onSuccess) {
+    public void loadCachedStaffList(String staffId, StackPane notification,
+                                    Runnable onSuccess, Runnable onFailure) {
         List<StaffCaching> staffCachings = staffCacheManager.getCachedStaffList();
         if (staffCachings != null && !staffCachings.isEmpty()) {
             if (staffCacheManager.isCacheValid()) {
                 counter ++;
-                checkCounter(counter, onSuccess);
+                checkCounter(counter, onSuccess, null);
                 return;
             }
         }
@@ -429,7 +616,7 @@ public class UtilityClass {
         Task<List<StaffCaching>> task = new Task<>() {
             @Override
             protected List<StaffCaching> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/load-staffs-info/" + staffId;
+                String url = BASE_URL + API_BASE_URL_V1 + "/load-staffs-info/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -442,6 +629,8 @@ public class UtilityClass {
                     return gson.fromJson(response.body(), staffListType);
                 }
 
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -450,9 +639,12 @@ public class UtilityClass {
             List<StaffCaching> staffs = task.getValue();
             if (staffs != null) {
                 staffCacheManager.setStaffList(staffs);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -464,21 +656,24 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadGradesFromBackend(String staffId, StackPane notification, Runnable onSuccess) {
+    public void loadGradesFromBackend(String staffId, StackPane notification,
+                                      Runnable onSuccess, Runnable onFailure) {
 
-        List<GradeCaching> cachedGrades = gradeCacheManager.getGradeCache();
-        if (cachedGrades != null && !cachedGrades.isEmpty() && gradeCacheManager.isCacheValid()) {
+        List<GradeCaching> cachedGrades = gradeCacheManager.getGradesCache();
+        if (cachedGrades != null && !cachedGrades.isEmpty() && gradeCacheManager.isCachedGradesValid()) {
             counter++;
-            System.out.println("1 " + counter);
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, null);
             return;
         }
 
@@ -488,7 +683,7 @@ public class UtilityClass {
         Task<List<GradeCaching>> task = new Task<>() {
             @Override
             protected List<GradeCaching> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/load-levels/" + staffId;
+                String url = BASE_URL + API_BASE_URL_V2 + "/load-levels/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -496,23 +691,28 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
                 if (response.statusCode() == 200) {
-                    System.out.println(response.body());
                     return gson.fromJson(response.body(), classListType);
                 }
+
+                errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             List<GradeCaching> gradesList = task.getValue();
+            System.out.println("success");
 
             if (gradesList != null && !gradesList.isEmpty()) {
-                gradeCacheManager.setGradeCache(gradesList);
+                gradeCacheManager.setCachedGrades(gradesList);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -524,22 +724,26 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadSemestersFromBackend(String staffId, StackPane notification, Runnable onSuccess) {
+    public void loadSemestersFromBackend(String staffId, StackPane notification,
+                                         Runnable onSuccess, Runnable onFailure) {
 
         List<SemesterCaching> semesterCaching = semesterCachingManager.getCachedSemesters();
         if (semesterCaching != null && !semesterCaching.isEmpty()) {
             if (semesterCachingManager.isSemesterCacheValid()) {
                 counter++;
-                System.out.println("2 " + counter);
-                checkCounter(counter, onSuccess);
+                checkCounter(counter, onSuccess, null);
                 return;
             }
         }
@@ -549,7 +753,7 @@ public class UtilityClass {
         Task<List<SemesterCaching>> task = new Task<>() {
             @Override
             protected List<SemesterCaching> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/load-semesters/" + staffId;
+                String url = BASE_URL + API_BASE_URL_V1 + "/load-semesters/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -560,17 +764,23 @@ public class UtilityClass {
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), semesterListType);
                 }
+
+                errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             List<SemesterCaching> semesterCachingList = task.getValue();
+            System.out.println("success");
             if (semesterCachingList != null && !semesterCachingList.isEmpty()) {
                 semesterCachingManager.setCachedSemesters(semesterCachingList);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -582,21 +792,26 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadClassSummaryFees(String staffId, StackPane notification, Runnable onSuccess) {
+    public void loadClassSummaryFees(String staffId, StackPane notification,
+                                     Runnable onSuccess, Runnable onFailure) {
 
         List<ClassFeesSummary> cachedClassFees = feesCacheManager.getClassFeesSummaryCache();
         if (cachedClassFees != null && !cachedClassFees.isEmpty()) {
             if (feesCacheManager.isCachedClassFeesValid()) {
                 counter++;
-                checkCounter(counter, onSuccess);
+                checkCounter(counter, onSuccess, null);
                 return;
             }
         }
@@ -606,7 +821,7 @@ public class UtilityClass {
         Task<List<ClassFeesSummary>> task = new Task<>() {
             @Override
             protected List<ClassFeesSummary> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/class-summary-fees/" + staffId;
+                String url = BASE_URL + API_BASE_URL_V2 + "/class-summary-fees/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -616,9 +831,11 @@ public class UtilityClass {
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), classFeesList);
-                } else {
-                    throw new Exception("Failed to fetch class-summary-fees data.");
                 }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
@@ -626,9 +843,12 @@ public class UtilityClass {
             List<ClassFeesSummary> classFeesSummaryList = task.getValue();
             if (classFeesSummaryList != null && !classFeesSummaryList.isEmpty()) {
                 feesCacheManager.setClassFeesSummaryCache(classFeesSummaryList);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -640,93 +860,27 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
-            }
-        });
-
-        new Thread(task).start();
-    }
-
-    // ==================== STAFF CONTROLLER METHODS ====================
-
-    public void loadGradeNameAndSize(String staffId, StackPane notification, Runnable onSuccess) {
-        if (staffController.getGradeName() != null && staffController.getGradeNumber() != null
-                && staffController.getGradeSize() != null) {
-            counter++;
-            System.out.println("4 " + counter);
-            checkCounter(counter, onSuccess);
-            return;
-        }
-
-        Task<GradeInfoResponse> task = new Task<>() {
-            @Override
-            protected GradeInfoResponse call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/load-grade-and-size/" + staffId;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .header("Accept", "application/json")
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), GradeInfoResponse.class);
-                }
-
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            GradeInfoResponse gradeInfoResponse = task.getValue();
-            if (gradeInfoResponse != null) {
-                staffController.setGradeNumber(gradeInfoResponse.getGradeNumber());
-                staffController.setGradeName(gradeInfoResponse.getGradeName());
-                staffController.setGradeSize(gradeInfoResponse.getGradeSize());
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
 
             counter ++;
-            checkCounter(counter, onSuccess);
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
-            }
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void loadGradeStudents(String staffId, StackPane notification, Runnable onSuccess) {
+    public void loadStaffGrades(String staffId, StackPane notification,
+                                Runnable onSuccess, Runnable onFailure) {
 
-        List<GradeStudentsDisplayDTO> gradeStudentsLists = gradeStudentsCacheManager.getCachedGradeStudents();
-        if (gradeStudentsLists != null && !gradeStudentsLists.isEmpty() && gradeStudentsCacheManager.isCacheValid()) {
+        Type studentList = new TypeToken<ArrayList<GradeInformation>>() {}.getType();
 
-            Platform.runLater(() -> staffController.studentsTable.getItems().setAll(gradeStudentsLists));
-
-            counter++;
-            System.out.println("3 " + counter);
-            checkCounter(counter, onSuccess);
-            return;
-        }
-
-        Type studentList = new TypeToken<ArrayList<GradeStudentsDisplayDTO>>() {}.getType();
-
-        Task<List<GradeStudentsDisplayDTO>> task = new Task<>() {
+        Task<List<GradeInformation>> task = new Task<>() {
             @Override
-            protected List<GradeStudentsDisplayDTO> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/load-grade-students/" + staffId;
+            protected List<GradeInformation> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/load-staff-grades/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -735,21 +889,26 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    System.out.println(response.body());
                     return gson.fromJson(response.body(), studentList);
                 }
 
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            List<GradeStudentsDisplayDTO> gradeStudentsDisplayDTOS = task.getValue();
-            if (gradeStudentsDisplayDTOS != null) {
-                gradeStudentsCacheManager.setCachedGradeStudents(gradeStudentsDisplayDTOS);
+            List<GradeInformation> gradesInformation = task.getValue();
+            System.out.println("success");
+            if (gradesInformation != null && !gradesInformation.isEmpty()) {
+                gradeInfoCacheManager.setGradesInformation(gradesInformation);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -761,9 +920,13 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
@@ -775,7 +938,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/add-new-student";
+                String url = BASE_URL + API_BASE_URL_V2 + "/add-new-student";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("firstName", firstName);
@@ -796,26 +959,21 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonObject responseBody = gson.fromJson(response.body(), JsonObject.class);
-
                 if (response.statusCode() == 200) {
-                    if (responseBody.get("status").getAsString().equals("success")) {
-                        String studentId = responseBody.get("studentId").getAsString();
-                        System.out.println(studentId);
-                        return studentId;
-                    } else {
-                        return responseBody.get("message").getAsString();
-                    }
-                } else {
                     return response.body();
                 }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             String response = task.getValue();
             if (response != null) {
-                studentId = response;
+                successMessageContainer = "";
+                successMessageContainer = response;
                 onSuccess.run();
                 return;
             }
@@ -831,9 +989,10 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -845,7 +1004,7 @@ public class UtilityClass {
         Task<SubjectScores> task = new Task<>() {
             @Override
             protected SubjectScores call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/load-subject-students/" + subjectId;
+                String url = BASE_URL + API_BASE_URL_V2 + "/load-subject-students/" + subjectId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -853,10 +1012,13 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println("Received: " + response.body());
+
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), SubjectScores.class);
                 }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -879,45 +1041,53 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void saveStudentScores(String staffId, String studentId, String subjectId, String classScore, String examScore,
-                                  String semesterId,
+    public void saveStudentScores(StudentsScoresTable scores, String scoresInfo,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/save-student-scores" +
-                        "?staffId=" + staffId +
-                        "&studentId=" + studentId +
-                        "&subjectId=" + subjectId +
-                        "&semesterId=" + semesterId +
-                        "&classScore=" + classScore +
-                        "&examScore=" + examScore;
+                String url = BASE_URL + API_BASE_URL_V2 + "/save-subject-scores";
+
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("studentId", scores.getStudentId());
+                requestBody.addProperty("scoresInfo", scoresInfo);
+                requestBody.addProperty("exercise1Score", scores.getExercise1Score());
+                requestBody.addProperty("classTestScore", scores.getClassTestScore());
+                requestBody.addProperty("exercise2Score", scores.getExercise2Score());
+                requestBody.addProperty("projectScore", scores.getProjectScore());
+                requestBody.addProperty("classScore", scores.getClassScore());
+                requestBody.addProperty("examScore", scores.getExamScore());
+                requestBody.addProperty("calculatedExamScore", scores.getCalculatedExamScore());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .POST(HttpRequest.BodyPublishers.noBody())
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return "success";
+                    return response.body();
                 }
-                return response.body();
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             String status = task.getValue();
-            if ("success".equals(status)) {  // Safer null check
-                onSuccess.run(); // Run on JavaFX thread
+            if (status != null) {
+                onSuccess.run();
                 return;
             }
 
@@ -933,9 +1103,10 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -946,7 +1117,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/add-new-grade" +
+                String url = BASE_URL + API_BASE_URL_V2 + "/add-new-grade" +
                         "?gradeName=" + gradeName +
                         "&instructorId=" + instructorId;
 
@@ -956,19 +1127,24 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
-                return jsonResponse.get("status").getAsString();
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             String status = task.getValue();
-            if ("success".equals(status)) {
+            if (status != null) {
+                successMessageContainer = status;
                 onSuccess.run();
-                gradeCacheManager.clearCache();
-            } else {
-                onFailure.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         task.setOnFailed(event -> {
@@ -980,9 +1156,11 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            errorMessageContainer = "Could not add new grade";
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -991,10 +1169,10 @@ public class UtilityClass {
     public void recoverPassword(String staffId, String newPassword,
                                 Runnable onSuccess,
                                 Runnable onFailure, Runnable onNetworkIssue) {
-        Task<PasswordRecoveryDTO> task = new Task<>() {
+        Task<String> task = new Task<>() {
             @Override
-            protected PasswordRecoveryDTO call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/reset-staff-password/" +
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/reset-staff-password/" +
                         staffId + "/" + newPassword;
 
                 HttpRequest request = HttpRequest.newBuilder()
@@ -1005,20 +1183,23 @@ public class UtilityClass {
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), PasswordRecoveryDTO.class);
+                    return response.body();
                 }
 
-                return gson.fromJson(response.body(), PasswordRecoveryDTO.class);
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            principalController.passwordRecoveryDTO = task.getValue();
-            if (principalController.passwordRecoveryDTO.getStatus().equals("failed")
-                    || principalController.passwordRecoveryDTO == null ) {
+            String status = task.getValue();
+            if (status == null) {
                 onFailure.run();
                 return;
             }
+
+            successMessageContainer = status;
             onSuccess.run();
         });
 
@@ -1031,9 +1212,10 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -1044,7 +1226,7 @@ public class UtilityClass {
         Task<StudentFeesPaymentDisplay> task = new Task<>() {
             @Override
             protected StudentFeesPaymentDisplay call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/search-fees-report" +
+                String url = BASE_URL + API_BASE_URL_V2 + "/search-fees-report" +
                         "?studentId=" + studentId +
                         "&semesterId=" + semesterId +
                         "&gradeId=" + gradeId;
@@ -1058,6 +1240,9 @@ public class UtilityClass {
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), StudentFeesPaymentDisplay.class);
                 }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -1065,8 +1250,11 @@ public class UtilityClass {
         task.setOnSucceeded(event -> {
             report = task.getValue();
             if (report != null) {
+                successMessageContainer = "Successfully loaded report";
                 onSuccess.run();
+                return;
             }
+
             onFailure.run();
         });
 
@@ -1079,24 +1267,24 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
     public void getFeesFilterData(String ownUrl,
-                                  Runnable onSuccess, Runnable onFailure) {
-        if (principalController == null) return;
+                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         Type fullYPaidList = new TypeToken<List<FeesSummaryTable>>() {}.getType();
 
         Task<List<FeesSummaryTable>> task = new Task<>() {
             @Override
             protected List<FeesSummaryTable> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + ownUrl;
+                String url = BASE_URL + API_BASE_URL_V2 + ownUrl;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1106,19 +1294,23 @@ public class UtilityClass {
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), fullYPaidList);
-                } else {
-                    throw new Exception("Failed to fetch not-paid student!");
                 }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             principalController.feesSummaryTable = task.getValue();
             if (principalController.feesSummaryTable != null) {
+                successMessageContainer = "Successfully loaded report";
                 onSuccess.run();
-            } else {
-                onFailure.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         task.setOnFailed(event -> {
@@ -1129,32 +1321,35 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                onFailure.run();
-            } else {
-                onFailure.run();
+                onNetworkIssue.run();
+                return;
             }
+
+            errorMessageContainer = "Could not load report";
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void loadAllStaffList(String staffId, StackPane notification, Runnable onSuccess) {
+    public void loadAllStaffList(String staffId, StackPane notification,
+                                 Runnable onSuccess, Runnable onFailure) {
 
-        List<RecentStaffView> staffList = staffListCacheManager.getCachedStaffList();
+        List<ViewStaffList> staffList = staffListCacheManager.getCachedStaffList();
         if (staffList != null && !staffList.isEmpty()) {
             if (staffListCacheManager.isCacheValid()) {
                 counter ++;
-                checkCounter(counter, onSuccess);
+                checkCounter(counter, onSuccess, null);
                 return;
             }
         }
 
-        Type staffListList = new TypeToken<ArrayList<RecentStaffView>>() {}.getType();
+        Type staffListList = new TypeToken<ArrayList<ViewStaffList>>() {}.getType();
 
-        Task<List<RecentStaffView>> task = new Task<>() {
+        Task<List<ViewStaffList>> task = new Task<>() {
             @Override
-            protected List<RecentStaffView> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/staff-list/" + staffId;
+            protected List<ViewStaffList> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/staff-list/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1163,21 +1358,25 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    System.out.println(response.body());
                     return gson.fromJson(response.body(), staffListList);
-                } else {
-                    throw new Exception("Failed to fetch staff-list data.");
                 }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            List<RecentStaffView> staffViewList = task.getValue();
+            List<ViewStaffList> staffViewList = task.getValue();
             if (staffViewList != null && !staffViewList.isEmpty()) {
                 staffListCacheManager.setStaffList(staffViewList);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -1189,22 +1388,25 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                counter ++;
+                checkCounter(counter, onFailure, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
     }
 
-    public void refreshAllStaffList(Runnable onSuccess, Runnable onFailure) {
+    public void searchStaffData(String staffId,
+                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
-        Type staffListList = new TypeToken<ArrayList<RecentStaffView>>() {}.getType();
-
-        Task<List<RecentStaffView>> task = new Task<>() {
+        Task<FindStaffResponse> task = new Task<>() {
             @Override
-            protected List<RecentStaffView> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/staff-list/" + principalController.currentStaffId;
+            protected FindStaffResponse call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/find-staff-by-id/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1213,55 +1415,12 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), staffListList);
-                } else {
-                    throw new Exception("Failed to fetch staff-list data.");
+                    return gson.fromJson(response.body(), FindStaffResponse.class);
                 }
-            }
-        };
 
-        task.setOnSucceeded(event -> {
-            principalController.refreshedStaffViewList = task.getValue();
-            if (principalController.refreshedStaffViewList != null) {
-                onSuccess.run();
-            } else  {
-                onFailure.run();
-            }
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onFailure.run();
-            } else {
-                onFailure.run();
-            }
-        });
-
-        new Thread(task).start();
-    }
-
-    public void searchStaffData(String staffId,
-                                Runnable onSuccess, Runnable onFailure) {
-        if (principalController == null) return;
-
-        Task<FindStaffResponse> task = new Task<>() {
-            @Override
-            protected FindStaffResponse call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/find-staff-by-id/" + staffId;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                return gson.fromJson(response.body(), FindStaffResponse.class);
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
@@ -1269,9 +1428,10 @@ public class UtilityClass {
             principalController.findStaffResponse = task.getValue();
             if (principalController.findStaffResponse != null) {
                 onSuccess.run();
-            } else {
-                onFailure.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         task.setOnFailed(event -> {
@@ -1282,21 +1442,26 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                onFailure.run();
-            } else {
-                onFailure.run();
+                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void searchStudentData(String studentId, Runnable onSuccess, Runnable onFailure) {
+    public void searchStudentData(String searchParameter, String searchParameter2, String searchParameter3,
+                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         Task<UpdateStudentPersonalData> task = new Task<>() {
             @Override
             protected UpdateStudentPersonalData call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/find-student-by-id/" + studentId;
+                String url = BASE_URL + API_BASE_URL_V2 + "/find-student?" +
+                        "searchParameter=" + searchParameter +
+                        "&searchParameter2=" + searchParameter2 +
+                        "&searchParameter3=" + searchParameter3;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1305,21 +1470,23 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    System.out.println(response.body());
                     return gson.fromJson(response.body(), UpdateStudentPersonalData.class);
-                } else {
-                    throw new Exception("Failed to fetch student personal data.");
                 }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            principalController.updateStudentPersonalData = task.getValue();
-            if(principalController.updateStudentPersonalData != null) {
-                onSuccess.run();
-            } else {
+             updateStudentPersonalData= task.getValue();
+            if(updateStudentPersonalData == null) {
                 onFailure.run();
+                return;
             }
+
+            onSuccess.run();
         });
 
         task.setOnFailed(event -> {
@@ -1330,105 +1497,34 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                onFailure.run();
-            } else {
-                onFailure.run();
+                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void showUpdateStudentDataDialog(StackPane notification) {
-        if (principalController == null || principalController.updateStudentPersonalData == null) return;
-
-        Dialog<UpdateStudentPersonalData> dialog = new Dialog<>();
-        dialog.setTitle("Edit Personal Data");
-        dialog.setHeaderText("Update personal and guardian contact details for " +
-                principalController.updateStudentPersonalData.getFirstName());
-
-        ButtonType saveButtonType = new ButtonType("Save Changes", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-
-        GridPane grid = new GridPane();
-        grid.setHgap(15);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        grid.add(new Label("Name:"), 0, 0);
-        grid.add(new Label(principalController.updateStudentPersonalData.getFirstName()), 1, 0);
-
-        grid.add(new Label("Student ID:"), 0, 1);
-        grid.add(new Label(principalController.updateStudentPersonalData.getStudentId()), 1, 1);
-
-        grid.add(new Label("Class/Grade:"), 0, 2);
-        grid.add(new Label(principalController.updateStudentPersonalData.getGradeName()), 1, 2);
-
-        grid.add(new Separator(), 0, 3, 2, 1);
-
-        ComboBox<String> genderComboBox = new ComboBox<>();
-        genderComboBox.getItems().addAll("Male", "Female");
-        genderComboBox.setValue(principalController.updateStudentPersonalData.getGender());
-        grid.add(new Label("Gender (Editable):"), 0, 4);
-        grid.add(genderComboBox, 1, 4);
-
-        ComboBox<String> statusComboBox = new ComboBox<>();
-        statusComboBox.getItems().addAll("ACTIVE", "INACTIVE", "COMPLETED");
-        statusComboBox.setValue(principalController.updateStudentPersonalData.getStatus());
-        grid.add(new Label("Status (Editable):"), 0, 5);
-        grid.add(genderComboBox, 1, 5);
-
-        DatePicker dobPicker = new DatePicker(LocalDate.parse(principalController.updateStudentPersonalData.getDateOfBirth()));
-        grid.add(new Label("Date of Birth (Editable):"), 0, 6);
-        grid.add(dobPicker, 1, 6);
-
-        TextField guardianNameField = new TextField(principalController.updateStudentPersonalData.getParentName());
-        grid.add(new Label("Guardian Name (Editable):"), 0, 7);
-        grid.add(guardianNameField, 1, 7);
-
-        TextField guardianPhoneField = new TextField(principalController.updateStudentPersonalData.getParentPhoneNumber());
-        grid.add(new Label("Contact (Editable):"), 0, 8);
-        grid.add(guardianPhoneField, 1, 8);
-
-        dialog.getDialogPane().setContent(grid);
-        Platform.runLater(genderComboBox::requestFocus);
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == saveButtonType) {
-                return new UpdateStudentPersonalData(
-                        principalController.updateStudentPersonalData.getStudentId(),
-                        principalController.updateStudentPersonalData.getFirstName(),
-                        principalController.updateStudentPersonalData.getLastName(),
-                        genderComboBox.getValue(),
-                        dobPicker.getValue().toString(),
-                        guardianNameField.getText(),
-                        guardianPhoneField.getText(),
-                        principalController.updateStudentPersonalData.getGradeName(),
-                        principalController.updateStudentPersonalData.getStatus()
-                );
-            }
-            return null;
-        });
-
-        dialog.showAndWait().ifPresent(update -> {
-            updateStudentPersonalData(update, notification);
-        });
-    }
-
-    private void updateStudentPersonalData(UpdateStudentPersonalData updateStudentPersonalData,
-                                           StackPane notification) {
+    public void updateStudentPersonalData(UpdateStudentPersonalData updateStudentPersonalData,
+                                           Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/update-student-data";
+                String url = BASE_URL + API_BASE_URL_V2 + "/update-student-data";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", updateStudentPersonalData.getStudentId());
                 requestBody.addProperty("gender", updateStudentPersonalData.getGender());
                 requestBody.addProperty("dateOfBirth", updateStudentPersonalData.getDateOfBirth().toString());
-                requestBody.addProperty("guardianName", updateStudentPersonalData.getParentName());
-                requestBody.addProperty("guardianContact", updateStudentPersonalData.getParentPhoneNumber());
+                requestBody.addProperty("parentName", updateStudentPersonalData.getParentName());
+                requestBody.addProperty("parentPhoneNumber", updateStudentPersonalData.getParentPhoneNumber());
                 requestBody.addProperty("status", updateStudentPersonalData.getStatus());
+                requestBody.addProperty("firstName", updateStudentPersonalData.getFirstName());
+                requestBody.addProperty("lastName", updateStudentPersonalData.getLastName());
+                requestBody.addProperty("gradeId", updateStudentPersonalData.getGradeId());
+                requestBody.addProperty("homeTown", updateStudentPersonalData.getHomeTown());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1438,21 +1534,25 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    JsonObject responseBody = gson.fromJson(response.body(), JsonObject.class);
-                    return responseBody.get("status").getAsString();
-                } else {
-                    return "error";
+                    return response.body();
                 }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             String status = task.getValue();
-            if ("success".equals(status)) {
-                showSuccess(notification, "Student data updated successfully.");
-            } else {
-                showError(notification, "Error: " + status);
+            if (status != null) {
+                successMessageContainer = "";
+                successMessageContainer = status;
+                onSuccess.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         task.setOnFailed(event -> {
@@ -1463,23 +1563,23 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred.");
+                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
     public void SearchStudentResults(String studentId, String semesterId, String classId,
-                                     Runnable onSuccess, Runnable onFailure) {
-        if (principalController == null) return;
+                                     Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         Task<StudentResults> task = new Task<>() {
             @Override
             protected StudentResults call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/search-student-results" +
+                String url = BASE_URL + API_BASE_URL_V2 + "/search-student-results" +
                         "?studentId=" + studentId +
                         "&semesterId=" + semesterId +
                         "&classId=" + classId;
@@ -1490,21 +1590,25 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.body() == null || "null".equals(response.body())) {
-                    return null;
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), StudentResults.class);
                 }
 
-                return gson.fromJson(response.body(), StudentResults.class);
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             studentResults = task.getValue();
             if (studentResults != null) {
+                successMessageContainer = "Results loaded successfully";
                 onSuccess.run();
-            } else {
-                onFailure.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         task.setOnFailed(event -> {
@@ -1515,10 +1619,12 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                onFailure.run();
-            } else {
-                onFailure.run();
+                onNetworkIssue.run();
+                return;
             }
+
+            errorMessageContainer = "Could not load results";
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -1529,7 +1635,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/add-new-fees" +
+                String url = BASE_URL + API_BASE_URL_V2 + "/add-new-fees" +
                         "?gradeId=" + gradeId +
                         "&semesterId=" + semesterId +
                         "&feesAmount=" + feesAmount;
@@ -1543,16 +1649,21 @@ public class UtilityClass {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                return response.body();
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             String result = task.getValue();
-            if (result.equals("success")) {
+            if (result != null) {
+                successMessageContainer = result;
                 onSuccess.run();
                 return;
             }
+
             onFailure.run();
         });
 
@@ -1565,9 +1676,11 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            errorMessageContainer = "Could not save Fees";
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -1579,7 +1692,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/add-semester";
+                String url = BASE_URL + API_BASE_URL_V1 + "/add-semester";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("semesterName", semesterName);
@@ -1632,7 +1745,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/add-subject";
+                String url = BASE_URL + API_BASE_URL_V2 + "/add-subject";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("subjectName", assignment.getSubjectName());
@@ -1646,18 +1759,25 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
-                return jsonResponse.get("status").getAsString();
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            String status = task.getValue();
-            if ("success".equals(status)) {
-                onSuccess.run();
-            } else {
+            String response = task.getValue();
+            if (response == null) {
                 onFailure.run();
+                return;
             }
+            successMessageContainer = "";
+            successMessageContainer = response;
+            onSuccess.run();
         });
 
         task.setOnFailed(event -> {
@@ -1669,9 +1789,10 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -1683,7 +1804,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/add-fees-payment";
+                String url = BASE_URL + API_BASE_URL_V2 + "/add-fees-payment";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", studentId);
@@ -1700,27 +1821,23 @@ public class UtilityClass {
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
                 if (response.statusCode() == 200) {
-                    jsonResponse.get("status").getAsString();
-                    if (jsonResponse.get("status").getAsString().equals("success")) {
-                        return jsonResponse.get("message").getAsString();
-                    } else {
-                        return jsonResponse.get("status").getAsString();
-                    }
-                } else {
-                    return jsonResponse.get("message").getAsString();
+                    return response.body();
                 }
+
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             String status = task.getValue();
-            if (status.equals("failed")) {
+            if (status == null) {
                 onFailure.run();
                 return;
             }
 
+            successMessageContainer = status;
             onSuccess.run();
         });
 
@@ -1733,21 +1850,24 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            errorMessageContainer = "Could not add Payment";
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void fetchAndSaveStudentList(String levelId, String levelName, Runnable onSuccess, Runnable onFailure) {
+    public void fetchAndSaveStudentList(String levelId, String levelName,
+                                        Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Type listType = new TypeToken<List<StudentListPrint>>() {}.getType();
 
         Task<List<StudentListPrint>> task = new Task<>() {
             @Override
             protected List<StudentListPrint> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/students-by-level/" + levelId;
+                String url = BASE_URL + API_BASE_URL_V2 + "/print-level-list/" + levelId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1759,15 +1879,22 @@ public class UtilityClass {
 
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), listType);
-                } else {
-                    throw new Exception("Failed to fetch students");
                 }
+
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             List<StudentListPrint> students = task.getValue();
-            if (students == null || students.isEmpty()) {
+            if (students == null) {
+                onFailure.run();
+                return;
+            }
+
+            if (students.isEmpty()) {
+                errorMessageContainer = "Class list is empty";
                 onFailure.run();
                 return;
             }
@@ -1788,11 +1915,14 @@ public class UtilityClass {
                 if (file != null) {
                     try {
                         saveStudentListToFile(students, file, levelName);
+                        successMessageContainer = "List successfully saved";
                         onSuccess.run();
                     } catch (Exception e) {
+                        errorMessageContainer = e.getMessage();
                         onFailure.run();
                     }
                 } else {
+                    errorMessageContainer = "Could not generate class list";
                     onFailure.run();
                 }
             });
@@ -1806,10 +1936,12 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                onFailure.run();
-            } else {
-                onFailure.run();
+                onNetworkIssue.run();
+                return;
             }
+
+            errorMessageContainer = "Could not generate class list";
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -1824,7 +1956,7 @@ public class UtilityClass {
         Task<List<RecentPaymentTable>> task = new Task<>() {
             @Override
             protected List<RecentPaymentTable> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/recent-fees-transactions/" + staffId;
+                String url = BASE_URL + API_BASE_URL_V1 + "/recent-fees-transactions/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1872,13 +2004,14 @@ public class UtilityClass {
         new Thread(task).start();
     }
 
-    public void fetchRecentFeesTransactions(String staffId, StackPane notification, Runnable onSuccess) {
+    public void fetchRecentFeesTransactions(String staffId, StackPane notification,
+                                            Runnable onSuccess, Runnable onFailure) {
 
             List<RecentPaymentTable> recentPaymentsTable = feesCacheManager.getRecentPaymentCache();
             if (recentPaymentsTable != null && !recentPaymentsTable.isEmpty()) {
                 if (feesCacheManager.isCachedRecentPaymentValid()) {
                     counter++;
-                    checkCounter(counter, onSuccess);
+                    checkCounter(counter, onSuccess, null);
                     return;
                 }
             }
@@ -1888,7 +2021,7 @@ public class UtilityClass {
         Task<List<RecentPaymentTable>> task = new Task<>() {
             @Override
             protected List<RecentPaymentTable> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/recent-fees-transactions/" + staffId;
+                String url = BASE_URL + API_BASE_URL_V1 + "/recent-fees-transactions/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -1902,6 +2035,8 @@ public class UtilityClass {
                     return gson.fromJson(response.body(), listType);
                 }
 
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -1910,10 +2045,13 @@ public class UtilityClass {
             List<RecentPaymentTable> recentPayments = task.getValue();
             if (recentPayments != null || !recentPayments.isEmpty()) {
                 feesCacheManager.setRecentPaymentCache(recentPayments);
+                counter++;
+                checkCounter(counter, onSuccess, null);
+                return;
             }
 
             counter ++;
-            checkCounter(counter, onSuccess);
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         task.setOnFailed(event -> {
@@ -1925,9 +2063,13 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 showError(notification, "Cannot connect to server. Check your internet.");
-            } else {
-                showError(notification, "Unexpected error occurred. Please try again later.");
+                counter ++;
+                checkCounter(counter, onFailure, null);
+                return;
             }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
         });
 
         new Thread(task).start();
@@ -1939,7 +2081,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/set-grades";
+                String url = BASE_URL + API_BASE_URL_V2 + "/set-grades";
 
                 JsonObject responseBody = new JsonObject();
                 responseBody.addProperty("staffId", staffId);
@@ -1950,6 +2092,7 @@ public class UtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(responseBody.toString()))
                         .build();
 
@@ -1959,13 +2102,15 @@ public class UtilityClass {
                     return response.body();
                 }
 
-                return responseBody.toString();
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            String responseBody = task.getValue();
-            if (responseBody != null) {
+            String response = task.getValue();
+            if (response != null) {
+                successMessageContainer =  response;
                 onSuccess.run();
                 return;
             }
@@ -1982,21 +2127,23 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            errorMessageContainer = "Could not add Grades";
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void downloadStudentReport(String staffId, String semesterId, String promotionGradeId,
-                                      Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+    public void downloadStudentsReport(String levelId, String semesterId, String promotionGradeId,
+                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<byte[]> task = new Task<>() {
             @Override
             protected byte[] call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/generate-class-report/" +
-                        staffId + "/" + semesterId + "/" + promotionGradeId;
+                String url = BASE_URL + API_BASE_URL_V2 + "/generate-class-report/" +
+                        levelId + "/" + semesterId + "/" + promotionGradeId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -2009,7 +2156,11 @@ public class UtilityClass {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
+
+                String errorMsg = new String(response.body(), StandardCharsets.UTF_8);
+                errorMessageContainer = errorMsg;
                 return null;
+
             }
         };
 
@@ -2030,14 +2181,20 @@ public class UtilityClass {
 
                     chooser.setInitialFileName("Students Report.pdf");
 
-                    File file = chooser.showSaveDialog(null);
+                    Window window = staffController.generateReportBtn.getScene().getWindow();
+                    File file = chooser.showSaveDialog(window);
+
 
                     if (file != null) {
                         Files.write(file.toPath(), pdfBytes);
                         onSuccess.run();
+                    }else {
+                        onFailure.run();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    errorMessageContainer = "";
+                    errorMessageContainer = e.getMessage();
                     onFailure.run();
                 }
             });
@@ -2052,73 +2209,25 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
-            }
-        });
-
-        new Thread(task).start();
-    }
-
-    public void loadClassResults(String staffId, String semesterId,
-                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Type listType = new TypeToken<List<GenerateStudentReport>>() {}.getType();
-        Task<List<GenerateStudentReport>> task = new Task<>() {
-            @Override
-            protected List<GenerateStudentReport> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/view-class-results/"
-                        + staffId + "/" + semesterId;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), listType);
-                }
-
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            staffController.generateStudentReports = task.getValue();
-            if (staffController.generateStudentReports != null) {
-                onSuccess.run();
                 return;
             }
 
             onFailure.run();
-
         });
 
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
-            }
-        });
-
-        new Thread(task).start();
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
 
-    public void loadClassResultsPrincipal(String levelId, String semesterId,
+    public void loadClassResults(String levelId, String semesterId,
                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Type listType = new TypeToken<List<GenerateStudentReport>>() {}.getType();
 
-        Task<List<GenerateStudentReport>> task = new Task<>() {
+        Type listType = new TypeToken<List<ViewClassSemesterReport>>() {}.getType();
+        Task<List<ViewClassSemesterReport>> task = new Task<>() {
             @Override
-            protected List<GenerateStudentReport> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/principal-view-class-results/"
+            protected List<ViewClassSemesterReport> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/view-class-results/"
                         + levelId + "/" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
@@ -2131,13 +2240,15 @@ public class UtilityClass {
                     return gson.fromJson(response.body(), listType);
                 }
 
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            principalController.generateStudentReport = task.getValue();
-            if (principalController.generateStudentReport != null) {
+            viewClassSemesterReports = task.getValue();
+            if (viewClassSemesterReports != null) {
                 onSuccess.run();
                 return;
             }
@@ -2155,21 +2266,22 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void movePassedStudents(String staffId, String semesterId, String passTotalScore, String nextLevelId,
+    public void movePassedStudents(String levelId, String semesterId, String passTotalScore, String nextLevelId,
                                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/generate-and-move-students/" +
-                        "staffId=" + staffId +
+                String url = BASE_URL + API_BASE_URL_V2 + "/generate-and-move-students/" +
+                        "levelId=" + levelId +
                         "&semesterId=" + semesterId +
                         "&passTotalScore=" + passTotalScore +
                         "&nextLevelId=" + nextLevelId;
@@ -2185,13 +2297,15 @@ public class UtilityClass {
                     return response.body();
                 }
 
-                return response.body();
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            staffController.passedResponse = task.getValue();
-            if (staffController.passedResponse == null) {
+            successMessageContainer = task.getValue();
+            if (successMessageContainer == null) {
                 onFailure.run();
                 return;
             }
@@ -2207,9 +2321,10 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -2217,14 +2332,13 @@ public class UtilityClass {
 
     public void loadStudentsForAttendance(String levelId, String date,
                                           Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        if (staffController == null) return;
 
         Type listType = new TypeToken<List<StudentAttendance>>() {}.getType();
 
         Task<List<StudentAttendance>> task = new Task<>() {
             @Override
             protected List<StudentAttendance> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/load-students-for-attendance/" +
+                String url = BASE_URL + API_BASE_URL_V1 + "/load-students-for-attendance/" +
                         levelId + "/" + date;
 
                 HttpRequest request = HttpRequest.newBuilder()
@@ -2237,6 +2351,7 @@ public class UtilityClass {
                     return gson.fromJson(response.body(), listType);
                 }
 
+                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -2248,7 +2363,6 @@ public class UtilityClass {
                 onFailure.run();
                 return;
             }
-
             onSuccess.run();
         });
 
@@ -2261,9 +2375,10 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -2274,7 +2389,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/mark-attendance";
+                String url = BASE_URL + API_BASE_URL_V1 + "/mark-attendance";
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", studentId);
                 requestBody.addProperty("staffId", staffId);
@@ -2330,7 +2445,7 @@ public class UtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/update-attendance?" +
+                String url = BASE_URL + API_BASE_URL_V1 + "/update-attendance?" +
                         "studentId=" + studentId +
                         "&staffId=" + staffId +
                         "&levelId=" + levelId +
@@ -2382,10 +2497,10 @@ public class UtilityClass {
                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Type listType = new TypeToken<List<PrintLevelSubjects>>() {}.getType();
 
-        Task<List<PrintLevelSubjects>> task = new Task<List<PrintLevelSubjects>>() {
+        Task<List<PrintLevelSubjects>> task = new Task<>() {
             @Override
             protected List<PrintLevelSubjects> call() throws Exception {
-                String url = BASE_URL + API_BASE_URL + "/print-subjects/" + levelId;
+                String url = BASE_URL + API_BASE_URL_V1 + "/print-subjects/" + levelId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -2397,13 +2512,15 @@ public class UtilityClass {
                     return gson.fromJson(response.body(), listType);
                 }
 
-                throw new Exception("Unexpected response code: " + response.statusCode());
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(event -> {
             List<PrintLevelSubjects> response = task.getValue();
-            if (response == null || response.isEmpty()) {
+            if (response == null) {
                 onFailure.run();
                 return;
             }
@@ -2425,9 +2542,12 @@ public class UtilityClass {
                         saveSubjectListToFile(response, file, levelName);
                         onSuccess.run();
                     } catch (Exception e) {
+                        errorMessageContainer = "";
+                        errorMessageContainer = e.getMessage();
                         onFailure.run();
                     }
                 } else {
+                    errorMessageContainer = "Could not download subject list";
                     onFailure.run();
                 }
             });
@@ -2441,10 +2561,407 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                onFailure.run();
-            } else {
-                onFailure.run();
+                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void findClassInfo(String searchParameter, String staffId,
+                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<FindAndUpdateClassInfo> task = new Task<>() {
+            @Override
+            protected FindAndUpdateClassInfo call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/find-and-update-classes/" +
+                        searchParameter + "/" + staffId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), FindAndUpdateClassInfo.class);
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            findAndUpdateClassInfo = task.getValue();
+            if (findAndUpdateClassInfo == null) {
+                onFailure.run();
+                return;
+            }
+
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void updateClassInfo(FindAndUpdateClassInfo updateInfo,
+                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/update-class-info";
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("levelId", updateInfo.getLevelId());
+                requestBody.addProperty("levelName", updateInfo.getLevelName());
+                requestBody.addProperty("staffId", updateInfo.getStaffId());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String result = task.getValue();
+            if (result == null) {
+                onFailure.run();
+                return;
+            }
+            successMessageContainer = result;
+
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void updateStaffInfo(FindStaffResponse info,
+                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/update-staff-info";
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("staffId", info.getStaffId());
+                requestBody.addProperty("firstName", info.getFirstName());
+                requestBody.addProperty("surname", info.getSurname());
+                requestBody.addProperty("gender", info.getGender());
+                requestBody.addProperty("dateOfBirth", info.getDateOfBirth());
+                requestBody.addProperty("email", info.getEmail());
+                requestBody.addProperty("phoneNumber", info.getPhoneNumber());
+                requestBody.addProperty("staffRole", info.getStaffRole());
+                requestBody.addProperty("staffStatus",  info.getStaffStatus());
+                requestBody.addProperty("dateOfRegistration", info.getDateOfRegistration());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String result = task.getValue();
+            if (result == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = result;
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void searchSemester(String semesterId,
+                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<FindSemester> task = new Task<>() {
+            @Override
+            protected FindSemester call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/search-semester/" + semesterId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), FindSemester.class);
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            semester = task.getValue();
+            if (semester == null) {
+                onFailure.run();
+                return;
+            }
+
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void updateSemesterInfo(FindSemester info,
+                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/update-semester-info";
+
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("semesterID", info.getSemesterID());
+                requestBody.addProperty("semesterName", info.getSemesterName());
+                requestBody.addProperty("semesterStartDate", info.getSemesterStartDate());
+                requestBody.addProperty("semesterEndDate", info.getSemesterEndDate());
+                requestBody.addProperty("academicYear", info.getAcademicYear());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = response;
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void fetchFeesDetails(String semesterId, String levelId,
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<FetchFeesDetails> task = new Task<>() {
+            @Override
+            protected FetchFeesDetails call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/fetch-fees-details/" +
+                        semesterId + "/" + levelId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), FetchFeesDetails.class);
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            financeController.feesDetails = task.getValue();
+            if (financeController.feesDetails == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = "Fees Details fetched successfully";
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not fetch fees details";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void updateSemesterFees(FetchFeesDetails update,
+                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/update-semester-fees";
+
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("amount", update.getAmount());
+                requestBody.addProperty("semesterId", update.getSemesterId());
+                requestBody.addProperty("levelId", update.getLevelId());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = response;
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not update Fees details";
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -2533,7 +3050,7 @@ public class UtilityClass {
         feesCacheManager.clearRecentPaymentCache();
 
         gradeCacheManager.clearCache();
-        gradeStudentsCacheManager.clearCachedGradeStudents();
+        gradeInfoCacheManager.clearCachedGradeStudents();
         cacheManager.clearCachedStudents();
         semesterCachingManager.clearCachedSemesters();
         staffCacheManager.clearCachedStaffList();

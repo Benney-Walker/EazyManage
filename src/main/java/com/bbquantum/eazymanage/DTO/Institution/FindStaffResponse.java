@@ -1,7 +1,5 @@
 package com.bbquantum.eazymanage.DTO.Institution;
 
-import java.time.LocalDate;
-
 public class FindStaffResponse {
     private String staffId;
 
@@ -11,17 +9,23 @@ public class FindStaffResponse {
 
     private String gender;
 
-    private LocalDate dateOfBirth;
+    private String dateOfBirth;
 
     private String email;
 
     private String phoneNumber;
 
-    private String status;
+    private String staffRole;
+
+    private String staffStatus;
 
     private String dateOfRegistration;
 
-    public FindStaffResponse(String staffId, String firstName, String surname, String gender, LocalDate dateOfBirth, String email, String phoneNumber, String status) {
+    public FindStaffResponse() {}
+
+    public FindStaffResponse(String staffId, String firstName, String surname, String gender,
+                             String dateOfBirth, String email, String phoneNumber,
+                             String staffRole, String staffStatus, String dateOfRegistration) {
         this.staffId = staffId;
         this.firstName = firstName;
         this.surname = surname;
@@ -29,7 +33,9 @@ public class FindStaffResponse {
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.status = status;
+        this.staffRole = staffRole;
+        this.staffStatus = staffStatus;
+        this.dateOfRegistration = dateOfRegistration;
     }
 
     public String getStaffId() {
@@ -64,11 +70,11 @@ public class FindStaffResponse {
         this.gender = gender;
     }
 
-    public LocalDate getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(LocalDate dateOfBirth) {
+    public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -88,12 +94,20 @@ public class FindStaffResponse {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getStatus() {
-        return status;
+    public String getStaffRole() {
+        return staffRole;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStaffRole(String staffRole) {
+        this.staffRole = staffRole;
+    }
+
+    public String getStaffStatus() {
+        return staffStatus;
+    }
+
+    public void setStaffStatus(String staffStatus) {
+        this.staffStatus = staffStatus;
     }
 
     public String getDateOfRegistration() {

@@ -1,23 +1,23 @@
 package com.bbquantum.eazymanage.DTO.Institution;
 
-public class RecentStudentView {
+public class AbsenteesView {
     private String studentId;
 
     private String studentName;
 
     private String studentGrade;
 
-    private String dateOfRegistration;
+    private String instructorName;
 
-    private String status;
+    private String instructorId;
 
-    public RecentStudentView(String studentId, String studentName, String studentGrade, String dateOfRegistration,
-                             String status) {
+    public AbsenteesView(String studentId, String studentName, String studentGrade, String instructorName,
+                         String instructorId) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.studentGrade = studentGrade;
-        this.dateOfRegistration = dateOfRegistration;
-        this.status = status;
+        this.instructorName = instructorName;
+        this.instructorId = instructorId;
     }
 
     public String getStudentId() {
@@ -44,19 +44,19 @@ public class RecentStudentView {
         this.studentGrade = studentGrade;
     }
 
-    public String getDateOfRegistration() {
-        return dateOfRegistration;
+    public String getInstructorName() {
+        return instructorName;
     }
 
-    public void setDateOfRegistration(String dateOfRegistration) {
-        this.dateOfRegistration = dateOfRegistration;
+    public void setInstructorName(String instructorName) {
+        this.instructorName = instructorName;
     }
 
-    public String getStatus() {
-        return status;
+    public String getInstructorId() {
+        return instructorId;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setInstructorId(String instructorId) {
+        this.instructorId = instructorId;
     }
 }

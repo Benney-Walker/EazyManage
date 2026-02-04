@@ -1,5 +1,6 @@
 package com.bbquantum.eazymanage.Controller;
 
+import com.bbquantum.eazymanage.Constants.StaffRoles;
 import com.bbquantum.eazymanage.DTO.Institution.EnrollmentResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
 import javafx.fxml.FXML;
@@ -22,7 +23,7 @@ import com.google.gson.JsonObject;
 public class EnrollStaffController {
 
     // Backend configuration
-    private static final String BASE_URL = "https://schoolmanagementsystem-production-afae.up.railway.app/api/v1/auth";
+    private static final String BASE_URL = "http://localhost:8080/api/v1/auth";
     private static final String ENROLL_ENDPOINT = "/enroll-new-staff";
 
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
@@ -43,7 +44,7 @@ public class EnrollStaffController {
 
     // Account Info
     @FXML private TextField institutionIdField;
-    @FXML private ComboBox<String> roleComboBox;
+    @FXML private ComboBox<StaffRoles> roleComboBox;
     @FXML private PasswordField enrollmentPasswordField;
     @FXML private PasswordField confirmPasswordField;
 
@@ -59,12 +60,7 @@ public class EnrollStaffController {
      */
     @FXML
     public void initialize() {
-        roleComboBox.getItems().addAll(
-                "Principal",
-                "Teaching Staff",
-                "Accountant",
-                "General Staff"
-        );
+        roleComboBox.getItems().addAll(StaffRoles.values());
 
         successPanel.setVisible(false);
         successPanel.setManaged(false);
@@ -83,7 +79,7 @@ public class EnrollStaffController {
      * Set role to Principal and lock it (called from SubscriptionController)
      */
     public void setRoleToPrincipal() {
-        roleComboBox.setValue("Principal");
+        roleComboBox.setValue(StaffRoles.PRINCIPAL);
         roleComboBox.setDisable(true); // Lock it
     }
 
@@ -106,7 +102,7 @@ public class EnrollStaffController {
                 emailField.getText().trim(),
                 phoneNumberField.getText().trim(),
                 institutionIdField.getText().trim(),
-                roleComboBox.getValue(),
+                String.valueOf(roleComboBox.getValue()),
                 enrollmentPasswordField.getText()
         );
     }
@@ -163,7 +159,7 @@ public class EnrollStaffController {
         }
 
         // Role
-        if (roleComboBox.getValue() == null || roleComboBox.getValue().isEmpty()) {
+        if (roleComboBox.getValue() == null) {
             showError("Please select a role");
             return false;
         }

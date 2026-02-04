@@ -1,6 +1,7 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.Academics.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Institution.StaffSpecificGrades;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -11,13 +12,13 @@ public class GradeCacheManager {
     private static GradeCacheManager instance;
 
     //Cached grade data
-    private List<GradeCaching> cachedGrade;
+    private List<GradeCaching> cachedGrades;
 
     //Timestamp of the last update
-    private LocalDateTime lastUpdateTime;
+    private LocalDateTime cachedGradesDuration;
 
     //Time-to-Live in minutes
-    private static final long CACHE_TTL_MINUTES = 5;
+    private static final long GRADES_CACHE_TTL_MINUTES = 5;
 
     private GradeCacheManager() {}
 
@@ -28,31 +29,31 @@ public class GradeCacheManager {
         return instance;
     }
 
-    //Check if the cache is stale
-    public boolean isCacheValid() {
-        if (cachedGrade == null || lastUpdateTime == null) {
+    //Check if the cached grades has expired
+    public boolean isCachedGradesValid() {
+        if (cachedGrades == null || cachedGradesDuration == null) {
             return false;
         }
 
-        long minutesElapsed = ChronoUnit.MINUTES.between(lastUpdateTime, LocalDateTime.now());
-        return minutesElapsed < CACHE_TTL_MINUTES;
+        long minutesElapsed = ChronoUnit.MINUTES.between(cachedGradesDuration, LocalDateTime.now());
+        return minutesElapsed < GRADES_CACHE_TTL_MINUTES;
     }
 
-    //Retrieves the cached list
-    public List<GradeCaching> getGradeCache() {
-        if (isCacheValid()) {
-            return cachedGrade;
+    //Retrieves the cached grades list
+    public List<GradeCaching> getGradesCache() {
+        if (isCachedGradesValid()) {
+            return cachedGrades;
         }
         return null;
     }
 
-    public void setGradeCache(List<GradeCaching> grades) {
-        this.cachedGrade = grades;
-        this.lastUpdateTime = LocalDateTime.now();
+    public void setCachedGrades(List<GradeCaching> grades) {
+        this.cachedGrades = grades;
+        this.cachedGradesDuration = LocalDateTime.now();
     }
 
     public void clearCache() {
-        this.cachedGrade = null;
-        this.lastUpdateTime = LocalDateTime.now();
+        this.cachedGrades = null;
+        this.cachedGradesDuration = null;
     }
 }

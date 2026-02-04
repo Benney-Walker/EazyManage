@@ -34,7 +34,7 @@ public class AuthController {
 
     /* ================= BACKEND CONFIG ================= */
 
-    private static final String LOGIN_BASE_URL = "https://schoolmanagementsystem-production-afae.up.railway.app/api/v1/auth";
+    private static final String LOGIN_BASE_URL = "http://localhost:8080/api/v1/auth";
     private static final String LOGIN_ENDPOINT = "/staff-login";
 
     private static final String SUBSCRIBE_ENDPOINT = "/school-subscription";
@@ -322,17 +322,17 @@ public class AuthController {
 
             // Determine which dashboard to open based on role
             switch (role) {
-                case "Principal":
+                case "PRINCIPAL":
                     fxmlFile = "/com/bbquantum/eazymanage/Principal/principal-main-dashboard.fxml";
                     title = "EAZY MANAGE - Principal Dashboard";
                     break;
 
-                case "Accountant":
+                case "ACCOUNTANT":
                     fxmlFile = "/com/bbquantum/eazymanage/Accountant/accountant-dashboard.fxml";
                     title = "EAZY MANAGE - Accountant Dashboard";
                     break;
 
-                case "Teaching Staff":
+                case "TEACHING_STAFF":
                     fxmlFile = "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
                     title = "EAZY MANAGE - Staff Dashboard";
                     break;
@@ -374,7 +374,7 @@ public class AuthController {
     }
 
     private static void findController(String role, String staffId, String institutionName, String staffFullName, FXMLLoader loader) {
-        if (role.equals("Principal")) {
+        if (role.equals("PRINCIPAL")) {
             PrincipalController principalController = loader.getController();
             principalController.setInstitutionName(institutionName);
             principalController.setStaffId(staffId);
@@ -383,7 +383,7 @@ public class AuthController {
             principalController.initializeAfterLogin();
         }
 
-        if (role.equals("Accountant")) {
+        if (role.equals("ACCOUNTANT")) {
             FinanceController financeController = loader.getController();
             financeController.setInstitutionName(institutionName);
             financeController.setStaffId(staffId);
@@ -392,7 +392,7 @@ public class AuthController {
             financeController.initializeAfterLogin();
         }
 
-        if (role.equals("Teaching Staff")) {
+        if (role.equals("TEACHING_STAFF")) {
             StaffController staffController = loader.getController();
             staffController.setInstitutionName(institutionName);
             staffController.setStaffId(staffId);

@@ -18,30 +18,30 @@
             <VBox prefWidth="250" minWidth="250" styleClass="sidebar">
 
                 <VBox alignment="CENTER" spacing="10" styleClass="sidebar-header">
-                    <StackPane styleClass="sidebar-logo-bg">
-                        <Label text="💰" style="-fx-font-size: 28px;"/>
+                    <StackPane styleClass="logo-container">
+                        <Label text="EM" styleClass="logo-text"/>
                     </StackPane>
                     <Label text="EAZY MANAGE" styleClass="brand-name"/>
-                    <Label text="V 2.0.0" styleClass="version-badge"/>
+                    <Label fx:id="versionLabel" text=" " styleClass="version-badge"/>
                 </VBox>
 
                 <Separator styleClass="sidebar-separator"/>
 
                 <VBox spacing="8" styleClass="nav-container">
 
-                    <Button fx:id="dashboardBtn" text="📊 Dashboard" onAction="#showDashboard"
+                    <Button fx:id="dashboardBtn" text="DASHBOARD" onAction="#showDashboard"
                             maxWidth="Infinity"
                             styleClass="nav-button, nav-button-active"/>
 
-                    <Button fx:id="addFeesBtn" text="➕ Add Semester Fees" onAction="#showAddFees"
+                    <Button fx:id="addFeesBtn" text="ADD SEMESTER FEES" onAction="#showAddFees"
                             maxWidth="Infinity"
                             styleClass="nav-button"/>
 
-                    <Button fx:id="recordPaymentBtn" text="💵 Record Payment" onAction="#showRecordPayment"
+                    <Button fx:id="recordPaymentBtn" text="RECORD PAYMENT" onAction="#showRecordPayment"
                             maxWidth="Infinity"
                             styleClass="nav-button"/>
 
-                    <Button fx:id="searchReportBtn" text="🔍 Search Report" onAction="#showSearchReport"
+                    <Button fx:id="searchReportBtn" text="FETCH FEES REPORT" onAction="#showSearchReport"
                             maxWidth="Infinity"
                             styleClass="nav-button"/>
                 </VBox>
@@ -54,12 +54,12 @@
                             <Label text="👤" style="-fx-font-size: 16px;"/>
                         </StackPane>
                         <VBox spacing="1">
-                            <Label fx:id="institutionNameLabel" text="School Name" styleClass="user-label-bold"/>
-                            <Label fx:id="accountantNameLabel" text="Accountant Name" styleClass="user-label-sub"/>
+                            <Label fx:id="accountantNameLabel"  styleClass="user-label-bold"/>
+                            <Label fx:id="institutionNameLabel"  styleClass="user-label-sub"/>
                         </VBox>
                     </HBox>
 
-                    <Button fx:id="logoutButton" text="🚪 Logout" onAction="#handleLogout" maxWidth="Infinity"
+                    <Button fx:id="logoutButton" text="LOGOUT" onAction="#handleLogout" maxWidth="Infinity"
                             styleClass="logout-button"/>
                 </VBox>
             </VBox>
@@ -76,9 +76,13 @@
                         <HBox alignment="CENTER_LEFT">
                             <VBox spacing="5">
                                 <Label text="Accountant Dashboard" styleClass="header-title"/>
-                                <Label fx:id="dateTimeLabel" text="Monday, December 30, 2025 | 2:30 PM" styleClass="header-subtitle"/>
+                                <Label fx:id="dateTimeLabel"  styleClass="header-subtitle"/>
                             </VBox>
                             <Region HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT">
+                            <Button fx:id="refreshDashboardBtn" text="REFRESH DASHBOARD" onAction="#refreshDashboard"
+                                    styleClass="action-button-outline"/>
                         </HBox>
 
                         <HBox spacing="20">
@@ -86,7 +90,7 @@
                                 <HBox alignment="CENTER_LEFT" spacing="20">
                                     <Label text="💵" styleClass="card-icon-bg-blue"/>
                                     <VBox spacing="5">
-                                        <Label text="Total Semester Fees" styleClass="card-label"/>
+                                        <Label text="TOTAL SEMESTER FEES" styleClass="card-label"/>
                                         <Label fx:id="totalFeesLabel" text="GH₵ 0.00" styleClass="card-value"/>
                                     </VBox>
                                 </HBox>
@@ -97,7 +101,7 @@
                                 <HBox alignment="CENTER_LEFT" spacing="20">
                                     <Label text="✅" styleClass="card-icon-bg-mint"/>
                                     <VBox spacing="5">
-                                        <Label text="Amount Paid" styleClass="card-label"/>
+                                        <Label text="AMOUNT PAID" styleClass="card-label"/>
                                         <Label fx:id="amountPaidLabel" text="GH₵ 0.00" styleClass="card-value-mint"/>
                                     </VBox>
                                 </HBox>
@@ -114,7 +118,7 @@
                                 <HBox alignment="CENTER_LEFT" spacing="20">
                                     <Label text="⏳" styleClass="card-icon-bg-red"/>
                                     <VBox spacing="5">
-                                        <Label text="Outstanding" styleClass="card-label"/>
+                                        <Label text="OUTSTANDING" styleClass="card-label"/>
                                         <Label fx:id="outstandingLabel" text="GH₵ 0.00" styleClass="card-value-red"/>
                                     </VBox>
                                 </HBox>
@@ -131,22 +135,22 @@
 
                             <VBox styleClass="card-action-purple" alignment="CENTER" spacing="12"
                                   GridPane.columnIndex="0" onMouseClicked="#showAddFees">
-                                <Label text="➕" styleClass="action-card-icon"/>
-                                <Label text="Add Semester Fees" styleClass="action-card-title"/>
-                                <Label text="Set fees for specific classes" styleClass="action-card-subtitle"/>
+                                <Label text="MANAGE" styleClass="action-card-title"/>
+                                <Label text="SEMESTER FEES" styleClass="action-card-title"/>
+                                <Label text="Add or update semester fees info" styleClass="action-card-subtitle"/>
                             </VBox>
 
                             <VBox styleClass="card-action-pink" alignment="CENTER" spacing="12"
                                   GridPane.columnIndex="1" onMouseClicked="#showRecordPayment">
-                                <Label text="💵" styleClass="action-card-icon"/>
-                                <Label text="Record Payment" styleClass="action-card-title"/>
+                                <Label text="MANAGE" styleClass="action-card-title"/>
+                                <Label text="PAYMENTS" styleClass="action-card-title"/>
                                 <Label text="Update student fee status" styleClass="action-card-subtitle"/>
                             </VBox>
 
                             <VBox styleClass="card-action-cyan" alignment="CENTER" spacing="12"
                                   GridPane.columnIndex="2" onMouseClicked="#showSearchReport">
-                                <Label text="🔍" styleClass="action-card-icon"/>
-                                <Label text="Search Report" styleClass="action-card-title"/>
+                                <Label text="FETCH" styleClass="action-card-title"/>
+                                <Label text="FEES REPORT" styleClass="action-card-title"/>
                                 <Label text="View audit history" styleClass="action-card-subtitle"/>
                             </VBox>
                         </GridPane>
@@ -155,7 +159,6 @@
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Label text="💳 Recent Transactions" styleClass="section-title"/>
                                 <Region HBox.hgrow="ALWAYS"/>
-                                <Button fx:id="refreshBtn" text="Refresh Table" onAction="#refreshDashboard" styleClass="text-button-blue"/>
                             </HBox>
 
                             <Separator styleClass="content-separator"/>
@@ -179,60 +182,150 @@
                 </ScrollPane>
 
                 <!-- ADD SEMESTER FEES VIEW -->
-                <ScrollPane fx:id="addSemesterFees" visible="false" managed="false" fitToWidth="true"
+                <ScrollPane fx:id="addSemesterFeesView" visible="false" managed="false" fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
                     <VBox alignment="TOP_CENTER" spacing="30" styleClass="content-padding">
 
                         <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #ECFDF5;">
-                                <Label text="➕" style="-fx-font-size: 24px;"/>
-                            </StackPane>
-                            <Label text="ADD SEMESTER FEES" styleClass="header-title"/>
+                            <Label text="MANAGE SEMESTER FEES" styleClass="header-title"/>
                             <Label text="Set financial requirements for the current academic term" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="550">
+                        <!-- 🔘 TOGGLE BUTTONS -->
+                        <HBox spacing="10" alignment="CENTER">
+                            <Button fx:id="addSemesterFeesToggleBtn"
+                                    text="ADD SEMESTER FEES"
+                                    onAction="#showAddSemesterFeesCard"
+                                    styleClass="action-button-primary"/>
 
-                            <Label text="Fee Configuration" styleClass="section-header-blue"/>
+                            <Button fx:id="updateFeesDetailsToggleBtn"
+                                    text="UPDATE FEES DETAILS"
+                                    onAction="#showUpdateSemesterFeesCard"
+                                    styleClass="action-button-primary"/>
+                        </HBox>
 
-                            <VBox spacing="20">
-                                <VBox spacing="8">
-                                    <Label text="Amount (GH₵) *" styleClass="input-label"/>
-                                    <TextField fx:id="feesAmountField" promptText="e.g. 3500.00" styleClass="modern-input"/>
+                        <StackPane maxWidth="700">
+
+                            <VBox fx:id="addSemesterFeesCard" spacing="25" styleClass="panel-card" maxWidth="550">
+
+                                <Label text="Fee Configuration" styleClass="section-header-blue"/>
+
+                                <VBox spacing="20">
+                                    <VBox spacing="8">
+                                        <Label text="Amount (GH₵) *" styleClass="input-label"/>
+                                        <TextField fx:id="feesAmountField" promptText="e.g. 3500.00" styleClass="modern-input"/>
+                                    </VBox>
+
+                                    <HBox spacing="15">
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Semester" styleClass="input-label"/>
+                                            <ComboBox fx:id="feesSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Class/Level" styleClass="input-label"/>
+                                            <ComboBox fx:id="feesClassComboBox" promptText="Select Level" maxWidth="Infinity" styleClass="modern-combo"/>
+                                        </VBox>
+                                    </HBox>
                                 </VBox>
 
-                                <HBox spacing="15">
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                        <Label text="Semester *" styleClass="input-label"/>
-                                        <ComboBox fx:id="feesAddSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
+                                <Separator styleClass="content-separator"/>
 
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                        <Label text="Class/Level *" styleClass="input-label"/>
-                                        <ComboBox fx:id="feesAddClassComboBox" promptText="Select Level" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
+                                <HBox spacing="15" alignment="CENTER">
+                                    <Button text="CANCEL"
+                                            onAction="#backToDashboard"
+                                            HBox.hgrow="ALWAYS"
+                                            styleClass="action-button-red"/>
+                                    <Button fx:id="saveFeesBtn"
+                                            text="SAVE FEES"
+                                            onAction="#handleSaveSemesterFees"
+                                            HBox.hgrow="ALWAYS"
+                                            styleClass="action-button-primary"/>
                                 </HBox>
+
+                                <VBox spacing="8" styleClass="alert-panel-info">
+                                    <HBox spacing="8" alignment="CENTER_LEFT">
+                                        <Label text="💡" style="-fx-font-size: 14px;"/>
+                                        <Label text="Pro-Tips for Accountants" style="-fx-font-weight: bold; -fx-text-fill: #1E293B; -fx-font-size: 12px;"/>
+                                    </HBox>
+                                    <Label text="• Ensure the amount is verified before saving to avoid bulk billing errors."
+                                           styleClass="login-footer-label" wrapText="true"/>
+                                </VBox>
                             </VBox>
 
-                            <Separator styleClass="content-separator"/>
+                            <VBox fx:id="updateSemesterFeesCard" spacing="25" styleClass="panel-card" maxWidth="550">
 
-                            <HBox spacing="15" alignment="CENTER">
-                                <Button fx:id="saveFeesBtn" text="💾 Save &amp; Clear" onAction="#handleSaveAndClear"
-                                        styleClass="action-button-mint" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                            </HBox>
+                                <VBox fx:id="feesSearchArea" spacing="15" maxWidth="550">
+                                    <Label text="Select the specific term and grade for the fees" styleClass="section-header-blue"/>
+                                    <HBox spacing="15">
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Term" styleClass="input-label"/>
+                                            <ComboBox fx:id="searchFeesSemesterComboBox"
+                                                      promptText="Select Term"
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-combo"/>
+                                        </VBox>
 
-                            <VBox spacing="8" styleClass="alert-panel-info">
-                                <HBox spacing="8" alignment="CENTER_LEFT">
-                                    <Label text="💡" style="-fx-font-size: 14px;"/>
-                                    <Label text="Pro-Tips for Accountants" style="-fx-font-weight: bold; -fx-text-fill: #1E293B; -fx-font-size: 12px;"/>
-                                </HBox>
-                                <Label text="• Use 'Save &amp; Add Another' to quickly cycle through different grade levels."
-                                       styleClass="login-footer-label" wrapText="true"/>
-                                <Label text="• Ensure the amount is verified before saving to avoid bulk billing errors."
-                                       styleClass="login-footer-label" wrapText="true"/>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Class/Level" styleClass="input-label"/>
+                                            <ComboBox fx:id="searchFeesClassComboBox"
+                                                      promptText="Select Level"
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-combo"/>
+                                        </VBox>
+                                    </HBox>
+                                    <VBox alignment="BOTTOM_RIGHT">
+                                        <Button fx:id="fetchFeesDetailsBtn"
+                                                text="FETCH FEES DETAILS"
+                                                onAction="#handleFetchFeesDetails"
+                                                styleClass="action-button-primary"/>
+                                    </VBox>
+                                </VBox>
+
+                                <VBox fx:id="feesDetailsArea" spacing="25" maxWidth="550">
+
+                                    <Label text="Fee Configuration" styleClass="section-header-blue"/>
+
+                                    <VBox spacing="20">
+                                        <VBox spacing="8">
+                                            <Label text="Amount (GH₵) *" styleClass="input-label"/>
+                                            <TextField fx:id="updateFeesAmountField" promptText="e.g. 3500.00" styleClass="modern-input"/>
+                                        </VBox>
+
+                                        <HBox spacing="15">
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="Semester" styleClass="input-label"/>
+                                                <ComboBox fx:id="updateFeesSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                            </VBox>
+
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="Class/Level" styleClass="input-label"/>
+                                                <ComboBox fx:id="updateFeesClassComboBox" promptText="Select Level" maxWidth="Infinity" styleClass="modern-combo"/>
+                                            </VBox>
+                                        </HBox>
+                                    </VBox>
+
+                                    <Separator styleClass="content-separator"/>
+
+                                    <HBox spacing="15" alignment="CENTER">
+                                        <Button fx:id="updateFeesBtn" text="SAVE CHANGES" onAction="#handleUpdateSemesterFees"
+                                                styleClass="action-button-primary" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                    </HBox>
+
+                                    <VBox spacing="8" styleClass="alert-panel-info">
+                                        <HBox spacing="8" alignment="CENTER_LEFT">
+                                            <Label text="💡" style="-fx-font-size: 14px;"/>
+                                            <Label text="Pro-Tips for Accountants" style="-fx-font-weight: bold; -fx-text-fill: #1E293B; -fx-font-size: 12px;"/>
+                                        </HBox>
+                                        <Label text="• Ensure the amount is verified before saving to avoid bulk billing errors."
+                                               styleClass="login-footer-label" wrapText="true"/>
+                                    </VBox>
+
+                                </VBox>
                             </VBox>
-                        </VBox>
+
+                        </StackPane>
                     </VBox>
                 </ScrollPane>
 
@@ -303,7 +396,7 @@
                             <Separator styleClass="content-separator"/>
 
                             <HBox spacing="15" alignment="CENTER">
-                                <Button text="💾 Save &amp; Add Another" onAction="#handleSaveAndClearPayment"
+                                <Button fx:id="saveFeesPaymentBtn" text="SAVE PAYMENT" onAction="#handleSavePayment"
                                         styleClass="action-button-mint" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
                             </HBox>
 

@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.Institution.RecentStudentView;
+import com.bbquantum.eazymanage.DTO.Institution.AbsenteesView;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -11,7 +11,7 @@ public class RecentStudentCacheManager {
     private static RecentStudentCacheManager instance;
 
     //Cached data
-    private List<RecentStudentView> cachedStudents;
+    private List<AbsenteesView> cachedAbsenteeStudents;
 
     //Timestamp of the last update
     private LocalDateTime lastUpdatedTime;
@@ -28,7 +28,7 @@ public class RecentStudentCacheManager {
     }
 
     public boolean isCacheValid() {
-        if (cachedStudents == null || lastUpdatedTime == null) {
+        if (cachedAbsenteeStudents == null || lastUpdatedTime == null) {
             return false;
         }
 
@@ -37,21 +37,21 @@ public class RecentStudentCacheManager {
     }
 
     //Cache List Retrieval
-    public List<RecentStudentView> getCachedStudents() {
+    public List<AbsenteesView> getCachedAbsenteeStudents() {
         if (isCacheValid()) {
-            return cachedStudents;
+            return cachedAbsenteeStudents;
         }
 
         return null;
     }
 
-    public void setCachedStudents(List<RecentStudentView> cachedStudents) {
-        this.cachedStudents = cachedStudents;
+    public void setCachedAbsenteeStudents(List<AbsenteesView> cachedAbsenteeStudents) {
+        this.cachedAbsenteeStudents = cachedAbsenteeStudents;
         this.lastUpdatedTime = LocalDateTime.now();
     }
 
     public void clearCachedStudents() {
-        this.cachedStudents = null;
+        this.cachedAbsenteeStudents = null;
         this.lastUpdatedTime = LocalDateTime.now();
     }
 }

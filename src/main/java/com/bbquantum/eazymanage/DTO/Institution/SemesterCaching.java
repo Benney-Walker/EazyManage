@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.DTO.Academics;
+package com.bbquantum.eazymanage.DTO.Institution;
 
 public class SemesterCaching {
     private String semesterId;

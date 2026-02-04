@@ -260,6 +260,7 @@
 .version-badge {
     -fx-text-fill: #FFD700;
     -fx-font-size: 11px;
+    -fx-font-weight: bold;
 }
 
 .sidebar-separator {
@@ -273,8 +274,11 @@
 }
 
 .nav-button {
-    -fx-background-color: transparent;
+    -fx-background-color: #1E293B;
+    -fx-font-weight: bold;
     -fx-text-fill: white;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-font-size: 13px;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 12 18;
@@ -435,15 +439,53 @@
     -fx-background-radius: 12;
 }
 
+/* ===============================
+   TABLE VIEW BASE
+================================ */
 .modern-table {
     -fx-background-color: transparent;
-    -fx-text-fill: #1E293B;
+    -fx-table-cell-border-color: transparent;
+    -fx-control-inner-background: transparent;
 }
 
-.modern-table-column {
+/* ===============================
+   TABLE HEADER FIX (IMPORTANT)
+================================ */
+.modern-table .column-header-background {
     -fx-background-color: transparent;
-    -fx-text-fill: #1E293B;
 }
+
+.modern-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #E5E7EB transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* THIS fixes the white header text */
+.modern-table .column-header .label {
+    -fx-text-fill: #1E293B;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+/* ===============================
+   TABLE ROW TEXT
+================================ */
+.modern-table .table-cell {
+    -fx-text-fill: #1E293B;
+    -fx-font-size: 12px;
+}
+
+/* Row hover */
+.modern-table .table-row-cell:hover {
+    -fx-background-color: rgba(226, 232, 240, 0.6);
+}
+
+/* Selected row */
+.modern-table .table-row-cell:selected {
+    -fx-background-color: rgba(99, 102, 241, 0.15);
+}
+
 
 .modern-scroll-pane {
     -fx-background: transparent;
@@ -480,15 +522,25 @@
 }
 
 .action-button-primary {
-    -fx-background-color: #4682B4;
+    -fx-background-color: #2E8B57;
     -fx-text-fill: white;
     -fx-font-weight: bold;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
 }
 
 .action-button-mint {
     -fx-background-color: #2E8B57;
     -fx-text-fill: white;
     -fx-font-weight: bold;
+}
+
+.action-button-red {
+    -fx-background-color: transparent;
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
 }
 
 .action-button-outline {
@@ -899,6 +951,19 @@
 .message-error {
     -fx-text-fill: #E11D48; /* red */
     -fx-font-weight: bold;
+}
+
+.icon-nav-button {
+    -fx-background-color: transparent;
+    -fx-font-size: 18px;
+    -fx-cursor: hand;
+    -fx-text-fill: #475569;
+}
+
+.icon-nav-button:hover {
+    -fx-text-fill: #4f46e5;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
 }
 
 

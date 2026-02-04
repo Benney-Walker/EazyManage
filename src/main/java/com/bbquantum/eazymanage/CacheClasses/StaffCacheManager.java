@@ -13,7 +13,7 @@ public class StaffCacheManager {
 
     private LocalDateTime lastUpdatedTime;
 
-    private static final long CACHE_TTL_MINUTES = 60;
+    private static final long CACHE_TTL_MINUTES = 5;
 
     private StaffCacheManager() {}
 
