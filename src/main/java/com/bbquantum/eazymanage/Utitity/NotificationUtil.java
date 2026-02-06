@@ -57,7 +57,7 @@ public class NotificationUtil {
             // Auto hide
             PauseTransition stay = new PauseTransition(Duration.millis(DISPLAY_TIME));
 
-            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), toast);
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(500), toast);
             fadeOut.setFromValue(1);
             fadeOut.setToValue(0);
 

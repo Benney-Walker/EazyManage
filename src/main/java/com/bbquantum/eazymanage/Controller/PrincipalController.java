@@ -7,7 +7,7 @@ import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
 import com.bbquantum.eazymanage.DTO.Finance.FeesSummaryTable;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
-import com.bbquantum.eazymanage.DTO.Finance.StudentPaymentHistory;
+import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Institution.*;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.animation.FadeTransition;
@@ -145,11 +145,11 @@ public class PrincipalController implements Initializable {
     @FXML private Label studentBalanceLabel;
     @FXML private Label studentPaymentPercentageLabel;
     @FXML private ProgressBar studentPaymentProgressBar;
-    @FXML private TableView<StudentPaymentHistory> paymentHistoryTable;
-    @FXML private TableColumn<StudentPaymentHistory, String> paymentDateColumn;
-    @FXML private TableColumn<StudentPaymentHistory, String> paymentAmountColumn;
-    @FXML private TableColumn<StudentPaymentHistory, String> paymentPersonColumn;
-    @FXML private TableColumn<StudentPaymentHistory, String> paymentPersonContactColumn;
+    @FXML private TableView<PaymentHistory> paymentHistoryTable;
+    @FXML private TableColumn<PaymentHistory, String> paymentDateColumn;
+    @FXML private TableColumn<PaymentHistory, String> paymentAmountColumn;
+    @FXML private TableColumn<PaymentHistory, String> paymentPersonColumn;
+    @FXML private TableColumn<PaymentHistory, String> paymentPersonContactColumn;
     @FXML
     public VBox noStudentFoundPanel;
     //Entire class fees summary table
@@ -770,13 +770,13 @@ public class PrincipalController implements Initializable {
         String semesterId = selectedSemester.getSemesterId();
         utilityClass.processingButton(searchFeesHistoryBtn);
 
-        utilityClass.searchFeesReport(studentId, semesterId, gradeId,
+        utilityClass.fetchStudentPaymentRecords(studentId, semesterId, null,
                 () -> {
                     // On success
                     Platform.runLater(() -> {
                         utilityClass.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
                         utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
-                        displayFeeReport(utilityClass.report);
+                        displayFeeReport(utilityClass.paymentRecords);
                     });
                 },
                 () -> {
@@ -2099,16 +2099,15 @@ public class PrincipalController implements Initializable {
         staffDetailsPanel.setManaged(true);
     }
 
-    private void displayFeeReport(StudentFeesPaymentDisplay studentFeesPaymentDisplay) {
-        studentIdDisplayLabel.setText(studentFeesPaymentDisplay.getStudentId());
-        studentNameLabel.setText(studentFeesPaymentDisplay.getStudentName());
-        studentClassLabel.setText(studentFeesPaymentDisplay.getLevelName());
-        studentSemesterLabel.setText(studentFeesPaymentDisplay.getSemesterName());
+    private void displayFeeReport(StudentFeesPaymentDisplay data) {
+        studentIdDisplayLabel.setText(data.getStudentId());
+        studentNameLabel.setText(data.getStudentName());
+        studentClassLabel.setText(data.getLevelName());
+        studentSemesterLabel.setText(data.getSemesterName());
 
         // Get Fees Values
-        Double totalFees = Double.parseDouble(studentFeesPaymentDisplay.getTotalFeesAmount());
-        List<StudentPaymentHistory> studentPaymentHistory = studentFeesPaymentDisplay.getStudentPaymentHistory();
-        Double totalFeesPaid = calAmountPaid(studentPaymentHistory);
+        Double totalFees = Double.parseDouble(data.getTotalFeesAmount());
+        Double totalFeesPaid = Double.parseDouble(data.getTotalAmountPaid());
         double outStandingBalance = totalFees -  totalFeesPaid;
 
         studentTotalFeesLabel.setText(totalFees.toString());
@@ -2116,11 +2115,11 @@ public class PrincipalController implements Initializable {
         studentBalanceLabel.setText(Double.toString(outStandingBalance));
 
         Double percent = collectionPercentageCalc(totalFees, totalFeesPaid);
-        studentPaymentPercentageLabel.setText(percent.toString() + "%");
+        studentPaymentPercentageLabel.setText(percent + "%");
         studentPaymentProgressBar.setProgress(percent/100);
 
         //Populate the payment history table
-        paymentHistoryTable.getItems().setAll(studentPaymentHistory);
+        paymentHistoryTable.getItems().addAll(data.getPaymentHistory());
         feeReportPanel.setVisible(true);
         feeReportPanel.setManaged(true);
         noStudentFoundPanel.setVisible(false);
@@ -2128,9 +2127,9 @@ public class PrincipalController implements Initializable {
     }
 
     //Calculate total fees paid
-    private Double calAmountPaid(List<StudentPaymentHistory> studentPaymentHistory) {
+    private Double calAmountPaid(List<PaymentHistory> paymentHistory) {
         double totalFeesPaid = 0.0;
-        for (StudentPaymentHistory history : studentPaymentHistory) {
+        for (PaymentHistory history : paymentHistory) {
             double paidFee = Double.parseDouble(history.getAmountPaid());
             totalFeesPaid += paidFee;
         }

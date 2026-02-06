@@ -195,12 +195,12 @@
                         <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
                             <Button fx:id="addSemesterFeesToggleBtn"
-                                    text="ADD SEMESTER FEES"
+                                    text="ADD NEW PAYMENT"
                                     onAction="#showAddSemesterFeesCard"
                                     styleClass="action-button-primary"/>
 
                             <Button fx:id="updateFeesDetailsToggleBtn"
-                                    text="UPDATE FEES DETAILS"
+                                    text="UPDATE PAYMENT DETAILS"
                                     onAction="#showUpdateSemesterFeesCard"
                                     styleClass="action-button-primary"/>
                         </HBox>
@@ -330,7 +330,7 @@
                 </ScrollPane>
 
                 <!-- RECORD PAYMENT VIEW -->
-                <ScrollPane fx:id="recordNewPayment" visible="false" managed="false" fitToWidth="true"
+                <ScrollPane fx:id="manageFeesPaymentPayment" visible="false" managed="false" fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
                     <VBox alignment="TOP_CENTER" spacing="30" styleClass="content-padding">
@@ -339,76 +339,222 @@
                             <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #FEF3C7;">
                                 <Label text="💵" style="-fx-font-size: 24px;"/>
                             </StackPane>
-                            <Label text="RECORD PAYMENT" styleClass="header-title"/>
+                            <Label text="MANAGE PAYMENT RECORDS" styleClass="header-title"/>
                             <Label text="Log incoming tuition and school fees" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="600">
+                        <!-- 🔘 TOGGLE BUTTONS -->
+                        <HBox spacing="10" alignment="CENTER">
+                            <Button fx:id="addNewPaymentToggleBtn"
+                                    text="ADD NEW PAYMENT"
+                                    onAction="#showAddNewPaymentCard"
+                                    styleClass="action-button-primary"/>
 
-                            <VBox spacing="15">
-                                <Label text="Student Details" styleClass="section-header-blue"/>
-                                <VBox spacing="8">
-                                    <Label text="Student ID *" styleClass="input-label"/>
-                                    <TextField fx:id="studentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
+                            <Button fx:id="updatePaymentDetailsToggleBtn"
+                                    text="UPDATE PAYMENT DETAILS"
+                                    onAction="#showPaymentDetailsCard"
+                                    styleClass="action-button-primary"/>
+                        </HBox>
+
+                        <StackPane maxWidth="Infinity">
+
+                            <VBox fx:id="newFeesPaymentCard" spacing="25" styleClass="panel-card" maxWidth="600">
+
+                                <VBox spacing="15">
+                                    <Label text="Student Details" styleClass="section-header-blue"/>
+
+                                    <HBox spacing="15">
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Student ID *" styleClass="input-label"/>
+                                            <TextField fx:id="newPaymentStudentIdField"
+                                                       promptText="Enter Student ID"
+                                                       onKeyReleased="#handleCheckStudentName"
+                                                       styleClass="modern-input"/>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Semester *" styleClass="input-label"/>
+                                            <ComboBox fx:id="newPaymentSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                        </VBox>
+                                    </HBox>
                                 </VBox>
 
-                                <HBox spacing="15">
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                        <Label text="Semester *" styleClass="input-label"/>
-                                        <ComboBox fx:id="recordPaymentSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                <Separator styleClass="content-separator"/>
+
+                                <VBox spacing="15">
+                                    <Label text="Transaction Details" styleClass="section-header-blue"/>
+
+                                    <VBox spacing="8">
+                                        <Label text="Amount Paid (GH₵) *" styleClass="input-label"/>
+                                        <TextField fx:id="newPaymentAmountField" promptText="e.g. 2000.00" styleClass="modern-input"/>
                                     </VBox>
 
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                        <Label text="Class/Level *" styleClass="input-label"/>
-                                        <ComboBox fx:id="recordPaymentClassComboBox" promptText="Select Level" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
-                                </HBox>
-                            </VBox>
+                                    <GridPane hgap="15" vgap="15">
+                                        <columnConstraints>
+                                            <ColumnConstraints percentWidth="60"/>
+                                            <ColumnConstraints percentWidth="40"/>
+                                        </columnConstraints>
 
-                            <Separator styleClass="content-separator"/>
+                                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                            <Label text="Person Who Paid *" styleClass="input-label"/>
+                                            <TextField fx:id="newPaymentPayerNameField" promptText="Parent/Guardian Name" styleClass="modern-input"/>
+                                        </VBox>
 
-                            <VBox spacing="15">
-                                <Label text="Transaction Details" styleClass="section-header-blue"/>
-
-                                <VBox spacing="8">
-                                    <Label text="Amount Paid (GH₵) *" styleClass="input-label"/>
-                                    <TextField fx:id="amountPaidField" promptText="e.g. 2000.00" styleClass="modern-input"/>
+                                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                            <Label text="Payer's Phone *" styleClass="input-label"/>
+                                            <TextField fx:id="newPaymentPayerPhoneField" promptText="0XXXXXXXXX" styleClass="modern-input"/>
+                                        </VBox>
+                                    </GridPane>
                                 </VBox>
 
-                                <GridPane hgap="15" vgap="15">
-                                    <columnConstraints>
-                                        <ColumnConstraints percentWidth="60"/>
-                                        <ColumnConstraints percentWidth="40"/>
-                                    </columnConstraints>
+                                <Separator styleClass="content-separator"/>
 
-                                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                        <Label text="Person Who Paid *" styleClass="input-label"/>
-                                        <TextField fx:id="payerNameField" promptText="Parent/Guardian Name" styleClass="modern-input"/>
-                                    </VBox>
-
-                                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                        <Label text="Payer's Phone *" styleClass="input-label"/>
-                                        <TextField fx:id="payerPhoneField" promptText="0XXXXXXXXX" styleClass="modern-input"/>
-                                    </VBox>
-                                </GridPane>
-                            </VBox>
-
-                            <Separator styleClass="content-separator"/>
-
-                            <HBox spacing="15" alignment="CENTER">
-                                <Button fx:id="saveFeesPaymentBtn" text="SAVE PAYMENT" onAction="#handleSavePayment"
-                                        styleClass="action-button-mint" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                            </HBox>
-
-                            <VBox spacing="8" styleClass="alert-panel-warning">
-                                <HBox spacing="8" alignment="CENTER_LEFT">
-                                    <Label text="⚠️" style="-fx-font-size: 14px;"/>
-                                    <Label text="Important Note" style="-fx-font-weight: bold; -fx-text-fill: #92400E; -fx-font-size: 12px;"/>
+                                <HBox spacing="15" alignment="CENTER">
+                                    <Button fx:id="saveFeesPaymentBtn"
+                                            text="SAVE PAYMENT"
+                                            onAction="#handleSavePayment"
+                                            styleClass="action-button-mint"
+                                            HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
                                 </HBox>
-                                <Label text="• Payments are timestamped automatically. Ensure the Student ID is correct to avoid misallocation of funds."
-                                       styleClass="login-footer-label" style="-fx-text-fill: #92400E;" wrapText="true"/>
+
+                                <VBox spacing="8" styleClass="alert-panel-warning">
+                                    <HBox spacing="8" alignment="CENTER_LEFT">
+                                        <Label text="⚠️" style="-fx-font-size: 14px;"/>
+                                        <Label text="Important Note" style="-fx-font-weight: bold; -fx-text-fill: #92400E; -fx-font-size: 12px;"/>
+                                    </HBox>
+                                    <Label text="• Payments are timestamped automatically. Ensure the Student ID is correct to avoid misallocation of funds."
+                                           styleClass="login-footer-label" style="-fx-text-fill: #92400E;" wrapText="true"/>
+                                </VBox>
                             </VBox>
-                        </VBox>
+
+
+                            <VBox fx:id="updateFeesPaymentCard" spacing="25" styleClass="panel-card" maxWidth="Infinity">
+
+                                <VBox fx:id="paymentSearchArea" spacing="15">
+                                    <Label text="Student Details" styleClass="section-header-blue"/>
+                                    <HBox spacing="15">
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Student ID *" styleClass="input-label"/>
+                                            <TextField fx:id="searchPaymentStudentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Semester *" styleClass="input-label"/>
+                                            <ComboBox fx:id="searchPaymentSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <Button fx:id="fetchPaymentDetailsBtn"
+                                            text="FETCH PAYMENT RECORDS"
+                                            onAction="#handleFetchPayment"
+                                            styleClass="action-button-primary"/>
+                                </VBox>
+
+                                <HBox spacing="25">
+
+                                    <VBox fx:id="paymentRecordsForStudent"
+                                          VBox.vgrow="ALWAYS"
+                                          visible="false"
+                                          managed="false">
+
+                                        <TableView fx:id="paymentRecordsTableView"
+                                                   styleClass="modern-table"
+                                                   prefHeight="350">
+                                            <columns>
+                                                <TableColumn text="DATE" fx:id="paymentRecordDateCol" prefWidth="150"/>
+                                                <TableColumn text="STUDENT ID" fx:id="recordStudentIdCol" prefWidth="120"/>
+                                                <TableColumn text="STUDENT NAME" fx:id="recordStudentNameCol" prefWidth="200"/>
+                                                <TableColumn text="AMOUNT (GH₵)" fx:id="recordAmountCol" prefWidth="130"/>
+                                                <TableColumn text="PAID BY" fx:id="recordPayerCol" prefWidth="150"/>
+                                                <TableColumn text="CONTACT" fx:id="recordPayerContactCol" prefWidth="100"/>
+                                            </columns>
+                                            <placeholder>
+                                                <Label text="No transactions recorded for this student." style="-fx-text-fill: #94A3B8;"/>
+                                            </placeholder>
+                                        </TableView>
+                                        <VBox alignment="CENTER_LEFT">
+                                            <Button text="CLOSE TABLE"
+                                                    onAction="#handleCloseRecordsTable"
+                                                    styleClass="action-button-red"/>
+                                        </VBox>
+                                    </VBox>
+
+                                    <VBox fx:id="paymentDetailsArea"
+                                          spacing="25"
+                                          VBox.vgrow="ALWAYS"
+                                          visible="false"
+                                          managed="false"
+                                          maxWidth="600">
+
+                                        <VBox spacing="15">
+                                            <VBox spacing="8" alignment="CENTER_LEFT">
+                                                <Label text="TX ID:" styleClass="section-header-blue"/>
+                                                <Label fx:id="transactionIdLabel" text=" "
+                                                       styleClass="section-title-small"/>
+                                            </VBox>
+                                            <Label text="Student Details" styleClass="section-header-blue"/>
+                                            <HBox spacing="15">
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <Label text="Student ID *" styleClass="input-label"/>
+                                                    <TextField fx:id="updatePaymentStudentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
+                                                </VBox>
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                    <Label text="Semester *" styleClass="input-label"/>
+                                                    <ComboBox fx:id="updatePaymentSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                                </VBox>
+                                            </HBox>
+                                        </VBox>
+
+                                        <Separator styleClass="content-separator"/>
+
+                                        <VBox spacing="15">
+                                            <Label text="Transaction Details" styleClass="section-header-blue"/>
+
+                                            <VBox spacing="8">
+                                                <Label text="Amount Paid (GH₵) *" styleClass="input-label"/>
+                                                <TextField fx:id="updatePaymentAmountField" promptText="e.g. 2000.00" styleClass="modern-input"/>
+                                            </VBox>
+
+                                            <GridPane hgap="15" vgap="15">
+                                                <columnConstraints>
+                                                    <ColumnConstraints percentWidth="60"/>
+                                                    <ColumnConstraints percentWidth="40"/>
+                                                </columnConstraints>
+
+                                                <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                                    <Label text="Person Who Paid *" styleClass="input-label"/>
+                                                    <TextField fx:id="updatePaymentPayerNameField" promptText="Parent/Guardian Name" styleClass="modern-input"/>
+                                                </VBox>
+
+                                                <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                                    <Label text="Payee's Phone *" styleClass="input-label"/>
+                                                    <TextField fx:id="updatePaymentPayerPhoneField" promptText="0XXXXXXXXX" styleClass="modern-input"/>
+                                                </VBox>
+                                            </GridPane>
+                                        </VBox>
+
+                                        <Separator styleClass="content-separator"/>
+
+                                        <HBox spacing="15" alignment="CENTER">
+                                            <Button fx:id="updateFeesPaymentBtn" text="SAVE CHANGES" onAction="#handleUpdatePayment"
+                                                    styleClass="action-button-primary" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+
+                                            <Button fx:id="deleteFeesPaymentBtn" text="DELETE RECORD" onAction="#handleDeletePayment"
+                                                    styleClass="action-button-red" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                        </HBox>
+
+                                        <VBox spacing="8" styleClass="alert-panel-warning">
+                                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                                <Label text="⚠️" style="-fx-font-size: 14px;"/>
+                                                <Label text="Important Note" style="-fx-font-weight: bold; -fx-text-fill: #92400E; -fx-font-size: 12px;"/>
+                                            </HBox>
+                                            <Label text="• Payments are timestamped automatically. Ensure the Student ID is correct to avoid misallocation of funds."
+                                                   styleClass="login-footer-label" style="-fx-text-fill: #92400E;" wrapText="true"/>
+                                        </VBox>
+
+                                    </VBox>
+
+                                </HBox>
+                            </VBox>
+                        </StackPane>
                     </VBox>
                 </ScrollPane>
 
@@ -424,117 +570,230 @@
                                 <Label text="🔍" style="-fx-font-size: 24px;"/>
                             </StackPane>
                             <Label text="PAYMENT AUDIT &amp; REPORTS" styleClass="header-title"/>
-                            <Label text="Search student financial history and generate statements" styleClass="header-subtitle"/>
+                            <Label text="Search student or Grade's financial history and generate statements" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="900">
-                            <Label text="Filter Criteria" styleClass="section-header-blue"/>
+                        <!-- 🔘 TOGGLE BUTTONS -->
+                        <HBox spacing="10" alignment="CENTER">
+                            <Button fx:id="studentPayReportToggleBtn"
+                                    text="STUDENT REPORT"
+                                    onAction="#showFetchStudentPayReportCard"
+                                    styleClass="action-button-primary"/>
 
-                            <GridPane hgap="15" vgap="15">
-                                <columnConstraints>
-                                    <ColumnConstraints percentWidth="40"/>
-                                    <ColumnConstraints percentWidth="30"/>
-                                    <ColumnConstraints percentWidth="30"/>
-                                </columnConstraints>
+                            <Button fx:id="gradePayReportToggleBtn"
+                                    text="GRADE REPORT"
+                                    onAction="#showFetchGradePayReportCard"
+                                    styleClass="action-button-primary"/>
+                        </HBox>
 
-                                <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                    <Label text="Student ID *" styleClass="input-label"/>
-                                    <TextField fx:id="reportSearchStudentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
-                                </VBox>
+                        <StackPane maxWidth="900">
 
-                                <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                    <Label text="Semester" styleClass="input-label"/>
-                                    <ComboBox fx:id="reportSearchSemesterComboBox" promptText="All Semesters" maxWidth="Infinity" styleClass="modern-combo"/>
-                                </VBox>
+                            <!-- Student Payment Records Search -->
+                            <VBox fx:id="studentPaymentRecordsCard" spacing="25" styleClass="panel-card" maxWidth="900">
+                                <Label text="Filter Criteria" styleClass="section-header-blue"/>
 
-                                <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                                    <Label text="Class/Level" styleClass="input-label"/>
-                                    <ComboBox fx:id="reportSearchClassComboBox" promptText="All Classes" maxWidth="Infinity" styleClass="modern-combo"/>
-                                </VBox>
-                            </GridPane>
+                                <GridPane hgap="15" vgap="15">
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="40"/>
+                                        <ColumnConstraints percentWidth="30"/>
+                                        <ColumnConstraints percentWidth="30"/>
+                                    </columnConstraints>
 
-                            <HBox spacing="15" alignment="CENTER_LEFT">
-                                <Button fx:id="searchFeesReportBtn" text="🔍 Search Report" onAction="#handleSearchFeesReport"
-                                        styleClass="action-button-primary" style="-fx-padding: 12 40;"/>
-                                <Button text="Reset Filters" onAction="#handleClear"
-                                        styleClass="text-button-blue" style="-fx-font-size: 14px;"/>
-                            </HBox>
-
-                            <Separator styleClass="content-separator"/>
-
-                            <VBox fx:id="reportResponsePanel" spacing="25" visible="false" managed="false">
-
-                                <HBox alignment="CENTER_LEFT" spacing="20" styleClass="alert-panel-info" style="-fx-padding: 20;">
-                                    <StackPane styleClass="avatar-circle-small" style="-fx-min-width: 60; -fx-min-height: 60;">
-                                        <Label text="🎓" style="-fx-font-size: 30px;"/>
-                                    </StackPane>
-                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                        <Label fx:id="reportResponseStudentNameLabel" text="Student Name" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
-                                        <HBox spacing="15">
-                                            <Label fx:id="reportResponseStudentIdLabel" text="ID: STU001" styleClass="sidebar-school-name"/>
-                                            <Label text="|" style="-fx-text-fill: #CBD5E1;"/>
-                                            <Label fx:id="reportResponseClassLabel" text="Class: Form 1A" styleClass="sidebar-school-name"/>
-                                            <Label text="|" style="-fx-text-fill: #CBD5E1;"/>
-                                            <Label fx:id="reportResponseSemesterLabel" text="Semester: 1st" styleClass="sidebar-school-name"/>
-                                        </HBox>
+                                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Label text="Student ID *" styleClass="input-label"/>
+                                        <TextField fx:id="reportSearchStudentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
                                     </VBox>
+
+                                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Label text="Semester" styleClass="input-label"/>
+                                        <ComboBox fx:id="reportSearchSemesterComboBox"
+                                                  promptText="Selected semester" maxWidth="Infinity" styleClass="modern-combo"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                        <Label text="Select Grade" styleClass="input-label"/>
+                                        <ComboBox fx:id="reportSearchClassComboBox"
+                                                  promptText="Select Grade"
+                                                  maxWidth="Infinity"
+                                                  styleClass="modern-combo"/>
+                                    </VBox>
+                                </GridPane>
+
+                                <HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Button fx:id="searchFeesReportBtn"
+                                            text="FETCH RECORDS"
+                                            onAction="#handleSearchFeesReport"
+                                            styleClass="action-button-primary"/>
+
+                                    <Button text="RESET FILTERS"
+                                            onAction="#handleClearPayRecordsFilters"
+                                            styleClass="action-button-red"/>
                                 </HBox>
 
-                                <HBox spacing="20">
-                                    <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                                        <Label text="Total Fees" styleClass="card-label"/>
-                                        <Label fx:id="reportResponseTotalFeeLabel" text="GH₵ 0.00" styleClass="card-value"/>
-                                    </VBox>
+                                <Separator styleClass="content-separator"/>
 
-                                    <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                                        <Label text="Total Paid" styleClass="card-label"/>
-                                        <Label fx:id="reportResponseAmountPaidLabel" text="GH₵ 0.00" styleClass="card-value-mint"/>
-                                    </VBox>
+                                <VBox fx:id="reportResponsePanel" spacing="25" visible="false" managed="false">
 
-                                    <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                                        <Label text="Outstanding Balance" styleClass="card-label"/>
-                                        <Label fx:id="reportResponseBalanceLabel" text="GH₵ 0.00" styleClass="card-value-red"/>
-                                    </VBox>
-                                </HBox>
+                                    <HBox alignment="CENTER_LEFT" spacing="20" styleClass="alert-panel-info" style="-fx-padding: 20;">
+                                        <StackPane styleClass="avatar-circle-small" style="-fx-min-width: 60; -fx-min-height: 60;">
+                                            <Label text="🎓" style="-fx-font-size: 30px;"/>
+                                        </StackPane>
+                                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                            <Label fx:id="reportResponseStudentNameLabel" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                                            <HBox spacing="15">
+                                                <Label fx:id="reportResponseStudentIdLabel" styleClass="sidebar-school-name"/>
+                                                <Label text="|" style="-fx-text-fill: #CBD5E1;"/>
 
-                                <VBox spacing="10" styleClass="stat-card">
-                                    <HBox alignment="CENTER_LEFT" spacing="10">
-                                        <Label text="Payment Completion:" styleClass="card-label"/>
-                                        <Label fx:id="reportResponsePercentageLabel" text="0%" style="-fx-font-weight: bold; -fx-text-fill: -accent-mint;"/>
+                                                <Label fx:id="reportResponseClassLabel" styleClass="sidebar-school-name"/>
+                                                <Label text="|" style="-fx-text-fill: #CBD5E1;"/>
+
+                                                <Label fx:id="reportResponseSemesterLabel" styleClass="sidebar-school-name"/>
+                                            </HBox>
+                                        </VBox>
                                     </HBox>
-                                    <ProgressBar fx:id="reportResponseProgressBar" progress="0.0" maxWidth="Infinity" styleClass="modern-progress-bar" style="-fx-pref-height: 12;"/>
-                                </VBox>
 
-                                <VBox spacing="15">
-                                    <Label text="Transaction Ledger" styleClass="section-title"/>
-                                    <TableView fx:id="paymentHistoryTable" styleClass="modern-table" prefHeight="300">
-                                        <columns>
-                                            <TableColumn text="Date" fx:id="dateColumn" prefWidth="130"/>
-                                            <TableColumn text="Amount" fx:id="amountColumn" prefWidth="130"/>
-                                            <TableColumn text="New Balance" fx:id="feesBalanceColumn" prefWidth="130"/>
-                                            <TableColumn text="Payer Name" fx:id="payerNameColumn" prefWidth="180"/>
-                                            <TableColumn text="Contact" fx:id="payerPhoneColumn" prefWidth="140"/>
-                                        </columns>
-                                        <placeholder>
-                                            <Label text="No individual payments found for this criteria."/>
-                                        </placeholder>
-                                    </TableView>
-                                </VBox>
+                                    <HBox spacing="20">
+                                        <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label text="Total Fees" styleClass="card-label"/>
+                                            <Label fx:id="reportResponseTotalFeeLabel" text="GH₵ 0.00" styleClass="card-value"/>
+                                        </VBox>
 
-                                <HBox spacing="15" alignment="CENTER_RIGHT">
-                                    <Button fx:id="printFeesReportBtn" text="Print Statement" onAction="#handlePrint" styleClass="text-button-blue"/>
-                                    <Button text="Export Excel" onAction="#handleExport" styleClass="action-button-mint"/>
+                                        <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label text="Total Paid" styleClass="card-label"/>
+                                            <Label fx:id="reportResponseAmountPaidLabel" text="GH₵ 0.00" styleClass="card-value-mint"/>
+                                        </VBox>
+
+                                        <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label text="Outstanding Balance" styleClass="card-label"/>
+                                            <Label fx:id="reportResponseBalanceLabel" text="GH₵ 0.00" styleClass="card-value-red"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <VBox spacing="10" styleClass="stat-card">
+                                        <HBox alignment="CENTER_LEFT" spacing="10">
+                                            <Label text="Payment Completion:" styleClass="card-label"/>
+                                            <Label fx:id="reportResponsePercentageLabel" text="0%" style="-fx-font-weight: bold; -fx-text-fill: -accent-mint;"/>
+                                        </HBox>
+                                        <ProgressBar fx:id="reportResponseProgressBar" progress="0.0" maxWidth="Infinity" styleClass="modern-progress-bar" style="-fx-pref-height: 12;"/>
+                                    </VBox>
+
+                                    <VBox spacing="15">
+                                        <Label text="Transaction Ledger" styleClass="section-title"/>
+                                        <TableView fx:id="paymentHistoryTable" styleClass="modern-table" prefHeight="300">
+                                            <columns>
+                                                <TableColumn text="DATE" fx:id="dateColumn" prefWidth="130"/>
+                                                <TableColumn text="AMOUNT" fx:id="amountColumn" prefWidth="130"/>
+                                                <TableColumn text="NEW BALANCE" fx:id="feesBalanceColumn" prefWidth="130"/>
+                                                <TableColumn text="Payer Name" fx:id="payerNameColumn" prefWidth="180"/>
+                                                <TableColumn text="Contact" fx:id="payerPhoneColumn" prefWidth="140"/>
+                                            </columns>
+                                        </TableView>
+                                    </VBox>
+
+                                    <HBox spacing="15" alignment="CENTER_RIGHT">
+                                        <Button fx:id="printStudentPayReportBtn"
+                                                text="EXPORT TO EXCEL"
+                                                onAction="#handlePrintStudentPayRecords"
+                                                styleClass="text-button-blue"/>
+                                    </HBox>
+                                </VBox>
+                            </VBox>
+
+                            <!-- Grade payment records search -->
+                            <VBox fx:id="GradePaymentRecordsCard" spacing="25" styleClass="panel-card" maxWidth="900">
+                                <Label text="Filter Criteria" styleClass="section-header-blue"/>
+
+                                <GridPane hgap="15" vgap="15">
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="40"/>
+                                        <ColumnConstraints percentWidth="30"/>
+                                        <ColumnConstraints percentWidth="30"/>
+                                    </columnConstraints>
+
+                                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Label text="Semester" styleClass="input-label"/>
+                                        <ComboBox fx:id="gradePaymentsReportSemesterComboBox" promptText="All Semesters" maxWidth="Infinity" styleClass="modern-combo"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                        <Label text="Class/Level" styleClass="input-label"/>
+                                        <ComboBox fx:id="gradePaymentsReportClassComboBox" promptText="All Classes" maxWidth="Infinity" styleClass="modern-combo"/>
+                                    </VBox>
+                                </GridPane>
+
+                                <HBox spacing="15" alignment="CENTER_LEFT">
+                                    <Button fx:id="gradePaymentsReportBtn" text="FETCH PAYMENT REPORTS" onAction="#handleSearchFeesReport"
+                                            styleClass="action-button-primary" style="-fx-padding: 12 40;"/>
+
+                                    <Button text="RESET FILTERS" onAction="#handleClearPayRecordsFilters"
+                                            styleClass="text-button-blue" style="-fx-font-size: 14px;"/>
                                 </HBox>
-                            </VBox>
 
-                            <VBox fx:id="noResponsePanel" spacing="15" alignment="CENTER" visible="false" managed="false" styleClass="alert-panel-warning">
-                                <Label text="⚠️" style="-fx-font-size: 32px;"/>
-                                <VBox alignment="CENTER" spacing="5">
-                                    <Label text="No Records Found" style="-fx-font-weight: bold; -fx-text-fill: #92400E;"/>
-                                    <Label text="We couldn't find any financial records matching those filters." style="-fx-text-fill: #92400E; -fx-font-size: 12px;"/>
+                                <Separator styleClass="content-separator"/>
+
+                                <VBox fx:id="gradePaymentsReportResponsePanel" spacing="25" visible="false" managed="false">
+
+                                    <HBox alignment="CENTER_LEFT" spacing="20" styleClass="alert-panel-info" style="-fx-padding: 20;">
+                                        <StackPane styleClass="avatar-circle-small" style="-fx-min-width: 60; -fx-min-height: 60;">
+                                            <Label text="🎓" style="-fx-font-size: 30px;"/>
+                                        </StackPane>
+                                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                            <Label fx:id="gradePaymentsReportNameLabel" text="Grade Name" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                                            <HBox spacing="15">
+                                                <Label fx:id="gradePaymentsReportIdLabel" styleClass="sidebar-school-name"/>
+                                                <Label fx:id="gradePaymentsReportSemesterLabel" styleClass="sidebar-school-name"/>
+                                            </HBox>
+                                        </VBox>
+                                    </HBox>
+
+                                    <HBox spacing="20">
+                                        <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label text="Total Fees" styleClass="card-label"/>
+                                            <Label fx:id="gradePaymentsReportTotalFeeLabel" text="GH₵ 0.00" styleClass="card-value"/>
+                                        </VBox>
+
+                                        <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label text="Total Paid" styleClass="card-label"/>
+                                            <Label fx:id="gradePaymentsReportAmountPaidLabel" text="GH₵ 0.00" styleClass="card-value-mint"/>
+                                        </VBox>
+
+                                        <VBox spacing="5" styleClass="stat-card" HBox.hgrow="ALWAYS">
+                                            <Label text="Outstanding Balance" styleClass="card-label"/>
+                                            <Label fx:id="gradePaymentsReportBalanceLabel" text="GH₵ 0.00" styleClass="card-value-red"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <VBox spacing="10" styleClass="stat-card">
+                                        <HBox alignment="CENTER_LEFT" spacing="10">
+                                            <Label text="Payment Completion:" styleClass="card-label"/>
+                                            <Label fx:id="gradePaymentsReportPercentageLabel" text="0%" style="-fx-font-weight: bold; -fx-text-fill: -accent-mint;"/>
+                                        </HBox>
+                                        <ProgressBar fx:id="gradePaymentsReportProgressBar" progress="0.0" maxWidth="Infinity" styleClass="modern-progress-bar" style="-fx-pref-height: 12;"/>
+                                    </VBox>
+
+                                    <VBox spacing="15">
+                                        <Label text="Transaction Ledger" styleClass="section-title"/>
+                                        <TableView fx:id="gradePaymentsReportHistoryTable" styleClass="modern-table" prefHeight="300">
+                                            <columns>
+                                                <TableColumn text="STUDENT ID" fx:id="studentIdColumn" prefWidth="130"/>
+                                                <TableColumn text="STUDENT NAME" fx:id="studentNameColumn" prefWidth="130"/>
+                                                <TableColumn text="FEES AMOUNT" fx:id="amountToPayColumn" prefWidth="130"/>
+                                                <TableColumn text="AMOUNT PAID" fx:id="amountPaidColumn" prefWidth="180"/>
+                                                <TableColumn text="OUTSTANDING" fx:id="outstandingAmountColumn" prefWidth="140"/>
+                                            </columns>
+                                        </TableView>
+                                    </VBox>
+
+                                    <HBox spacing="15" alignment="CENTER_RIGHT">
+                                        <Button fx:id="gradePaymentsExportReportBtn"
+                                                text="EXPORT TO EXCEL"
+                                                onAction="#handlePrintStudentPayRecords"
+                                                styleClass="text-button-blue"/>
+                                    </HBox>
                                 </VBox>
                             </VBox>
-                        </VBox>
+
+                        </StackPane>
                     </VBox>
                 </ScrollPane>
 

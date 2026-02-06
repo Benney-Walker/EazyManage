@@ -17,6 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -67,7 +68,7 @@ public class UtilityClass {
     public final String API_BASE_URL_V2 = "api/v2";
 
     // Stores retrieved fees report from backend
-    public StudentFeesPaymentDisplay report;
+    public StudentFeesPaymentDisplay paymentRecords;
     // Store student results
     public StudentResults studentResults;
     // Stores student information for update
@@ -1221,8 +1222,8 @@ public class UtilityClass {
         new Thread(task).start();
     }
 
-    public void searchFeesReport(String studentId, String semesterId, String gradeId,
-                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+    public void fetchStudentPaymentRecords(String studentId, String semesterId, String gradeId,
+                                           Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<StudentFeesPaymentDisplay> task = new Task<>() {
             @Override
             protected StudentFeesPaymentDisplay call() throws Exception {
@@ -1238,6 +1239,7 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
+                    System.out.println("Response: " + response.body());
                     return gson.fromJson(response.body(), StudentFeesPaymentDisplay.class);
                 }
 
@@ -1248,8 +1250,8 @@ public class UtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            report = task.getValue();
-            if (report != null) {
+            paymentRecords = task.getValue();
+            if (paymentRecords != null) {
                 successMessageContainer = "Successfully loaded report";
                 onSuccess.run();
                 return;
@@ -1270,6 +1272,7 @@ public class UtilityClass {
                 return;
             }
 
+            errorMessageContainer = "Could not fetch report";
             onFailure.run();
         });
 
@@ -1798,7 +1801,7 @@ public class UtilityClass {
         new Thread(task).start();
     }
 
-    public void addNewFeesPayment(String studentId, String semesterId, String gradeId,
+    public void addNewFeesPayment(String studentId, String semesterId,
                                   String amountPaid, String payerName, String payerPhone,
                                   Runnable onSuccess,  Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
@@ -1809,7 +1812,6 @@ public class UtilityClass {
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", studentId);
                 requestBody.addProperty("semesterId", semesterId);
-                requestBody.addProperty("gradeId", gradeId);
                 requestBody.addProperty("amountPaid", amountPaid);
                 requestBody.addProperty("payerName", payerName);
                 requestBody.addProperty("payerPhone", payerPhone);
@@ -2967,6 +2969,230 @@ public class UtilityClass {
         new Thread(task).start();
     }
 
+    public void fetchPaymentRecord(String studentId, String semesterId,
+                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        Type listType = new TypeToken<List<StudentPaymentRecords>>() {}.getType();
+
+        Task<List<StudentPaymentRecords>> task = new Task<>() {
+            @Override
+            protected List<StudentPaymentRecords> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/fetch-payment-records/"
+                        + studentId + "/" + semesterId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), listType);
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            financeController.studentPaymentRecords = task.getValue();
+            if (financeController.studentPaymentRecords == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = "Payment records fetched successfully";
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not fetch payment records";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void deletePaymentRecord(String transactionId,
+                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/delete-payment-record/"
+                        + transactionId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .DELETE()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = response;
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not delete record";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void updatePaymentDetails(StudentPaymentRecords update,
+                                     Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/update-payment-details";
+
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("paymentId", update.getPaymentId());
+                requestBody.addProperty("dateOfPayment", update.getDateOfPayment());
+                requestBody.addProperty("studentId", update.getStudentId());
+                requestBody.addProperty("studentName", update.getStudentName());
+                requestBody.addProperty("amount", update.getAmount());
+                requestBody.addProperty("semesterId", update.getSemesterId());
+                requestBody.addProperty("payerName", update.getPayerName());
+                requestBody.addProperty("payerContact", update.getPayerContact());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = response;
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not update payment records";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void getStudentName(String studentId,
+                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/get-student-name/" + studentId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = response;
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not get Student name";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
     private void saveSubjectListToFile(List<PrintLevelSubjects> subjects, File file, String levelName) throws Exception {
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
             // Header
@@ -2992,6 +3218,60 @@ public class UtilityClass {
             writer.println("Generated on: " + LocalDate.now());
         }
     }
+
+    public void saveStudentPayRecordsListToFile(List<PaymentHistory> records,
+                                                 File file,
+                                                 String levelName,
+                                                 String semesterName,
+                                                 String studentName,
+                                                 String studentId) throws Exception {
+
+        try (PrintWriter writer = new PrintWriter(
+                new BufferedWriter(new FileWriter(file, false)))) {
+
+            // Header
+            writer.println("===============================================================");
+            writer.println("                    STUDENT PAYMENT RECORDS                    ");
+            writer.println("===============================================================");
+            writer.println("STUDENT ID : " + studentId);
+            writer.println("STUDENT NAME : " + studentName);
+            writer.println("GRADE : " + levelName);
+            writer.println("SEMESTER : " + semesterName);
+            writer.println("---------------------------------------------------------------");
+
+            // Column titles
+            writer.println(String.format(
+                    "%-4s | %-12s | %-10s | %-10s | %-20s | %-15s",
+                    "No",
+                    "Date",
+                    "Amount",
+                    "Balance",
+                    "Payer",
+                    "Contact"
+            ));
+
+            writer.println("---------------------------------------------------------------");
+
+            // Data rows
+            int count = 1;
+            for (PaymentHistory record : records) {
+                writer.println(String.format(
+                        "%-4d | %-12s | %-10s | %-10s | %-20s | %-15s",
+                        count++,
+                        record.getDateOfPayment(),
+                        record.getAmountPaid(),
+                        record.getFeesBalance(),
+                        record.getPersonWhoPaid(),
+                        record.getContactInfo()
+                ));
+            }
+
+            writer.println("---------------------------------------------------------------");
+            writer.println("Total Transactions: " + records.size());
+            writer.println("Generated on: " + LocalDate.now());
+        }
+    }
+
 
     private void saveStudentListToFile(List<StudentListPrint> students, File file, String levelName) throws Exception {
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
@@ -3064,7 +3344,7 @@ public class UtilityClass {
         feesProgressBarFromBackend = 0.0;
 
         // Clear reports / temp objects
-        report = null;
+        paymentRecords = null;
     }
 
 }
