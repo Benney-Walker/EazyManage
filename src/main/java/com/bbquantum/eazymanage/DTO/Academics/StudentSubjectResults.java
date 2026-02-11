@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.DTO.Academics;
 
-public class StudentResultsSubject {
+public class StudentSubjectResults {
     private String subjectName;
 
     private String score;
@@ -9,7 +9,7 @@ public class StudentResultsSubject {
 
     private String remark;
 
-    public StudentResultsSubject(String subjectName, String score, String grade, String remark) {
+    public StudentSubjectResults(String subjectName, String score, String grade, String remark) {
         this.subjectName = subjectName;
         this.score = score;
         this.grade = grade;

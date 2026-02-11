@@ -34,7 +34,7 @@ public class AuthController {
 
     /* ================= BACKEND CONFIG ================= */
 
-    private static final String LOGIN_BASE_URL = "http://localhost:8080/api/v1/auth";
+    private static final String LOGIN_BASE_URL = "https://eazymanagesoftware.up.railway.app/api/v1/auth";
     private static final String LOGIN_ENDPOINT = "/staff-login";
 
     private static final String SUBSCRIBE_ENDPOINT = "/school-subscription";
@@ -338,7 +338,7 @@ public class AuthController {
                     break;
 
                 default:
-                    showError("You are not allowed to access this system " + role);
+                    showError("Staff not allowed on system " + role);
                     return;
             }
 

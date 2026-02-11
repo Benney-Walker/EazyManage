@@ -42,6 +42,9 @@ public class FinanceController implements Initializable {
     //Hold Payment records
     public List<StudentPaymentRecords> studentPaymentRecords;
 
+    //Holds grade payment Records
+    public List<GradeFeesReport> gradeFeesReport;
+
     //Navigation Side
     @FXML public StackPane notification;
     @FXML public Label versionLabel;
@@ -141,6 +144,7 @@ public class FinanceController implements Initializable {
     @FXML private Button gradePayReportToggleBtn;
 
     @FXML private VBox studentPaymentRecordsCard;
+    @FXML private VBox studentPaymentRecordsArea;
     @FXML private TextField reportSearchStudentIdField;
     @FXML private ComboBox<SemesterCaching> reportSearchSemesterComboBox;
     @FXML private ComboBox<GradeCaching> reportSearchClassComboBox;
@@ -164,7 +168,8 @@ public class FinanceController implements Initializable {
     @FXML private TableColumn<PaymentHistory, String> payerPhoneColumn;
     @FXML private Button printStudentPayReportBtn;
 
-    @FXML private VBox GradePaymentRecordsCard;
+    @FXML private VBox gradePaymentRecordsCard;
+    @FXML private VBox gradePaymentRecordsSearchArea;
     @FXML private ComboBox<SemesterCaching> gradePaymentsReportSemesterComboBox;
     @FXML private ComboBox<GradeCaching> gradePaymentsReportClassComboBox;
     @FXML private Button gradePaymentsReportBtn;
@@ -178,12 +183,12 @@ public class FinanceController implements Initializable {
     @FXML private Label gradePaymentsReportBalanceLabel;
     @FXML private Label gradePaymentsReportPercentageLabel;
     @FXML private ProgressBar gradePaymentsReportProgressBar;
-    @FXML private TableView<PaymentHistory> gradePaymentsReportHistoryTable;
-    @FXML private TableColumn<PaymentHistory, String> studentIdColumn;
-    @FXML private TableColumn<PaymentHistory, String> studentNameColumn;
-    @FXML private TableColumn<PaymentHistory, String> amountToPayColumn;
-    @FXML private TableColumn<PaymentHistory, String> amountPaidColumn;
-    @FXML private TableColumn<PaymentHistory, String> outstandingAmountColumn;
+    @FXML private TableView<GradeFeesReport> gradePaymentsReportHistoryTable;
+    @FXML private TableColumn<GradeFeesReport, String> studentIdColumn;
+    @FXML private TableColumn<GradeFeesReport, String> studentNameColumn;
+    @FXML private TableColumn<GradeFeesReport, String> amountToPayColumn;
+    @FXML private TableColumn<GradeFeesReport, String> amountPaidColumn;
+    @FXML private TableColumn<GradeFeesReport, String> outstandingAmountColumn;
     @FXML private Button gradePaymentsExportReportBtn;
 
 
@@ -274,9 +279,24 @@ public class FinanceController implements Initializable {
             });
             return row;
         });
+
+
+        //Grade Payment Records Table
+        studentIdColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStudentId()));
+
+        studentNameColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStudentName()));
+
+        amountToPayColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getTotalAmountToPay()));
+
+        amountPaidColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getAmountPayed()));
+
+        outstandingAmountColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getOutstanding()));
     }
-
-
 
     @FXML
     public void showDashboard() {
@@ -294,14 +314,12 @@ public class FinanceController implements Initializable {
     @FXML
     public void showRecordPayment() {
         switchView(manageFeesPaymentPayment, recordPaymentBtn);
-
         showAddNewPaymentCard();
     }
 
     @FXML
     public void showSearchReport() {
         switchView(searchStudentReportView, searchReportBtn);
-
         showFetchStudentPayReportCard();
     }
 
@@ -574,12 +592,33 @@ public class FinanceController implements Initializable {
 
     @FXML
     public void handleClearPayRecordsFilters() {
-        reportResponsePanel.setVisible(false);
-        reportResponsePanel.setManaged(false);
+        if (gradePaymentsReportResponsePanel.isVisible()) {
+            gradePaymentsReportHistoryTable.getItems().clear();
+            gradePaymentsReportResponsePanel.setVisible(false);
+            gradePaymentsReportResponsePanel.setManaged(false);
+        }
 
-        reportSearchStudentIdField.clear();
+        gradePaymentsReportSemesterComboBox.getSelectionModel().clearSelection();
+        gradePaymentsReportSemesterComboBox.getSelectionModel().clearSelection();
+
+        gradePaymentRecordsSearchArea.setVisible(true);
+        gradePaymentRecordsSearchArea.setManaged(true);
+    }
+
+    @FXML
+    public void handleClearStudentPayRecordsFilters() {
+        if (reportResponsePanel.isVisible()) {
+            reportResponsePanel.setVisible(false);
+            reportResponsePanel.setManaged(false);
+        }
+
         reportSearchSemesterComboBox.getSelectionModel().clearSelection();
         reportSearchClassComboBox.getSelectionModel().clearSelection();
+
+        reportSearchStudentIdField.clear();
+
+        studentPaymentRecordsArea.setVisible(true);
+        studentPaymentRecordsArea.setManaged(true);
     }
 
     @FXML
@@ -612,7 +651,44 @@ public class FinanceController implements Initializable {
                     utilityClass.showSuccess(notification, "Successfully saved payment records to file");
                     utilityClass.notProcessingButton(printStudentPayReportBtn, "EXPORT TO EXCEL");
                 } catch (Exception e) {
-                    utilityClass.showError(notification, e.getMessage());
+                    e.printStackTrace();
+                    utilityClass.showError(notification, "Could not export file");
+                }
+            } else {
+                utilityClass.showError(notification, "Could not export file");
+            }
+        });
+    }
+
+    @FXML
+    public void handlePrintGradeFeesReport() {
+        String levelName = gradePaymentsReportNameLabel.getText();
+        String semesterName = gradePaymentsReportSemesterLabel.getText();
+
+        utilityClass.processingButton(gradePaymentsExportReportBtn);
+        utilityClass.showSuccess(notification, "Keep working while we prepare your report");
+        Platform.runLater(() -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Subject List");
+            fileChooser.setInitialFileName(levelName + "_Payment_Records.csv");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
+                    new FileChooser.ExtensionFilter("Text Files", "*.txt")
+            );
+
+            Stage stage = (Stage) gradePaymentsExportReportBtn.getScene().getWindow();
+            File file = fileChooser.showSaveDialog(stage);
+
+            if (file != null) {
+                try {
+                    utilityClass.saveGradePayRecordsListToFile(gradeFeesReport,
+                            file, levelName, semesterName
+                    );
+                    utilityClass.showSuccess(notification, "Successfully saved payment records to file");
+                    utilityClass.notProcessingButton(gradePaymentsExportReportBtn, "EXPORT TO EXCEL");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    utilityClass.showError(notification, "Could not export file");
                 }
             } else {
                 utilityClass.showError(notification, "Could not export file");
@@ -708,7 +784,7 @@ public class FinanceController implements Initializable {
              }
          }
 
-        switchPageCards(studentPaymentRecordsCard, GradePaymentRecordsCard,
+        switchPageCards(studentPaymentRecordsCard, gradePaymentRecordsCard,
                 studentPayReportToggleBtn, gradePayReportToggleBtn);
      }
 
@@ -727,7 +803,13 @@ public class FinanceController implements Initializable {
              }
          }
 
-         switchPageCards(GradePaymentRecordsCard, studentPaymentRecordsCard,
+         gradePaymentsReportResponsePanel.setVisible(false);
+         gradePaymentsReportResponsePanel.setManaged(false);
+
+         gradePaymentRecordsSearchArea.setVisible(true);
+         gradePaymentRecordsSearchArea.setManaged(true);
+
+         switchPageCards(gradePaymentRecordsCard, studentPaymentRecordsCard,
                  gradePayReportToggleBtn, studentPayReportToggleBtn);
      }
 
@@ -971,7 +1053,6 @@ public class FinanceController implements Initializable {
     public void handleCheckStudentName() {
         String studentId = newPaymentStudentIdField.getText().trim();
         if (studentId.length() != 9) {
-            utilityClass.showError(notification, "Invalid student ID");
             return;
         }
 
@@ -999,6 +1080,82 @@ public class FinanceController implements Initializable {
                         utilityClass.showError(notification, "Network error! Could not get student name");
                     });
                 });
+    }
+
+    @FXML
+    public void handleFetchGradeFeesReport() {
+        SemesterCaching selectedSemester = gradePaymentsReportSemesterComboBox.getSelectionModel().getSelectedItem();
+        if (selectedSemester == null) {
+            utilityClass.showError(notification, "Please select a Semester");
+            return;
+        }
+
+        GradeCaching selectedGrade = gradePaymentsReportClassComboBox.getSelectionModel().getSelectedItem();
+        if (selectedGrade == null) {
+            utilityClass.showError(notification, "Please select a Grade");
+            return;
+        }
+
+        utilityClass.processingButton(gradePaymentsReportBtn);
+        utilityClass.fetchGradeFeesRecords(selectedGrade.getLevelId(), selectedSemester.getSemesterId(),
+                () -> {
+            //On Success
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
+                        populateGradePaymentsReportResponsePanel(gradeFeesReport,
+                                selectedGrade, selectedSemester.getSemesterName());
+                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                    });
+                },
+                () -> {
+            //On Failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
+                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                    });
+                },
+                () -> {
+            //On Network Issue
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
+                        utilityClass.showError(notification, "Network Error! Please check your network connection");
+                    });
+                });
+    }
+
+    private void populateGradePaymentsReportResponsePanel(List<GradeFeesReport> reports,
+                                                          GradeCaching grade,
+                                                          String semesterName) {
+        gradePaymentsReportIdLabel.setText(grade.getLevelId());
+        gradePaymentsReportNameLabel.setText(grade.getLevelName());
+        gradePaymentsReportSemesterLabel.setText(semesterName);
+
+        double totalFees = 0;
+        double totalPayments = 0;
+        double outStandingBalance = 0;
+        for (GradeFeesReport reportItem : reports) {
+            totalFees += Double.parseDouble(reportItem.getTotalAmountToPay());
+            totalPayments += Double.parseDouble(reportItem.getAmountPayed());
+            outStandingBalance += Double.parseDouble(reportItem.getOutstanding());
+        }
+
+        gradePaymentsReportTotalFeeLabel.setText(String.valueOf(totalFees));
+        gradePaymentsReportAmountPaidLabel.setText(String.valueOf(totalPayments));
+        gradePaymentsReportBalanceLabel.setText(String.valueOf(outStandingBalance));
+
+        double percentagePaid = (totalPayments / totalFees) * 100;
+        double progressBar = percentagePaid / 100;
+
+        gradePaymentsReportPercentageLabel.setText(percentagePaid + "%");
+        gradePaymentsReportProgressBar.setProgress(progressBar);
+
+        gradePaymentsReportHistoryTable.getItems().addAll(reports);
+
+        gradePaymentRecordsSearchArea.setVisible(false);
+        gradePaymentRecordsSearchArea.setManaged(false);
+
+        gradePaymentsReportResponsePanel.setVisible(true);
+        gradePaymentsReportResponsePanel.setManaged(true);
     }
 
     private void updatePaymentsTableAfterDelete(List<StudentPaymentRecords> previousList, String TXId) {
@@ -1115,27 +1272,20 @@ public class FinanceController implements Initializable {
 
         double percent = collectionPercentageCalc(totalFees, totalFeesPaid);
         reportResponsePercentageLabel.setText(percent + "%");
-        reportResponseProgressBar.setProgress(percent/100);
+        reportResponseProgressBar.setProgress(Double.parseDouble(String.format("%.2f", percent/100)));
 
         //Populate the payment history table
         paymentHistoryTable.getItems().addAll(data.getPaymentHistory());
         reportResponsePanel.setVisible(true);
         reportResponsePanel.setManaged(true);
+
+        studentPaymentRecordsArea.setVisible(false);
+        studentPaymentRecordsArea.setManaged(false);
     }
 
     private Double collectionPercentageCalc(Double totalSemesterFeesFromBackend,
                                             Double feesPaidFromBackend) {
         return (feesPaidFromBackend / totalSemesterFeesFromBackend) * 100;
-    }
-
-    //Calculate total fees paid
-    private Double calAmountPaid(List<PaymentHistory> paymentHistory) {
-        double totalFeesPaid = 0.0;
-        for (PaymentHistory history : paymentHistory) {
-            double paidFee = Double.parseDouble(history.getAmountPaid());
-            totalFeesPaid += paidFee;
-        }
-        return totalFeesPaid;
     }
 
     private void switchView(ScrollPane scrollPane, Button actionButton) {
@@ -1204,7 +1354,8 @@ public class FinanceController implements Initializable {
         amountPaidLabel.setText(String.format("%.2f", paidFees));
         outstandingLabel.setText(String.format("%.2f", outstanding));
 
-        double progress = utilityClass.feesProgressBarFromBackend;
+        double progress = paidFees/totalFees;
+        percentageLabel.setText(String.format("%.2f", progress * 100) + "%");
         progressBar.setProgress(progress);
 
         List<RecentPaymentTable> recentPaymentTransactions = utilityClass.feesCacheManager.getRecentPaymentCache();

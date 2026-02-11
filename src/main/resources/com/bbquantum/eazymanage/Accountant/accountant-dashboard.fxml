@@ -195,12 +195,12 @@
                         <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
                             <Button fx:id="addSemesterFeesToggleBtn"
-                                    text="ADD NEW PAYMENT"
+                                    text="ADD NEW FEES"
                                     onAction="#showAddSemesterFeesCard"
                                     styleClass="action-button-primary"/>
 
                             <Button fx:id="updateFeesDetailsToggleBtn"
-                                    text="UPDATE PAYMENT DETAILS"
+                                    text="UPDATE FEES INFO"
                                     onAction="#showUpdateSemesterFeesCard"
                                     styleClass="action-button-primary"/>
                         </HBox>
@@ -559,7 +559,7 @@
                 </ScrollPane>
 
 
-                <!-- SEARCH STUDENT REPORT VIEW -->
+                <!-- SEARCH FEES REPORT VIEW -->
                 <ScrollPane fx:id="searchStudentReportView" visible="false" managed="false" fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
@@ -592,45 +592,44 @@
                             <VBox fx:id="studentPaymentRecordsCard" spacing="25" styleClass="panel-card" maxWidth="900">
                                 <Label text="Filter Criteria" styleClass="section-header-blue"/>
 
-                                <GridPane hgap="15" vgap="15">
-                                    <columnConstraints>
-                                        <ColumnConstraints percentWidth="40"/>
-                                        <ColumnConstraints percentWidth="30"/>
-                                        <ColumnConstraints percentWidth="30"/>
-                                    </columnConstraints>
+                                <VBox fx:id="studentPaymentRecordsArea">
 
-                                    <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                        <Label text="Student ID *" styleClass="input-label"/>
-                                        <TextField fx:id="reportSearchStudentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
-                                    </VBox>
+                                    <HBox spacing="10" alignment="CENTER_LEFT" >
 
-                                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                        <Label text="Semester" styleClass="input-label"/>
-                                        <ComboBox fx:id="reportSearchSemesterComboBox"
-                                                  promptText="Selected semester" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Student ID *" styleClass="input-label"/>
+                                            <TextField fx:id="reportSearchStudentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
+                                        </VBox>
 
-                                    <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                                        <Label text="Select Grade" styleClass="input-label"/>
-                                        <ComboBox fx:id="reportSearchClassComboBox"
-                                                  promptText="Select Grade"
-                                                  maxWidth="Infinity"
-                                                  styleClass="modern-combo"/>
-                                    </VBox>
-                                </GridPane>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Semester" styleClass="input-label"/>
+                                            <ComboBox fx:id="reportSearchSemesterComboBox"
+                                                      promptText="Selected semester" maxWidth="Infinity" styleClass="modern-combo"/>
+                                        </VBox>
 
-                                <HBox spacing="15" alignment="CENTER_LEFT">
-                                    <Button fx:id="searchFeesReportBtn"
-                                            text="FETCH RECORDS"
-                                            onAction="#handleSearchFeesReport"
-                                            styleClass="action-button-primary"/>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Select Grade" styleClass="input-label"/>
+                                            <ComboBox fx:id="reportSearchClassComboBox"
+                                                      promptText="Select Grade"
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-combo"/>
+                                        </VBox>
 
-                                    <Button text="RESET FILTERS"
-                                            onAction="#handleClearPayRecordsFilters"
-                                            styleClass="action-button-red"/>
-                                </HBox>
+                                    </HBox>
 
-                                <Separator styleClass="content-separator"/>
+                                    <Separator styleClass="content-separator"/>
+
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
+                                        <Button fx:id="searchFeesReportBtn"
+                                                text="FETCH RECORDS"
+                                                onAction="#handleSearchFeesReport"
+                                                styleClass="action-button-primary"/>
+
+                                        <Button text="RESET FILTERS"
+                                                onAction="#handleClearStudentPayRecordsFilters"
+                                                styleClass="action-button-red"/>
+                                    </HBox>
+                                </VBox>
 
                                 <VBox fx:id="reportResponsePanel" spacing="25" visible="false" managed="false">
 
@@ -691,6 +690,10 @@
                                     </VBox>
 
                                     <HBox spacing="15" alignment="CENTER_RIGHT">
+                                        <Button text="RESET FILTERS"
+                                                onAction="#handleClearStudentPayRecordsFilters"
+                                                styleClass="action-button-red"/>
+
                                         <Button fx:id="printStudentPayReportBtn"
                                                 text="EXPORT TO EXCEL"
                                                 onAction="#handlePrintStudentPayRecords"
@@ -700,36 +703,46 @@
                             </VBox>
 
                             <!-- Grade payment records search -->
-                            <VBox fx:id="GradePaymentRecordsCard" spacing="25" styleClass="panel-card" maxWidth="900">
+                            <VBox fx:id="gradePaymentRecordsCard" spacing="25" styleClass="panel-card" maxWidth="900">
                                 <Label text="Filter Criteria" styleClass="section-header-blue"/>
 
-                                <GridPane hgap="15" vgap="15">
-                                    <columnConstraints>
-                                        <ColumnConstraints percentWidth="40"/>
-                                        <ColumnConstraints percentWidth="30"/>
-                                        <ColumnConstraints percentWidth="30"/>
-                                    </columnConstraints>
+                                <VBox fx:id="gradePaymentRecordsSearchArea"
+                                      spacing="25"
+                                      maxWidth="900">
+                                    <Label text="Select filters to fetch payment records"
+                                           styleClass="section-title-small"/>
 
-                                    <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                        <Label text="Semester" styleClass="input-label"/>
-                                        <ComboBox fx:id="gradePaymentsReportSemesterComboBox" promptText="All Semesters" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
+                                    <HBox spacing="25">
 
-                                    <VBox spacing="8" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                                        <Label text="Class/Level" styleClass="input-label"/>
-                                        <ComboBox fx:id="gradePaymentsReportClassComboBox" promptText="All Classes" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
-                                </GridPane>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Semester" styleClass="input-label"/>
+                                            <ComboBox fx:id="gradePaymentsReportSemesterComboBox"
+                                                      promptText="Select Semester"
+                                                      maxWidth="Infinity" styleClass="modern-combo"/>
+                                        </VBox>
 
-                                <HBox spacing="15" alignment="CENTER_LEFT">
-                                    <Button fx:id="gradePaymentsReportBtn" text="FETCH PAYMENT REPORTS" onAction="#handleSearchFeesReport"
-                                            styleClass="action-button-primary" style="-fx-padding: 12 40;"/>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Class/Level" styleClass="input-label"/>
+                                            <ComboBox fx:id="gradePaymentsReportClassComboBox"
+                                                      promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
+                                        </VBox>
 
-                                    <Button text="RESET FILTERS" onAction="#handleClearPayRecordsFilters"
-                                            styleClass="text-button-blue" style="-fx-font-size: 14px;"/>
-                                </HBox>
+                                    </HBox>
 
-                                <Separator styleClass="content-separator"/>
+                                    <Separator styleClass="content-separator"/>
+
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
+                                        <Button fx:id="gradePaymentsReportBtn"
+                                                text="FETCH PAYMENTS REPORT"
+                                                onAction="#handleFetchGradeFeesReport"
+                                                styleClass="action-button-primary"/>
+
+                                        <Button text="RESET FILTERS"
+                                                onAction="#handleClearPayRecordsFilters"
+                                                styleClass="action-button-red"/>
+                                    </HBox>
+
+                                </VBox>
 
                                 <VBox fx:id="gradePaymentsReportResponsePanel" spacing="25" visible="false" managed="false">
 
@@ -738,9 +751,9 @@
                                             <Label text="🎓" style="-fx-font-size: 30px;"/>
                                         </StackPane>
                                         <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                            <Label fx:id="gradePaymentsReportNameLabel" text="Grade Name" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                                            <Label fx:id="gradePaymentsReportIdLabel" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
                                             <HBox spacing="15">
-                                                <Label fx:id="gradePaymentsReportIdLabel" styleClass="sidebar-school-name"/>
+                                                <Label fx:id="gradePaymentsReportNameLabel" styleClass="sidebar-school-name"/>
                                                 <Label fx:id="gradePaymentsReportSemesterLabel" styleClass="sidebar-school-name"/>
                                             </HBox>
                                         </VBox>
@@ -787,8 +800,12 @@
                                     <HBox spacing="15" alignment="CENTER_RIGHT">
                                         <Button fx:id="gradePaymentsExportReportBtn"
                                                 text="EXPORT TO EXCEL"
-                                                onAction="#handlePrintStudentPayRecords"
-                                                styleClass="text-button-blue"/>
+                                                onAction="#handlePrintGradeFeesReport"
+                                                styleClass="action-button-primary"/>
+
+                                        <Button text="RESET FILTERS"
+                                                onAction="#handleClearPayRecordsFilters"
+                                                styleClass="action-button-red"/>
                                     </HBox>
                                 </VBox>
                             </VBox>

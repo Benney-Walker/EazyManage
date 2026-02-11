@@ -63,14 +63,14 @@ public class UtilityClass {
             .create();
 
     // Backend Configuration
-    public final String BASE_URL = "http://localhost:8080/";
+    public final String BASE_URL = "https://eazymanagesoftware.up.railway.app/";
     public final String API_BASE_URL_V1 = "api/v1";
     public final String API_BASE_URL_V2 = "api/v2";
 
     // Stores retrieved fees report from backend
     public StudentFeesPaymentDisplay paymentRecords;
     // Store student results
-    public StudentResults studentResults;
+    public StudentResult studentResult;
     // Stores student information for update
     public UpdateStudentPersonalData updateStudentPersonalData;
 
@@ -1579,9 +1579,9 @@ public class UtilityClass {
     public void SearchStudentResults(String studentId, String semesterId, String classId,
                                      Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
-        Task<StudentResults> task = new Task<>() {
+        Task<StudentResult> task = new Task<>() {
             @Override
-            protected StudentResults call() throws Exception {
+            protected StudentResult call() throws Exception {
                 String url = BASE_URL + API_BASE_URL_V2 + "/search-student-results" +
                         "?studentId=" + studentId +
                         "&semesterId=" + semesterId +
@@ -1594,7 +1594,7 @@ public class UtilityClass {
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), StudentResults.class);
+                    return gson.fromJson(response.body(), StudentResult.class);
                 }
 
                 errorMessageContainer = "";
@@ -1604,8 +1604,8 @@ public class UtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            studentResults = task.getValue();
-            if (studentResults != null) {
+            studentResult = task.getValue();
+            if (studentResult != null) {
                 successMessageContainer = "Results loaded successfully";
                 onSuccess.run();
                 return;
@@ -3193,6 +3193,61 @@ public class UtilityClass {
         new Thread(task).start();
     }
 
+    public void fetchGradeFeesRecords(String levelId, String semesterId,
+                                      Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Type listType = new TypeToken<List<GradeFeesReport>>() {}.getType();
+
+        Task<List<GradeFeesReport>> task = new Task<>() {
+            @Override
+            protected List<GradeFeesReport> call() throws Exception {
+                String url = BASE_URL + API_BASE_URL_V2 + "/fetch-grade-fees-report/"
+                        + levelId + "/" + semesterId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), listType);
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            financeController.gradeFeesReport = task.getValue();
+            if (financeController.gradeFeesReport == null) {
+                onFailure.run();
+                return;
+            }
+
+            successMessageContainer = "Payment records Loaded Successfully";
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not get Records";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
     private void saveSubjectListToFile(List<PrintLevelSubjects> subjects, File file, String levelName) throws Exception {
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
             // Header
@@ -3272,6 +3327,56 @@ public class UtilityClass {
         }
     }
 
+    public void saveGradePayRecordsListToFile(List<GradeFeesReport> records,
+                                                File file,
+                                                String levelName,
+                                                String semesterName) throws Exception {
+
+        try (PrintWriter writer = new PrintWriter(
+                new BufferedWriter(new FileWriter(file, false)))) {
+
+            // Header
+            writer.println("===============================================================");
+            writer.println("                          PAYMENT RECORDS                      ");
+            writer.println("===============================================================");
+            writer.println("GRADE : " + levelName);
+            writer.println("SEMESTER : " + semesterName);
+            writer.println("---------------------------------------------------------------");
+
+            // Column titles
+            writer.println(String.format(
+                    "%-4s | %-12s | %-15s | %-10s | %-20s | %-15s",
+                    "No",
+                    "Student Id",
+                    "Student Name",
+                    "Fees Amount",
+                    "Amount Paid",
+                    "Outstanding"
+            ));
+
+            writer.println("---------------------------------------------------------------");
+
+            // Data rows
+            int count = 1;
+            for (GradeFeesReport record : records) {
+                writer.println(String.format(
+                        "%-4d | %-12s | %-15s | %-10s | %-20s | %-15s",
+                        count++,
+                        record.getStudentId(),
+                        record.getStudentName(),
+                        record.getTotalAmountToPay(),
+                        record.getAmountPayed(),
+                        record.getOutstanding()
+
+                ));
+            }
+
+            writer.println("---------------------------------------------------------------");
+            writer.println("Total Students: " + records.size());
+            writer.println("Generated on: " + LocalDate.now());
+        }
+    }
+
 
     private void saveStudentListToFile(List<StudentListPrint> students, File file, String levelName) throws Exception {
         try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
@@ -3280,7 +3385,10 @@ public class UtilityClass {
             writer.println("         STUDENT LIST - " + levelName);
             writer.println("========================================");
             writer.println();
-            writer.println(String.format("%-5s | %-20s | %-30s", "No.", "Student ID", "Full Name"));
+            writer.println(String.format("%-5s | %-20s | %-30s",
+                    "No.",
+                    "Student ID",
+                    "Full Name"));
             writer.println("---------------------------------------------------");
 
             // Data rows

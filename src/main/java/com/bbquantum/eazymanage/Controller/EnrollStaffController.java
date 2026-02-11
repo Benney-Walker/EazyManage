@@ -23,7 +23,7 @@ import com.google.gson.JsonObject;
 public class EnrollStaffController {
 
     // Backend configuration
-    private static final String BASE_URL = "http://localhost:8080/api/v1/auth";
+    private static final String BASE_URL = "https://eazymanagesoftware.up.railway.app/api/v1/auth";
     private static final String ENROLL_ENDPOINT = "/enroll-new-staff";
 
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
@@ -205,9 +205,7 @@ public class EnrollStaffController {
                 requestBody.addProperty("lastName", lastName);
                 requestBody.addProperty("gender", gender);
 
-                // Convert LocalDate to LocalDateTime (start of day) and format as ISO string
-                String dateTimeString = dateOfBirth.atStartOfDay().toString();
-                requestBody.addProperty("dateOfBirth", dateTimeString);
+                requestBody.addProperty("dateOfBirth", String.valueOf(dateOfBirth));
 
                 requestBody.addProperty("email", email);
                 requestBody.addProperty("phoneNumber", phoneNumber);

@@ -192,7 +192,7 @@ public class StaffController implements Initializable {
     //MANAGE RESULTS PAGE
     @FXML private ScrollPane manageResultsView;
 
-    @FXML private HBox viewResultsHBox;
+    @FXML private VBox viewResultsHBox;
     @FXML private ComboBox<GradeInformation> resultsGradeComboBox;
     @FXML private ComboBox<SemesterCaching> resultsSemesterComboBox;
     @FXML private Button loadClassResultsBtn;
@@ -200,8 +200,6 @@ public class StaffController implements Initializable {
     @FXML private HBox resultsInfoBox;
     @FXML private Label gradeNameLabel;
     @FXML private Label semesterNameLabel;
-
-    @FXML private VBox noResultsBox;
 
     @FXML private VBox classResultsTableContainer;
     @FXML private TableView<ViewClassSemesterReport> classResultsTable;
@@ -752,7 +750,7 @@ public class StaffController implements Initializable {
     }
 
     @FXML
-    public void handleLoadStudents() {
+    public void handleLoadStudentsForScores() {
         String subjectId = subjectCodeField.getText().trim();
         if (subjectId.isEmpty()) {
             utilityClass.showError(notification, "Subject code field is empty!");
@@ -930,9 +928,6 @@ public class StaffController implements Initializable {
         classResultsTableContainer.setVisible(false);
         classResultsTableContainer.setManaged(false);
 
-        noResultsBox.setVisible(false);
-        noResultsBox.setManaged(false);
-
         resultsInfoBox.setVisible(false);
         resultsInfoBox.setManaged(false);
 
@@ -988,27 +983,30 @@ public class StaffController implements Initializable {
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(generateReportBtn, "Download Semester Reports");
+                        utilityClass.notProcessingButton(generateReportBtn, "DOWNLOAD SEMESTER REPORT");
                         if (semesterNameSplit[0].equals("THIRD")) {
                             resultsPassmarkHBox.setVisible(true);
                             resultsPassmarkHBox.setManaged(true);
                             movePassedStudentsBtn.setDisable(false);
+                            utilityClass.showSuccess(notification, "Results downloaded successfully. Enter passed total score and promotion grade for promotion");
+                            return;
                         }
-                        utilityClass.showSuccess(notification, "Results downloaded successfully. Enter passed total score and promotion grade for promotion");
+                        utilityClass.showSuccess(notification, "Results downloaded successfully.");
                     });
                 }, () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(generateReportBtn, "Download Semester Reports");
+                        utilityClass.notProcessingButton(generateReportBtn, "DOWNLOAD SEMESTER REPORT");
                         if (utilityClass.errorMessageContainer != null && !utilityClass.errorMessageContainer.isEmpty()) {
                             utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                            return;
                         }
                         utilityClass.showError(notification, "Could not download report");
                     });
                 }, () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(generateReportBtn, "Download Semester Reports");
+                        utilityClass.notProcessingButton(generateReportBtn, "DOWNLOAD SEMESTER REPORT");
                         utilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
@@ -1082,21 +1080,21 @@ public class StaffController implements Initializable {
                         markAttendanceTableContainer.setVisible(true);
                         markAttendanceTableContainer.setManaged(true);
 
-                        utilityClass.notProcessingButton(markAttendanceBtn, "Mark Attendance");
+                        utilityClass.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
                         utilityClass.showSuccess(notification, "Students Loaded Successfully");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(markAttendanceBtn, "Mark Attendance");
+                        utilityClass.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
                         utilityClass.showError(notification, utilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(markAttendanceBtn, "Mark Attendance");
+                        utilityClass.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
                         utilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
@@ -1154,21 +1152,21 @@ public class StaffController implements Initializable {
                         updateAttendanceTableContainer.setVisible(true);
                         updateAttendanceTableContainer.setManaged(true);
 
-                        utilityClass.notProcessingButton(updateAttendanceBtn, "Update Attendance");
+                        utilityClass.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
                         utilityClass.showSuccess(notification, "Students Loaded Successfully");
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateAttendanceBtn, "Update Attendance");
+                        utilityClass.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
                         utilityClass.showError(notification, utilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateAttendanceBtn, "Mark Attendance");
+                        utilityClass.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
                         utilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
@@ -1828,7 +1826,6 @@ public class StaffController implements Initializable {
         subjectNameLabel.setText(subjectScores.getSubjectName());
         subjectCodeLabel.setText(subjectScores.getSubjectId());
 
-        // Use setAll() to replace items, not addAll()
         List<StudentsScoresTable> scores = subjectScores.getScoresTable();
         if (scores != null) {
             studentsScoresTable.getItems().setAll(scores);

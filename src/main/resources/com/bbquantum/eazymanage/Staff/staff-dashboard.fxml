@@ -199,7 +199,7 @@
                                     <TextField fx:id="subjectCodeField" promptText="e.g. MATH101, ENG-JHS2" styleClass="modern-input"/>
                                 </VBox>
 
-                                <Button fx:id="loadSubjectStudentsBtn" text="LOAD STUDENTS" onAction="#handleLoadStudents"
+                                <Button fx:id="loadSubjectStudentsBtn" text="LOAD STUDENTS" onAction="#handleLoadStudentsForScores"
                                         styleClass="action-button-primary" style="-fx-padding: 12 30;"/>
                             </HBox>
 
@@ -272,16 +272,22 @@
                                         <TableColumn text="CLASS TEST" fx:id="classTestColumn" prefWidth="100"/>
                                         <TableColumn text="EXERCISE 2" fx:id="exercise2Column" prefWidth="100"/>
                                         <TableColumn text="PROJECT" fx:id="projectColumn" prefWidth="100"/>
-                                        <TableColumn text="CLASS SCORE" fx:id="classScoreColumn" prefWidth="100" />
-                                        <TableColumn text="EXAM SCORE (100)" fx:id="examScoreColumn" prefWidth="100"/>
-                                        <TableColumn text="EXAM SCORE" fx:id="calExamScoreColumn" prefWidth="100"/>
+                                        <TableColumn text="EXAM SCORE" fx:id="examScoreColumn" prefWidth="100"/>
+                                        <TableColumn text="CLASS(50%)" fx:id="classScoreColumn" prefWidth="100" />
+                                        <TableColumn text="EXAM(50%) " fx:id="calExamScoreColumn" prefWidth="100"/>
                                     </columns>
                                 </TableView>
 
                                 <HBox spacing="15" alignment="CENTER_RIGHT">
-                                    <Button text="RESET TABLE" onAction="#handleClearScores" styleClass="text-button-blue"/>
-                                    <Button fx:id="saveScores" text="SAVE SCORES" onAction="#handleSaveScores"
-                                            styleClass="action-button-primary" style="-fx-padding: 12 40;"/>
+                                    <Button text="RESET TABLE"
+                                            onAction="#handleClearScores"
+                                            styleClass="text-button-blue"/>
+
+                                    <Button fx:id="saveScores"
+                                            text="SAVE SCORES"
+                                            onAction="#handleSaveScores"
+                                            styleClass="action-button-primary"
+                                            style="-fx-padding: 12 40;"/>
                                 </HBox>
 
                                 <VBox fx:id="saveScoresSemesterVBox" spacing="8" visible="false" managed="false">
@@ -647,28 +653,35 @@
 
                         <VBox spacing="25" styleClass="panel-card" maxWidth="1000">
 
-                            <HBox fx:id="viewResultsHBox" spacing="15" alignment="BOTTOM_LEFT">
+                            <VBox fx:id="viewResultsHBox" alignment="CENTER" spacing="15" maxWidth="1000">
 
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Select Grade *" styleClass="input-label"/>
-                                    <ComboBox fx:id="resultsGradeComboBox"
-                                              promptText="Select Grade"
-                                              maxWidth="300"
-                                              styleClass="modern-combo"/>
+                                <HBox spacing="15" alignment="BOTTOM_LEFT">
 
-                                    <Label text="Select Semester *" styleClass="input-label"/>
-                                    <ComboBox fx:id="resultsSemesterComboBox"
-                                              promptText="Select Semester"
-                                              maxWidth="300"
-                                              styleClass="modern-combo"/>
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Select Grade *" styleClass="input-label"/>
+                                        <ComboBox fx:id="resultsGradeComboBox"
+                                                  promptText="Select Grade"
+                                                  maxWidth="300"
+                                                  styleClass="modern-combo"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Select Semester *" styleClass="input-label"/>
+                                        <ComboBox fx:id="resultsSemesterComboBox"
+                                                  promptText="Select Semester"
+                                                  maxWidth="300"
+                                                  styleClass="modern-combo"/>
+                                    </VBox>
+                                </HBox>
+
+                                <VBox alignment="BOTTOM_LEFT">
+                                    <Button fx:id="loadClassResultsBtn"
+                                            text="FETCH RESULTS"
+                                            onAction="#handleLoadClassResults"
+                                            styleClass="action-button-primary"
+                                            style="-fx-padding: 12 30;"/>
                                 </VBox>
-
-                                <Button fx:id="loadClassResultsBtn"
-                                        text="FETCH RESULTS"
-                                        onAction="#handleLoadClassResults"
-                                        styleClass="action-button-primary"
-                                        style="-fx-padding: 12 30;"/>
-                            </HBox>
+                            </VBox>
 
                             <HBox fx:id="resultsInfoBox" spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
                                   styleClass="alert-panel-info">
@@ -731,7 +744,7 @@
 
 
                                 <Button fx:id="generateReportBtn"
-                                        text="Download Semester Reports"
+                                        text="DOWNLOAD SEMESTER REPORT"
                                         onAction="#handleDownloadReports"
                                         styleClass="action-button-primary"
                                         style="-fx-padding: 12 40;"/>
@@ -755,7 +768,7 @@
 
                                 <HBox spacing="15" alignment="CENTER_RIGHT">
                                     <Button fx:id="movePassedStudentsBtn"
-                                            text="Transfer Students"
+                                            text="TRANSFER STUDENTS"
                                             disable="true"
                                             onAction="#handleMovePassedStudents"
                                             styleClass="action-button-primary"/>
@@ -789,6 +802,7 @@
                             <Label text="Mark or update daily attendance for students" styleClass="header-subtitle"/>
                         </VBox>
 
+                        <!-- TOGGLE BUTTONS -->
                         <HBox spacing="15" alignment="CENTER">
                             <Button fx:id="markAttendanceCard"
                                     text="MARK ATTENDANCE"
@@ -810,12 +824,16 @@
                                     <HBox spacing="15" alignment="BOTTOM_LEFT">
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
                                             <Label text="Select Grade *" styleClass="input-label"/>
-                                            <ComboBox fx:id="markAttendanceGradeComboBox" promptText="Select Grade"
-                                                      prefWidth="250" styleClass="modern-combo" />
+                                            <ComboBox fx:id="markAttendanceGradeComboBox"
+                                                      promptText="Select Grade"
+                                                      prefWidth="250"
+                                                      styleClass="modern-combo" />
                                         </VBox>
                                     </HBox>
                                     <VBox spacing="10" >
-                                        <Button fx:id="markAttendanceBtn" text="Mark Attendance" onAction="#loadAttendanceStudents"
+                                        <Button fx:id="markAttendanceBtn"
+                                                text="FETCH STUDENTS"
+                                                onAction="#loadAttendanceStudents"
                                                 styleClass="action-button-primary" style="-fx-padding: 12 30;"/>
                                     </VBox>
                                 </VBox>
@@ -864,16 +882,20 @@
                                             <ComboBox fx:id="updateAttendanceGradeComboBox" promptText="Select Grade"
                                                       prefWidth="250" styleClass="modern-combo" />
                                         </VBox>
-                                    </HBox>
-                                    <VBox spacing="15" >
-                                        <Button fx:id="updateAttendanceBtn" text="🔍 Update Attendance" onAction="#loadAttendanceForUpdate"
-                                                styleClass="action-button-primary" alignment="BOTTOM_LEFT" style="-fx-padding: 12 30;"/>
 
                                         <DatePicker
                                                 fx:id="updateAttendanceDatePicker" visible="false" managed="false"
                                                 promptText="previous days cannot be updated"
                                                 maxWidth="200"
+                                                HBox.hgrow="ALWAYS"
                                                 styleClass="modern-date-picker"/>
+                                    </HBox>
+                                    <VBox spacing="15" >
+                                        <Button fx:id="updateAttendanceBtn"
+                                                text="FETCH STUDENTS"
+                                                onAction="#loadAttendanceForUpdate"
+                                                styleClass="action-button-primary" alignment="BOTTOM_LEFT" style="-fx-padding: 12 30;"/>
+
                                     </VBox>
 
                                     <Label text="Previous days cannot be edited" styleClass="login-footer-label"/>

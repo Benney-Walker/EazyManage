@@ -1501,32 +1501,43 @@
 
                             <Label text="Semester Selection" styleClass="section-header-blue"/>
 
-                            <HBox spacing="15" alignment="BOTTOM_LEFT">
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Select Term *" styleClass="input-label"/>
-                                    <ComboBox fx:id="classResultsSemesterComboBox"
-                                              promptText="Select Semester"
-                                              maxWidth="Infinity"
-                                              styleClass="modern-combo"/>
-                                </VBox>
+                            <VBox spacing="15" alignment="CENTER_LEFT">
 
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Select Grade *" styleClass="input-label"/>
-                                    <ComboBox fx:id="classResultsGradeComboBox"
-                                              promptText="Select Semester"
-                                              maxWidth="Infinity"
-                                              styleClass="modern-combo"/>
-                                </VBox>
+                                <HBox spacing="15" alignment="BOTTOM_LEFT">
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Select Term *" styleClass="input-label"/>
+                                        <ComboBox fx:id="classResultsSemesterComboBox"
+                                                  promptText="Select Semester"
+                                                  maxWidth="Infinity"
+                                                  styleClass="modern-combo"/>
+                                    </VBox>
 
-                                <Button text="CANCEL"
-                                        onAction="#backToDashboard"
-                                        styleClass="action-button-red"/>
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Select Grade *" styleClass="input-label"/>
+                                        <ComboBox fx:id="classResultsGradeComboBox"
+                                                  promptText="Select Semester"
+                                                  maxWidth="Infinity"
+                                                  styleClass="modern-combo"/>
+                                    </VBox>
+
+                                </HBox>
+
+                                <HBox spacing="15" alignment="BOTTOM_RIGHT">
+
+                                    <Button text="CANCEL"
+                                            onAction="#backToDashboard"
+                                            styleClass="action-button-red"/>
 
 
-                                <Button fx:id="loadClassResultsBtn" text="FETCH RESULTS" onAction="#handleLoadClassResults"
-                                        styleClass="action-button-primary" style="-fx-padding: 12 30;"/>
+                                    <Button fx:id="loadClassResultsBtn"
+                                            text="FETCH RESULTS"
+                                            onAction="#handleLoadClassResults"
+                                            styleClass="action-button-primary"
+                                            style="-fx-padding: 12 30;"/>
 
-                            </HBox>
+                                </HBox>
+
+                            </VBox>
 
                             <HBox fx:id="resultsInfoBox" spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
                                   styleClass="alert-panel-info">

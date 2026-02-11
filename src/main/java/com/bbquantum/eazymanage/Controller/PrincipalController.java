@@ -193,11 +193,11 @@ public class PrincipalController implements Initializable {
     @FXML private Label positionLabel;
     @FXML
     public VBox noResultsFoundPanel;
-    @FXML private TableView<StudentResultsSubject> subjectResultsTable;
-    @FXML private TableColumn<StudentResultsSubject, String> subjectNameColumn;
-    @FXML private TableColumn<StudentResultsSubject, String> subjectScoreColumn;
-    @FXML private TableColumn<StudentResultsSubject, String> subjectGradeColumn;
-    @FXML private TableColumn<StudentResultsSubject, String> subjectRemarkColumn;
+    @FXML private TableView<StudentSubjectResults> subjectResultsTable;
+    @FXML private TableColumn<StudentSubjectResults, String> subjectNameColumn;
+    @FXML private TableColumn<StudentSubjectResults, String> subjectScoreColumn;
+    @FXML private TableColumn<StudentSubjectResults, String> subjectGradeColumn;
+    @FXML private TableColumn<StudentSubjectResults, String> subjectRemarkColumn;
 
     // ADD STUDENT VIEW
     @FXML private ScrollPane addNewStudentView;
@@ -754,12 +754,11 @@ public class PrincipalController implements Initializable {
 
         //Get selected class from combo box
         GradeCaching selectedGrade = classLevelComboBox.getSelectionModel().getSelectedItem();
-        String gradeId = null;
         if (selectedGrade == null) {
             utilityClass.showError(notification, "Please select Grade");
             return;
         }
-        gradeId = selectedGrade.getLevelId();
+        String gradeId = selectedGrade.getLevelId();
 
         //Get selected semester from combo box
         SemesterCaching selectedSemester = semesterComboBox.getSelectionModel().getSelectedItem();
@@ -770,7 +769,7 @@ public class PrincipalController implements Initializable {
         String semesterId = selectedSemester.getSemesterId();
         utilityClass.processingButton(searchFeesHistoryBtn);
 
-        utilityClass.fetchStudentPaymentRecords(studentId, semesterId, null,
+        utilityClass.fetchStudentPaymentRecords(studentId, semesterId, gradeId,
                 () -> {
                     // On success
                     Platform.runLater(() -> {
@@ -931,13 +930,13 @@ public class PrincipalController implements Initializable {
         String semesterId = selectedSemester.getSemesterId();
         utilityClass.processingButton(getResultsBtn);
 
-        utilityClass.SearchStudentResults(studentId, classId, semesterId,
+        utilityClass.SearchStudentResults(studentId, semesterId, classId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         utilityClass.notProcessingButton(getResultsBtn, "FETCH RESULT");
                         utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
-                        displayStudentResultsPanel(utilityClass.studentResults);
+                        displayStudentResultsPanel(utilityClass.studentResult);
                     });
                 },
                 () -> {
@@ -965,6 +964,7 @@ public class PrincipalController implements Initializable {
             return;
         }
 
+        utilityClass.processingButton(searchStaffBtn);
         utilityClass.searchStaffData(staffId,
                 () -> {
             //On Success
@@ -2136,16 +2136,16 @@ public class PrincipalController implements Initializable {
         return totalFeesPaid;
     }
 
-    public void displayStudentResultsPanel(StudentResults studentResults) {
+    public void displayStudentResultsPanel(StudentResult studentResult) {
         //Setting panel data
-        resultsStudentIdLabel.setText(studentResults.getStudentId());
-        resultsStudentNameLabel.setText(studentResults.getStudentName());
-        resultsClassLabel.setText(studentResults.getGrade());
-        resultsSemesterLabel.setText(studentResults.getSemesterName());
-        totalScoreLabel.setText(studentResults.getTotalScore().toString());
-        averageScoreLabel.setText(studentResults.getAverageScore().toString());
-        positionLabel.setText(studentResults.getPosition());
-        subjectResultsTable.getItems().setAll(studentResults.getStudentSubjectResults());
+        resultsStudentIdLabel.setText(studentResult.getStudentId());
+        resultsStudentNameLabel.setText(studentResult.getStudentName());
+        resultsClassLabel.setText(studentResult.getGrade());
+        resultsSemesterLabel.setText(studentResult.getSemesterName());
+        totalScoreLabel.setText(studentResult.getTotalScore().toString());
+        averageScoreLabel.setText(studentResult.getAverageScore().toString());
+        positionLabel.setText(studentResult.getPosition());
+        subjectResultsTable.getItems().addAll(studentResult.getStudentSubjectResults());
 
         //Display panel
         resultsDisplayPanel.setVisible(true);

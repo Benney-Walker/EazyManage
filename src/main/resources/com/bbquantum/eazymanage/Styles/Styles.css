@@ -521,6 +521,14 @@
     -fx-padding: 8;
 }
 
+.modern-date-picker .header {
+    -fx-background-color: transparent;
+}
+
+.modern-date-picker .label {
+    -fx-text-fill: #475569;
+}
+
 .action-button-primary {
     -fx-background-color: #2E8B57;
     -fx-text-fill: white;

@@ -2,7 +2,7 @@ package com.bbquantum.eazymanage.DTO.Academics;
 
 import java.util.List;
 
-public class StudentResults {
+public class StudentResult {
     private String studentId;
 
     private String studentName;
@@ -17,10 +17,10 @@ public class StudentResults {
 
     private String position;
 
-    private List<StudentResultsSubject> studentResultSubjects;
+    private List<StudentSubjectResults> studentSubjectResults;
 
-    public StudentResults(String studentId, String studentName, String grade, String semesterName, Double totalScore,
-                          Double averageScore, String position, List<StudentResultsSubject> studentResultSubjects) {
+    public StudentResult(String studentId, String studentName, String grade, String semesterName, Double totalScore,
+                         Double averageScore, String position, List<StudentSubjectResults> studentSubjectResults) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.className = grade;
@@ -28,7 +28,7 @@ public class StudentResults {
         this.totalScore = totalScore;
         this.averageScore = averageScore;
         this.position = position;
-        this.studentResultSubjects = studentResultSubjects;
+        this.studentSubjectResults = studentSubjectResults;
     }
 
     public String getStudentId() {
@@ -87,11 +87,11 @@ public class StudentResults {
         this.position = position;
     }
 
-    public List<StudentResultsSubject> getStudentSubjectResults() {
-        return studentResultSubjects;
+    public List<StudentSubjectResults> getStudentSubjectResults() {
+        return studentSubjectResults;
     }
 
-    public void setStudentSubjectResults(List<StudentResultsSubject> studentResultSubjects) {
-        this.studentResultSubjects = studentResultSubjects;
+    public void setStudentSubjectResults(List<StudentSubjectResults> studentResultSubjects) {
+        this.studentSubjectResults = studentResultSubjects;
     }
 }
