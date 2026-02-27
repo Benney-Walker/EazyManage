@@ -51,12 +51,13 @@ public class StaffController implements Initializable {
     //Grades information and dashboard rotation
     private PauseTransition resumeTimer =
             new PauseTransition(Duration.seconds(15));
+
     private List<GradeInformation> gradeInformation;
     private Timeline gradeRotationTimeline;
     private boolean isRotationPaused = false;
     private int currentDisplayIndex;
 
-    //Results grades Info
+    //Holds results for printing report cards
     GradeInformation resultGrade;
 
     //Semester and Grade for loading and downloading results
@@ -71,6 +72,11 @@ public class StaffController implements Initializable {
     public List<StudentAttendance> studentAttendances;
     private final ObservableList<StudentAttendanceUI> attendanceData = FXCollections.observableArrayList();
     private LocalDate selectedAttendanceDate;
+
+    //Stores a list of the attendances for uploaded
+    private List<StudentAttendance> studentAttendanceList = new ArrayList<>();
+
+    private int currentUploadIndex;
 
     // NAVIGATION
     @FXML public StackPane notification;
@@ -102,7 +108,7 @@ public class StaffController implements Initializable {
     @FXML private TableColumn<StudentsRoaster, String> parentPhoneCol;
 
     //NEW SUBJECT SCORES
-    @FXML private ScrollPane newSubjectResultView;
+    @FXML private ScrollPane AddNewSubjectScoresView;
 
     @FXML private HBox subjectResultSearchBox;
     @FXML private TextField subjectCodeField;
@@ -255,6 +261,8 @@ public class StaffController implements Initializable {
     @FXML private TableColumn<StudentAttendanceUI, AttendanceStatus> markAbsentCol;
     @FXML private TableColumn<StudentAttendanceUI, AttendanceStatus> markPresentCol;
     @FXML private Button saveAttendanceBtn;
+    @FXML private VBox attendanceSaveProgressBarVBox;
+    @FXML private ProgressBar attendanceSaveProgressBar;
 
     @FXML private VBox updateAttendancePanel;
     @FXML private VBox updateAttendanceSelection;
@@ -271,6 +279,8 @@ public class StaffController implements Initializable {
     @FXML private TableColumn<StudentAttendanceUI, AttendanceStatus> updateAbsentCol;
     @FXML private TableColumn<StudentAttendanceUI, AttendanceStatus> updatePresentCol;
     @FXML private Button updateAndSaveAttendanceBtn;
+    @FXML private VBox attendanceUpdateProgressBarVBox;
+    @FXML private ProgressBar attendanceUpdateProgressBar;
 
     //SPINNER
     @FXML private VBox loadingOverlay;
@@ -635,7 +645,7 @@ public class StaffController implements Initializable {
             }
         }
 
-        SwitchView(addResultsBtn, newSubjectResultView);
+        SwitchView(addResultsBtn, AddNewSubjectScoresView);
     }
 
     @FXML
@@ -840,8 +850,13 @@ public class StaffController implements Initializable {
     @FXML
     public void handleClearScores() {
         for (StudentsScoresTable student : studentsScoresTable.getItems()) {
+            student.setExercise1Score("0");
+            student.setClassTestScore("0");
+            student.setExercise2Score("0");
+            student.setProjectScore("0");
             student.setClassScore("0");
             student.setExamScore("0");
+            student.setCalculatedExamScore("0");
         }
         studentsScoresTable.refresh();
     }
@@ -1173,86 +1188,183 @@ public class StaffController implements Initializable {
     }
 
     @FXML
+    public void handleCancelAttendance() {
+        if (markAttendanceTableContainer.isVisible()) {
+            markAttendanceInfoBox.setVisible(false);
+            markAttendanceInfoBox.setManaged(false);
+
+            markAttendanceTableContainer.setVisible(false);
+            markAttendanceTableContainer.setManaged(false);
+
+            markAttendanceSelection.setVisible(true);
+            markAttendanceSelection.setManaged(true);
+        } else {
+            updateAttendanceInfoBox.setVisible(false);
+            updateAttendanceInfoBox.setManaged(false);
+
+            updateAttendanceTableContainer.setVisible(false);
+            updateAttendanceTableContainer.setManaged(false);
+
+            updateAttendanceSelection.setVisible(true);
+            updateAttendanceSelection.setManaged(true);
+        }
+    }
+
+    @FXML
     public void handleSaveAttendance() {
         utilityClass.processingButton(saveAttendanceBtn);
         ObservableList<StudentAttendanceUI> attendanceList = markAttendanceTable.getItems();
 
-        List<StudentAttendance> studentAttendance = new ArrayList<>();
-        for (StudentAttendanceUI studentAttendanceUI : attendanceList) {
-            studentAttendance.add(studentAttendanceUI.toStudentAttendance());
+        if (studentAttendanceList.isEmpty()) {
+            for (StudentAttendanceUI studentAttendanceUI : attendanceList) {
+                studentAttendanceList.add(studentAttendanceUI.toStudentAttendance());
+            }
         }
 
-        final int totalStudents = studentAttendance.size();
-        final int[] savedCount = {0};
-        final int[] failedCount = {0};
+        attendanceSaveProgressBarVBox.setVisible(true);
+        attendanceSaveProgressBarVBox.setManaged(true);
 
-        for (StudentAttendance markAttendance: studentAttendance) {
-            utilityClass.markStudentAttendance(markAttendance.getStudentId(), staffId,
-                    markAttendance.getLevelId(), markAttendance.getStatus(),
-                    () -> {
-                //On Success
-                        Platform.runLater(() -> {
-                            savedCount[0]++;
-                            completionCheck(savedCount[0], failedCount[0], totalStudents, saveAttendanceBtn, "Save Attendance");
-                        });
-                    },
-                    () -> {
-                //On Failure
-                        Platform.runLater(() -> {
-                            failedCount[0]++;
-                            completionCheck(savedCount[0], failedCount[0], totalStudents, saveAttendanceBtn, "Save Attendance");
-                        });
-                    },
-                    () -> {
-                //On Network Issue
-                        Platform.runLater(() -> {
-                            utilityClass.notProcessingButton(saveAttendanceBtn, "Save Attendance");
-                            utilityClass.showError(notification, "Network Error! Check your network connection and try again");
-                        });
-                    });
-        }
+        uploadNextAttendance();
     }
+
+    private void uploadNextAttendance() {
+
+        if (currentUploadIndex >= studentAttendanceList.size()) {
+            // Finished
+            utilityClass.notProcessingButton(saveAttendanceBtn, "SAVE ATTENDANCE");
+            utilityClass.showSuccess(notification, "Attendance Saved Successfully");
+
+            attendanceSaveProgressBar.setProgress(0.0);
+            attendanceSaveProgressBarVBox.setVisible(false);
+            attendanceSaveProgressBarVBox.setManaged(false);
+
+            currentUploadIndex = 0;
+            studentAttendanceList.clear();
+
+            markAttendanceInfoBox.setVisible(false);
+            markAttendanceInfoBox.setManaged(false);
+
+            markAttendanceTableContainer.setVisible(false);
+            markAttendanceTableContainer.setManaged(false);
+
+            markAttendanceSelection.setVisible(true);
+            markAttendanceSelection.setManaged(true);
+            return;
+        }
+
+        StudentAttendance record = studentAttendanceList.get(currentUploadIndex);
+
+        utilityClass.markStudentAttendance(
+                record.getStudentId(),
+                staffId,
+                record.getLevelId(),
+                record.getStatus(),
+
+                () -> {
+                    Platform.runLater(() -> {
+                        currentUploadIndex++;
+
+                        double progress = (double) currentUploadIndex / studentAttendanceList.size();
+                        attendanceSaveProgressBar.setProgress(progress);
+
+                        uploadNextAttendance(); // 🔥 recursive controlled chain
+                    });
+                },
+
+                () -> {
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveAttendanceBtn, "CONTINUE");
+                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                    });
+                },
+
+                () -> {
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(saveAttendanceBtn, "CONTINUE");
+                        utilityClass.showError(notification,
+                                "Network Error! Fix connection and click Continue.");
+                    });
+                }
+        );
+    }
+
+
 
     @FXML
     public void handleUpdateAttendance() {
         utilityClass.processingButton(updateAndSaveAttendanceBtn);
         ObservableList<StudentAttendanceUI> attendanceList = markAttendanceTable.getItems();
 
-        List<StudentAttendance> studentAttendance = new ArrayList<>();
-        for (StudentAttendanceUI studentAttendanceUI : attendanceList) {
-            studentAttendance.add(studentAttendanceUI.toStudentAttendance());
+        if (studentAttendanceList.isEmpty()) {
+            for (StudentAttendanceUI studentAttendanceUI : attendanceList) {
+                studentAttendanceList.add(studentAttendanceUI.toStudentAttendance());
+            }
         }
 
-        final int totalStudents = studentAttendance.size();
-        final int[] savedCount = {0};
-        final int[] failedCount = {0};
+        attendanceUpdateProgressBarVBox.setVisible(true);
+        attendanceUpdateProgressBarVBox.setManaged(true);
 
-        for (StudentAttendance markAttendance: studentAttendance) {
-            utilityClass.updateAttendance(markAttendance.getStudentId(),
-                    staffId, markAttendance.getLevelId(),
-                    markAttendance.getStatus(), selectedAttendanceDate.toString(),
-                    () -> {
-                        //On Success
-                        Platform.runLater(() -> {
-                            savedCount[0]++;
-                            completionCheck(savedCount[0], failedCount[0], totalStudents, updateAndSaveAttendanceBtn, "Update Attendance");
-                        });
-                    },
-                    () -> {
-                        //On Failure
-                        Platform.runLater(() -> {
-                            failedCount[0]++;
-                            completionCheck(savedCount[0], failedCount[0], totalStudents, updateAndSaveAttendanceBtn, "Update Attendance");
-                        });
-                    },
-                    () -> {
-                        //On Network Issue
-                        Platform.runLater(() -> {
-                            utilityClass.notProcessingButton(saveAttendanceBtn, "Update Attendance");
-                            utilityClass.showError(notification, "Network Error! Check your network connection and try again");
-                        });
+        uploadUpdateAttendance();
+    }
+
+    private void uploadUpdateAttendance() {
+        if (currentUploadIndex >= studentAttendanceList.size()) {
+            utilityClass.notProcessingButton(updateAndSaveAttendanceBtn, "SAVE ATTENDANCE");
+
+            utilityClass.showSuccess(notification, "Attendance Saved Successfully");
+
+            attendanceSaveProgressBar.setProgress(0.0);
+            attendanceSaveProgressBarVBox.setVisible(false);
+            attendanceSaveProgressBarVBox.setManaged(false);
+
+            currentUploadIndex = 0;
+            studentAttendanceList.clear();
+
+            updateAttendanceInfoBox.setVisible(false);
+            updateAttendanceInfoBox.setManaged(false);
+
+            updateAttendanceTableContainer.setVisible(false);
+            updateAttendanceTableContainer.setManaged(false);
+
+            updateAttendanceSelection.setVisible(true);
+            updateAttendanceSelection.setManaged(true);
+            return;
+        }
+
+        StudentAttendance record = studentAttendanceList.get(currentUploadIndex);
+
+        utilityClass.updateAttendance(
+                record.getStudentId(),
+                staffId,
+                record.getLevelId(),
+                record.getStatus(),
+                selectedAttendanceDate.toString(),
+                () -> {
+                    //On Success
+                    Platform.runLater(() -> {
+                        currentUploadIndex++;
+
+                        double progress = ((double) currentUploadIndex /studentAttendanceList.size());
+
+                        attendanceUpdateProgressBar.setProgress(progress);
+
+                        uploadUpdateAttendance();
                     });
-        }
+                },
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(updateAndSaveAttendanceBtn, "CONTINUE");
+                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                    });
+                },
+                () -> {
+                    //On Network Issue
+                    Platform.runLater(() -> {
+                        utilityClass.notProcessingButton(updateAndSaveAttendanceBtn, "CONTINUE");
+                        utilityClass.showError(notification, "Network Error! Check your network connection and Click on Continue");
+                    });
+                });
     }
 
     @FXML
@@ -1798,6 +1910,7 @@ public class StaffController implements Initializable {
 
                     resultsTableContainer.setVisible(false);
                     resultsTableContainer.setManaged(false);
+                    studentsScoresTable.getItems().clear();
 
                     subjectResultSearchBox.setVisible(true);
                     subjectResultSearchBox.setManaged(true);
@@ -1805,19 +1918,6 @@ public class StaffController implements Initializable {
                     utilityClass.showError(notification, utilityClass.errorMessageContainer);
                 }
 
-            });
-        }
-    }
-
-    private void completionCheck(int saved, int failed, int total, Button button, String text) {
-        if (saved + failed == total) {
-            Platform.runLater(() -> {
-                utilityClass.notProcessingButton(button, text);
-                if (failed == 0) {
-                    utilityClass.showSuccess(notification, "All " + saved + " attendance saved successfully!");
-                } else {
-                    utilityClass.showError(notification, saved + " saved, " + failed + " failed");
-                }
             });
         }
     }
@@ -1950,8 +2050,8 @@ public class StaffController implements Initializable {
         dashboardView.setVisible(false);
         dashboardView.setManaged(false);
 
-        newSubjectResultView.setVisible(false);
-        newSubjectResultView.setManaged(false);
+        AddNewSubjectScoresView.setVisible(false);
+        AddNewSubjectScoresView.setManaged(false);
 
         addNewStudentView.setVisible(false);
         addNewStudentView.setManaged(false);

@@ -129,15 +129,39 @@
                     <HBox spacing="15">
                         <VBox spacing="6" HBox.hgrow="ALWAYS">
                             <Label text="Create Password *" styleClass="enroll-label"/>
-                            <PasswordField fx:id="enrollmentPasswordField"
-                                           styleClass="enroll-input"/>
+
+                            <StackPane>
+                                <PasswordField fx:id="passwordField"
+                                               styleClass="enroll-input"/>
+
+                                <TextField fx:id="passwordTextField"
+                                           styleClass="enroll-input"
+                                           visible="false"
+                                           managed="false"/>
+                            </StackPane>
                         </VBox>
 
                         <VBox spacing="6" HBox.hgrow="ALWAYS">
                             <Label text="Confirm Password *" styleClass="enroll-label"/>
-                            <PasswordField fx:id="confirmPasswordField"
-                                           styleClass="enroll-input"/>
+
+                            <StackPane>
+                                <PasswordField fx:id="confirmPasswordField"
+                                               styleClass="enroll-input"/>
+
+                                <TextField fx:id="confirmPasswordTextField"
+                                           styleClass="enroll-input"
+                                           visible="false"
+                                           managed="false"/>
+                            </StackPane>
                         </VBox>
+                    </HBox>
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <CheckBox fx:id="showPasswordTick"
+                                  onAction="#togglePassword"
+                                  styleClass="action-button-outline"/>
+
+                        <Label text="show password" styleClass="input-label"/>
                     </HBox>
                 </VBox>
 

@@ -1,33 +1,25 @@
 package com.bbquantum.eazymanage.DTO.Institution;
 
+import java.util.List;
+
 public class LoginResponse {
-    String success;
+    private String staffId;
 
-    String staffId;
+    private String staffName;
 
-    String staffRole;
+    private List<String> roles;
 
-    String institutionName;
+    private String institutionName;
 
-    String staffFullName;
+    private String authToken;
 
-    String gradeId;
-
-    public LoginResponse(String success, String staffId, String staffRole,
-                         String institutionName, String staffFullName) {
-        this.success = success;
+    public LoginResponse(String staffId, String staffName, List<String> roles,
+                         String institutionName, String authToken) {
         this.staffId = staffId;
-        this.staffRole = staffRole;
+        this.staffName = staffName;
+        this.roles = roles;
         this.institutionName = institutionName;
-        this.staffFullName = staffFullName;
-    }
-
-    public String getSuccess() {
-        return success;
-    }
-
-    public void setSuccess(String success) {
-        this.success = success;
+        this.authToken = authToken;
     }
 
     public String getStaffId() {
@@ -38,12 +30,20 @@ public class LoginResponse {
         this.staffId = staffId;
     }
 
-    public String getStaffRole() {
-        return staffRole;
+    public String getStaffName() {
+        return staffName;
     }
 
-    public void setStaffRole(String staffRole) {
-        this.staffRole = staffRole;
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 
     public String getInstitutionName() {
@@ -54,19 +54,11 @@ public class LoginResponse {
         this.institutionName = institutionName;
     }
 
-    public String getStaffFullName() {
-        return staffFullName;
+    public String getAuthToken() {
+        return authToken;
     }
 
-    public void setStaffFullName(String staffFullName) {
-        this.staffFullName = staffFullName;
-    }
-
-    public String getGradeId() {
-        return gradeId;
-    }
-
-    public void setGradeId(String gradeId) {
-        this.gradeId = gradeId;
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

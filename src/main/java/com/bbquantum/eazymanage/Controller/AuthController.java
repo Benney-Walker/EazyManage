@@ -3,6 +3,7 @@ package com.bbquantum.eazymanage.Controller;
 import com.bbquantum.eazymanage.DTO.Institution.LoginResponse;
 import com.bbquantum.eazymanage.DTO.Institution.SubscriptionResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
+import com.bbquantum.eazymanage.Utitity.SessionManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import javafx.animation.FadeTransition;
@@ -22,22 +23,19 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * Unified Authentication Controller
- * Handles:
- *  - Staff Login
- *  - Institution Subscription
- *  - Animated switching between forms
- */
 public class AuthController {
+    /* ================= CONTROLLER OWN VARIABLES ================= */
+    private String errorMessageContainer;
 
     /* ================= BACKEND CONFIG ================= */
 
-    private static final String LOGIN_BASE_URL = "https://eazymanagesoftware.up.railway.app/api/v1/auth";
-    private static final String LOGIN_ENDPOINT = "/staff-login";
+    private static final String BASE_URL = "http://localhost:8080/api/auth";
+    private static final String LOGIN_ENDPOINT = "/v1/staff-login";
 
-    private static final String SUBSCRIBE_ENDPOINT = "/school-subscription";
+    private static final String SUBSCRIBE_ENDPOINT = "/v1/school-subscription";
 
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
     private final Gson gson = new Gson();
@@ -46,6 +44,8 @@ public class AuthController {
 
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
+    @FXML private TextField passwordTextField;
+    @FXML private CheckBox showPasswordTick;
     @FXML private Label errorLabel;
     @FXML private Button loginButton;
 
@@ -76,51 +76,6 @@ public class AuthController {
     @FXML
     private void switchToLogin() {
         animateSwap(subscriptionForm, loginForm);
-    }
-
-    private void animateSwap(VBox hide, VBox show) {
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), hide);
-        fadeOut.setFromValue(1);
-        fadeOut.setToValue(0);
-
-        fadeOut.setOnFinished(e -> {
-            hide.setVisible(false);
-            hide.setManaged(false);
-
-            show.setOpacity(0);
-            show.setVisible(true);
-            show.setManaged(true);
-
-            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), show);
-            fadeIn.setFromValue(0);
-            fadeIn.setToValue(1);
-            fadeIn.play();
-        });
-
-        fadeOut.play();
-    }
-
-    /* ================= LOGIN LOGIC ================= */
-
-    @FXML
-    private void handleLogin() {
-        String staffId = usernameField.getText().trim();
-        String password = passwordField.getText();
-
-        if (staffId.isEmpty()) {
-            showError("Please enter your Staff ID");
-            return;
-        }
-
-        if (password.isEmpty()) {
-            showError("Please enter your password");
-            return;
-        }
-
-        loginButton.setDisable(true);
-        loginButton.setText("Logging in...");
-
-        authenticateUser(staffId, password);
     }
 
     @FXML
@@ -159,63 +114,86 @@ public class AuthController {
         }
     }
 
+    @FXML
+    private void handleLogin() {
+        String staffId = usernameField.getText().trim();
+        String password = passwordField.getText();
+
+        if (staffId.isEmpty()) {
+            showError("Please enter your Staff ID");
+            return;
+        }
+
+        if (password.isEmpty()) {
+            showError("Please enter your password");
+            return;
+        }
+
+        loginButton.setDisable(true);
+        loginButton.setText("Authenticating...");
+
+        authenticateUser(staffId, password);
+    }
+
     private void authenticateUser(String staffId, String password) {
         Task<LoginResponse> task = new Task<>() {
             @Override
             protected LoginResponse call() throws Exception {
-                JsonObject body = new JsonObject();
-                body.addProperty("staffId", staffId);
-                body.addProperty("password", password);
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("staffId", staffId);
+                requestBody.addProperty("password", password);
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(LOGIN_BASE_URL + LOGIN_ENDPOINT))
+                        .uri(URI.create(BASE_URL + LOGIN_ENDPOINT))
                         .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response =
                         httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 200) {
-                    JsonObject json = gson.fromJson(response.body(), JsonObject.class);
-                    String status = json.get("status").getAsString();
-
-                    if ("success".equals(status)) {
-                        return new LoginResponse(
-                                status,
-                                json.get("returnStaffId").getAsString(),
-                                json.get("role").getAsString(),
-                                json.get("institutionName").getAsString(),
-                                json.get("staffFullName").getAsString()
-                        );
-                    }
-                    return new LoginResponse("failed",
-                            json.get("message").getAsString(), null, null, null);
+                    return gson.fromJson(response.body(), LoginResponse.class);
                 }
-                return new LoginResponse("failed", "Server error", null, null, null);
+
+                errorMessageContainer = response.body();
+                return null;
             }
         };
 
         task.setOnSucceeded(e -> {
             loginButton.setDisable(false);
-            loginButton.setText("Sign In");
+            loginButton.setText("SIGN IN");
 
             LoginResponse response = task.getValue();
-            if ("success".equals(response.getSuccess())) {
+            if (response == null) {
+                showError(errorMessageContainer);
+                return;
+            }
+
+            String rolesHeader = response.getRoles().stream()
+                            .collect(Collectors.joining(","));
+
+            SessionManager.clearSession();
+
+            SessionManager.saveSession(
+                    response.getAuthToken(),
+                    response.getStaffId(),
+                    response.getStaffName(),
+                    response.getInstitutionName(),
+                    rolesHeader);
+
                 openDashboardByRole(
-                        response.getStaffRole(),
+                        response.getRoles(),
                         response.getStaffId(),
                         response.getInstitutionName(),
-                        response.getStaffFullName()
+                        response.getStaffName()
                 );
-            } else {
-                showError(response.getStaffId());
-            }
         });
 
         task.setOnFailed(e -> {
             loginButton.setDisable(false);
-            loginButton.setText("Sign In");
+            loginButton.setText("SIGN IN");
             showError("Connection error. Please try again.");
         });
 
@@ -251,7 +229,7 @@ public class AuthController {
                 body.addProperty("subscriptionCode", code);
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(LOGIN_BASE_URL + SUBSCRIBE_ENDPOINT))
+                        .uri(URI.create(BASE_URL + SUBSCRIBE_ENDPOINT))
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(body)))
                         .build();
@@ -313,10 +291,11 @@ public class AuthController {
 
     /* ================= DASHBOARD ROUTING ================= */
 
-    private void openDashboardByRole(String role, String staffId, String institutionName, String staffFullName) {
+    public void openDashboardByRole(List<String> roles, String staffId, String institutionName, String staffFullName) {
+        String role = roles.getFirst();
+
         try {
             String fxmlFile;
-            String title;
             int width = 1200;
             int height = 800;
 
@@ -324,17 +303,14 @@ public class AuthController {
             switch (role) {
                 case "PRINCIPAL":
                     fxmlFile = "/com/bbquantum/eazymanage/Principal/principal-main-dashboard.fxml";
-                    title = "EAZY MANAGE - Principal Dashboard";
                     break;
 
                 case "ACCOUNTANT":
                     fxmlFile = "/com/bbquantum/eazymanage/Accountant/accountant-dashboard.fxml";
-                    title = "EAZY MANAGE - Accountant Dashboard";
                     break;
 
                 case "TEACHING_STAFF":
                     fxmlFile = "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
-                    title = "EAZY MANAGE - Staff Dashboard";
                     break;
 
                 default:
@@ -359,7 +335,7 @@ public class AuthController {
                             "/com/bbquantum/eazymanage/Assets/EazyManage.png"
                     ))
             );
-            dashboardStage.setTitle(title);
+            dashboardStage.setTitle("Eazy Manage");
             dashboardStage.setScene(scene);
             dashboardStage.setMaximized(true);
 
@@ -373,7 +349,7 @@ public class AuthController {
         }
     }
 
-    private static void findController(String role, String staffId, String institutionName, String staffFullName, FXMLLoader loader) {
+    public static void findController(String role, String staffId, String institutionName, String staffFullName, FXMLLoader loader) {
         if (role.equals("PRINCIPAL")) {
             PrincipalController principalController = loader.getController();
             principalController.setInstitutionName(institutionName);
@@ -459,6 +435,47 @@ public class AuthController {
 
         subscribeButton.setDisable(true);
 
+    }
+
+    private void animateSwap(VBox hide, VBox show) {
+        FadeTransition fadeOut = new FadeTransition(Duration.millis(250), hide);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+
+        fadeOut.setOnFinished(e -> {
+            hide.setVisible(false);
+            hide.setManaged(false);
+
+            show.setOpacity(0);
+            show.setVisible(true);
+            show.setManaged(true);
+
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), show);
+            fadeIn.setFromValue(0);
+            fadeIn.setToValue(1);
+            fadeIn.play();
+        });
+
+        fadeOut.play();
+    }
+
+    @FXML
+    private void togglePassword() {
+        if (showPasswordTick.isSelected()) {
+            passwordTextField.setText(passwordField.getText());
+            passwordTextField.setVisible(true);
+            passwordTextField.setManaged(true);
+
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+        } else {
+            passwordField.setText(passwordTextField.getText());
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
+
+            passwordTextField.setVisible(false);
+            passwordTextField.setManaged(false);
+        }
     }
 
 }

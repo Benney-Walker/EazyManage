@@ -34,7 +34,7 @@ import java.util.List;
 
 public class UtilityClass {
 
-    public String applicationVersion = "V 2.1.0";
+    public String applicationVersion = "V 2.2.0";
 
     // Controllers - only one will be set at a time
     private final PrincipalController principalController;
@@ -2410,7 +2410,6 @@ public class UtilityClass {
                 }
 
                 errorMessageContainer = response.body();
-                System.out.println(errorMessageContainer);
                 return null;
             }
         };
@@ -2434,9 +2433,10 @@ public class UtilityClass {
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
+                return;
             }
+
+            onFailure.run();
         });
 
         new Thread(task).start();
@@ -3432,6 +3432,8 @@ public class UtilityClass {
     }
 
     public void clearSession() {
+
+        SessionManager.clearSession();
 
         // Clear cached backend data
         feesCacheManager.clearClassFeesSummaryCache();

@@ -40,6 +40,10 @@ public class StudentAttendanceUI {
         return studentName;
     }
 
+    public String getStudentId() {
+        return studentId.get();
+    }
+
     public ObjectProperty<AttendanceStatus> statusProperty() {
         return status;
     }

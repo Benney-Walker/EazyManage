@@ -83,13 +83,29 @@
 
                 <VBox spacing="8" alignment="CENTER_LEFT">
                     <Label text="Enter Password:" styleClass="input-label"/>
-                    <PasswordField fx:id="passwordField"
-                                   promptText="Password"
-                                   styleClass="auth-input"/>
+
+                        <StackPane HBox.hgrow="ALWAYS">
+                            <PasswordField fx:id="passwordField"
+                                           promptText="Password"
+                                           styleClass="auth-input"/>
+
+                            <TextField fx:id="passwordTextField"
+                                       promptText="Password"
+                                       styleClass="auth-input"
+                                       visible="false" managed="false"/>
+                        </StackPane>
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <CheckBox fx:id="showPasswordTick"
+                                  onAction="#togglePassword"
+                                  styleClass="action-button-outline"/>
+
+                        <Label text="show password" styleClass="input-label"/>
+                    </HBox>
                 </VBox>
 
                 <Button fx:id="loginButton"
-                        text="Sign In"
+                        text="SIGN IN"
                         onAction="#handleLogin"
                         maxWidth="Infinity"
                         styleClass="auth-primary-btn"/>

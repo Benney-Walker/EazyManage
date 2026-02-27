@@ -6,6 +6,7 @@ module com.bbquantum.eazymanage {
     requires javafx.graphics;
     requires javafx.base;
     requires java.desktop;
+    requires java.prefs;
 
     exports com.bbquantum.eazymanage;
     exports com.bbquantum.eazymanage.CacheClasses;

@@ -23,8 +23,8 @@ import com.google.gson.JsonObject;
 public class EnrollStaffController {
 
     // Backend configuration
-    private static final String BASE_URL = "https://eazymanagesoftware.up.railway.app/api/v1/auth";
-    private static final String ENROLL_ENDPOINT = "/enroll-new-staff";
+    private static final String BASE_URL = "http://localhost:8080/api/auth";
+    private static final String ENROLL_ENDPOINT = "/v1/enroll-new-staff";
 
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
     private final Gson gson = new Gson();
@@ -45,8 +45,11 @@ public class EnrollStaffController {
     // Account Info
     @FXML private TextField institutionIdField;
     @FXML private ComboBox<StaffRoles> roleComboBox;
-    @FXML private PasswordField enrollmentPasswordField;
+    @FXML private PasswordField passwordField;
+    @FXML private TextField passwordTextField;
     @FXML private PasswordField confirmPasswordField;
+    @FXML private TextField confirmPasswordTextField;
+    @FXML private CheckBox showPasswordTick;
 
     // Message and Success Panel
     @FXML private Label enrollmentMessageLabel;
@@ -103,7 +106,7 @@ public class EnrollStaffController {
                 phoneNumberField.getText().trim(),
                 institutionIdField.getText().trim(),
                 String.valueOf(roleComboBox.getValue()),
-                enrollmentPasswordField.getText()
+                passwordField.getText()
         );
     }
 
@@ -165,7 +168,7 @@ public class EnrollStaffController {
         }
 
         // Password
-        String password = enrollmentPasswordField.getText();
+        String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
         if (password.isEmpty()) {
@@ -334,6 +337,41 @@ public class EnrollStaffController {
         } catch (IOException e) {
             showError("Error loading login page: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void togglePassword() {
+        if (showPasswordTick.isSelected()) {
+
+            passwordTextField.setText(passwordField.getText());
+            passwordTextField.setVisible(true);
+            passwordTextField.setManaged(true);
+
+            confirmPasswordTextField.setText(confirmPasswordField.getText());
+            confirmPasswordTextField.setVisible(true);
+            confirmPasswordTextField.setManaged(true);
+
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+
+            confirmPasswordField.setVisible(false);
+            confirmPasswordField.setManaged(false);
+        } else {
+
+            passwordField.setText(passwordTextField.getText());
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
+
+            confirmPasswordField.setText(confirmPasswordField.getText());
+            confirmPasswordField.setVisible(true);
+            confirmPasswordField.setManaged(true);
+
+            passwordTextField.setVisible(false);
+            passwordTextField.setManaged(false);
+
+            confirmPasswordTextField.setVisible(false);
+            confirmPasswordTextField.setManaged(false);
         }
     }
 }

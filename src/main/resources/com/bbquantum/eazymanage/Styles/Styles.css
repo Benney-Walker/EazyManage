@@ -353,6 +353,12 @@
     -fx-text-fill: #1E293B;
 }
 
+.text-data {
+    -fx-font-family: Verdana, Geneva, Tahoma, Geneva, Verdana, sans-serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: black;
+}
+
 .section-title-small {
     -fx-font-size: 14px;
     -fx-font-weight: bold;

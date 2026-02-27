@@ -177,7 +177,7 @@
                 </ScrollPane>
 
                 <!-- NEW SUBJECT SCORES PAGE -->
-                <ScrollPane fx:id="newSubjectResultView" visible="false" managed="false" fitToWidth="true" styleClass="modern-scroll-pane">
+                <ScrollPane fx:id="AddNewSubjectScoresView" visible="false" managed="false" fitToWidth="true" styleClass="modern-scroll-pane">
 
                     <VBox spacing="30" styleClass="content-padding">
 
@@ -196,11 +196,16 @@
                             <HBox fx:id="subjectResultSearchBox" spacing="15" alignment="BOTTOM_LEFT">
                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
                                     <Label text="Subject Code *" styleClass="input-label"/>
-                                    <TextField fx:id="subjectCodeField" promptText="e.g. MATH101, ENG-JHS2" styleClass="modern-input"/>
+                                    <TextField fx:id="subjectCodeField"
+                                               promptText="SUB********"
+                                               styleClass="modern-input"/>
                                 </VBox>
 
-                                <Button fx:id="loadSubjectStudentsBtn" text="LOAD STUDENTS" onAction="#handleLoadStudentsForScores"
-                                        styleClass="action-button-primary" style="-fx-padding: 12 30;"/>
+                                <Button fx:id="loadSubjectStudentsBtn"
+                                        text="LOAD STUDENTS"
+                                        onAction="#handleLoadStudentsForScores"
+                                        styleClass="action-button-primary"
+                                        style="-fx-padding: 12 30;"/>
                             </HBox>
 
                             <HBox fx:id="subjectInfoBox" spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
@@ -866,9 +871,28 @@
                                     </TableView>
 
                                     <HBox spacing="15" alignment="CENTER_RIGHT">
-                                        <Button fx:id="saveAttendanceBtn" text="Save Attendance" onAction="#handleSaveAttendance"
-                                                styleClass="action-button-mint" style="-fx-padding: 12 40;"/>
+                                        <Button text="CANCEL"
+                                                onAction="#handleCancelAttendance"
+                                                styleClass="action-button-red"
+                                                style="-fx-padding: 12 40;"/>
+
+                                        <Button fx:id="saveAttendanceBtn"
+                                                text="SAVE ATTENDANCE"
+                                                onAction="#handleSaveAttendance"
+                                                styleClass="action-button-primary"
+                                                style="-fx-padding: 12 40;"/>
                                     </HBox>
+
+                                    <VBox fx:id="attendanceSaveProgressBarVBox"
+                                          maxWidth="Infinity"
+                                          visible="false"
+                                          managed="false">
+                                        <ProgressBar fx:id="attendanceSaveProgressBar"
+                                                     progress="0.0"
+                                                     maxWidth="Infinity"
+                                                     styleClass="modern-progress-bar"/>
+                                    </VBox>
+
                                 </VBox>
                             </VBox>
 
@@ -929,10 +953,28 @@
                                     </TableView>
 
                                     <HBox spacing="15" alignment="CENTER_RIGHT">
+                                        <Button text="CANCEL"
+                                                onAction="#handleCancelAttendance"
+                                                styleClass="action-button-red"
+                                                style="-fx-padding: 12 40;"/>
 
-                                        <Button fx:id="updateAndSaveAttendanceBtn" text="Update Attendance" onAction="#handleUpdateAttendance"
-                                                styleClass="action-button-primary" style="-fx-padding: 12 40;"/>
+                                        <Button fx:id="updateAndSaveAttendanceBtn"
+                                                text="SAVE CHANGES"
+                                                onAction="#handleUpdateAttendance"
+                                                styleClass="action-button-primary"
+                                                style="-fx-padding: 12 40;"/>
                                     </HBox>
+
+                                    <VBox fx:id="attendanceUpdateProgressBarVBox"
+                                          maxWidth="Infinity"
+                                          visible="false"
+                                          managed="false">
+                                        <ProgressBar fx:id="attendanceUpdateProgressBar"
+                                                     progress="0.0"
+                                                     maxWidth="Infinity"
+                                                     styleClass="modern-progress-bar"/>
+                                    </VBox>
+
                                 </VBox>
                             </VBox>
 
