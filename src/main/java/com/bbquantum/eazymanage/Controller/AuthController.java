@@ -313,6 +313,10 @@ public class AuthController {
                     fxmlFile = "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
                     break;
 
+                case "ADMINISTRATOR":
+                    fxmlFile = "/com/bbquantum/eazymanage/Admin/Admin-dashboard.fxml";
+                    break;
+
                 default:
                     showError("Staff not allowed on system " + role);
                     return;
@@ -375,6 +379,15 @@ public class AuthController {
             staffController.setStaffFullName(staffFullName);
 
             staffController.initializeAfterLogin();
+        }
+
+        if (role.equals("ADMINISTRATOR")) {
+            AdminController adminController = loader.getController();
+            adminController.setInstitutionName(institutionName);
+            adminController.setStaffId(staffId);
+            adminController.setStaffFullName(staffFullName);
+
+            adminController.initializeAfterLogin();
         }
     }
 

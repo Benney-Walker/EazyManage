@@ -32,7 +32,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UtilityClass {
+public class ApiUtilityClass {
 
     public String applicationVersion = "V 2.2.0";
 
@@ -40,6 +40,10 @@ public class UtilityClass {
     private final PrincipalController principalController;
     private final FinanceController financeController;
     private final StaffController staffController;
+    private final AdminController adminController;
+
+    //Store staff Data for Update
+    public FindStaffResponse findStaffResponse;
 
     //Counter for loading Dashboards
     int counter = 0;
@@ -63,51 +67,63 @@ public class UtilityClass {
             .create();
 
     // Backend Configuration
-    public final String BASE_URL = "https://eazymanagesoftware.up.railway.app/";
+    public final String BASE_URL = "http://localhost:8080/";
     public final String API_BASE_URL_V1 = "api/v1";
     public final String API_BASE_URL_V2 = "api/v2";
 
     // Stores retrieved fees report from backend
-    public StudentFeesPaymentDisplay paymentRecords;
+    public static StudentFeesPaymentDisplay paymentRecords;
     // Store student results
     public StudentResult studentResult;
     // Stores student information for update
     public UpdateStudentPersonalData updateStudentPersonalData;
 
     // Cache Managers
-    public final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
-    public final StaffCacheManager staffCacheManager = StaffCacheManager.getInstance();
-    public final GradeCacheManager gradeCacheManager = GradeCacheManager.getInstance();
-    public final FeesCacheManager feesCacheManager = FeesCacheManager.getInstance();
-    public final SemesterCachingManager semesterCachingManager = SemesterCachingManager.getInstance();
-    public final StaffListCacheManager staffListCacheManager = StaffListCacheManager.getInstance();
-    public final GradeInfoCacheManager gradeInfoCacheManager = GradeInfoCacheManager.getInstance();
+    public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
+    public static final StaffCacheManager staffCacheManager = StaffCacheManager.getInstance();
+    public static final GradeCacheManager gradeCacheManager = GradeCacheManager.getInstance();
+    public static final FeesCacheManager feesCacheManager = FeesCacheManager.getInstance();
+    public static final SemesterCachingManager semesterCachingManager = SemesterCachingManager.getInstance();
+    public static final StaffListCacheManager staffListCacheManager = StaffListCacheManager.getInstance();
+    public static final GradeInfoCacheManager gradeInfoCacheManager = GradeInfoCacheManager.getInstance();
+    public static final SystemLogsCacheManager systemLogsCacheManager = SystemLogsCacheManager.getInstance();
 
     // Controller own variables
-    public Long totalStudentsFromBackend = 0L;
-    public Long totalStaffFromBackend = 0L;
-    public Double totalSemesterFeesFromBackend = 0D;
-    public Double feesPaidFromBackend = 0D;
-    public Double feesProgressBarFromBackend = 0D;
+    public static Long totalStudentsFromBackend = 0L;
+    public static Long totalStaffFromBackend = 0L;
+    public static Double totalSemesterFeesFromBackend = 0D;
+    public static Double feesPaidFromBackend = 0D;
+    public static Double feesProgressBarFromBackend = 0D;
 
     // PRINCIPAL CONSTRUCTOR
-    public UtilityClass(PrincipalController principalController) {
+    public ApiUtilityClass(PrincipalController principalController) {
         this.principalController = principalController;
         this.financeController = null;
         this.staffController = null;
+        this.adminController = null;
     }
 
     // FINANCE CONSTRUCTOR
-    public UtilityClass(FinanceController financeController) {
+    public ApiUtilityClass(FinanceController financeController) {
         this.financeController = financeController;
         this.principalController = null;
         this.staffController = null;
+        this.adminController = null;
     }
 
     // STAFF CONSTRUCTOR
-    public UtilityClass(StaffController staffController) {
+    public ApiUtilityClass(StaffController staffController) {
         this.staffController = staffController;
         this.principalController = null;
+        this.financeController = null;
+        this.adminController = null;
+    }
+
+    //ADMIN CONTROLLER
+    public ApiUtilityClass(AdminController adminController) {
+        this.adminController = adminController;
+        this.principalController = null;
+        this.staffController = null;
         this.financeController = null;
     }
 
@@ -116,7 +132,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -124,7 +140,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -132,7 +148,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -140,7 +156,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -148,7 +164,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -156,7 +172,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -164,7 +180,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -172,7 +188,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -180,7 +196,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -188,40 +204,9 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
-    }
-
-    private void checkCounter(int counter, Runnable onSuccess, Runnable onFailure) {
-        if (principalController != null && financeController == null && staffController == null) {
-            int initialCounter = 10;
-            if (counter == initialCounter) {
-                onSuccess.run();
-                this.counter = 0;
-            }
-            if (onFailure != null) {
-                onFailure.run();
-            }
-        } else if (principalController == null && financeController != null && staffController == null) {
-            int initialCounter = 5;
-            if (counter == initialCounter) {
-                onSuccess.run();
-                this.counter = 0;
-            }
-            if (onFailure != null) {
-                onFailure.run();
-            }
-        } else if (principalController == null && financeController == null && staffController != null) {
-            int initialCounter = 3;
-            if (counter == initialCounter) {
-                onSuccess.run();
-                this.counter = 0;
-            }
-            if (onFailure != null) {
-                onFailure.run();
-            }
-        }
     }
 
     public void loadFinanceDashboardData(String financeId, StackPane notification, Runnable onSuccess) {
@@ -229,7 +214,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -237,7 +222,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -245,7 +230,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -253,7 +238,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -261,7 +246,7 @@ public class UtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
     }
@@ -271,7 +256,7 @@ public class UtilityClass {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -279,7 +264,7 @@ public class UtilityClass {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -287,9 +272,13 @@ public class UtilityClass {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        showError(notification, errorMessageContainer);
+                        UtilityMethods.showError(notification, errorMessageContainer);
                     });
                 });
+    }
+
+    public void loadAdminDashboard(String staffId, StackPane notification, Runnable onSuccess) {
+
     }
 
     // ==================== PRINCIPAL METHODS ====================
@@ -337,7 +326,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -395,7 +384,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -453,7 +442,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -511,7 +500,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet connection.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet connection.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -588,7 +577,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -656,7 +645,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -724,7 +713,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -792,7 +781,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -860,7 +849,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -920,7 +909,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -1390,7 +1379,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onFailure, null);
                 return;
@@ -1428,8 +1417,8 @@ public class UtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            principalController.findStaffResponse = task.getValue();
-            if (principalController.findStaffResponse != null) {
+            findStaffResponse = task.getValue();
+            if (findStaffResponse != null) {
                 onSuccess.run();
                 return;
             }
@@ -1916,7 +1905,7 @@ public class UtilityClass {
 
                 if (file != null) {
                     try {
-                        saveStudentListToFile(students, file, levelName);
+                        UtilityMethods.saveStudentListToFile(students, file, levelName);
                         successMessageContainer = "List successfully saved";
                         onSuccess.run();
                     } catch (Exception e) {
@@ -2064,7 +2053,7 @@ public class UtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onFailure, null);
                 return;
@@ -2541,7 +2530,7 @@ public class UtilityClass {
 
                 if (file != null) {
                     try {
-                        saveSubjectListToFile(response, file, levelName);
+                        UtilityMethods.saveSubjectListToFile(response, file, levelName);
                         onSuccess.run();
                     } catch (Exception e) {
                         errorMessageContainer = "";
@@ -3248,213 +3237,36 @@ public class UtilityClass {
         new Thread(task).start();
     }
 
-    private void saveSubjectListToFile(List<PrintLevelSubjects> subjects, File file, String levelName) throws Exception {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-            // Header
-            writer.println("========================================");
-            writer.println("         SUBJECT LIST - " + levelName);
-            writer.println("========================================");
-            writer.println();
-            writer.println(String.format("%-5s | %-20s | %-30s", "No.", "Student ID", "Full Name"));
-            writer.println("---------------------------------------------------");
 
-            // Data rows
-            int count = 1;
-            for (PrintLevelSubjects subject : subjects) {
-                writer.println(String.format("%-5d | %-20s | %-30s",
-                        count++,
-                        subject.getSubjectId(),
-                        subject.getSubjectName()));
+    private void checkCounter(int counter, Runnable onSuccess, Runnable onFailure) {
+        if (principalController != null && financeController == null && staffController == null) {
+            int initialCounter = 10;
+            if (counter == initialCounter) {
+                onSuccess.run();
+                this.counter = 0;
             }
-
-            writer.println();
-            writer.println("---------------------------------------------------");
-            writer.println("Total Subjects: " + subjects.size());
-            writer.println("Generated on: " + LocalDate.now());
-        }
-    }
-
-    public void saveStudentPayRecordsListToFile(List<PaymentHistory> records,
-                                                 File file,
-                                                 String levelName,
-                                                 String semesterName,
-                                                 String studentName,
-                                                 String studentId) throws Exception {
-
-        try (PrintWriter writer = new PrintWriter(
-                new BufferedWriter(new FileWriter(file, false)))) {
-
-            // Header
-            writer.println("===============================================================");
-            writer.println("                    STUDENT PAYMENT RECORDS                    ");
-            writer.println("===============================================================");
-            writer.println("STUDENT ID : " + studentId);
-            writer.println("STUDENT NAME : " + studentName);
-            writer.println("GRADE : " + levelName);
-            writer.println("SEMESTER : " + semesterName);
-            writer.println("---------------------------------------------------------------");
-
-            // Column titles
-            writer.println(String.format(
-                    "%-4s | %-12s | %-10s | %-10s | %-20s | %-15s",
-                    "No",
-                    "Date",
-                    "Amount",
-                    "Balance",
-                    "Payer",
-                    "Contact"
-            ));
-
-            writer.println("---------------------------------------------------------------");
-
-            // Data rows
-            int count = 1;
-            for (PaymentHistory record : records) {
-                writer.println(String.format(
-                        "%-4d | %-12s | %-10s | %-10s | %-20s | %-15s",
-                        count++,
-                        record.getDateOfPayment(),
-                        record.getAmountPaid(),
-                        record.getFeesBalance(),
-                        record.getPersonWhoPaid(),
-                        record.getContactInfo()
-                ));
+            if (onFailure != null) {
+                onFailure.run();
             }
-
-            writer.println("---------------------------------------------------------------");
-            writer.println("Total Transactions: " + records.size());
-            writer.println("Generated on: " + LocalDate.now());
-        }
-    }
-
-    public void saveGradePayRecordsListToFile(List<GradeFeesReport> records,
-                                                File file,
-                                                String levelName,
-                                                String semesterName) throws Exception {
-
-        try (PrintWriter writer = new PrintWriter(
-                new BufferedWriter(new FileWriter(file, false)))) {
-
-            // Header
-            writer.println("===============================================================");
-            writer.println("                          PAYMENT RECORDS                      ");
-            writer.println("===============================================================");
-            writer.println("GRADE : " + levelName);
-            writer.println("SEMESTER : " + semesterName);
-            writer.println("---------------------------------------------------------------");
-
-            // Column titles
-            writer.println(String.format(
-                    "%-4s | %-12s | %-15s | %-10s | %-20s | %-15s",
-                    "No",
-                    "Student Id",
-                    "Student Name",
-                    "Fees Amount",
-                    "Amount Paid",
-                    "Outstanding"
-            ));
-
-            writer.println("---------------------------------------------------------------");
-
-            // Data rows
-            int count = 1;
-            for (GradeFeesReport record : records) {
-                writer.println(String.format(
-                        "%-4d | %-12s | %-15s | %-10s | %-20s | %-15s",
-                        count++,
-                        record.getStudentId(),
-                        record.getStudentName(),
-                        record.getTotalAmountToPay(),
-                        record.getAmountPayed(),
-                        record.getOutstanding()
-
-                ));
+        } else if (principalController == null && financeController != null && staffController == null) {
+            int initialCounter = 5;
+            if (counter == initialCounter) {
+                onSuccess.run();
+                this.counter = 0;
             }
-
-            writer.println("---------------------------------------------------------------");
-            writer.println("Total Students: " + records.size());
-            writer.println("Generated on: " + LocalDate.now());
-        }
-    }
-
-
-    private void saveStudentListToFile(List<StudentListPrint> students, File file, String levelName) throws Exception {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-            // Header
-            writer.println("========================================");
-            writer.println("         STUDENT LIST - " + levelName);
-            writer.println("========================================");
-            writer.println();
-            writer.println(String.format("%-5s | %-20s | %-30s",
-                    "No.",
-                    "Student ID",
-                    "Full Name"));
-            writer.println("---------------------------------------------------");
-
-            // Data rows
-            int count = 1;
-            for (StudentListPrint student : students) {
-                writer.println(String.format("%-5d | %-20s | %-30s",
-                        count++,
-                        student.getStudentId(),
-                        student.getFullName()));
+            if (onFailure != null) {
+                onFailure.run();
             }
-
-            writer.println();
-            writer.println("---------------------------------------------------");
-            writer.println("Total Students: " + students.size());
-            writer.println("Generated on: " + LocalDate.now());
+        } else if (principalController == null && financeController == null && staffController != null) {
+            int initialCounter = 3;
+            if (counter == initialCounter) {
+                onSuccess.run();
+                this.counter = 0;
+            }
+            if (onFailure != null) {
+                onFailure.run();
+            }
         }
-    }
-
-    // ==================== UTILITY METHODS ====================
-
-    public void showError(StackPane notification, String message) {
-        Platform.runLater(() -> {
-            NotificationUtil.showError(notification, message);
-        });
-    }
-
-    public void showSuccess(StackPane notification, String message) {
-        Platform.runLater(() -> {
-            NotificationUtil.showSuccess(notification, message);
-        });
-    }
-
-    public void processingButton(Button button) {
-        button.setText("Processing...");
-        button.setDisable(true);
-    }
-
-    public void notProcessingButton(Button button, String buttonText) {
-        button.setText(buttonText);
-        button.setDisable(false);
-    }
-
-    public void clearSession() {
-
-        SessionManager.clearSession();
-
-        // Clear cached backend data
-        feesCacheManager.clearClassFeesSummaryCache();
-        feesCacheManager.clearRecentPaymentCache();
-
-        gradeCacheManager.clearCache();
-        gradeInfoCacheManager.clearCachedGradeStudents();
-        cacheManager.clearCachedStudents();
-        semesterCachingManager.clearCachedSemesters();
-        staffCacheManager.clearCachedStaffList();
-        staffListCacheManager.clearCachedStaffList();
-
-        // Clear dashboard numbers
-        totalStudentsFromBackend = 0L;
-        totalStaffFromBackend = 0L;
-        totalSemesterFeesFromBackend = 0.0;
-        feesPaidFromBackend = 0.0;
-        feesProgressBarFromBackend = 0.0;
-
-        // Clear reports / temp objects
-        paymentRecords = null;
     }
 
 }

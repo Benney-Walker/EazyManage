@@ -216,7 +216,7 @@ public class EnrollStaffController {
                 requestBody.addProperty("password", password);
 
                 // Set status based on role (adjust if needed)
-                requestBody.addProperty("status", role);
+                requestBody.addProperty("role", role);
 
                 // Build HTTP request
                 HttpRequest request = HttpRequest.newBuilder()

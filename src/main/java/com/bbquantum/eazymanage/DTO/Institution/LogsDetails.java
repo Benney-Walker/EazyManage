@@ -74,7 +74,7 @@ public class LogsDetails {
         this.createdBy = createdBy;
     }
 
-    public String getStatus() {
+    public String getActionStatus() {
         return status;
     }
 

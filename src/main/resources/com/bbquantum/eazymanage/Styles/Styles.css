@@ -897,7 +897,7 @@
 .back-nav-button {
     -fx-background-color: transparent;
     -fx-text-fill: #10B981; /* soft danger red */
-    -fx-font-size: 15px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-padding: 10 14;
     -fx-background-radius: 8;

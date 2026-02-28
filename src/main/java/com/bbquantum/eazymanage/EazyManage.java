@@ -41,6 +41,10 @@ public class EazyManage extends Application {
                     fxmlFile = "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
                     break;
 
+                case "ADMINISTRATOR":
+                    fxmlFile = "/com/bbquantum/eazymanage/Admin/Admin-dashboard.fxml";
+                    break;
+
             }
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));

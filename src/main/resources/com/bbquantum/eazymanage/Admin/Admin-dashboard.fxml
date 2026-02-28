@@ -12,6 +12,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ProgressIndicator?>
 <StackPane xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.bbquantum.eazymanage.Controller.AdminController"
            fx:id="notification"
@@ -50,7 +52,7 @@
                     <Button fx:id="reportsNavBtn" text="MANAGE RESULTS" onAction="#showManageResults"
                             maxWidth="Infinity" styleClass="nav-button"/>
 
-                    <Button fx:id="staffNavButton" text="MANAGE STAFFS" onAction="showManageStaffs"
+                    <Button fx:id="staffNavButton" text="MANAGE STAFFS" onAction="#showManageStaffs"
                             maxWidth="Infinity" styleClass="nav-button"/>
 
                     <Button fx:id="logsNavBtn" text="SYSTEM LOGS" onAction="#showSystemLogs"
@@ -85,18 +87,20 @@
                        styleClass="main-content-bg">
 
                 <ScrollPane fx:id="dashboardView"
+                            fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
                     <VBox spacing="30" styleClass="content-padding">
-                        <HBox alignment="CENTER_LEFT">
-                            <VBox spacing="5">
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
                                 <Label text="ADMINISTRATOR" styleClass="header-title"/>
                                 <Label fx:id="dateTimeLabel" text=" " styleClass="header-subtitle"/>
                             </VBox>
-                        </HBox>
-                        <HBox alignment="CENTER_RIGHT">
-                            <Button text="REFRESH DASHBOARD" onAction="#refreshDashboard"
-                                    styleClass="action-button-outline"/>
+
+                            <VBox alignment="BOTTOM_RIGHT" HBox.hgrow="ALWAYS">
+                                <Button text="REFRESH DASHBOARD" onAction="#refreshDashboard"
+                                        styleClass="action-button-outline"/>
+                            </VBox>
                         </HBox>
 
                         <!-- Statistics Cards -->
@@ -150,23 +154,22 @@
 
                             <TableView fx:id="recentActivitiesTable"
                                        styleClass="modern-table"
+                                       VBox.vgrow="ALWAYS"
                                        prefHeight="300">
 
                                 <columns>
-                                    <TableColumn text="ID" fx:id="activitiesIdCol" prefWidth="120"/>
-                                    <TableColumn text="TYPE" fx:id="activityTypeCol" prefWidth="250"/>
+                                    <TableColumn text="ID" fx:id="activityIdCol" prefWidth="100"/>
+                                    <TableColumn text="TYPE" fx:id="activityTypeCol" prefWidth="100"/>
                                     <TableColumn text="CREATED BY" fx:id="createdByCol" prefWidth="120"/>
-                                    <TableColumn text="DATE" fx:id="activityDateCol" prefWidth="180"/>
-                                    <TableColumn text="TIME" fx:id="activityTimeCol" prefWidth="120"/>
-                                    <TableColumn text="ACTION" fx:id="actionCol" prefWidth="120"/>
-                                    <TableColumn text="STATUS" fx:id="activityStatusCol" prefWidth="120"/>
+                                    <TableColumn text="DATE" fx:id="activityDateCol" prefWidth="100"/>
+                                    <TableColumn text="TIME" fx:id="activityTimeCol" prefWidth="100"/>
+                                    <TableColumn text="ACTION" fx:id="actionDataCol" prefWidth="200"/>
+                                    <TableColumn text="STATUS" fx:id="activityStatusCol" prefWidth="100"/>
                                 </columns>
 
                                 <placeholder>
-                                    <VBox alignment="CENTER" spacing="6">
-                                        <Label text="No Recent Activities"
-                                               style="-fx-font-weight: bold; -fx-text-fill: #16a34a;"/>
-                                    </VBox>
+                                    <Label text="No Recent Activities"
+                                           style="-fx-font-weight: bold; -fx-text-fill: #16a34a;"/>
                                 </placeholder>
 
                             </TableView>
@@ -177,7 +180,7 @@
                 </ScrollPane>
 
                 <!-- MANAGE STUDENTS PAGE -->
-                <ScrollPane fx:id="addNewStudentView"
+                <ScrollPane fx:id="manageStudentView"
                             visible="false"
                             managed="false"
                             fitToWidth="true"
@@ -272,7 +275,9 @@
                                 <Separator styleClass="content-separator"/>
 
                                 <HBox spacing="15" alignment="CENTER">
-                                    <Button fx:id="saveAndClearBtn" text="Save Student" onAction="#handleSaveAndClear"
+                                    <Button fx:id="saveAndClearBtn"
+                                            text="ADD STUDENT"
+                                            onAction="#handleSaveAndClear"
                                             styleClass="action-button-mint" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
                                 </HBox>
 
@@ -450,13 +455,15 @@
                                     <VBox spacing="8" HBox.hgrow="ALWAYS">
                                         <Label text="Select Subject" styleClass="input-label"/>
                                         <ComboBox fx:id="score_selectSubjectBox"
+                                                  promptText="Select subject"
                                                    styleClass="modern-input"/>
                                     </VBox>
 
                                     <VBox spacing="8" HBox.hgrow="ALWAYS">
                                         <Label text="Select Grade" styleClass="input-label"/>
                                         <ComboBox fx:id="score_SelectClassBox"
-                                                   promptText="SUB********"
+                                                  onMouseReleased="#fetchClassSubjects"
+                                                   promptText="Select grade"
                                                    styleClass="modern-input"/>
                                     </VBox>
                                 </HBox>
@@ -536,25 +543,31 @@
                                     </columns>
                                 </TableView>
 
-                                <HBox spacing="15" alignment="CENTER_RIGHT">
-                                    <Button text="RESET TABLE"
-                                            onAction="#handleClearScores"
-                                            styleClass="text-button-blue"/>
+                                <HBox spacing="15" alignment="CENTER_LEFT">
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Select Semester *" styleClass="input-label"/>
+                                        <ComboBox fx:id="saveScoresSemesterComboBox"
+                                                  promptText="Select Semester"
+                                                  maxWidth="300"
+                                                  styleClass="modern-combo"/>
+                                    </VBox>
 
-                                    <Button fx:id="saveScores"
-                                            text="SAVE SCORES"
-                                            onAction="#handleSaveScores"
-                                            styleClass="action-button-primary"
-                                            style="-fx-padding: 12 40;"/>
+                                    <HBox spacing="10"
+                                          alignment="CENTER_RIGHT"
+                                          HBox.hgrow="ALWAYS">
+
+                                        <Button text="RESET TABLE"
+                                                onAction="#handleClearScoresTable"
+                                                styleClass="text-button-blue"/>
+
+                                        <Button fx:id="saveScores"
+                                                text="SAVE SCORES"
+                                                onAction="#handleSaveScores"
+                                                styleClass="action-button-primary"
+                                                style="-fx-padding: 12 40;"/>
+
+                                    </HBox>
                                 </HBox>
-
-                                <VBox fx:id="saveScoresSemesterVBox" spacing="8" visible="false" managed="false">
-                                    <Label text="Select Semester *" styleClass="input-label"/>
-                                    <ComboBox fx:id="saveScoresSemesterComboBox"
-                                              promptText="Select Semester"
-                                              maxWidth="300"
-                                              styleClass="modern-combo"/>
-                                </VBox>
 
                             </VBox>
                         </VBox>
@@ -584,12 +597,12 @@
                         <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
                             <Button fx:id="addSubjectToggleBtn"
-                                    text="➕ Add Subject"
+                                    text="ADD SUBJECT"
                                     onAction="#showAddSubjectCard"
                                     styleClass="action-button-primary"/>
 
                             <Button fx:id="updateSubjectToggleBtn"
-                                    text="🖨️ Print Class Subjects"
+                                    text="UPDATE SUBJECT"
                                     onAction="#showUpdateSubjectCard"
                                     styleClass="action-button-primary"/>
                         </HBox>
@@ -743,7 +756,7 @@
 
                         <VBox spacing="25" styleClass="panel-card" maxWidth="1000">
 
-                            <VBox fx:id="viewResultsHBox" alignment="CENTER" spacing="15" maxWidth="1000">
+                            <VBox fx:id="viewResultsContainer" alignment="CENTER" spacing="15" maxWidth="1000">
 
                                 <HBox spacing="15" alignment="BOTTOM_LEFT">
 
@@ -773,78 +786,88 @@
                                 </VBox>
                             </VBox>
 
-                            <HBox fx:id="resultsInfoBox" spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
-                                  styleClass="alert-panel-info">
-                                <Label text="📚" styleClass="sidebar-logo-bg"/>
-                                <VBox spacing="2">
-                                    <Label fx:id="gradeNameLabel" text=" " styleClass="section-title"/>
-                                    <Label fx:id="semesterNameLabel" text=" " styleClass="section-title"/>
-                                </VBox>
-                                <Region HBox.hgrow="ALWAYS"/>
-                                <Label text="View Results Below" style="-fx-text-fill: #059669; -fx-font-weight: bold; -fx-font-size: 11px;"/>
-                            </HBox>
+                            <VBox fx:id="resultsDisplayPanel" alignment="CENTER">
 
-                            <VBox fx:id="classResultsTableContainer" spacing="20" visible="false" managed="false">
-                                <Separator styleClass="content-separator"/>
-
-                                <HBox alignment="CENTER_LEFT">
-                                    <VBox spacing="5">
-                                        <Label text="Student Ledger" styleClass="section-title"/>
-                                        <Label text="Click row to view detailed result below the table" styleClass="section-title-small"/>
+                                <HBox spacing="15" alignment="CENTER_LEFT"
+                                      styleClass="alert-panel-info">
+                                    <Label text="📚" styleClass="sidebar-logo-bg"/>
+                                    <VBox spacing="2">
+                                        <Label fx:id="gradeNameLabel" text=" " styleClass="section-title"/>
+                                        <Label fx:id="semesterNameLabel" text=" " styleClass="section-title"/>
                                     </VBox>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label text="View Results Below" style="-fx-text-fill: #059669; -fx-font-weight: bold; -fx-font-size: 11px;"/>
                                 </HBox>
 
-                                <TableView fx:id="classResultsTable"
-                                           editable="true"
-                                           styleClass="modern-table"
-                                           VBox.vgrow="ALWAYS">
+                                <Separator styleClass="content-separator"/>
 
-                                    <columns>
-                                        <TableColumn text="STUD ID" fx:id="studentResultIdColumn" prefWidth="150" />
-                                        <TableColumn text="STUD NAME" fx:id="studentResultNameColumn" prefWidth="300" />
-                                        <TableColumn text="GRADE" fx:id="classNameColumn" prefWidth="180" />
-                                        <TableColumn text="SEMESTER" fx:id="semesterNameColumn" prefWidth="180"/>
-                                        <TableColumn text="TOTAL SCORE" fx:id="totalScoreColumn" prefWidth="180"/>
-                                        <TableColumn text="AVG SCORE" fx:id="averageScoreColumn" prefWidth="180"/>
-                                        <TableColumn text="POSITION" fx:id="positionColumn" prefWidth="180"/>
-                                    </columns>
-                                </TableView>
+                                <VBox spacing="20" >
 
-                                <VBox fx:id="resultsDetailsBox" visible="false" managed="false" spacing="15" styleClass="sub-panel">
+                                    <HBox alignment="CENTER_LEFT">
+                                        <VBox spacing="5">
+                                            <Label text="Student Ledger" styleClass="section-title"/>
+                                            <Label text="Click row to view detailed result below the table" styleClass="section-title-small"/>
+                                        </VBox>
+                                    </HBox>
 
-                                    <Label text="📊 Subject Breakdown" styleClass="section-title-small"/>
+                                    <Separator styleClass="content-separator"/>
 
-                                    <TableView fx:id="subjectBreakdownTable" styleClass="modern-table" maxHeight="250">
+                                    <TableView fx:id="classResultsTable"
+                                               editable="true"
+                                               styleClass="modern-table"
+                                               VBox.vgrow="ALWAYS">
+
                                         <columns>
-                                            <TableColumn fx:id="subjectNameCol" text="SUBJECT" prefWidth="150"/>
-                                            <TableColumn fx:id="exercise1Col" text="EX 1" prefWidth="100"/>
-                                            <TableColumn fx:id="classTestCol" text="CLASS TEST" prefWidth="100"/>
-                                            <TableColumn fx:id="exercise2Col" text="EX 2" prefWidth="100"/>
-                                            <TableColumn fx:id="projectScoreCol" text="PROJECT" prefWidth="100"/>
-                                            <TableColumn fx:id="classScoreCol" text="ClASS (50%)" prefWidth="100"/>
-                                            <TableColumn fx:id="examScoreCol" text="EXAM SCORE" prefWidth="100"/>
-                                            <TableColumn fx:id="calculatedExamScoreCol" text="EXAM (50%)" prefWidth="100"/>
-                                            <TableColumn fx:id="totalCol" text="TOTAL" prefWidth="100"/>
-                                            <TableColumn fx:id="gradeCol" text="GRADE" prefWidth="100"/>
-                                            <TableColumn fx:id="remarkCol" text="REMARK" prefWidth="150"/>
+                                            <TableColumn text="STUD ID" fx:id="studentResultIdColumn" prefWidth="150" />
+                                            <TableColumn text="STUD NAME" fx:id="studentResultNameColumn" prefWidth="300" />
+                                            <TableColumn text="GRADE" fx:id="classNameColumn" prefWidth="180" />
+                                            <TableColumn text="SEMESTER" fx:id="semesterNameColumn" prefWidth="180"/>
+                                            <TableColumn text="TOTAL SCORE" fx:id="totalScoreColumn" prefWidth="180"/>
+                                            <TableColumn text="AVG SCORE" fx:id="averageScoreColumn" prefWidth="180"/>
+                                            <TableColumn text="POSITION" fx:id="positionColumn" prefWidth="180"/>
                                         </columns>
                                     </TableView>
 
+                                    <Separator styleClass="content-separator"/>
+
+                                    <VBox fx:id="resultsDetailsBox" visible="false" managed="false" spacing="15" styleClass="sub-panel">
+
+                                        <Label text="📊 Subject Breakdown" styleClass="section-title-small"/>
+
+                                        <TableView fx:id="subjectBreakdownTable" styleClass="modern-table" maxHeight="250">
+                                            <columns>
+                                                <TableColumn fx:id="subjectNameCol" text="SUBJECT" prefWidth="150"/>
+                                                <TableColumn fx:id="exercise1Col" text="EX 1" prefWidth="100"/>
+                                                <TableColumn fx:id="classTestCol" text="CLASS TEST" prefWidth="100"/>
+                                                <TableColumn fx:id="exercise2Col" text="EX 2" prefWidth="100"/>
+                                                <TableColumn fx:id="projectScoreCol" text="PROJECT" prefWidth="100"/>
+                                                <TableColumn fx:id="classScoreCol" text="ClASS (50%)" prefWidth="100"/>
+                                                <TableColumn fx:id="examScoreCol" text="EXAM SCORE" prefWidth="100"/>
+                                                <TableColumn fx:id="calculatedExamScoreCol" text="EXAM (50%)" prefWidth="100"/>
+                                                <TableColumn fx:id="totalCol" text="TOTAL" prefWidth="100"/>
+                                                <TableColumn fx:id="gradeCol" text="GRADE" prefWidth="100"/>
+                                                <TableColumn fx:id="remarkCol" text="REMARK" prefWidth="150"/>
+                                            </columns>
+                                        </TableView>
+
+                                    </VBox>
+
+                                    <HBox spacing="15" alignment="CENTER_RIGHT">
+                                        <Button fx:id="generateReportBtn"
+                                                text="DOWNLOAD TERM REPORTS"
+                                                onAction="#handleDownloadReports"
+                                                styleClass="action-button-primary"
+                                                style="-fx-padding: 12 40;"/>
+
+                                        <Button text="CLEAR RESULTS"
+                                                onAction="#handleClearResults"
+                                                styleClass="action-button-red"/>
+                                    </HBox>
+
                                 </VBox>
 
-                                <HBox spacing="15" alignment="CENTER_RIGHT">
-                                    <Button fx:id="generateReportBtn"
-                                            text="DOWNLOAD TERM REPORTS"
-                                            onAction="#handleDownloadReports"
-                                            styleClass="action-button-primary"
-                                            style="-fx-padding: 12 40;"/>
-
-                                    <Button text="CLEAR RESULTS"
-                                            onAction="#handleClearResults"
-                                            styleClass="action-button-red"/>
-                                </HBox>
-
                             </VBox>
+
                         </VBox>
 
                     </VBox>
@@ -891,7 +914,6 @@
                                     <placeholder>
                                         <Label text="No staff members found" style="-fx-text-fill: #94A3B8;"/>
                                     </placeholder>
-
                                 </TableView>
                             </VBox>
 
@@ -908,7 +930,7 @@
                                     </StackPane>
                                     <VBox spacing="3" HBox.hgrow="ALWAYS">
                                         <Label fx:id="staffFullNameLabel" text="Staff Name" styleClass="section-title"/>
-                                        <Label fx:id="staffIdLabel" text="ID" styleClass="section-title"/>
+                                        <Label fx:id="staffIdLabel" text="ID" styleClass="section-title-small"/>
                                     </VBox>
                                 </HBox>
 
@@ -1029,11 +1051,9 @@
                             </HBox>
                         </VBox>
 
-                        <VBox spacing="20" styleClass="stat-card">
-
-                            <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="📋 Current Staff List" styleClass="section-title"/>
-                            </HBox>
+                        <VBox fx:id="activitiesListPanel"
+                              spacing="20"
+                              styleClass="stat-card">
 
                             <Separator styleClass="content-separator"/>
 
@@ -1063,7 +1083,16 @@
                               styleClass="panel-card"
                               maxWidth="700">
 
-                            <Label text="LOG INFORMATION" styleClass="section-header-blue"/>
+                            <HBox alignment="CENTER_LEFT"
+                                  styleClass="sub-panel"
+                                  spacing="15">
+                                <Button text="BACK"
+                                        styleClass="back-nav-button"
+                                        onAction="#backToLogsList"/>
+
+                                <Label text="LOG INFORMATION"
+                                       styleClass="section-header-blue"/>
+                            </HBox>
 
                             <HBox spacing="15">
                                 <VBox spacing="8" HBox.hgrow="ALWAYS">
@@ -1109,14 +1138,32 @@
 
                             <VBox spacing="8" styleClass="sub-panel">
                                 <Label text="Activity Data:" styleClass="section-title-small"/>
-                                <Label fx:id="activityDataField"
-                                       styleClass="text-data"/>
+                                <TextArea fx:id="activityDataField"
+                                          maxWidth="500"
+                                          maxHeight="300"
+                                          editable="false"
+                                          styleClass="text-data"/>
                             </VBox>
 
                         </VBox>
                     </VBox>
 
                 </ScrollPane>
+
+                <!-- LOADING OVERLAY -->
+                <VBox fx:id="loadingOverlay"
+                      alignment="CENTER"
+                      spacing="15"
+                      visible="false"
+                      managed="false"
+                      style="-fx-background-color: rgba(0,0,0,0.3);">
+
+                    <ProgressIndicator fx:id="loadingSpinner"
+                                       style="-fx-text-fill: #4682B4;"/>
+
+                    <Label text="Loading dashboard..."
+                           style="-fx-text-fill: #4682B4; -fx-font-size: 14;" />
+                </VBox>
 
             </StackPane>
         </center>

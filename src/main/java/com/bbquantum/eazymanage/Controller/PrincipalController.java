@@ -9,7 +9,8 @@ import com.bbquantum.eazymanage.DTO.Finance.FeesSummaryTable;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Institution.*;
-import com.bbquantum.eazymanage.Utitity.UtilityClass;
+import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
+import com.bbquantum.eazymanage.Utitity.UtilityMethods;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -39,7 +40,7 @@ import java.util.ResourceBundle;
 
 public class PrincipalController implements Initializable {
 
-    private UtilityClass utilityClass;
+    private ApiUtilityClass apiUtilityClass;
 
     //Store staff Data from backend
     String institutionName;
@@ -48,8 +49,6 @@ public class PrincipalController implements Initializable {
     //Store logged in staff Id from login
     public String currentStaffId;
 
-    //Store staff Data for Update
-    public FindStaffResponse findStaffResponse;
     //Get refreshed staff list
     public List<ViewStaffList> refreshedStaffViewList;
     //Store fees filter
@@ -109,10 +108,8 @@ public class PrincipalController implements Initializable {
     @FXML private Button searchStaffBtn;
     @FXML private Button passwordResetBtn;
     @FXML private Button updateStaffInfoBtn;
-    @FXML
-    public VBox noStaffFoundPanel;
-    @FXML
-    public TableView<ViewStaffList> allStaffTable;
+
+    @FXML public TableView<ViewStaffList> allStaffTable;
     @FXML private TableColumn<ViewStaffList, String> staffIdColumn;
     @FXML private TableColumn<ViewStaffList, String> staffNameColumn;
     @FXML private TableColumn<ViewStaffList, String> staffRoleColumn;
@@ -542,7 +539,7 @@ public class PrincipalController implements Initializable {
     @FXML
     public void refreshDashboard() {
         showLoading();
-        utilityClass.loadPrincipalData(currentStaffId, notification,
+        apiUtilityClass.loadPrincipalData(currentStaffId, notification,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -555,7 +552,7 @@ public class PrincipalController implements Initializable {
 
     @FXML
     public void handleLogout() throws IOException {
-        utilityClass.clearSession();
+        UtilityMethods.clearSession();
         // Close the login window
         Stage principalDashboard = (Stage) logoutButton.getScene().getWindow();
 
@@ -585,17 +582,17 @@ public class PrincipalController implements Initializable {
     private void showFinanceDashboard() {
         loadFinanceDashboardData();
 
-        List<GradeCaching> cachedGrades = utilityClass.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = apiUtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null) {
             Platform.runLater(() -> classLevelComboBox.getItems().setAll(cachedGrades));
         }
 
-        List<SemesterCaching> semesterCaching = utilityClass.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> semesterCaching = apiUtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesterCaching != null) {
             Platform.runLater(() -> semesterComboBox.getItems().setAll(semesterCaching));
         }
 
-        List<ClassFeesSummary> cachedClassfees = utilityClass.feesCacheManager.getClassFeesSummaryCache();
+        List<ClassFeesSummary> cachedClassfees = apiUtilityClass.feesCacheManager.getClassFeesSummaryCache();
         if (cachedClassfees != null) {
             Platform.runLater(() -> classSummaryTable.getItems().setAll(cachedClassfees));
         }
@@ -608,13 +605,13 @@ public class PrincipalController implements Initializable {
 
         loadStudentDashboardData();
 
-        List<GradeCaching> cachedGrades = utilityClass.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = apiUtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             resultsClassComboBox.getItems().setAll(cachedGrades);
             printStudentClassComboBox.getItems().setAll(cachedGrades);
         }
 
-        List<SemesterCaching> semesterCaching = utilityClass.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> semesterCaching = apiUtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesterCaching != null && !semesterCaching.isEmpty()) {
             resultsSemesterComboBox.getItems().setAll(semesterCaching);
         }
@@ -629,14 +626,14 @@ public class PrincipalController implements Initializable {
     }
 
     public void openClassResultsView() {
-        List<GradeCaching> cachedGrades = utilityClass.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = apiUtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             if (classResultsGradeComboBox.getItems().isEmpty()) {
                 classResultsGradeComboBox.getItems().addAll(cachedGrades);
             }
         }
 
-        List<SemesterCaching> semesterCaching = utilityClass.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> semesterCaching = apiUtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesterCaching != null && !semesterCaching.isEmpty()) {
             if (classResultsSemesterComboBox.getItems().isEmpty()) {
                 classResultsSemesterComboBox.getItems().addAll(semesterCaching);
@@ -650,7 +647,7 @@ public class PrincipalController implements Initializable {
     public void handleResetPassword() {
         String staffId = searchStaffIdField.getText().trim();
         if (staffId.isEmpty()) {
-            utilityClass.showError(notification, "Please enter a staff id!");
+            UtilityMethods.showError(notification, "Please enter a staff id!");
             return;
         }
 
@@ -661,11 +658,11 @@ public class PrincipalController implements Initializable {
 
         String newPassword = newPasswordField.getText();
         if (newPassword.isEmpty()) {
-            utilityClass.showError(notification, "Please enter a new password!");
+            UtilityMethods.showError(notification, "Please enter a new password!");
             return;
         }
 
-        utilityClass.processingButton(passwordResetBtn);
+        UtilityMethods.processingButton(passwordResetBtn);
 
         // Confirm action
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -674,28 +671,28 @@ public class PrincipalController implements Initializable {
         confirmAlert.setContentText("New Password: " + newPassword);
 
         if (confirmAlert.showAndWait().get() != ButtonType.OK) {
-            utilityClass.notProcessingButton(passwordResetBtn, "RESET PASSWORD");
+            UtilityMethods.notProcessingButton(passwordResetBtn, "RESET PASSWORD");
             return;
         }
-        utilityClass.recoverPassword(staffId, newPassword,
+        apiUtilityClass.recoverPassword(staffId, newPassword,
                 () -> {
             //On Success
                     Platform.runLater( () -> {
-                        utilityClass.notProcessingButton(passwordResetBtn, "RESET PASSWORD");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(passwordResetBtn, "RESET PASSWORD");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater( () -> {
-                        utilityClass.notProcessingButton(passwordResetBtn, "RESET PASSWORD");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(passwordResetBtn, "RESET PASSWORD");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
             //On Network Issue
                     Platform.runLater( () -> {
-                        utilityClass.notProcessingButton(passwordResetBtn, "Recover password");
-                        utilityClass.showError(notification, "Network error! Check your internet and try again");
+                        UtilityMethods.notProcessingButton(passwordResetBtn, "Recover password");
+                        UtilityMethods.showError(notification, "Network error! Check your internet and try again");
                     });
                 });
     }
@@ -713,14 +710,14 @@ public class PrincipalController implements Initializable {
             return;
         }
 
-        utilityClass.processingButton(updateStaffInfoBtn);
+        UtilityMethods.processingButton(updateStaffInfoBtn);
         FindStaffResponse updateInfo = updateStaffDTO();
-        utilityClass.updateStaffInfo(updateInfo,
+        apiUtilityClass.updateStaffInfo(updateInfo,
                 () -> {
             //On Success
                     Platform.runLater( () -> {
-                        utilityClass.notProcessingButton(updateStaffInfoBtn, "SAVE CHANGES");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(updateStaffInfoBtn, "SAVE CHANGES");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         staffDetailsPanel.setVisible(false);
                         staffDetailsPanel.setManaged(false);
                         searchStaffIdField.clear();
@@ -729,15 +726,15 @@ public class PrincipalController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater( () -> {
-                        utilityClass.notProcessingButton(updateStaffInfoBtn, "SAVE CHANGES");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(updateStaffInfoBtn, "SAVE CHANGES");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater( () -> {
-                        utilityClass.notProcessingButton(updateStaffInfoBtn, "SAVE CHANGES");
-                        utilityClass.showError(notification, "Network Error! Check your internet and try again");
+                        UtilityMethods.notProcessingButton(updateStaffInfoBtn, "SAVE CHANGES");
+                        UtilityMethods.showError(notification, "Network Error! Check your internet and try again");
                     });
                 });
 
@@ -748,14 +745,14 @@ public class PrincipalController implements Initializable {
         //Extract studentId from textField
         String studentId = studentIdSearchField.getText().trim();
         if (studentId.isEmpty()) {
-            utilityClass.showError(notification, "Please enter a student id!");
+            UtilityMethods.showError(notification, "Please enter a student id!");
             return;
         }
 
         //Get selected class from combo box
         GradeCaching selectedGrade = classLevelComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) {
-            utilityClass.showError(notification, "Please select Grade");
+            UtilityMethods.showError(notification, "Please select Grade");
             return;
         }
         String gradeId = selectedGrade.getLevelId();
@@ -763,32 +760,32 @@ public class PrincipalController implements Initializable {
         //Get selected semester from combo box
         SemesterCaching selectedSemester = semesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            utilityClass.showError(notification, "Please select Semester");
+            UtilityMethods.showError(notification, "Please select Semester");
             return;
         }
         String semesterId = selectedSemester.getSemesterId();
-        utilityClass.processingButton(searchFeesHistoryBtn);
+        UtilityMethods.processingButton(searchFeesHistoryBtn);
 
-        utilityClass.fetchStudentPaymentRecords(studentId, semesterId, gradeId,
+        apiUtilityClass.fetchStudentPaymentRecords(studentId, semesterId, gradeId,
                 () -> {
                     // On success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
-                        displayFeeReport(utilityClass.paymentRecords);
+                        UtilityMethods.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        displayFeeReport(apiUtilityClass.paymentRecords);
                     });
                 },
                 () -> {
                     // On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
-                        utilityClass.showError(notification,"Network error! Check your internet and try again");
+                        UtilityMethods.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
+                        UtilityMethods.showError(notification,"Network error! Check your internet and try again");
                     });
                 });
     }
@@ -798,13 +795,13 @@ public class PrincipalController implements Initializable {
         String ownUrl = "/fully-paid-students/" + currentStaffId;
         String filter = "FULLY PAID STUDENTS";
 
-        utilityClass.processingButton(fullyPaidBtn);
-        utilityClass.getFeesFilterData(ownUrl,
+        UtilityMethods.processingButton(fullyPaidBtn);
+        apiUtilityClass.getFeesFilterData(ownUrl,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(fullyPaidBtn, "FULLY PAID");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(fullyPaidBtn, "FULLY PAID");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         String size = String.valueOf(feesSummaryTable.size());
                         displayFilteredFeesTable(feesSummaryTable, filter, size);
                     });
@@ -812,17 +809,17 @@ public class PrincipalController implements Initializable {
                 () -> {
             //On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(fullyPaidBtn, "FULLY PAID");
+                        UtilityMethods.notProcessingButton(fullyPaidBtn, "FULLY PAID");
                         filteredStudentsPanel.setVisible(false);
                         filteredStudentsPanel.setManaged(false);
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(fullyPaidBtn, "FULLY PAID");
-                        utilityClass.showError(notification, "Network Error! Check your internet and try again");
+                        UtilityMethods.notProcessingButton(fullyPaidBtn, "FULLY PAID");
+                        UtilityMethods.showError(notification, "Network Error! Check your internet and try again");
                     });
                 });
     }
@@ -832,13 +829,13 @@ public class PrincipalController implements Initializable {
         String ownUrl = "/partially-paid-students/" + currentStaffId;
         String filter = "PARTIALLY PAID STUDENTS";
 
-        utilityClass.processingButton(partiallyPaidBtn);
-        utilityClass.getFeesFilterData(ownUrl,
+        UtilityMethods.processingButton(partiallyPaidBtn);
+        apiUtilityClass.getFeesFilterData(ownUrl,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(partiallyPaidBtn, "PARTIAL PAYMENT");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(partiallyPaidBtn, "PARTIAL PAYMENT");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         String size = String.valueOf(feesSummaryTable.size());
                         displayFilteredFeesTable(feesSummaryTable, filter, size);
                     });
@@ -846,17 +843,17 @@ public class PrincipalController implements Initializable {
                 () -> {
                     //On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(partiallyPaidBtn, "PARTIAL PAYMENT");
+                        UtilityMethods.notProcessingButton(partiallyPaidBtn, "PARTIAL PAYMENT");
                         filteredStudentsPanel.setVisible(false);
                         filteredStudentsPanel.setManaged(false);
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(fullyPaidBtn, "PARTIAL PAYMENT");
-                        utilityClass.showError(notification, "Network Error! Check your internet and try again");
+                        UtilityMethods.notProcessingButton(fullyPaidBtn, "PARTIAL PAYMENT");
+                        UtilityMethods.showError(notification, "Network Error! Check your internet and try again");
                     });
                 });
     }
@@ -866,13 +863,13 @@ public class PrincipalController implements Initializable {
         String ownUrl = "/not-paid-students/" + currentStaffId;
         String filter = "NOT PAID STUDENTS";
 
-        utilityClass.processingButton(notPaidBtn);
-        utilityClass.getFeesFilterData(ownUrl,
+        UtilityMethods.processingButton(notPaidBtn);
+        apiUtilityClass.getFeesFilterData(ownUrl,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(notPaidBtn, "NOT PAID");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(notPaidBtn, "NOT PAID");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         String size = String.valueOf(feesSummaryTable.size());
                         displayFilteredFeesTable(feesSummaryTable, filter, size);
                     });
@@ -880,17 +877,17 @@ public class PrincipalController implements Initializable {
                 () -> {
                     //On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(notPaidBtn, "NOT PAID");
+                        UtilityMethods.notProcessingButton(notPaidBtn, "NOT PAID");
                         filteredStudentsPanel.setVisible(false);
                         filteredStudentsPanel.setManaged(false);
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(notPaidBtn, "NOT PAID");
-                        utilityClass.showError(notification, "Network Error! Check your internet and try again");
+                        UtilityMethods.notProcessingButton(notPaidBtn, "NOT PAID");
+                        UtilityMethods.showError(notification, "Network Error! Check your internet and try again");
                     });
                 });
     }
@@ -911,46 +908,46 @@ public class PrincipalController implements Initializable {
     public void handleSearchResults() {
         String studentId = resultsSearchIdField.getText().trim();
         if (studentId.isEmpty()) {
-            utilityClass.showError(notification, "Please enter student id");
+            UtilityMethods.showError(notification, "Please enter student id");
             return;
         }
         //Get selected grade/class
         GradeCaching selectedGrade = resultsClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) {
-            utilityClass.showError(notification, "No grade selected");
+            UtilityMethods.showError(notification, "No grade selected");
             return;
         }
         String classId = selectedGrade.getLevelId();
 
         SemesterCaching selectedSemester = resultsSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            utilityClass.showError(notification, "No semester selected");
+            UtilityMethods.showError(notification, "No semester selected");
             return;
         }
         String semesterId = selectedSemester.getSemesterId();
-        utilityClass.processingButton(getResultsBtn);
+        UtilityMethods.processingButton(getResultsBtn);
 
-        utilityClass.SearchStudentResults(studentId, semesterId, classId,
+        apiUtilityClass.SearchStudentResults(studentId, semesterId, classId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(getResultsBtn, "FETCH RESULT");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
-                        displayStudentResultsPanel(utilityClass.studentResult);
+                        UtilityMethods.notProcessingButton(getResultsBtn, "FETCH RESULT");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        displayStudentResultsPanel(apiUtilityClass.studentResult);
                     });
                 },
                 () -> {
             //On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(getResultsBtn, "FETCH RESULT");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(getResultsBtn, "FETCH RESULT");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(getResultsBtn, "FETCH RESULT");
-                        utilityClass.showError(notification, "Network Error! Check your internet and try again");
+                        UtilityMethods.notProcessingButton(getResultsBtn, "FETCH RESULT");
+                        UtilityMethods.showError(notification, "Network Error! Check your internet and try again");
                     });
                 });
     }
@@ -960,42 +957,42 @@ public class PrincipalController implements Initializable {
         String staffId = searchStaffIdField.getText().trim();
 
         if (staffId.isEmpty()) {
-            utilityClass.showError(notification, "Enter Staff ID");
+            UtilityMethods.showError(notification, "Enter Staff ID");
             return;
         }
 
-        utilityClass.processingButton(searchStaffBtn);
-        utilityClass.searchStaffData(staffId,
+        UtilityMethods.processingButton(searchStaffBtn);
+        apiUtilityClass.searchStaffData(staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchStaffBtn, "FIND STAFF");
-                        displayStaffDetails(findStaffResponse);
+                        UtilityMethods.notProcessingButton(searchStaffBtn, "FIND STAFF");
+                        displayStaffDetails(apiUtilityClass.findStaffResponse);
                     });
                 },
                 () -> {
             //On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchStaffBtn, "FIND STAFF");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(searchStaffBtn, "FIND STAFF");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchStaffBtn, "FIND STAFF");
-                        utilityClass.showError(notification, "Network Error! Check your connection and try again");
+                        UtilityMethods.notProcessingButton(searchStaffBtn, "FIND STAFF");
+                        UtilityMethods.showError(notification, "Network Error! Check your connection and try again");
                     });
                 });
     }
 
     @FXML
     public void initializeAfterLogin() {
-        utilityClass = new UtilityClass(this);
+        apiUtilityClass = new ApiUtilityClass(this);
         setActiveButton(mainDashboardBtn);
         loadPrincipalInfo();
         showLoading();
-        utilityClass.loadPrincipalData(currentStaffId, notification,
+        apiUtilityClass.loadPrincipalData(currentStaffId, notification,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -1022,31 +1019,31 @@ public class PrincipalController implements Initializable {
     public void handlePrintStudentData() {
         GradeCaching selectedGrade = printStudentClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) {
-            utilityClass.showError(notification, "Please select a class first");
+            UtilityMethods.showError(notification, "Please select a class first");
             return;
         }
 
-        utilityClass.processingButton(printStudentDataBtn);
-        utilityClass.fetchAndSaveStudentList(selectedGrade.getLevelId(), selectedGrade.getLevelName(),
+        UtilityMethods.processingButton(printStudentDataBtn);
+        apiUtilityClass.fetchAndSaveStudentList(selectedGrade.getLevelId(), selectedGrade.getLevelName(),
                 () -> {
                     // On success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(printStudentDataBtn, "PRINT CLASS LIST");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(printStudentDataBtn, "PRINT CLASS LIST");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                     });
                 },
                 () -> {
                     // On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(printStudentDataBtn, "PRINT CLASS LIST");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(printStudentDataBtn, "PRINT CLASS LIST");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(printStudentDataBtn, "PRINT CLASS LIST");
-                        utilityClass.showError(notification, "Network Error! Check your connection and try again");
+                        UtilityMethods.notProcessingButton(printStudentDataBtn, "PRINT CLASS LIST");
+                        UtilityMethods.showError(notification, "Network Error! Check your connection and try again");
                     });
                 });
     }
@@ -1059,49 +1056,49 @@ public class PrincipalController implements Initializable {
         String academicYear = academicYearField.getText().trim();
 
         if (semesterName.isEmpty()) {
-            utilityClass.showError(notification, "Semester name is required");
+            UtilityMethods.showError(notification, "Semester name is required");
             return;
         }
 
         if (!semesterName.contains("_") || semesterName.contains(" ")
                 || semesterName.contains("-")) {
-            utilityClass.showError(notification, "Semester name must contain '_' eg. First_Term");
+            UtilityMethods.showError(notification, "Semester name must contain '_' eg. First_Term");
             return;
         }
 
         if (startDate == null || endDate == null) {
-            utilityClass.showError(notification, "Start and end dates are required");
+            UtilityMethods.showError(notification, "Start and end dates are required");
             return;
         }
         if (endDate.isBefore(startDate)) {
-            utilityClass.showError(notification, "End date cannot be before start date");
+            UtilityMethods.showError(notification, "End date cannot be before start date");
             return;
         }
         if (academicYear.isEmpty()) {
-            utilityClass.showError(notification, "Academic year is required");
+            UtilityMethods.showError(notification, "Academic year is required");
             return;
         }
 
-        utilityClass.processingButton(saveSemesterBtn);
-        utilityClass.addNewSemester(semesterName, startDate, endDate, academicYear, currentStaffId,
+        UtilityMethods.processingButton(saveSemesterBtn);
+        apiUtilityClass.addNewSemester(semesterName, startDate, endDate, academicYear, currentStaffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveSemesterBtn, "Save Semester");
+                        UtilityMethods.notProcessingButton(saveSemesterBtn, "Save Semester");
                         clearSemesterForm();
-                        utilityClass.showSuccess(notification, "Successfully saved semester");
+                        UtilityMethods.showSuccess(notification, "Successfully saved semester");
                     });
                 }, () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveSemesterBtn, "Save Semester");
-                        utilityClass.showError(notification, "Could not save semester! Try again");
+                        UtilityMethods.notProcessingButton(saveSemesterBtn, "Save Semester");
+                        UtilityMethods.showError(notification, "Could not save semester! Try again");
                     });
                 }, () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveSemesterBtn, "Save Semester");
-                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityMethods.notProcessingButton(saveSemesterBtn, "Save Semester");
+                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
 
@@ -1124,36 +1121,36 @@ public class PrincipalController implements Initializable {
         String remarks = gradeRemarksField.getText();
 
         if (gradeCriteria.isEmpty()) {
-            utilityClass.showError(notification, "Grade criteria is required");
+            UtilityMethods.showError(notification, "Grade criteria is required");
             return;
         }
 
         if (lowerRange.isNaN() || upperRange.isNaN()) {
-            utilityClass.showError(notification, "Please enter grade criteria marks");
+            UtilityMethods.showError(notification, "Please enter grade criteria marks");
             return;
         }
 
         if (lowerRange > upperRange) {
-            utilityClass.showError(notification, "Lower range cannot be greater than upper range");
+            UtilityMethods.showError(notification, "Lower range cannot be greater than upper range");
             return;
         }
 
         if (remarks.isEmpty()) {
-            utilityClass.showError(notification, "Remarks is required");
+            UtilityMethods.showError(notification, "Remarks is required");
             return;
         }
 
-        utilityClass.processingButton(saveGradeBtn);
+        UtilityMethods.processingButton(saveGradeBtn);
         GradingCriteria gradingCriteria = new GradingCriteria(
                 lowerRange, upperRange, gradeCriteria, remarks
         );
 
-        utilityClass.saveGradingCriteria(gradingCriteria, currentStaffId,
+        apiUtilityClass.saveGradingCriteria(gradingCriteria, currentStaffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveGradeBtn, "ADD GRADE CRITERIA");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(saveGradeBtn, "ADD GRADE CRITERIA");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         gradeCriteriaField.clear();
                         upperRangeField.clear();
                         lowerRangeField.clear();
@@ -1163,14 +1160,14 @@ public class PrincipalController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveGradeBtn, "ADD GRADE CRITERIA");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(saveGradeBtn, "ADD GRADE CRITERIA");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveGradeBtn, "ADD GRADE CRITERIA");
-                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityMethods.notProcessingButton(saveGradeBtn, "ADD GRADE CRITERIA");
+                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
 
@@ -1180,42 +1177,42 @@ public class PrincipalController implements Initializable {
     public void handleAddClass() {
         String className = addClassNameField.getText().trim();
         if (className.isEmpty()) {
-            utilityClass.showError(notification, "Class name is required");
+            UtilityMethods.showError(notification, "Class name is required");
             return;
         }
 
         if (!className.contains("_") || className.contains(" ")) {
-            utilityClass.showError(notification, "Class name must contain '_' eg.Grade_1");
+            UtilityMethods.showError(notification, "Class name must contain '_' eg.Grade_1");
             return;
         }
 
         StaffCaching staffCaching = addClassStaffComboBox.getSelectionModel().getSelectedItem();
         if (staffCaching == null) {
-            utilityClass.showError(notification, "Please select a staff cache");
+            UtilityMethods.showError(notification, "Please select a staff cache");
             return;
         }
 
         String staffId = staffCaching.getStaffId();
 
-        utilityClass.processingButton(saveClassBtn);
-        utilityClass.addNewGrade(className, staffId,
+        UtilityMethods.processingButton(saveClassBtn);
+        apiUtilityClass.addNewGrade(className, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveClassBtn, "ADD CLASS");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(saveClassBtn, "ADD CLASS");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                     });
                 }, () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveClassBtn, "ADD CLASS");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(saveClassBtn, "ADD CLASS");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveClassBtn, "ADD CLASS");
-                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityMethods.notProcessingButton(saveClassBtn, "ADD CLASS");
+                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1224,41 +1221,41 @@ public class PrincipalController implements Initializable {
     public void handleLoadClassResults() {
         SemesterCaching semesterCaching = classResultsSemesterComboBox.getSelectionModel().getSelectedItem();
         if (semesterCaching == null) {
-            utilityClass.showError(notification, "Select Semester to Load Results");
+            UtilityMethods.showError(notification, "Select Semester to Load Results");
             return;
         }
 
         GradeCaching gradeCaching = classResultsGradeComboBox.getSelectionModel().getSelectedItem();
         if (gradeCaching == null) {
-            utilityClass.showError(notification, "Select Grade to Load Results");
+            UtilityMethods.showError(notification, "Select Grade to Load Results");
             return;
         }
 
         String gradeId = gradeCaching.getLevelId();
         String semesterId = semesterCaching.getSemesterId();
 
-        utilityClass.processingButton(loadClassResultsBtn);
-        utilityClass.loadClassResults(gradeId, semesterId,
+        UtilityMethods.processingButton(loadClassResultsBtn);
+        apiUtilityClass.loadClassResults(gradeId, semesterId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(loadClassResultsBtn, "FETCH RESULTS");
-                        utilityClass.showSuccess(notification, "Results successfully loaded");
-                        populateClassResults(utilityClass.viewClassSemesterReports);
+                        UtilityMethods.notProcessingButton(loadClassResultsBtn, "FETCH RESULTS");
+                        UtilityMethods.showSuccess(notification, "Results successfully loaded");
+                        populateClassResults(apiUtilityClass.viewClassSemesterReports);
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(loadClassResultsBtn, "FETCH RESULTS");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(loadClassResultsBtn, "FETCH RESULTS");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
 
                     });
                 }, () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(loadClassResultsBtn, "Fetch Results");
-                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityMethods.notProcessingButton(loadClassResultsBtn, "Fetch Results");
+                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1271,7 +1268,7 @@ public class PrincipalController implements Initializable {
             genderComboBox.getItems().addAll("Male", "Female");
         }
 
-        List<GradeCaching> gradeCaching = utilityClass.gradeCacheManager.getGradesCache();
+        List<GradeCaching> gradeCaching = apiUtilityClass.gradeCacheManager.getGradesCache();
         if (gradeCaching != null && !gradeCaching.isEmpty()) {
             if (classComboBox.getItems().isEmpty()) {
                 classComboBox.getItems().addAll(gradeCaching);
@@ -1287,7 +1284,7 @@ public class PrincipalController implements Initializable {
         addClassNameField.clear();
         addClassStaffComboBox.getSelectionModel().clearSelection();
 
-        List<StaffCaching> cachedStaffs = utilityClass.staffCacheManager.getCachedStaffList();
+        List<StaffCaching> cachedStaffs = apiUtilityClass.staffCacheManager.getCachedStaffList();
         if (cachedStaffs != null && !cachedStaffs.isEmpty()) {
             if (addClassStaffComboBox.getItems().isEmpty()) {
                 addClassStaffComboBox.getItems().addAll(cachedStaffs);
@@ -1342,7 +1339,7 @@ public class PrincipalController implements Initializable {
 
     @FXML
     public void showUpdateSemesterCard() {
-        List<SemesterCaching> cachedSemesters = utilityClass.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> cachedSemesters = apiUtilityClass.semesterCachingManager.getCachedSemesters();
         if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
             if (updateSemesterInfoComboBox.getItems().isEmpty()) {
                 updateSemesterInfoComboBox.getItems().addAll(cachedSemesters);
@@ -1360,33 +1357,33 @@ public class PrincipalController implements Initializable {
     public void handleSearchSemesterInfo() {
         SemesterCaching selectedItem = updateSemesterInfoComboBox.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
-            utilityClass.showError(notification, "Please select a semester from the list");
+            UtilityMethods.showError(notification, "Please select a semester from the list");
             return;
         }
 
-        utilityClass.processingButton(findSemesterBtn);
+        UtilityMethods.processingButton(findSemesterBtn);
         String semesterId = selectedItem.getSemesterId();
-        utilityClass.searchSemester(semesterId,
+        apiUtilityClass.searchSemester(semesterId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(findSemesterBtn, "FETCH INFO");
-                        utilityClass.showSuccess(notification, "Semester Info loaded successfully");
-                        populateSemesterInfoPanel(utilityClass.semester);
+                        UtilityMethods.notProcessingButton(findSemesterBtn, "FETCH INFO");
+                        UtilityMethods.showSuccess(notification, "Semester Info loaded successfully");
+                        populateSemesterInfoPanel(apiUtilityClass.semester);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(findSemesterBtn, "FETCH INFO");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(findSemesterBtn, "FETCH INFO");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(findSemesterBtn, "FETCH INFO");
-                        utilityClass.showError(notification, "Network Error! Check your connection and try again");
+                        UtilityMethods.notProcessingButton(findSemesterBtn, "FETCH INFO");
+                        UtilityMethods.showError(notification, "Network Error! Check your connection and try again");
                     });
                 });
     }
@@ -1398,41 +1395,41 @@ public class PrincipalController implements Initializable {
         String academicYear = updateAcademicYearField.getText().trim();
 
         if (semesterName.isEmpty()) {
-            utilityClass.showError(notification, "Semester name is required");
+            UtilityMethods.showError(notification, "Semester name is required");
             return;
         }
 
         if (!semesterName.contains("_") || semesterName.contains(" ")
                 || semesterName.contains("-")) {
-            utilityClass.showError(notification, "Semester name must contain '_' eg. First_Term");
+            UtilityMethods.showError(notification, "Semester name must contain '_' eg. First_Term");
             return;
         }
 
         if (startDate == null || endDate == null) {
-            utilityClass.showError(notification, "Start and end dates are required");
+            UtilityMethods.showError(notification, "Start and end dates are required");
             return;
         }
         if (endDate.isBefore(startDate)) {
-            utilityClass.showError(notification, "End date cannot be before start date");
+            UtilityMethods.showError(notification, "End date cannot be before start date");
             return;
         }
         if (academicYear.isEmpty()) {
-            utilityClass.showError(notification, "Academic year is required");
+            UtilityMethods.showError(notification, "Academic year is required");
             return;
         }
 
-        utilityClass.semester.setSemesterName(semesterName);
-        utilityClass.semester.setSemesterStartDate(String.valueOf(startDate));
-        utilityClass.semester.setSemesterEndDate(String.valueOf(endDate));
-        utilityClass.semester.setAcademicYear(academicYear);
+        apiUtilityClass.semester.setSemesterName(semesterName);
+        apiUtilityClass.semester.setSemesterStartDate(String.valueOf(startDate));
+        apiUtilityClass.semester.setSemesterEndDate(String.valueOf(endDate));
+        apiUtilityClass.semester.setAcademicYear(academicYear);
 
-        utilityClass.processingButton(updateSemesterBtn);
-        utilityClass.updateSemesterInfo(utilityClass.semester,
+        UtilityMethods.processingButton(updateSemesterBtn);
+        apiUtilityClass.updateSemesterInfo(apiUtilityClass.semester,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateSemesterBtn, "SAVE CHANGES");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(updateSemesterBtn, "SAVE CHANGES");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
 
                         semesterInfoPanel.setVisible(false);
                         semesterInfoPanel.setManaged(false);
@@ -1447,15 +1444,15 @@ public class PrincipalController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateSemesterBtn, "SAVE CHANGES");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(updateSemesterBtn, "SAVE CHANGES");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateSemesterBtn, "SAVE CHANGES");
-                        utilityClass.showError(notification, "Network Error! Check your connection and try again");
+                        UtilityMethods.notProcessingButton(updateSemesterBtn, "SAVE CHANGES");
+                        UtilityMethods.showError(notification, "Network Error! Check your connection and try again");
                     });
                 });
     }
@@ -1477,25 +1474,25 @@ public class PrincipalController implements Initializable {
     public void handleSaveAndClear() {
         if (!validateForm()) return;
 
-        utilityClass.processingButton(saveAndClearBtn);
+        UtilityMethods.processingButton(saveAndClearBtn);
         saveStudent(() -> {
             // On Success
             Platform.runLater(() -> {
                 clearForm();
-                utilityClass.notProcessingButton(saveAndClearBtn, "Save Student");
-                utilityClass.showSuccess(notification, "Student saved successfully! ID: " + utilityClass.successMessageContainer);
+                UtilityMethods.notProcessingButton(saveAndClearBtn, "Save Student");
+                UtilityMethods.showSuccess(notification, "Student saved successfully! ID: " + apiUtilityClass.successMessageContainer);
             });
         }, () -> {
             // On Failure
             Platform.runLater(() -> {
-                utilityClass.notProcessingButton(saveAndClearBtn, "Save Student");
-                utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                UtilityMethods.notProcessingButton(saveAndClearBtn, "Save Student");
+                UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
             });
         }, () -> {
             // On Network Failure
             Platform.runLater(() -> {
-                utilityClass.notProcessingButton(saveAndClearBtn, "Save and Close");
-                utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                UtilityMethods.notProcessingButton(saveAndClearBtn, "Save and Close");
+                UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
             });
         });
     }
@@ -1504,7 +1501,7 @@ public class PrincipalController implements Initializable {
     public void handleFindStudent() {
         String searchId = studentSearchField.getText();
         if (searchId.isEmpty()) {
-            utilityClass.showError(notification, "Enter search parameter");
+            UtilityMethods.showError(notification, "Enter search parameter");
             return;
         }
 
@@ -1516,7 +1513,7 @@ public class PrincipalController implements Initializable {
         } else {
             String[] searchParameters = searchId.split("\\s+");
             if (searchParameters.length < 2) {
-                utilityClass.showError(notification, "Enter student full name or enter student id");
+                UtilityMethods.showError(notification, "Enter student full name or enter student id");
                 return;
             } else if (searchParameters.length == 3) {
                 searchParameter1 = searchParameters[0];
@@ -1529,28 +1526,28 @@ public class PrincipalController implements Initializable {
             searchParameter3 = "empty";
         }
 
-        utilityClass.processingButton(findStudentBtn);
-        utilityClass.searchStudentData(searchParameter1, searchParameter2, searchParameter3,
+        UtilityMethods.processingButton(findStudentBtn);
+        apiUtilityClass.searchStudentData(searchParameter1, searchParameter2, searchParameter3,
                 () -> {
                     // On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(findStudentBtn, "Find Student");
-                        utilityClass.showSuccess(notification, "Student Found");
-                        studentInfoUpdatePanel(utilityClass.updateStudentPersonalData);
+                        UtilityMethods.notProcessingButton(findStudentBtn, "Find Student");
+                        UtilityMethods.showSuccess(notification, "Student Found");
+                        studentInfoUpdatePanel(apiUtilityClass.updateStudentPersonalData);
                     });
                 },
                 () -> {
                     //On failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(findStudentBtn, "Find Student");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(findStudentBtn, "Find Student");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(findStudentBtn, "Find Student");
-                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityMethods.notProcessingButton(findStudentBtn, "Find Student");
+                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1570,27 +1567,27 @@ public class PrincipalController implements Initializable {
         studentPersonalData.setHomeTown(updateHomeTownField.getText());
         studentPersonalData.setStatus(updateStatusComboBox.getSelectionModel().getSelectedItem().toString());
 
-        utilityClass.processingButton(updateStudentInfoBtn);
-        utilityClass.updateStudentPersonalData(studentPersonalData,
+        UtilityMethods.processingButton(updateStudentInfoBtn);
+        apiUtilityClass.updateStudentPersonalData(studentPersonalData,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateStudentInfoBtn, "UPDATE INFO");
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(updateStudentInfoBtn, "UPDATE INFO");
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         showUpdateInfoCard();
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateStudentInfoBtn, "UPDATE INFO");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(updateStudentInfoBtn, "UPDATE INFO");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateStudentInfoBtn, "UPDATE INFO");
-                        utilityClass.showError(notification, "Network Error! Check your internet connection and try again");
+                        UtilityMethods.notProcessingButton(updateStudentInfoBtn, "UPDATE INFO");
+                        UtilityMethods.showError(notification, "Network Error! Check your internet connection and try again");
                     });
                 });
     }
@@ -1605,7 +1602,7 @@ public class PrincipalController implements Initializable {
         subjectNameField.clear();
         gradeComboBox.getSelectionModel().clearSelection();
 
-        List<GradeCaching> gradeCaching  = utilityClass.gradeCacheManager.getGradesCache();
+        List<GradeCaching> gradeCaching  = apiUtilityClass.gradeCacheManager.getGradesCache();
         if (gradeCaching != null && !gradeCaching.isEmpty()) {
             if (gradeComboBox.getItems().isEmpty()) {
                 gradeComboBox.getItems().addAll(gradeCaching);
@@ -1619,7 +1616,7 @@ public class PrincipalController implements Initializable {
     public void showPrintSubjectCard() {
         printClassSubjectsComboBox.getSelectionModel().clearSelection();
 
-        List<GradeCaching> gradeCaching  = utilityClass.gradeCacheManager.getGradesCache();
+        List<GradeCaching> gradeCaching  = apiUtilityClass.gradeCacheManager.getGradesCache();
         if (gradeCaching != null && !gradeCaching.isEmpty()) {
             if (printClassSubjectsComboBox.getItems().isEmpty()) {
                 printClassSubjectsComboBox.getItems().addAll(gradeCaching);
@@ -1633,43 +1630,43 @@ public class PrincipalController implements Initializable {
     public void handleAddSubject() {
         String subjectName = subjectNameField.getText();
         if (subjectName.isEmpty()) {
-            utilityClass.showError(notification, "Please enter subjectName");
+            UtilityMethods.showError(notification, "Please enter subjectName");
             return;
         }
 
         GradeCaching grade = gradeComboBox.getSelectionModel().getSelectedItem();
         if (grade == null) {
-            utilityClass.showError(notification, "Please select a grade");
+            UtilityMethods.showError(notification, "Please select a grade");
             return;
         }
         String gradeId = grade.getLevelId();
 
-        utilityClass.processingButton(saveSubjectBtn);
+        UtilityMethods.processingButton(saveSubjectBtn);
 
         AssignSubject assignSubject = new AssignSubject(
                 subjectName, gradeId
         );
 
-        utilityClass.addNewSubject(assignSubject,
+        apiUtilityClass.addNewSubject(assignSubject,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveSubjectBtn, "Save Subject");
-                        utilityClass.showSuccess(notification, "Successfully saved subject with ID: " + utilityClass.successMessageContainer);
+                        UtilityMethods.notProcessingButton(saveSubjectBtn, "Save Subject");
+                        UtilityMethods.showSuccess(notification, "Successfully saved subject with ID: " + apiUtilityClass.successMessageContainer);
                         subjectNameField.clear();
                         gradeComboBox.getSelectionModel().clearSelection();
                     });
                 }, () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveSubjectBtn, "Save Subject");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(saveSubjectBtn, "Save Subject");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(saveSubjectBtn, "Save Subject");
-                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityMethods.notProcessingButton(saveSubjectBtn, "Save Subject");
+                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1678,34 +1675,34 @@ public class PrincipalController implements Initializable {
     public void handlePrintSubjectData() {
         GradeCaching gradeCaching = printClassSubjectsComboBox.getSelectionModel().getSelectedItem();
         if (gradeCaching == null) {
-            utilityClass.showError(notification, "Select Grade");
+            UtilityMethods.showError(notification, "Select Grade");
             return;
         }
 
-        utilityClass.processingButton(printSubjectDataBtn);
+        UtilityMethods.processingButton(printSubjectDataBtn);
         String levelId = gradeCaching.getLevelId();
         String levelName = gradeCaching.getLevelName();
 
-        utilityClass.printSubjectList(levelId, levelName,
+        apiUtilityClass.printSubjectList(levelId, levelName,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(printSubjectDataBtn, "Print Subject List");
-                        utilityClass.showSuccess(notification, "Subject List successfully downloaded");
+                        UtilityMethods.notProcessingButton(printSubjectDataBtn, "Print Subject List");
+                        UtilityMethods.showSuccess(notification, "Subject List successfully downloaded");
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(printSubjectDataBtn, "Print Subject List");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(printSubjectDataBtn, "Print Subject List");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(printSubjectDataBtn, "Print Subject List");
-                        utilityClass.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityMethods.notProcessingButton(printSubjectDataBtn, "Print Subject List");
+                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1714,12 +1711,12 @@ public class PrincipalController implements Initializable {
     public void handleFindClass() {
         String searchParameter = updateClassSearchField.getText().trim();
         if (searchParameter.isEmpty()) {
-            utilityClass.showError(notification, "Please enter class");
+            UtilityMethods.showError(notification, "Please enter class");
             return;
         }
 
         if (searchParameter.contains(" ") && !searchParameter.startsWith("LV")) {
-            utilityClass.showError(notification, "Class name must contain '_'. eg. Grade_1");
+            UtilityMethods.showError(notification, "Class name must contain '_'. eg. Grade_1");
             return;
         }
 
@@ -1727,47 +1724,47 @@ public class PrincipalController implements Initializable {
             searchParameter = searchParameter + "_";
         }
 
-        utilityClass.processingButton(searchClassBtn);
-        utilityClass.findClassInfo(searchParameter, currentStaffId,
+        UtilityMethods.processingButton(searchClassBtn);
+        apiUtilityClass.findClassInfo(searchParameter, currentStaffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        List<StaffCaching> cachedStaffs = utilityClass.staffCacheManager.getCachedStaffList();
+                        List<StaffCaching> cachedStaffs = apiUtilityClass.staffCacheManager.getCachedStaffList();
                         if (cachedStaffs != null && !cachedStaffs.isEmpty()) {
                             if (updateClassInfoStaffComboBox.getItems().isEmpty()) {
                                 updateClassInfoStaffComboBox.getItems().addAll(cachedStaffs);
                             }
 
                             for (StaffCaching staffCaching : cachedStaffs) {
-                                if (staffCaching.getStaffId().equals(utilityClass.findAndUpdateClassInfo.getStaffId())) {
+                                if (staffCaching.getStaffId().equals(apiUtilityClass.findAndUpdateClassInfo.getStaffId())) {
                                     updateClassInfoStaffComboBox.getSelectionModel().select(staffCaching);
                                     break;
                                 }
                             }
                         }
 
-                        updateClassInfoNameField.setText(utilityClass.findAndUpdateClassInfo.getLevelName());
+                        updateClassInfoNameField.setText(apiUtilityClass.findAndUpdateClassInfo.getLevelName());
                         updateClassInfoDisplayArea.setVisible(true);
                         updateClassInfoDisplayArea.setManaged(true);
 
                         updateClassSearchArea.setVisible(false);
                         updateClassSearchArea.setManaged(false);
-                        utilityClass.notProcessingButton(searchClassBtn, "FIND CLASS");
-                        utilityClass.showSuccess(notification, "Class information found");
+                        UtilityMethods.notProcessingButton(searchClassBtn, "FIND CLASS");
+                        UtilityMethods.showSuccess(notification, "Class information found");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchClassBtn, "FIND CLASS");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(searchClassBtn, "FIND CLASS");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(searchClassBtn, "FIND CLASS");
-                        utilityClass.showError(notification, "Network error! Check your connection and try again");
+                        UtilityMethods.notProcessingButton(searchClassBtn, "FIND CLASS");
+                        UtilityMethods.showError(notification, "Network error! Check your connection and try again");
                     });
                 });
     }
@@ -1776,50 +1773,50 @@ public class PrincipalController implements Initializable {
     public void handleUpdateClassInfo() {
         String newClassName = updateClassInfoNameField.getText().trim();
         if (newClassName.isEmpty()) {
-            utilityClass.showError(notification, "Please enter class name");
+            UtilityMethods.showError(notification, "Please enter class name");
             return;
         }
 
         if (!newClassName.contains("_") || newClassName.contains(" ")) {
-            utilityClass.showError(notification, "Class name must contain '_' eg.Grade_1");
+            UtilityMethods.showError(notification, "Class name must contain '_' eg.Grade_1");
             return;
         }
 
         StaffCaching staffCaching = updateClassInfoStaffComboBox.getSelectionModel().getSelectedItem();
         if (staffCaching == null) {
-            utilityClass.showError(notification, "Please select a staff");
+            UtilityMethods.showError(notification, "Please select a staff");
             return;
         }
 
-        utilityClass.processingButton(updateClassInfoBtn);
-        utilityClass.findAndUpdateClassInfo.setLevelName(newClassName);
-        utilityClass.findAndUpdateClassInfo.setStaffId(staffCaching.getStaffId());
+        UtilityMethods.processingButton(updateClassInfoBtn);
+        apiUtilityClass.findAndUpdateClassInfo.setLevelName(newClassName);
+        apiUtilityClass.findAndUpdateClassInfo.setStaffId(staffCaching.getStaffId());
 
-        utilityClass.updateClassInfo(utilityClass.findAndUpdateClassInfo,
+        apiUtilityClass.updateClassInfo(apiUtilityClass.findAndUpdateClassInfo,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
+                        UtilityMethods.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
                         updateClassInfoDisplayArea.setVisible(false);
                         updateClassInfoDisplayArea.setManaged(false);
 
                         updateClassSearchArea.setVisible(true);
                         updateClassSearchArea.setManaged(true);
-                        utilityClass.showSuccess(notification, utilityClass.successMessageContainer);
+                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
-                        utilityClass.showError(notification, utilityClass.errorMessageContainer);
+                        UtilityMethods.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
+                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        utilityClass.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
-                        utilityClass.showError(notification, "Network Error! Check your connection and try again");
+                        UtilityMethods.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
+                        UtilityMethods.showError(notification, "Network Error! Check your connection and try again");
                     });
                 });
     }
@@ -1841,37 +1838,37 @@ public class PrincipalController implements Initializable {
 
     private boolean validateStaffUpdateForm() {
         if (editFirstNameField.getText().isEmpty()) {
-            utilityClass.showError(notification, "Please enter first name");
+            UtilityMethods.showError(notification, "Please enter first name");
             return false;
         }
 
         if (editLastNameField.getText().isEmpty()) {
-            utilityClass.showError(notification, "Please enter last name");
+            UtilityMethods.showError(notification, "Please enter last name");
             return false;
         }
 
         if (editEmailField.getText().isEmpty() || !editEmailField.getText().endsWith(".com")) {
-            utilityClass.showError(notification, "Please enter valid email");
+            UtilityMethods.showError(notification, "Please enter valid email");
             return false;
         }
 
         if (editPhoneField.getText().isEmpty() || editPhoneField.getText().length() != 10) {
-            utilityClass.showError(notification, "Please enter valid phone number");
+            UtilityMethods.showError(notification, "Please enter valid phone number");
             return false;
         }
 
         if (editDateOfBirthPicker.getValue() == null) {
-            utilityClass.showError(notification, "Please select date of birth");
+            UtilityMethods.showError(notification, "Please select date of birth");
             return false;
         }
 
         if (editGenderComboBox.getSelectionModel().getSelectedItem() == null) {
-            utilityClass.showError(notification, "Please select gender");
+            UtilityMethods.showError(notification, "Please select gender");
             return false;
         }
 
         if (editStatusComboBox.getSelectionModel().getSelectedItem() == null) {
-            utilityClass.showError(notification, "Please select status");
+            UtilityMethods.showError(notification, "Please select status");
             return false;
         }
 
@@ -1934,19 +1931,19 @@ public class PrincipalController implements Initializable {
 
     //Load staff Dashboard data on open
     private void loadStaffDashboardData() {
-        totalStaffCountLabel.setText(String.valueOf(utilityClass.totalStaffFromBackend));
-        List<ViewStaffList> staffList = utilityClass.staffListCacheManager.getCachedStaffList();
+        totalStaffCountLabel.setText(String.valueOf(apiUtilityClass.totalStaffFromBackend));
+        List<ViewStaffList> staffList = apiUtilityClass.staffListCacheManager.getCachedStaffList();
         allStaffTable.getItems().setAll(staffList);
     }
 
     //Load finance Dashboard Data on open
     private void loadFinanceDashboardData() {
-        totalSemesterFeesLabel.setText(String.valueOf(utilityClass.totalSemesterFeesFromBackend));
-        amountPaidLabel.setText(String.valueOf(utilityClass.feesPaidFromBackend));
-        collectionProgressBar.setProgress(utilityClass.feesProgressBarFromBackend);
-        String collectionPercent = collectionPercentageCalc(utilityClass.totalSemesterFeesFromBackend, utilityClass.feesPaidFromBackend).toString();
+        totalSemesterFeesLabel.setText(String.valueOf(apiUtilityClass.totalSemesterFeesFromBackend));
+        amountPaidLabel.setText(String.valueOf(apiUtilityClass.feesPaidFromBackend));
+        collectionProgressBar.setProgress(apiUtilityClass.feesProgressBarFromBackend);
+        String collectionPercent = collectionPercentageCalc(apiUtilityClass.totalSemesterFeesFromBackend, apiUtilityClass.feesPaidFromBackend).toString();
         collectionPercentageLabel.setText(collectionPercent + "%");
-        String outStanding = calOutstandingBalance(utilityClass.totalSemesterFeesFromBackend, utilityClass.feesPaidFromBackend).toString();
+        String outStanding = calOutstandingBalance(apiUtilityClass.totalSemesterFeesFromBackend, apiUtilityClass.feesPaidFromBackend).toString();
         outstandingBalanceLabel.setText(outStanding);
     }
 
@@ -1963,7 +1960,7 @@ public class PrincipalController implements Initializable {
 
     //Load student Dashboard data
     private void loadStudentDashboardData() {
-        totalStudentsCountLabel.setText(String.valueOf(utilityClass.totalStudentsFromBackend));
+        totalStudentsCountLabel.setText(String.valueOf(apiUtilityClass.totalStudentsFromBackend));
     }
 
     public void setInstitutionName(String institutionName) {
@@ -1975,7 +1972,7 @@ public class PrincipalController implements Initializable {
     }
 
     private void loadPrincipalInfo() {
-        versionLabel.setText(utilityClass.applicationVersion);
+        versionLabel.setText(apiUtilityClass.applicationVersion);
         principalNameLabel.setText(principalName.toUpperCase());
         institutionNameLabel.setText(institutionName.toUpperCase());
     }
@@ -1985,32 +1982,32 @@ public class PrincipalController implements Initializable {
         updateDateTime();
 
         //Load total students
-        totalStudentsLabel.setText(String.valueOf(utilityClass.totalStudentsFromBackend));
+        totalStudentsLabel.setText(String.valueOf(apiUtilityClass.totalStudentsFromBackend));
 
         //Load total Staff
-        totalStaffLabel.setText(String.valueOf(utilityClass.totalStaffFromBackend));
+        totalStaffLabel.setText(String.valueOf(apiUtilityClass.totalStaffFromBackend));
 
         //Load semester Fees
-        semesterFeesLabel.setText(String.valueOf(utilityClass.totalSemesterFeesFromBackend));
+        semesterFeesLabel.setText(String.valueOf(apiUtilityClass.totalSemesterFeesFromBackend));
 
         //Load fees Paid
-        feesPaidLabel.setText(String.valueOf(utilityClass.feesPaidFromBackend));
+        feesPaidLabel.setText(String.valueOf(apiUtilityClass.feesPaidFromBackend));
 
         //Calculate progress
         try {
-            Double totalFeesPaid = utilityClass.feesPaidFromBackend;
+            Double totalFeesPaid = apiUtilityClass.feesPaidFromBackend;
             if (totalFeesPaid > 0.0) {
-                utilityClass.feesProgressBarFromBackend = totalFeesPaid / utilityClass.totalSemesterFeesFromBackend;
+                apiUtilityClass.feesProgressBarFromBackend = totalFeesPaid / apiUtilityClass.totalSemesterFeesFromBackend;
             } else {
-                utilityClass.feesProgressBarFromBackend = 0.0;
+                apiUtilityClass.feesProgressBarFromBackend = 0.0;
             }
-            feesProgressBar.setProgress(utilityClass.feesProgressBarFromBackend);
+            feesProgressBar.setProgress(apiUtilityClass.feesProgressBarFromBackend);
         } catch (Exception e) {
             feesProgressBar.setProgress(0.0);
-            utilityClass.showError(notification, "Couldn't get fees Progress");
+            UtilityMethods.showError(notification, "Couldn't get fees Progress");
         }
 
-        List<AbsenteesView> cachedStudents = utilityClass.cacheManager.getCachedAbsenteeStudents();
+        List<AbsenteesView> cachedStudents = apiUtilityClass.cacheManager.getCachedAbsenteeStudents();
         if (cachedStudents != null) {
             absenteesTable.getItems().setAll(cachedStudents);
         }
@@ -2193,31 +2190,31 @@ public class PrincipalController implements Initializable {
 
     private boolean validateForm() {
         if (firstNameField.getText().trim().isEmpty()) {
-            utilityClass.showError(notification, "First name is required");
+            UtilityMethods.showError(notification, "First name is required");
             return false;
         }
         if (lastNameField.getText().trim().isEmpty()) {
-            utilityClass.showError(notification, "Last name is required");
+            UtilityMethods.showError(notification, "Last name is required");
             return false;
         }
         if (genderComboBox.getValue() == null) {
-            utilityClass.showError(notification, "Please select a gender");
+            UtilityMethods.showError(notification, "Please select a gender");
             return false;
         }
         if (dateOfBirthPicker.getValue() == null) {
-            utilityClass.showError(notification, "Date of birth is required");
+            UtilityMethods.showError(notification, "Date of birth is required");
             return false;
         }
         if (parentNameField.getText().trim().isEmpty()) {
-            utilityClass.showError(notification, "Parent name is required");
+            UtilityMethods.showError(notification, "Parent name is required");
             return false;
         }
         if (parentPhoneField.getText().trim().isEmpty()) {
-            utilityClass.showError(notification, "Parent phone number is required");
+            UtilityMethods.showError(notification, "Parent phone number is required");
             return false;
         }
         if (classComboBox.getValue() == null) {
-            utilityClass.showError(notification, "Please select a class");
+            UtilityMethods.showError(notification, "Please select a class");
             return false;
         }
         return true;
@@ -2225,31 +2222,31 @@ public class PrincipalController implements Initializable {
 
     private boolean validateUpdateForm() {
         if (updateFirstNameField.getText().trim().isEmpty()) {
-            utilityClass.showError(notification, "First name is required");
+            UtilityMethods.showError(notification, "First name is required");
             return false;
         }
         if (updateLastNameField.getText().trim().isEmpty()) {
-            utilityClass.showError(notification, "Last name is required");
+            UtilityMethods.showError(notification, "Last name is required");
             return false;
         }
         if (updateGenderComboBox.getValue() == null) {
-            utilityClass.showError(notification, "Please select a gender");
+            UtilityMethods.showError(notification, "Please select a gender");
             return false;
         }
         if (updateDateOfBirthPicker.getValue() == null) {
-            utilityClass.showError(notification, "Date of birth is required");
+            UtilityMethods.showError(notification, "Date of birth is required");
             return false;
         }
         if (updateParentNameField.getText().trim().isEmpty()) {
-            utilityClass.showError(notification, "Parent name is required");
+            UtilityMethods.showError(notification, "Parent name is required");
             return false;
         }
         if (updateParentPhoneField.getText().trim().isEmpty()) {
-            utilityClass.showError(notification, "Parent phone number is required");
+            UtilityMethods.showError(notification, "Parent phone number is required");
             return false;
         }
         if (updateClassComboBox.getValue() == null) {
-            utilityClass.showError(notification, "Please select a class");
+            UtilityMethods.showError(notification, "Please select a class");
             return false;
         }
         return true;
@@ -2268,17 +2265,17 @@ public class PrincipalController implements Initializable {
         GradeCaching selectedClass = classComboBox.getSelectionModel().getSelectedItem();
         String selectedGradeId;
         if (selectedClass == null) {
-            utilityClass.showError(notification, "No grade selected!");
+            UtilityMethods.showError(notification, "No grade selected!");
             return;
         }
         selectedGradeId = selectedClass.getLevelId();
 
-        utilityClass.enrollNewStudent(firstName, lastName, selectedGradeId, gender,
+        apiUtilityClass.enrollNewStudent(firstName, lastName, selectedGradeId, gender,
                 dob, homeTown, parentName, parentPhone, currentStaffId, onSuccess, onFailure, onNetworkIssue);
     }
 
     private void studentInfoUpdatePanel(UpdateStudentPersonalData data) {
-        List<GradeCaching> gradeCachings  = utilityClass.gradeCacheManager.getGradesCache();
+        List<GradeCaching> gradeCachings  = apiUtilityClass.gradeCacheManager.getGradesCache();
         GradeCaching updateGrade = null;
         if (gradeCachings != null && !gradeCachings.isEmpty()) {
             for (GradeCaching gradeCaching1 : gradeCachings) {

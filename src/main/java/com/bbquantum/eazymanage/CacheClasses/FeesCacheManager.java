@@ -73,12 +73,12 @@ public class FeesCacheManager {
 
     public void clearRecentPaymentCache() {
         this.cachedRecentPaymentList = null;
-        this.lastUpdateTime = LocalDateTime.now();
+        this.lastUpdateTime = null;
     }
 
     public void clearClassFeesSummaryCache() {
         this.cachedClassFeesSummaryList = null;
-        this.lastUpdateTime = LocalDateTime.now();
+        this.lastUpdateTime = null;
     }
 
 }

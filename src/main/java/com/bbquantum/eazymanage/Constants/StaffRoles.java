@@ -4,5 +4,6 @@ public enum StaffRoles {
     PRINCIPAL,
     ACCOUNTANT,
     TEACHING_STAFF,
-    GENERAL_STAFF
+    GENERAL_STAFF,
+    ADMINISTRATOR
 }
