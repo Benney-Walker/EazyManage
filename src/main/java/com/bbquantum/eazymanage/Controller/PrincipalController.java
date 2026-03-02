@@ -27,8 +27,6 @@ import javafx.scene.layout.*;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -91,9 +89,6 @@ public class PrincipalController implements Initializable {
     //STAFF DASHBOARD VIEW
     @FXML private ScrollPane staffDashboardView;
     @FXML private Label totalStaffCountLabel;
-    @FXML private TextField searchStaffIdField;
-    @FXML private VBox newPasswordBox;
-    @FXML private TextField newPasswordField;
     @FXML public VBox staffDetailsPanel;
     @FXML private Label staffFullNameLabel;
     @FXML private Label staffIdLabel;
@@ -105,9 +100,6 @@ public class PrincipalController implements Initializable {
     @FXML private ComboBox<String> editGenderComboBox;
     @FXML private ComboBox<StaffRoles> editRoleComboBox;
     @FXML private ComboBox<StaffStatus> editStatusComboBox;
-    @FXML private Button searchStaffBtn;
-    @FXML private Button passwordResetBtn;
-    @FXML private Button updateStaffInfoBtn;
 
     @FXML public TableView<ViewStaffList> allStaffTable;
     @FXML private TableColumn<ViewStaffList, String> staffIdColumn;
@@ -217,7 +209,8 @@ public class PrincipalController implements Initializable {
 
     @FXML private VBox updateStudentInfoCard;
     @FXML private VBox studentSearchFieldBox;
-    @FXML private TextField studentSearchField;
+    @FXML private ComboBox<StudentsHolder> studentSearchComboBox;
+    @FXML private ComboBox<GradeCaching> studentSearchClassBox;
     @FXML private Button findStudentBtn;
     @FXML private VBox personalInfo;
     @FXML private Label studentIdLabel;
@@ -225,90 +218,11 @@ public class PrincipalController implements Initializable {
     @FXML private Label updateGradeNameLabel;
     @FXML private TextField updateFirstNameField;
     @FXML private TextField updateLastNameField;
-    @FXML private ComboBox<String> updateGenderComboBox;
-    @FXML private DatePicker updateDateOfBirthPicker;
-    @FXML private TextField updateHomeTownField;
-    @FXML private VBox guardianInfo;
-    @FXML private TextField updateParentNameField;
-    @FXML private TextField updateParentPhoneField;
-    @FXML private VBox gradeInfo;
-    @FXML private ComboBox<GradeCaching> updateClassComboBox;
-    @FXML private VBox statusInfo;
-    @FXML private ComboBox<StudentStatus> updateStatusComboBox;
-    @FXML private VBox updateButtonVBox;
-    @FXML private Button updateStudentInfoBtn;
-
-    //ADD SUBJECT VIEW
-    @FXML private ScrollPane addNewSubjectView;
-
-    @FXML private Button addSubjectToggleBtn;
-    @FXML private Button printSubjectsToggleBtn;
-
-    @FXML private StackPane subjectCardContainer;
-
-    @FXML private VBox addNewSubjectCard;
-    @FXML private TextField subjectNameField;
-    @FXML private ComboBox<GradeCaching> gradeComboBox;
-    @FXML private Button saveSubjectBtn;
-
-    @FXML private VBox printClassSubjectsCard;
-    @FXML private ComboBox<GradeCaching> printClassSubjectsComboBox;
-    @FXML public Button printSubjectDataBtn;
-
-    //ADD SEMESTER PAGE
-    @FXML private ScrollPane addSemesterView;
-
-    @FXML private Button addSemesterToggleBtn;
-    @FXML private Button updateSemesterToggleBtn;
-
-    @FXML private VBox addSemesterCard;
-    @FXML private TextField semesterNameField;
-    @FXML private DatePicker startDatePicker;
-    @FXML private DatePicker endDatePicker;
-    @FXML private TextField academicYearField;
-    @FXML private Button saveSemesterBtn;
-
-    @FXML private VBox updateSemesterInfoCard;
-    @FXML private VBox semesterSearchPanel;
-    @FXML private ComboBox<SemesterCaching> updateSemesterInfoComboBox;
-    @FXML private Button findSemesterBtn;
-    @FXML private VBox semesterInfoPanel;
-    @FXML private TextField updateSemesterNameField;
-    @FXML private DatePicker updateStartDatePicker;
-    @FXML private DatePicker updateEndDatePicker;
-    @FXML private TextField updateAcademicYearField;
-    @FXML private Button updateSemesterBtn;
-
-    //ADD GRADES CRITERIA PAGE
-    @FXML private ScrollPane addGradesView;
-    @FXML private TextField gradeCriteriaField;
-    @FXML private TextField lowerRangeField;
-    @FXML private TextField upperRangeField;
-    @FXML private TextField gradeRemarksField;
-    @FXML private Button saveGradeBtn;
-
-    //ADD CLASS PAGE
-    @FXML private ScrollPane addNewClassView;
-
-    @FXML private Button addClassToggleBtn;
-    @FXML private Button updateClassInfoToggleBtn;
-
-    @FXML private StackPane classCardContainer;
-
-    @FXML private VBox addClassCard;
-    @FXML private TextField addClassNameField;
-    @FXML private ComboBox<StaffCaching> addClassStaffComboBox;
-    @FXML private Button saveClassBtn;
-
-    @FXML private VBox updateClassInfoCard;
-    @FXML private VBox updateClassSearchArea;
-    @FXML private TextField updateClassSearchField;
-    @FXML private Button searchClassBtn;
-
-    @FXML private VBox updateClassInfoDisplayArea;
-    @FXML private TextField updateClassInfoNameField;
-    @FXML private ComboBox<StaffCaching> updateClassInfoStaffComboBox;
-    @FXML private Button updateClassInfoBtn;
+    @FXML private Label updateGenderComboBox;
+    @FXML private Label updateDateOfBirthPicker;
+    @FXML private Label updateHomeTownField;
+    @FXML private Label updateParentNameField;
+    @FXML private Label updateParentPhoneField;
 
     //MANAGE RESULTS PAGE
     @FXML private ScrollPane manageResultsView;
@@ -582,19 +496,19 @@ public class PrincipalController implements Initializable {
     private void showFinanceDashboard() {
         loadFinanceDashboardData();
 
-        List<GradeCaching> cachedGrades = apiUtilityClass.gradeCacheManager.getGradesCache();
-        if (cachedGrades != null) {
+        List<GradeCaching> cachedGrades = ApiUtilityClass.gradeCacheManager.getGradesCache();
+        if (cachedGrades != null && !cachedGrades.isEmpty()) {
             Platform.runLater(() -> classLevelComboBox.getItems().setAll(cachedGrades));
         }
 
-        List<SemesterCaching> semesterCaching = apiUtilityClass.semesterCachingManager.getCachedSemesters();
-        if (semesterCaching != null) {
-            Platform.runLater(() -> semesterComboBox.getItems().setAll(semesterCaching));
+        List<SemesterCaching> cachedSemesters = ApiUtilityClass.semesterCachingManager.getCachedSemesters();
+        if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
+            Platform.runLater(() -> semesterComboBox.getItems().setAll(cachedSemesters));
         }
 
-        List<ClassFeesSummary> cachedClassfees = apiUtilityClass.feesCacheManager.getClassFeesSummaryCache();
-        if (cachedClassfees != null) {
-            Platform.runLater(() -> classSummaryTable.getItems().setAll(cachedClassfees));
+        List<ClassFeesSummary> cachedClassFees = ApiUtilityClass.feesCacheManager.getClassFeesSummaryCache();
+        if (cachedClassFees != null && !cachedClassFees.isEmpty()) {
+            Platform.runLater(() -> classSummaryTable.getItems().setAll(cachedClassFees));
         }
 
         switchView(financeDashboardView, financeDashboardBtn);
@@ -605,24 +519,18 @@ public class PrincipalController implements Initializable {
 
         loadStudentDashboardData();
 
-        List<GradeCaching> cachedGrades = apiUtilityClass.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = ApiUtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             resultsClassComboBox.getItems().setAll(cachedGrades);
             printStudentClassComboBox.getItems().setAll(cachedGrades);
         }
 
-        List<SemesterCaching> semesterCaching = apiUtilityClass.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> semesterCaching = ApiUtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesterCaching != null && !semesterCaching.isEmpty()) {
             resultsSemesterComboBox.getItems().setAll(semesterCaching);
         }
 
         switchView(studentDashboardView, studentDashboardBtn);
-    }
-
-    @FXML
-    public void openAddClassPage() {
-        showAddClassCard();
-        switchView(addNewClassView, staffDashboardBtn);
     }
 
     public void openClassResultsView() {
@@ -697,11 +605,11 @@ public class PrincipalController implements Initializable {
                 });
     }
 
+
+
     @FXML
-    public void handleCancelUpdate() {
-        staffDetailsPanel.setVisible(false);
-        staffDetailsPanel.setManaged(false);
-        searchStaffIdField.clear();
+    public void fetchGradeStudents() {
+
     }
 
     @FXML
@@ -890,6 +798,11 @@ public class PrincipalController implements Initializable {
                         UtilityMethods.showError(notification, "Network Error! Check your internet and try again");
                     });
                 });
+    }
+
+    @FXML
+    public void backToStaffDashboard() {
+
     }
 
     @FXML
@@ -1109,11 +1022,6 @@ public class PrincipalController implements Initializable {
         showStaffDashboard();
     }
 
-    @FXML
-    public void openAddGrades() {
-        switchView(addGradesView, staffDashboardBtn);
-    }
-
     @FXML void handleSaveGrade() {
         String gradeCriteria = gradeCriteriaField.getText();
         Double lowerRange = Double.parseDouble(lowerRangeField.getText());
@@ -1171,50 +1079,6 @@ public class PrincipalController implements Initializable {
                     });
                 });
 
-    }
-
-    @FXML
-    public void handleAddClass() {
-        String className = addClassNameField.getText().trim();
-        if (className.isEmpty()) {
-            UtilityMethods.showError(notification, "Class name is required");
-            return;
-        }
-
-        if (!className.contains("_") || className.contains(" ")) {
-            UtilityMethods.showError(notification, "Class name must contain '_' eg.Grade_1");
-            return;
-        }
-
-        StaffCaching staffCaching = addClassStaffComboBox.getSelectionModel().getSelectedItem();
-        if (staffCaching == null) {
-            UtilityMethods.showError(notification, "Please select a staff cache");
-            return;
-        }
-
-        String staffId = staffCaching.getStaffId();
-
-        UtilityMethods.processingButton(saveClassBtn);
-        apiUtilityClass.addNewGrade(className, staffId,
-                () -> {
-            //On Success
-                    Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveClassBtn, "ADD CLASS");
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
-                    });
-                }, () -> {
-            //On Failure
-                    Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveClassBtn, "ADD CLASS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
-                    });
-                }, () -> {
-            //On Network Issue
-                    Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveClassBtn, "ADD CLASS");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
-                    });
-                });
     }
 
     @FXML
@@ -1325,7 +1189,7 @@ public class PrincipalController implements Initializable {
         studentSearchFieldBox.setVisible(true);
         studentSearchFieldBox.setManaged(true);
 
-        studentSearchField.clear();
+        studentSearchComboBox.clear();
 
         switchPageCards(updateStudentInfoCard, addStudentCard,
                 updateStudentToggleBtn, addStudentToggleBtn);
@@ -1499,7 +1363,7 @@ public class PrincipalController implements Initializable {
 
     @FXML
     public void handleFindStudent() {
-        String searchId = studentSearchField.getText();
+        String searchId = studentSearchComboBox.getText();
         if (searchId.isEmpty()) {
             UtilityMethods.showError(notification, "Enter search parameter");
             return;
@@ -1555,6 +1419,7 @@ public class PrincipalController implements Initializable {
     @FXML
     public void handleUpdateStudentInfo() {
         if (!validateUpdateForm()) return;
+
         UpdateStudentPersonalData studentPersonalData = new UpdateStudentPersonalData();
         studentPersonalData.setStudentId(studentIdLabel.getText());
         studentPersonalData.setFirstName(updateFirstNameField.getText());
@@ -1707,120 +1572,6 @@ public class PrincipalController implements Initializable {
                 });
     }
 
-    @FXML
-    public void handleFindClass() {
-        String searchParameter = updateClassSearchField.getText().trim();
-        if (searchParameter.isEmpty()) {
-            UtilityMethods.showError(notification, "Please enter class");
-            return;
-        }
-
-        if (searchParameter.contains(" ") && !searchParameter.startsWith("LV")) {
-            UtilityMethods.showError(notification, "Class name must contain '_'. eg. Grade_1");
-            return;
-        }
-
-        if (!searchParameter.contains("_") && !searchParameter.endsWith("\\d+(\\.\\d+)?")) {
-            searchParameter = searchParameter + "_";
-        }
-
-        UtilityMethods.processingButton(searchClassBtn);
-        apiUtilityClass.findClassInfo(searchParameter, currentStaffId,
-                () -> {
-            //On Success
-                    Platform.runLater(() -> {
-                        List<StaffCaching> cachedStaffs = apiUtilityClass.staffCacheManager.getCachedStaffList();
-                        if (cachedStaffs != null && !cachedStaffs.isEmpty()) {
-                            if (updateClassInfoStaffComboBox.getItems().isEmpty()) {
-                                updateClassInfoStaffComboBox.getItems().addAll(cachedStaffs);
-                            }
-
-                            for (StaffCaching staffCaching : cachedStaffs) {
-                                if (staffCaching.getStaffId().equals(apiUtilityClass.findAndUpdateClassInfo.getStaffId())) {
-                                    updateClassInfoStaffComboBox.getSelectionModel().select(staffCaching);
-                                    break;
-                                }
-                            }
-                        }
-
-                        updateClassInfoNameField.setText(apiUtilityClass.findAndUpdateClassInfo.getLevelName());
-                        updateClassInfoDisplayArea.setVisible(true);
-                        updateClassInfoDisplayArea.setManaged(true);
-
-                        updateClassSearchArea.setVisible(false);
-                        updateClassSearchArea.setManaged(false);
-                        UtilityMethods.notProcessingButton(searchClassBtn, "FIND CLASS");
-                        UtilityMethods.showSuccess(notification, "Class information found");
-                    });
-                },
-                () -> {
-            //On Failure
-                    Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(searchClassBtn, "FIND CLASS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
-                    });
-                },
-                () -> {
-            //On Network Issue
-                    Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(searchClassBtn, "FIND CLASS");
-                        UtilityMethods.showError(notification, "Network error! Check your connection and try again");
-                    });
-                });
-    }
-
-    @FXML
-    public void handleUpdateClassInfo() {
-        String newClassName = updateClassInfoNameField.getText().trim();
-        if (newClassName.isEmpty()) {
-            UtilityMethods.showError(notification, "Please enter class name");
-            return;
-        }
-
-        if (!newClassName.contains("_") || newClassName.contains(" ")) {
-            UtilityMethods.showError(notification, "Class name must contain '_' eg.Grade_1");
-            return;
-        }
-
-        StaffCaching staffCaching = updateClassInfoStaffComboBox.getSelectionModel().getSelectedItem();
-        if (staffCaching == null) {
-            UtilityMethods.showError(notification, "Please select a staff");
-            return;
-        }
-
-        UtilityMethods.processingButton(updateClassInfoBtn);
-        apiUtilityClass.findAndUpdateClassInfo.setLevelName(newClassName);
-        apiUtilityClass.findAndUpdateClassInfo.setStaffId(staffCaching.getStaffId());
-
-        apiUtilityClass.updateClassInfo(apiUtilityClass.findAndUpdateClassInfo,
-                () -> {
-            //On Success
-                    Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
-                        updateClassInfoDisplayArea.setVisible(false);
-                        updateClassInfoDisplayArea.setManaged(false);
-
-                        updateClassSearchArea.setVisible(true);
-                        updateClassSearchArea.setManaged(true);
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
-                    });
-                },
-                () -> {
-            //On Failure
-                    Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
-                    });
-                },
-                () -> {
-            //On Network Issue
-                    Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
-                        UtilityMethods.showError(notification, "Network Error! Check your connection and try again");
-                    });
-                });
-    }
-
     private FindStaffResponse updateStaffDTO() {
         FindStaffResponse staff = new FindStaffResponse();
         staff.setStaffId(staffIdLabel.getText());
@@ -1923,27 +1674,39 @@ public class PrincipalController implements Initializable {
         this.currentStaffId = currentStaffId;
     }
 
-    private void updateDateTime() {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy | HH:mm:ss");
-        dateTimeLabel.setText(now.format(formatter));
-    }
-
     //Load staff Dashboard data on open
     private void loadStaffDashboardData() {
-        totalStaffCountLabel.setText(String.valueOf(apiUtilityClass.totalStaffFromBackend));
-        List<ViewStaffList> staffList = apiUtilityClass.staffListCacheManager.getCachedStaffList();
-        allStaffTable.getItems().setAll(staffList);
+        totalStaffCountLabel.setText(
+                String.valueOf(ApiUtilityClass.totalStaffFromBackend)
+        );
+
+        List<ViewStaffList> staffList = ApiUtilityClass.staffListCacheManager.getCachedStaffList();
+        if (staffList != null && !staffList.isEmpty()) {
+            allStaffTable.getItems().setAll(staffList);
+        }
     }
 
     //Load finance Dashboard Data on open
     private void loadFinanceDashboardData() {
-        totalSemesterFeesLabel.setText(String.valueOf(apiUtilityClass.totalSemesterFeesFromBackend));
-        amountPaidLabel.setText(String.valueOf(apiUtilityClass.feesPaidFromBackend));
-        collectionProgressBar.setProgress(apiUtilityClass.feesProgressBarFromBackend);
-        String collectionPercent = collectionPercentageCalc(apiUtilityClass.totalSemesterFeesFromBackend, apiUtilityClass.feesPaidFromBackend).toString();
-        collectionPercentageLabel.setText(collectionPercent + "%");
-        String outStanding = calOutstandingBalance(apiUtilityClass.totalSemesterFeesFromBackend, apiUtilityClass.feesPaidFromBackend).toString();
+        totalSemesterFeesLabel.setText(
+                String.valueOf(ApiUtilityClass.totalSemesterFeesFromBackend)
+        );
+        amountPaidLabel.setText(
+                String.valueOf(ApiUtilityClass.feesPaidFromBackend)
+        );
+        collectionProgressBar.setProgress(
+                ApiUtilityClass.feesProgressBarFromBackend
+        );
+        String collectionPercent = collectionPercentageCalc(
+                ApiUtilityClass.totalSemesterFeesFromBackend, ApiUtilityClass.feesPaidFromBackend
+        ).toString();
+        collectionPercentageLabel.setText(
+                collectionPercent + "%"
+        );
+        String outStanding = calOutstandingBalance(
+                ApiUtilityClass.totalSemesterFeesFromBackend, ApiUtilityClass.feesPaidFromBackend
+        ).toString();
+
         outstandingBalanceLabel.setText(outStanding);
     }
 
@@ -1960,7 +1723,9 @@ public class PrincipalController implements Initializable {
 
     //Load student Dashboard data
     private void loadStudentDashboardData() {
-        totalStudentsCountLabel.setText(String.valueOf(apiUtilityClass.totalStudentsFromBackend));
+        totalStudentsCountLabel.setText(
+                String.valueOf(ApiUtilityClass.totalStudentsFromBackend)
+        );
     }
 
     public void setInstitutionName(String institutionName) {
@@ -1979,36 +1744,34 @@ public class PrincipalController implements Initializable {
 
     public void loadMainDashboardData() {
 
-        updateDateTime();
-
         //Load total students
-        totalStudentsLabel.setText(String.valueOf(apiUtilityClass.totalStudentsFromBackend));
+        totalStudentsLabel.setText(String.valueOf(ApiUtilityClass.totalStudentsFromBackend));
 
         //Load total Staff
-        totalStaffLabel.setText(String.valueOf(apiUtilityClass.totalStaffFromBackend));
+        totalStaffLabel.setText(String.valueOf(ApiUtilityClass.totalStaffFromBackend));
 
         //Load semester Fees
-        semesterFeesLabel.setText(String.valueOf(apiUtilityClass.totalSemesterFeesFromBackend));
+        semesterFeesLabel.setText(String.valueOf(ApiUtilityClass.totalSemesterFeesFromBackend));
 
         //Load fees Paid
-        feesPaidLabel.setText(String.valueOf(apiUtilityClass.feesPaidFromBackend));
+        feesPaidLabel.setText(String.valueOf(ApiUtilityClass.feesPaidFromBackend));
 
         //Calculate progress
         try {
-            Double totalFeesPaid = apiUtilityClass.feesPaidFromBackend;
+            Double totalFeesPaid = ApiUtilityClass.feesPaidFromBackend;
             if (totalFeesPaid > 0.0) {
-                apiUtilityClass.feesProgressBarFromBackend = totalFeesPaid / apiUtilityClass.totalSemesterFeesFromBackend;
+                ApiUtilityClass.feesProgressBarFromBackend = totalFeesPaid / apiUtilityClass.totalSemesterFeesFromBackend;
             } else {
-                apiUtilityClass.feesProgressBarFromBackend = 0.0;
+                ApiUtilityClass.feesProgressBarFromBackend = 0.0;
             }
-            feesProgressBar.setProgress(apiUtilityClass.feesProgressBarFromBackend);
+            feesProgressBar.setProgress(ApiUtilityClass.feesProgressBarFromBackend);
         } catch (Exception e) {
             feesProgressBar.setProgress(0.0);
             UtilityMethods.showError(notification, "Couldn't get fees Progress");
         }
 
-        List<AbsenteesView> cachedStudents = apiUtilityClass.cacheManager.getCachedAbsenteeStudents();
-        if (cachedStudents != null) {
+        List<AbsenteesView> cachedStudents = ApiUtilityClass.cacheManager.getCachedAbsenteeStudents();
+        if (cachedStudents != null && !cachedStudents.isEmpty()) {
             absenteesTable.getItems().setAll(cachedStudents);
         }
 

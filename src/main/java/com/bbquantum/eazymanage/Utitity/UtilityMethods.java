@@ -1,9 +1,15 @@
 package com.bbquantum.eazymanage.Utitity;
 
+import com.bbquantum.eazymanage.CacheClasses.*;
 import com.bbquantum.eazymanage.DTO.Academics.PrintLevelSubjects;
 import com.bbquantum.eazymanage.DTO.Academics.StudentListPrint;
+import com.bbquantum.eazymanage.DTO.Academics.SubjectScores;
+import com.bbquantum.eazymanage.DTO.Academics.SubjectsHolder;
 import com.bbquantum.eazymanage.DTO.Finance.GradeFeesReport;
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
+import com.bbquantum.eazymanage.DTO.Institution.FindAndUpdateClassInfo;
+import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
+import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -22,27 +28,60 @@ import java.util.List;
 
 public class UtilityMethods {
 
+    // Cache Managers
+    public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
+    public static final StaffCacheManager staffCacheManager = StaffCacheManager.getInstance();
+    public static final GradeCacheManager gradeCacheManager = GradeCacheManager.getInstance();
+    public static final FeesCacheManager feesCacheManager = FeesCacheManager.getInstance();
+    public static final SemesterCachingManager semesterCachingManager = SemesterCachingManager.getInstance();
+    public static final StaffListCacheManager staffListCacheManager = StaffListCacheManager.getInstance();
+    public static final GradeInfoCacheManager gradeInfoCacheManager = GradeInfoCacheManager.getInstance();
+    public static final SystemLogsCacheManager systemLogsCacheManager = SystemLogsCacheManager.getInstance();
+
+    // System own variables
+    public static Long totalStudentsFromBackend = 0L;
+    public static Long totalStaffFromBackend = 0L;
+    public static Double totalSemesterFeesFromBackend = 0D;
+    public static Double feesPaidFromBackend = 0D;
+    public static Double feesProgressBarFromBackend = 0D;
+
+    //Holds class information for update
+    public static FindAndUpdateClassInfo findAndUpdateClassInfo;
+
+    //Holds Students
+    public static List<StudentsHolder> studentsHolder;
+
+    //Holds Subjects
+    public static List<SubjectsHolder> subjectsHolder;
+
+    // Stores student information for update
+    public static UpdateStudentPersonalData updateStudentPersonalData;
+
+    //Stores students for scores input
+    public static SubjectScores subjectScores;
+
+
     public static void clearSession() {
 
         SessionManager.clearSession();
 
         // Clear cached backend data
-        ApiUtilityClass.feesCacheManager.clearClassFeesSummaryCache();
-        ApiUtilityClass.feesCacheManager.clearRecentPaymentCache();
+        feesCacheManager.clearClassFeesSummaryCache();
+        feesCacheManager.clearRecentPaymentCache();
 
-        ApiUtilityClass.gradeCacheManager.clearCache();
-        ApiUtilityClass.gradeInfoCacheManager.clearCachedGradeStudents();
-        ApiUtilityClass.cacheManager.clearCachedStudents();
-        ApiUtilityClass.semesterCachingManager.clearCachedSemesters();
-        ApiUtilityClass.staffCacheManager.clearCachedStaffList();
-        ApiUtilityClass.staffListCacheManager.clearCachedStaffList();
+        gradeCacheManager.clearCache();
+        gradeInfoCacheManager.clearCachedGradeStudents();
+        cacheManager.clearCachedStudents();
+        semesterCachingManager.clearCachedSemesters();
+        staffCacheManager.clearCachedStaffList();
+        staffListCacheManager.clearCachedStaffList();
 
         // Clear dashboard numbers
-        ApiUtilityClass.totalStudentsFromBackend = 0L;
-        ApiUtilityClass.totalStaffFromBackend = 0L;
-        ApiUtilityClass.totalSemesterFeesFromBackend = 0.0;
-        ApiUtilityClass.feesPaidFromBackend = 0.0;
-        ApiUtilityClass.feesProgressBarFromBackend = 0.0;
+        totalStudentsFromBackend = 0L;
+        totalStaffFromBackend = 0L;
+        totalSemesterFeesFromBackend = 0.0;
+        feesPaidFromBackend = 0.0;
+        feesProgressBarFromBackend = 0.0;
 
         // Clear reports / temp objects
         ApiUtilityClass.paymentRecords = null;

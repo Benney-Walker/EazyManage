@@ -43,6 +43,9 @@
                     <Button fx:id="studentNavBtn" text="MANAGE STUDENTS" onAction="#showManageStudent"
                             maxWidth="Infinity" styleClass="nav-button"/>
 
+                    <Button fx:id="gradeCriteriaNavBtn" text="MANAGE GRADING CRITERIA" onAction="#showGradingCriteria"
+                            maxWidth="Infinity" styleClass="nav-button"/>
+
                     <Button fx:id="scoresNavBtn" text="MANAGE SCORES" onAction="#showManageScores"
                             maxWidth="Infinity" styleClass="nav-button"/>
 
@@ -179,6 +182,132 @@
                     </VBox>
                 </ScrollPane>
 
+                <ScrollPane fx:id="manageClassView"
+                            visible="false"
+                            managed="false"
+                            fitToWidth="true"
+                            styleClass="modern-scroll-pane">
+
+                    <VBox spacing="30" alignment="TOP_CENTER" styleClass="content-padding">
+
+
+                        <VBox alignment="CENTER" spacing="10">
+                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #DBEAFE;">
+                                <Label text="🏫" style="-fx-font-size: 24px;"/>
+                            </StackPane>
+                            <Label text="MANAGE CLASSES" styleClass="header-title"/>
+                            <Label text="Add  or update exiting grade info." styleClass="header-subtitle"/>
+                        </VBox>
+
+
+                        <HBox spacing="10" alignment="CENTER">
+                            <Button fx:id="addClassToggleBtn"
+                                    text="ADD NEW GRADE"
+                                    onAction="#showAddClassCard"
+                                    styleClass="action-button-primary"/>
+
+                            <Button fx:id="updateClassInfoToggleBtn"
+                                    text="UPDATE CLASS INFO"
+                                    onAction="#showUpdateClassInfoCard"
+                                    styleClass="action-button-primary"/>
+                        </HBox>
+
+                        <StackPane fx:id="classCardContainer"
+                                   maxWidth="700">
+
+
+                            <VBox fx:id="addClassCard" spacing="25" maxWidth="700" styleClass="panel-card">
+
+                                <Label text="CLASS INFORMATION" styleClass="section-header-blue"/>
+
+
+                                <VBox spacing="8">
+                                    <Label text="Class Name *" styleClass="input-label"/>
+                                    <TextField fx:id="addClassNameField"
+                                               promptText="e.g. Grade_1, JHS_2, Form_3A"
+                                               styleClass="modern-input"/>
+                                </VBox>
+
+
+                                <VBox spacing="8">
+                                    <Label text="Assign Instructor *" styleClass="input-label"/>
+                                    <ComboBox fx:id="addClassStaffComboBox"
+                                              promptText="Select Instructor"
+                                              maxWidth="Infinity"
+                                              styleClass="modern-combo"/>
+                                    <Label text="💡 Only active teaching staff will appear here"
+                                           styleClass="login-footer-label"/>
+                                </VBox>
+
+                                <Separator styleClass="content-separator"/>
+
+
+                                <VBox alignment="BOTTOM_RIGHT">
+                                    <Button fx:id="saveClassBtn"
+                                            text="ADD CLASS"
+                                            onAction="#handleAddClass"
+                                            styleClass="action-button-primary"/>
+                                </VBox>
+                            </VBox>
+
+
+                            <VBox fx:id="updateClassInfoCard" spacing="25" maxWidth="700" styleClass="panel-card">
+
+                                <VBox fx:id="updateClassSearchArea" spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="Select Grade" styleClass="input-label"/>
+                                    <ComboBox fx:id="updateClassSearchBox"
+                                               styleClass="modern-input"/>
+
+                                    <VBox spacing="8" alignment="BOTTOM_RIGHT">
+                                        <Button fx:id="searchClassBtn"
+                                                text="FETCH GRADE INFO"
+                                                onAction="#handleFindClass"
+                                                styleClass="action-button-primary"/>
+                                    </VBox>
+                                </VBox>
+
+                                <VBox fx:id="updateClassInfoDisplayArea" visible="false" managed="false" spacing="25">
+
+                                    <Label text="CLASS INFORMATION" styleClass="section-header-blue"/>
+
+                                    <Separator styleClass="content-separator"/>
+
+                                    <VBox spacing="8">
+                                        <Label text="Class Name *" styleClass="input-label"/>
+                                        <TextField fx:id="updateClassInfoNameField"
+                                                   promptText="e.g. Grade_1, JHS_2, Form_3A"
+                                                   styleClass="modern-input"/>
+                                    </VBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Assign Instructor *" styleClass="input-label"/>
+                                        <ComboBox fx:id="updateClassInfoStaffComboBox"
+                                                  promptText="Select Instructor"
+                                                  maxWidth="Infinity"
+                                                  styleClass="modern-combo"/>
+                                        <Label text="💡 Only active teaching staff will appear here"
+                                               styleClass="login-footer-label"/>
+                                    </VBox>
+
+                                    <Separator styleClass="content-separator"/>
+
+
+                                    <HBox spacing="15" alignment="CENTER_RIGHT">
+
+                                        <Button fx:id="updateClassInfoBtn"
+                                                text="SAVE CHANGES"
+                                                onAction="#handleUpdateClassInfo"
+                                                styleClass="action-button-primary"/>
+                                    </HBox>
+
+                                </VBox>
+
+                            </VBox>
+
+                        </StackPane>
+                    </VBox>
+                </ScrollPane>
+
                 <!-- MANAGE STUDENTS PAGE -->
                 <ScrollPane fx:id="manageStudentView"
                             visible="false"
@@ -205,7 +334,7 @@
 
                             <Button fx:id="updateStudentToggleBtn"
                                     text="UPDATE STUDENT INFO"
-                                    onAction="#showUpdateInfoCard"
+                                    onAction="#showUpdateStudentInfoCard"
                                     styleClass="action-button-primary"/>
                         </HBox>
 
@@ -294,10 +423,14 @@
                             <VBox fx:id="updateStudentInfoCard" spacing="25" styleClass="panel-card" maxWidth="700">
 
                                 <VBox fx:id="studentSearchFieldBox" spacing="10" alignment="CENTER_LEFT">
+
+                                    <Label text="Select the specific grade to fetch students"
+                                           styleClass="section-header-blue"/>
+
                                     <HBox spacing="10" alignment="CENTER_LEFT">
 
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Enter Student full name or student ID"
+                                            <Label text="Select Student"
                                                    styleClass="input-label"/>
                                             <ComboBox fx:id="student_SelectionBox"
                                                       promptText="Select Student"
@@ -305,7 +438,7 @@
                                         </VBox>
 
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Enter Student full name or student ID"
+                                            <Label text="Select grade"
                                                    styleClass="input-label"/>
                                             <ComboBox fx:id="student_classSelectionBox"
                                                       onMouseReleased="#LoadClassStudent"
@@ -318,113 +451,181 @@
                                     <VBox alignment="BOTTOM_RIGHT">
                                         <Button fx:id="findStudentBtn"
                                                 text="FETCH DETAILS"
-                                                onAction="#handleFindStudent"
+                                                onAction="#handleFindStudentData"
                                                 styleClass="action-button-primary"/>
                                     </VBox>
                                 </VBox>
 
-                                <VBox fx:id="personalInfo" spacing="15">
-                                    <VBox spacing="8" alignment="CENTER_LEFT">
-                                        <VBox spacing="8" >
-                                            <Label text="STUDENT ID:" styleClass="input-label"/>
-                                            <Label fx:id="studentIdLabel" text=" " styleClass="section-title-small"/>
+                                <VBox fx:id="studentInfoPanel" spacing="10">
 
-                                            <VBox spacing="8" alignment="BOTTOM_RIGHT">
-                                                <Label text="STUDENT STATUS:" styleClass="input-label"/>
-                                                <Label fx:id="studentStatusLabel" text=" " styleClass="section-title-small"/>
-                                            </VBox>
+                                    <VBox spacing="15">
+
+                                        <VBox spacing="8" alignment="CENTER_LEFT">
+                                            <HBox spacing="8" >
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                                                    <Label text="STUDENT ID:" styleClass="input-label"/>
+                                                    <Label fx:id="studentIdLabel" text=" " styleClass="section-title-small"/>
+                                                </VBox>
+
+                                                <VBox spacing="8" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                                                    <Label text="STUDENT STATUS:" styleClass="input-label"/>
+                                                    <Label fx:id="studentStatusLabel" text=" " styleClass="section-title-small"/>
+                                                </VBox>
+                                            </HBox>
+
+                                            <Label text="GRADE NAME:" styleClass="input-label"/>
+                                            <Label fx:id="updateGradeNameLabel" text=" " styleClass="section-title-small"/>
                                         </VBox>
 
-                                        <Label text="GRADE NAME:" styleClass="input-label"/>
-                                        <Label fx:id="updateGradeNameLabel" text=" " styleClass="section-title-small"/>
+                                        <Separator styleClass="content-separator"/>
+
+                                        <Label text="Personal Information" styleClass="section-header-blue"/>
+
+                                        <HBox spacing="15">
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="First Name *" styleClass="input-label"/>
+                                                <TextField fx:id="updateFirstNameField" promptText="e.g. John" styleClass="modern-input"/>
+                                            </VBox>
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="Last Name *" styleClass="input-label"/>
+                                                <TextField fx:id="updateLastNameField" promptText="e.g. Doe" styleClass="modern-input"/>
+                                            </VBox>
+                                        </HBox>
+
+                                        <Separator styleClass="content-separator"/>
+
+                                        <HBox spacing="15">
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="Gender *" styleClass="input-label"/>
+                                                <ComboBox fx:id="updateGenderComboBox"
+                                                          promptText="Select" maxWidth="300"
+                                                          styleClass="modern-combo"/>
+                                            </VBox>
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="Date of Birth *" styleClass="input-label"/>
+                                                <DatePicker fx:id="updateDateOfBirthPicker"
+                                                            promptText="MM/DD/YYYY" maxWidth="300"
+                                                            styleClass="modern-date-picker"/>
+                                            </VBox>
+                                        </HBox>
+
+                                        <VBox spacing="8">
+                                            <Label text="Home Town *" styleClass="input-label"/>
+                                            <TextField fx:id="updateHomeTownField" promptText="Enter student's home town" styleClass="modern-input"/>
+                                        </VBox>
                                     </VBox>
 
                                     <Separator styleClass="content-separator"/>
 
-                                    <Label text="Personal Information" styleClass="section-header-blue"/>
+                                    <VBox spacing="15">
+                                        <Label text="Parent/Guardian Information" styleClass="section-header-blue"/>
 
-                                    <HBox spacing="15">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="First Name *" styleClass="input-label"/>
-                                            <TextField fx:id="updateFirstNameField" promptText="e.g. John" styleClass="modern-input"/>
+                                        <VBox spacing="8">
+                                            <Label text="Parent/Guardian Name *" styleClass="input-label"/>
+                                            <TextField fx:id="updateParentNameField" promptText="Full name of primary contact" styleClass="modern-input"/>
                                         </VBox>
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Last Name *" styleClass="input-label"/>
-                                            <TextField fx:id="updateLastNameField" promptText="e.g. Doe" styleClass="modern-input"/>
-                                        </VBox>
-                                    </HBox>
 
-                                    <HBox spacing="15">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Gender *" styleClass="input-label"/>
-                                            <ComboBox fx:id="updateGenderComboBox"
-                                                      promptText="Select" maxWidth="300"
+                                        <VBox spacing="8">
+                                            <Label text="Parent Phone Number *" styleClass="input-label"/>
+                                            <TextField fx:id="updateParentPhoneField" promptText="0XXXXXXXXX" styleClass="modern-input"/>
+                                        </VBox>
+                                    </VBox>
+
+                                    <Separator styleClass="content-separator"/>
+
+                                    <VBox spacing="15">
+                                        <Label text="Class Information" styleClass="section-header-blue"/>
+                                        <VBox spacing="8">
+                                            <Label text="Assign Class/Level *" styleClass="input-label"/>
+                                            <ComboBox fx:id="updateClassComboBox"
+                                                      promptText="Select Grade"
+                                                      maxWidth="Infinity"
                                                       styleClass="modern-combo"/>
+                                            <Label text="💡 Ensure the class has available capacity before enrolling." styleClass="login-footer-label"/>
                                         </VBox>
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Date of Birth *" styleClass="input-label"/>
-                                            <DatePicker fx:id="updateDateOfBirthPicker"
-                                                        promptText="MM/DD/YYYY" maxWidth="300"
-                                                        styleClass="modern-date-picker"/>
+                                    </VBox>
+
+                                    <VBox spacing="15">
+                                        <Label text="Status Information" styleClass="section-header-blue"/>
+                                        <VBox spacing="8">
+                                            <Label text="Select Status *" styleClass="input-label"/>
+                                            <ComboBox fx:id="updateStatusComboBox" promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
                                         </VBox>
+                                    </VBox>
+
+                                    <Separator styleClass="content-separator"/>
+
+                                    <HBox spacing="15" alignment="BOTTOM_RIGHT">
+                                        <Button fx:id="updateStudentInfoBtn"
+                                                text="UPDATE INFO"
+                                                onAction="#handleUpdateStudentInfo"
+                                                styleClass="action-button-primary"/>
+
+                                        <Button text="CANCEL"
+                                                onAction="#handleCancelInfoUpdate"
+                                                styleClass="action-button-red"/>
                                     </HBox>
 
-                                    <VBox spacing="8">
-                                        <Label text="Home Town *" styleClass="input-label"/>
-                                        <TextField fx:id="updateHomeTownField" promptText="Enter student's home town" styleClass="modern-input"/>
-                                    </VBox>
                                 </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <VBox fx:id="guardianInfo" spacing="15">
-                                    <Label text="Parent/Guardian Information" styleClass="section-header-blue"/>
-
-                                    <VBox spacing="8">
-                                        <Label text="Parent/Guardian Name *" styleClass="input-label"/>
-                                        <TextField fx:id="updateParentNameField" promptText="Full name of primary contact" styleClass="modern-input"/>
-                                    </VBox>
-
-                                    <VBox spacing="8">
-                                        <Label text="Parent Phone Number *" styleClass="input-label"/>
-                                        <TextField fx:id="updateParentPhoneField" promptText="0XXXXXXXXX" styleClass="modern-input"/>
-                                    </VBox>
-                                </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <VBox fx:id="gradeInfo" spacing="15">
-                                    <Label text="Class Information" styleClass="section-header-blue"/>
-                                    <VBox spacing="8">
-                                        <Label text="Assign Class/Level *" styleClass="input-label"/>
-                                        <ComboBox fx:id="updateClassComboBox" promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
-                                        <Label text="💡 Ensure the class has available capacity before enrolling." styleClass="login-footer-label"/>
-                                    </VBox>
-                                </VBox>
-
-                                <VBox fx:id="statusInfo" spacing="15">
-                                    <Label text="Status Information" styleClass="section-header-blue"/>
-                                    <VBox spacing="8">
-                                        <Label text="Select Status *" styleClass="input-label"/>
-                                        <ComboBox fx:id="updateStatusComboBox" promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
-                                </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <HBox fx:id="updateButtonVBox" spacing="15" alignment="BOTTOM_RIGHT">
-                                    <Button fx:id="updateStudentInfoBtn"
-                                            text="UPDATE INFO"
-                                            onAction="#handleUpdateStudentInfo"
-                                            styleClass="action-button-primary"/>
-
-                                    <Button text="CANCEL"
-                                            onAction="#handleCancelInfoUpdate"
-                                            styleClass="action-button-red"/>
-                                </HBox>
                             </VBox>
 
                         </StackPane>
+                    </VBox>
+                </ScrollPane>
+
+                <ScrollPane fx:id="gradingCriteriaView"
+                            visible="false"
+                            managed="false"
+                            fitToWidth="true"
+                            styleClass="modern-scroll-pane">
+
+                    <VBox spacing="30" styleClass="content-padding" alignment="TOP_CENTER">
+
+
+                        <VBox alignment="CENTER" spacing="10">
+                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #ECFEFF;">
+                                <Label text="G" style="-fx-font-size: 24px;"/>
+                            </StackPane>
+                            <Label text="ADD GRADING CRITERIA" styleClass="header-title"/>
+                        </VBox>
+
+
+                        <VBox spacing="25" styleClass="panel-card" maxWidth="700">
+
+                            <Label text="Grade Details" styleClass="section-header-blue"/>
+
+                            <VBox spacing="10">
+                                <Label text="Grade Representation eg. 'A'" styleClass="input-label"/>
+                                <TextField fx:id="gradeCriteriaField" promptText="A, B, C" styleClass="modern-input"/>
+                            </VBox>
+
+                            <HBox spacing="15">
+                                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                    <Label text="Lower Limit eg. '80'" styleClass="input-label"/>
+                                    <TextField fx:id="lowerRangeField" promptText="80" styleClass="modern-date-picker"/>
+                                </VBox>
+
+                                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                                    <Label text="Upper Limit eg. '100'" styleClass="input-label"/>
+                                    <TextField fx:id="upperRangeField" promptText="100" styleClass="modern-date-picker"/>
+                                </VBox>
+                            </HBox>
+
+                            <VBox spacing="10">
+                                <Label text="Grade Remarks eg. 'Excellent'" styleClass="input-label"/>
+                                <TextField fx:id="gradeRemarksField" promptText="Excellent" styleClass="modern-input"/>
+                            </VBox>
+
+                            <Separator styleClass="content-separator"/>
+
+                            <HBox spacing="15" alignment="CENTER_RIGHT">
+                                <Button fx:id="saveGradeBtn"
+                                        text="ADD GRADE CRITERIA"
+                                        onAction="#handleSaveGradingCriteria"
+                                        styleClass="action-button-primary"/>
+                            </HBox>
+
+                        </VBox>
                     </VBox>
                 </ScrollPane>
 
@@ -451,12 +652,17 @@
 
                             <VBox fx:id="subjectResultSearchBox" spacing="15" alignment="BOTTOM_LEFT">
 
+                                <Label text="Select Grade to fetch the subjects"
+                                       styleClass="section-header-blue"/>
+
+                                <Separator styleClass="content-separator"/>
+
                                 <HBox spacing="10" alignment="CENTER_LEFT">
                                     <VBox spacing="8" HBox.hgrow="ALWAYS">
                                         <Label text="Select Subject" styleClass="input-label"/>
                                         <ComboBox fx:id="score_selectSubjectBox"
                                                   promptText="Select subject"
-                                                   styleClass="modern-input"/>
+                                                  styleClass="modern-input"/>
                                     </VBox>
 
                                     <VBox spacing="8" HBox.hgrow="ALWAYS">
@@ -541,6 +747,11 @@
                                         <TableColumn text="CLASS(50%)" fx:id="classScoreColumn" prefWidth="100" />
                                         <TableColumn text="EXAM(50%) " fx:id="calExamScoreColumn" prefWidth="100"/>
                                     </columns>
+
+                                    <placeholder>
+                                        <Label text="No students found" styleClass="card-footer-text"/>
+                                    </placeholder>
+
                                 </TableView>
 
                                 <HBox spacing="15" alignment="CENTER_LEFT">
@@ -756,7 +967,7 @@
 
                         <VBox spacing="25" styleClass="panel-card" maxWidth="1000">
 
-                            <VBox fx:id="viewResultsContainer" alignment="CENTER" spacing="15" maxWidth="1000">
+                            <VBox fx:id="viewResultsFilterContainer" alignment="CENTER" spacing="15" maxWidth="1000">
 
                                 <HBox spacing="15" alignment="BOTTOM_LEFT">
 
@@ -786,7 +997,8 @@
                                 </VBox>
                             </VBox>
 
-                            <VBox fx:id="resultsDisplayPanel" alignment="CENTER">
+                            <VBox fx:id="resultsDisplayPanel"
+                                  alignment="CENTER">
 
                                 <HBox spacing="15" alignment="CENTER_LEFT"
                                       styleClass="alert-panel-info">
@@ -862,14 +1074,11 @@
                                         <Button text="CLEAR RESULTS"
                                                 onAction="#handleClearResults"
                                                 styleClass="action-button-red"/>
+
                                     </HBox>
-
                                 </VBox>
-
                             </VBox>
-
                         </VBox>
-
                     </VBox>
                 </ScrollPane>
 
@@ -886,13 +1095,15 @@
                         </VBox>
 
                         <!-- Search & Update Section -->
-                        <VBox spacing="20" styleClass="stat-card">
-
-                            <Label text="Select from the list to display staff data" styleClass="section-title"/>
-                            <Separator styleClass="content-separator"/>
+                        <StackPane fx:id="staffManagementContainer">
 
                             <VBox fx:id="staffListTableContainer"
                                   spacing="10" styleClass="stat-card">
+
+                                <Label text="Select from the list to display staff data"
+                                       styleClass="section-title"/>
+
+                                <Separator styleClass="content-separator"/>
 
                                 <VBox alignment="CENTER_LEFT">
                                     <Label text="Staff List" styleClass="section-title"/>
@@ -1019,7 +1230,7 @@
                                     </HBox>
                                 </HBox>
                             </VBox>
-                        </VBox>
+                        </StackPane>
 
                     </VBox>
                 </ScrollPane>
@@ -1036,116 +1247,130 @@
                             <Label text="VIEW SYSTEM LOGS" styleClass="header-title"/>
                         </VBox>
 
-                        <VBox spacing="10" alignment="CENTER_LEFT" styleClass="sub-panel">
+                        <VBox fx:id="logsSearchArea"
+                              spacing="10"
+                              alignment="CENTER_LEFT"
+                              styleClass="sub-panel">
                             <Label text="Select fetch category for filtering activities"
                                    styleClass="input-label"/>
 
-                            <HBox spacing="10" alignment="CENTER_RIGHT">
-                                <DatePicker fx:id="filterDatePicker"
-                                            maxWidth="Infinity"
-                                            styleClass="modern-date-picker"/>
+                            <HBox spacing="10">
+                                <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                    <Label text="Select Date *" styleClass="input-label"/>
+                                    <DatePicker fx:id="filterDatePicker"
+                                                maxWidth="Infinity"
+                                                styleClass="modern-date-picker"/>
+                                </VBox>
 
-                                <ComboBox fx:id="filterStaffBox"
-                                          maxWidth="Infinity"
-                                          styleClass="modern-combo"/>
+                                <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                    <Label text="Select Staff" styleClass="input-label"/>
+                                    <ComboBox fx:id="filterStaffBox"
+                                              promptText="Select staff for filtering"
+                                              maxWidth="Infinity"
+                                              styleClass="modern-combo"/>
+                                </VBox>
                             </HBox>
                         </VBox>
 
-                        <VBox fx:id="activitiesListPanel"
-                              spacing="20"
-                              styleClass="stat-card">
+                        <StackPane fx:id="logsCardContainer">
 
-                            <Separator styleClass="content-separator"/>
+                            <VBox fx:id="activitiesListPanel"
+                                  spacing="20"
+                                  styleClass="stat-card">
 
-                            <TableView fx:id="activitiesTable"
-                                       prefHeight="500"
-                                       styleClass="modern-table">
-                                <columns>
-                                    <TableColumn text="ID" fx:id="filter_activitiesIdCol" prefWidth="120"/>
-                                    <TableColumn text="TYPE" fx:id="filter_activityTypeCol" prefWidth="250"/>
-                                    <TableColumn text="CREATED BY" fx:id="filter_createdByCol" prefWidth="120"/>
-                                    <TableColumn text="DATE" fx:id="filter_activityDateCol" prefWidth="180"/>
-                                    <TableColumn text="TIME" fx:id="filter_activityTimeCol" prefWidth="120"/>
-                                    <TableColumn text="ACTION" fx:id="filter_actionDataCol" prefWidth="120"/>
-                                    <TableColumn text="STATUS" fx:id="filter_activityStatusCol" prefWidth="120"/>
-                                </columns>
-                                <placeholder>
-                                    <Label text="No Activities found"
-                                           style="-fx-text-fill: #94A3B8;"/>
-                                </placeholder>
-                            </TableView>
-                        </VBox>
+                                <Separator styleClass="content-separator"/>
 
-                        <VBox fx:id="viewLogDetailsPanel"
-                              spacing="25"
-                              visible="false"
-                              managed="false"
-                              styleClass="panel-card"
-                              maxWidth="700">
-
-                            <HBox alignment="CENTER_LEFT"
-                                  styleClass="sub-panel"
-                                  spacing="15">
-                                <Button text="BACK"
-                                        styleClass="back-nav-button"
-                                        onAction="#backToLogsList"/>
-
-                                <Label text="LOG INFORMATION"
-                                       styleClass="section-header-blue"/>
-                            </HBox>
-
-                            <HBox spacing="15">
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Activity ID:" styleClass="section-title-small"/>
-                                    <Label fx:id="activityIdField"
-                                           styleClass="section-title-small"/>
-                                </VBox>
-
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Activity Date:" styleClass="section-title-small"/>
-                                    <Label fx:id="activityDateField"
-                                           styleClass="section-title-small"/>
-                                </VBox>
-
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Activity Time:" styleClass="section-title-small"/>
-                                    <Label fx:id="activityTimeField"
-                                           styleClass="section-title-small"/>
-                                </VBox>
-                            </HBox>
-
-                            <Separator styleClass="content-separator"/>
-
-                            <HBox spacing="15">
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Activity Type:" styleClass="section-title-small"/>
-                                    <Label fx:id="activityTypeField"
-                                           styleClass="section-title-small"/>
-                                </VBox>
-
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Created By:" styleClass="section-title-small"/>
-                                    <Label fx:id="activityOwnerField"
-                                           styleClass="section-title-small"/>
-                                </VBox>
-
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Activity Status:" styleClass="section-title-small"/>
-                                    <Label fx:id="activityStatusField"
-                                           styleClass="section-title-small"/>
-                                </VBox>
-                            </HBox>
-
-                            <VBox spacing="8" styleClass="sub-panel">
-                                <Label text="Activity Data:" styleClass="section-title-small"/>
-                                <TextArea fx:id="activityDataField"
-                                          maxWidth="500"
-                                          maxHeight="300"
-                                          editable="false"
-                                          styleClass="text-data"/>
+                                <TableView fx:id="activitiesTable"
+                                           prefHeight="500"
+                                           styleClass="modern-table">
+                                    <columns>
+                                        <TableColumn text="ID" fx:id="filter_activitiesIdCol" prefWidth="120"/>
+                                        <TableColumn text="TYPE" fx:id="filter_activityTypeCol" prefWidth="250"/>
+                                        <TableColumn text="CREATED BY" fx:id="filter_createdByCol" prefWidth="120"/>
+                                        <TableColumn text="DATE" fx:id="filter_activityDateCol" prefWidth="180"/>
+                                        <TableColumn text="TIME" fx:id="filter_activityTimeCol" prefWidth="120"/>
+                                        <TableColumn text="ACTION" fx:id="filter_actionDataCol" prefWidth="120"/>
+                                        <TableColumn text="STATUS" fx:id="filter_activityStatusCol" prefWidth="120"/>
+                                    </columns>
+                                    <placeholder>
+                                        <Label text="No Activities found"
+                                               style="-fx-text-fill: #94A3B8;"/>
+                                    </placeholder>
+                                </TableView>
                             </VBox>
 
-                        </VBox>
+                            <VBox fx:id="viewLogDetailsPanel"
+                                  spacing="25"
+                                  visible="false"
+                                  managed="false"
+                                  styleClass="panel-card"
+                                  maxWidth="700">
+
+                                <HBox alignment="CENTER_LEFT"
+                                      styleClass="sub-panel"
+                                      spacing="15">
+                                    <Button text="BACK"
+                                            styleClass="back-nav-button"
+                                            onAction="#backToLogsList"/>
+
+                                    <Label text="LOG INFORMATION"
+                                           styleClass="section-header-blue"/>
+                                </HBox>
+
+                                <HBox spacing="15">
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Activity ID:" styleClass="section-title-small"/>
+                                        <Label fx:id="activityIdField"
+                                               styleClass="section-title-small"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Activity Date:" styleClass="section-title-small"/>
+                                        <Label fx:id="activityDateField"
+                                               styleClass="section-title-small"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Activity Time:" styleClass="section-title-small"/>
+                                        <Label fx:id="activityTimeField"
+                                               styleClass="section-title-small"/>
+                                    </VBox>
+                                </HBox>
+
+                                <Separator styleClass="content-separator"/>
+
+                                <HBox spacing="15">
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Activity Type:" styleClass="section-title-small"/>
+                                        <Label fx:id="activityTypeField"
+                                               styleClass="section-title-small"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Created By:" styleClass="section-title-small"/>
+                                        <Label fx:id="activityOwnerField"
+                                               styleClass="section-title-small"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Activity Status:" styleClass="section-title-small"/>
+                                        <Label fx:id="activityStatusField"
+                                               styleClass="section-title-small"/>
+                                    </VBox>
+                                </HBox>
+
+                                <VBox spacing="8" styleClass="sub-panel">
+                                    <Label text="Activity Data:" styleClass="section-title-small"/>
+                                    <TextArea fx:id="activityDataField"
+                                              maxWidth="500"
+                                              maxHeight="300"
+                                              editable="false"
+                                              styleClass="text-data"/>
+                                </VBox>
+
+                            </VBox>
+
+                        </StackPane>
                     </VBox>
 
                 </ScrollPane>

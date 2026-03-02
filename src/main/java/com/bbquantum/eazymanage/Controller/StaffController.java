@@ -44,7 +44,6 @@ public class StaffController implements Initializable {
 
     // CONTROLLER OWN VARIABLES
     private ApiUtilityClass apiUtilityClass;
-    public SubjectScores subjectScores;
     private String institutionName;
     public String staffId;
     private String staffFullName;
@@ -768,7 +767,7 @@ public class StaffController implements Initializable {
             return;
         }
         UtilityMethods.processingButton(loadSubjectStudentsBtn);
-        apiUtilityClass.loadSubjectStudents(subjectId,
+        apiUtilityClass.loadSubjectStudents(subjectId, staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -1897,7 +1896,7 @@ public class StaffController implements Initializable {
         }
     }
 
-    public void displaySubjectStudents(SubjectScores subjectScores) {
+    private void displaySubjectStudents(SubjectScores subjectScores) {
         subjectNameLabel.setText(subjectScores.getSubjectName());
         subjectCodeLabel.setText(subjectScores.getSubjectId());
 
