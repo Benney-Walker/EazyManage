@@ -26,4 +26,9 @@ public class StudentsHolder {
     public void setStudentName(String studentName) {
         this.studentName = studentName;
     }
+
+    @Override
+    public String toString(){
+        return studentName;
+    }
 }

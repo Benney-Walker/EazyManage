@@ -1,16 +1,18 @@
 package com.bbquantum.eazymanage.DTO.Institution;
 
+import java.util.List;
+
 public class StaffCaching {
     private String staffName;
 
     private String staffId;
 
-    private String staffRole;
+    private List<String> staffRoles;
 
-    public  StaffCaching(String staffName, String staffId, String staffRole) {
+    public  StaffCaching(String staffName, String staffId, List<String> staffRoles) {
         this.staffName = staffName;
         this.staffId = staffId;
-        this.staffRole = staffRole;
+        this.staffRoles = staffRoles;
     }
 
     public String getStaffName() {
@@ -28,16 +30,16 @@ public class StaffCaching {
         this.staffId = staffId;
     }
 
-    public String getStaffRole() {
-        return staffRole;
+    public List<String> getStaffRoles() {
+        return staffRoles;
     }
 
-    public void setStaffRole(String staffRole) {
-        this.staffRole = staffRole;
+    public void setStaffRoles(List<String> staffRoles) {
+        this.staffRoles = staffRoles;
     }
 
     @Override
     public String toString() {
-        return staffName + " (" + staffRole + ")";
+        return staffName + " " + staffRoles;
     }
 }

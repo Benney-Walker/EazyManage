@@ -29,19 +29,13 @@
                     <Button fx:id="dashboardBtn" text="DASHBOARD" onAction="#showDashboard"
                             maxWidth="Infinity" styleClass="nav-button, nav-button-active"/>
 
-                    <Button fx:id="addStudentBtn" text="ENROLL STUDENT" onAction="#showAddStudent"
-                            maxWidth="Infinity" styleClass="nav-button"/>
-
                     <Button fx:id="addResultsBtn" text="INPUT SUBJECT SCORE" onAction="#showAddResults"
                             maxWidth="Infinity" styleClass="nav-button"/>
 
-                    <Button fx:id="addSubjectBtn" text="MANAGE SUBJECTS" onAction="#openAddSubjectPage"
+                    <Button fx:id="resultsBtn" text="MANAGE RESULTS" onAction="#showResultsPage"
                             maxWidth="Infinity" styleClass="nav-button"/>
 
-                    <Button fx:id="resultsBtn" text="MANAGE RESULTS" onAction="#openResultsPage"
-                            maxWidth="Infinity" styleClass="nav-button"/>
-
-                    <Button fx:id="attendanceBtn" text="MANAGE ATTENDANCE" onAction="#openAttendancePage"
+                    <Button fx:id="attendanceBtn" text="MANAGE ATTENDANCE" onAction="#showAttendancePage"
                             maxWidth="Infinity" styleClass="nav-button"/>
                 </VBox>
 
@@ -66,113 +60,160 @@
             <StackPane fx:id="contentArea" styleClass="main-content-bg">
 
                 <ScrollPane fx:id="dashboardView" fitToWidth="true" styleClass="modern-scroll-pane">
+
                     <VBox spacing="30" styleClass="content-padding">
 
-                        <HBox alignment="CENTER_LEFT">
-                            <VBox spacing="5">
-                                <Label text="STAFF DASHBOARD" styleClass="header-title"/>
-                                <Label fx:id="dateTimeLabel" text=" " styleClass="header-subtitle"/>
+                        <StackPane>
+
+                            <VBox fx:id="mainDashboard" spacing="30" alignment="CENTER">
+
+                                <HBox alignment="CENTER_LEFT">
+                                    <VBox spacing="5">
+                                        <Label text="STAFF DASHBOARD" styleClass="header-title"/>
+                                        <Label fx:id="dateTimeLabel" text=" " styleClass="header-subtitle"/>
+                                    </VBox>
+                                </HBox>
+                                <HBox alignment="CENTER_RIGHT">
+                                    <Button text="REFRESH DASHBOARD" onAction="#refreshDashboard"
+                                            styleClass="action-button-outline"/>
+                                </HBox>
+
+                                <VBox styleClass="stat-card">
+                                    <HBox alignment="CENTER_LEFT" spacing="15">
+
+                                        <!-- Previous button -->
+                                        <Button fx:id="prevClassBtn"
+                                                text="⬅"
+                                                onAction="#showPreviousClass"
+                                                styleClass="icon-nav-button"/>
+
+                                        <Label text="🏫" styleClass="card-icon-bg-blue"/>
+
+                                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                            <Label text="Your Assigned Class" styleClass="card-label"/>
+                                            <Label fx:id="classNameLabel"
+                                                   text="No class Assigned"
+                                                   styleClass="card-value"/>
+                                        </VBox>
+
+                                        <VBox spacing="5" alignment="CENTER_RIGHT">
+                                            <Label text="Student Count" styleClass="card-label"/>
+                                            <Label fx:id="totalStudentsLabel"
+                                                   text="0"
+                                                   styleClass="card-value-mint"/>
+                                        </VBox>
+
+                                        <!-- Next button -->
+                                        <Button fx:id="nextClassBtn"
+                                                text="➡"
+                                                onAction="#showNextClass"
+                                                styleClass="icon-nav-button"/>
+
+                                    </HBox>
+                                </VBox>
+
+                                <VBox spacing="20" styleClass="stat-card">
+                                    <HBox alignment="CENTER_LEFT">
+                                        <Label text="📋 Students Roster" styleClass="section-title"/>
+                                        <Region HBox.hgrow="ALWAYS"/>
+                                    </HBox>
+                                    <TableView fx:id="studentsTable"
+                                               styleClass="modern-table"
+                                               prefHeight="400">
+                                        <columns>
+                                            <TableColumn text="ID" fx:id="studentIdCol" prefWidth="200"/>
+                                            <TableColumn text="Full Name" fx:id="studentNameCol" prefWidth="220"/>
+                                            <TableColumn text="Gender" fx:id="genderCol" prefWidth="200"/>
+                                        </columns>
+                                    </TableView>
+                                </VBox>
                             </VBox>
-                        </HBox>
-                        <HBox alignment="CENTER_RIGHT">
-                            <Button text="REFRESH DASHBOARD" onAction="#refreshDashboard"
-                                    styleClass="action-button-outline"/>
-                        </HBox>
 
-                        <VBox styleClass="stat-card">
-                            <HBox alignment="CENTER_LEFT" spacing="15">
+                            <VBox fx:id="studentPersonalInfo"
+                                  spacing="25"
+                                  styleClass="panel-card"
+                                  visible="false"
+                                  managed="false"
+                                  alignment="CENTER"
+                                  maxWidth="700">
 
-                                <!-- Previous button -->
-                                <Button fx:id="prevClassBtn"
-                                        text="⬅"
-                                        onAction="#showPreviousClass"
-                                        styleClass="icon-nav-button"/>
-
-                                <Label text="🏫" styleClass="card-icon-bg-blue"/>
-
-                                <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                    <Label text="Your Assigned Class" styleClass="card-label"/>
-                                    <Label fx:id="classNameLabel"
-                                           text="No class Assigned"
-                                           styleClass="card-value"/>
+                                <VBox alignment="CENTER_LEFT">
+                                    <Button text="BACK"
+                                            onAction="#backToDashboard"
+                                            styleClass="action-button-orange"/>
                                 </VBox>
 
-                                <VBox spacing="5" alignment="CENTER_RIGHT">
-                                    <Label text="Student Count" styleClass="card-label"/>
-                                    <Label fx:id="totalStudentsLabel"
-                                           text="0"
-                                           styleClass="card-value-mint"/>
+                                <Separator styleClass="content-separator"/>
+
+                                <VBox spacing="15">
+                                    <VBox spacing="8" alignment="CENTER_LEFT">
+                                        <HBox spacing="8">
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="STUDENT ID:" styleClass="input-label"/>
+                                                <Label fx:id="studentIdLabel" text=" " styleClass="section-title-small"/>
+                                            </VBox>
+
+                                            <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                                <Label text="STUDENT STATUS:" styleClass="input-label"/>
+                                                <Label fx:id="studentStatusLabel" text=" " styleClass="section-title-small"/>
+                                            </VBox>
+                                        </HBox>
+
+                                        <Label text="GRADE NAME:" styleClass="input-label"/>
+                                        <Label fx:id="updateGradeNameLabel" text=" " styleClass="section-title-small"/>
+                                    </VBox>
+
+                                    <Separator styleClass="content-separator"/>
+
+                                    <Label text="Personal Information" styleClass="section-header-blue"/>
+
+                                    <HBox spacing="15">
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="First Name *" styleClass="input-label"/>
+                                            <Label fx:id="updateFirstNameField" styleClass="section-title-small"/>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Last Name *" styleClass="input-label"/>
+                                            <Label fx:id="updateLastNameField" styleClass="section-title-small"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <HBox spacing="15">
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Gender *" styleClass="input-label"/>
+                                            <Label fx:id="updateGenderComboBox"
+                                                   styleClass="section-title-small"/>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Date of Birth *" styleClass="input-label"/>
+                                            <Label fx:id="updateDateOfBirthPicker"
+                                                   styleClass="section-title-small"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <VBox spacing="8">
+                                        <Label text="Home Town *" styleClass="input-label"/>
+                                        <Label fx:id="updateHomeTownField" styleClass="section-title-small"/>
+                                    </VBox>
                                 </VBox>
 
-                                <!-- Next button -->
-                                <Button fx:id="nextClassBtn"
-                                        text="➡"
-                                        onAction="#showNextClass"
-                                        styleClass="icon-nav-button"/>
+                                <Separator styleClass="content-separator"/>
 
-                            </HBox>
-                        </VBox>
+                                <VBox  spacing="15">
+                                    <Label text="Parent/Guardian Information" styleClass="section-header-blue"/>
 
-                        <GridPane hgap="20">
-                            <columnConstraints>
-                                <ColumnConstraints percentWidth="33.3"/>
-                                <ColumnConstraints percentWidth="33.3"/>
-                                <ColumnConstraints percentWidth="33.3"/>
-                            </columnConstraints>
-
-                            <Button onAction="#showAddStudent" GridPane.columnIndex="0"
-                                    maxWidth="Infinity" maxHeight="Infinity"
-                                    styleClass="card-action-purple">
-                                <graphic>
-                                    <VBox spacing="12" alignment="CENTER">
-                                        <Label text="➕" styleClass="action-card-icon"/>
-                                        <Label text="Add Student" styleClass="action-card-title"/>
-                                        <Label text="Enroll new students" styleClass="action-card-subtitle"/>
+                                    <VBox spacing="8">
+                                        <Label text="Parent/Guardian Name *" styleClass="input-label"/>
+                                        <Label fx:id="updateParentNameField" styleClass="section-title-small"/>
                                     </VBox>
-                                </graphic>
-                            </Button>
 
-                            <Button onAction="#showAddResults" GridPane.columnIndex="1"
-                                    maxWidth="Infinity" maxHeight="Infinity"
-                                    styleClass="card-action-pink">
-                                <graphic>
-                                    <VBox spacing="12" alignment="CENTER">
-                                        <Label text="📝" styleClass="action-card-icon"/>
-                                        <Label text="Add Results" styleClass="action-card-title"/>
-                                        <Label text="Enter subject scores" styleClass="action-card-subtitle"/>
+                                    <VBox spacing="8">
+                                        <Label text="Parent Phone Number *" styleClass="input-label"/>
+                                        <Label fx:id="updateParentPhoneField" styleClass="section-title-small"/>
                                     </VBox>
-                                </graphic>
-                            </Button>
-
-                            <Button onAction="#openAddSubjectPage" GridPane.columnIndex="2"
-                                    maxWidth="Infinity" maxHeight="Infinity"
-                                    styleClass="card-action-cyan">
-                                <graphic>
-                                    <VBox spacing="12" alignment="CENTER">
-                                        <Label text="📚" styleClass="action-card-icon"/>
-                                        <Label text="Add Subject" styleClass="action-card-title"/>
-                                        <Label text="Create curriculum items" styleClass="action-card-subtitle"/>
-                                    </VBox>
-                                </graphic>
-                            </Button>
-                        </GridPane>
-
-                        <VBox spacing="20" styleClass="stat-card">
-                            <HBox alignment="CENTER_LEFT">
-                                <Label text="📋 Students Roster" styleClass="section-title"/>
-                                <Region HBox.hgrow="ALWAYS"/>
-                            </HBox>
-                            <TableView fx:id="studentsTable" styleClass="modern-table" prefHeight="400">
-                                <columns>
-                                    <TableColumn text="ID" fx:id="studentIdCol" prefWidth="100"/>
-                                    <TableColumn text="Full Name" fx:id="studentNameCol" prefWidth="220"/>
-                                    <TableColumn text="Gender" fx:id="genderCol" prefWidth="100"/>
-                                    <TableColumn text="Home Town" fx:id="homeTownCol" prefWidth="100"/>
-                                    <TableColumn text="Parent/Guardian" fx:id="parentNameCol" prefWidth="180"/>
-                                    <TableColumn text="Contact" fx:id="parentPhoneCol" prefWidth="140"/>
-                                </columns>
-                            </TableView>
-                        </VBox>
+                                </VBox>
+                            </VBox>
+                        </StackPane>
                     </VBox>
                 </ScrollPane>
 
@@ -189,457 +230,146 @@
                             <Label text="Input and verify student performance scores" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="1000">
+                        <VBox spacing="25" styleClass="panel-card" maxWidth="800">
 
-                            <Label text="Subject &amp; Class Selection" styleClass="section-header-blue"/>
+                            <VBox fx:id="score_subjectSelectionBox"
+                                  spacing="10"
+                                  alignment="CENTER">
 
-                            <HBox fx:id="subjectResultSearchBox" spacing="15" alignment="BOTTOM_LEFT">
-                                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                    <Label text="Subject Code *" styleClass="input-label"/>
-                                    <TextField fx:id="subjectCodeField"
-                                               promptText="SUB********"
-                                               styleClass="modern-input"/>
-                                </VBox>
+                                <Label text="Subject Selection Panel" styleClass="section-header-blue"/>
+
+                                <HBox spacing="15" alignment="CENTER">
+                                    <VBox spacing="8" prefWidth="300">
+                                        <Label text="Select subject *" styleClass="input-label"/>
+                                        <ComboBox fx:id="score_subSelectionBox"
+                                                  promptText="Select subject"
+                                                  maxWidth="Infinity"
+                                                  styleClass="modern-combo"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" prefWidth="300">
+                                        <Label text="Select Class *" styleClass="input-label"/>
+                                        <ComboBox fx:id="score_classSelectionBox"
+                                                  promptText="Select class"
+                                                  maxWidth="Infinity"
+                                                  onMouseClicked="#fetchGradeSubjects"
+                                                  styleClass="modern-combo"/>
+                                    </VBox>
+                                </HBox>
 
                                 <Button fx:id="loadSubjectStudentsBtn"
                                         text="LOAD STUDENTS"
                                         onAction="#handleLoadStudentsForScores"
                                         styleClass="action-button-primary"
                                         style="-fx-padding: 12 30;"/>
-                            </HBox>
-
-                            <HBox fx:id="subjectInfoBox" spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
-                                  styleClass="alert-panel-info">
-                                <Label text="📚" styleClass="sidebar-logo-bg"/>
-                                <VBox spacing="2">
-                                    <Label fx:id="subjectNameLabel" text=" " styleClass="section-title"/>
-                                    <Label fx:id="subjectCodeLabel" text=" " styleClass="section-title"/>
-                                </VBox>
-                                <Region HBox.hgrow="ALWAYS"/>
-                                <Label text="Status: Ready for Entry" style="-fx-text-fill: #059669; -fx-font-weight: bold; -fx-font-size: 11px;"/>
-                            </HBox>
-
-                            <VBox fx:id="noStudentsBox" spacing="10" alignment="CENTER" visible="false" managed="false"
-                                  styleClass="alert-panel-warning">
-                                <Label text="⚠️" style="-fx-font-size: 28px;"/>
-                                <Label text="No Students Found" style="-fx-font-weight: bold; -fx-text-fill: #92400E;"/>
-                                <Label text="Verify the subject code or ensure students are enrolled in this course." style="-fx-text-fill: #92400E; -fx-font-size: 12px;"/>
                             </VBox>
 
-                            <VBox fx:id="resultsTableContainer" spacing="20" visible="false" managed="false">
-                                <Separator styleClass="content-separator"/>
+                            <VBox fx:id="score_studentListPanel"
+                                  spacing="10"
+                                  alignment="CENTER">
 
-                                <HBox alignment="CENTER_LEFT" spacing="20">
-
-                                    <!-- LEFT: Title -->
-                                    <VBox spacing="5">
-                                        <Label text="Student Ledger" styleClass="section-title"/>
-                                        <Label text="Double-click cells to edit scores" styleClass="login-footer-label"/>
+                                <HBox spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
+                                      styleClass="alert-panel-info">
+                                    <Label text="📚" styleClass="sidebar-logo-bg"/>
+                                    <VBox spacing="2">
+                                        <Label fx:id="subjectNameLabel" text=" " styleClass="section-title"/>
+                                        <Label fx:id="subjectCodeLabel" text=" " styleClass="section-title"/>
                                     </VBox>
-
                                     <Region HBox.hgrow="ALWAYS"/>
-
-                                    <!-- RIGHT: Instructions -->
-                                    <VBox spacing="8"
-                                          maxWidth="600"
-                                          alignment="CENTER_RIGHT"
-                                          style="-fx-opacity: 0.7;">
-
-                                        <!-- Row 1 -->
-                                        <HBox spacing="20" alignment="CENTER_RIGHT">
-                                            <Label text="Exercise 1 &amp; 2 ≤ 20" styleClass="login-footer-label"/>
-                                            <Label text="Class Test &amp; Project ≤ 30" styleClass="login-footer-label"/>
-                                            <Label text="Enter exact Exam score" styleClass="login-footer-label"/>
-                                        </HBox>
-
-                                        <!-- Row 2 -->
-                                        <HBox spacing="20" alignment="CENTER_RIGHT">
-                                            <Label text="Press ENTER to commit" styleClass="login-footer-label"/>
-                                            <Label text="Real-time calculation" styleClass="login-footer-label"/>
-                                            <Label text="No manual calculation" styleClass="login-footer-label"/>
-                                            <Label text="Grades auto-calculated on save" styleClass="login-footer-label"/>
-                                        </HBox>
-
-                                    </VBox>
-
+                                    <Label text="Status: Ready for Entry" style="-fx-text-fill: #059669; -fx-font-weight: bold; -fx-font-size: 11px;"/>
                                 </HBox>
 
-
-                                <TableView fx:id="studentsScoresTable"
-                                           editable="true"
-                                           styleClass="modern-table"
-                                           prefHeight="200">
-
-                                    <columns>
-                                        <TableColumn text="STUDENT ID" fx:id="studentIdColumn" prefWidth="100" />
-                                        <TableColumn text="STUDENT NAME" fx:id="studentNameColumn" prefWidth="180" />
-                                        <TableColumn text="EXERCISE 1" fx:id="exercise1Column" prefWidth="100"/>
-                                        <TableColumn text="CLASS TEST" fx:id="classTestColumn" prefWidth="100"/>
-                                        <TableColumn text="EXERCISE 2" fx:id="exercise2Column" prefWidth="100"/>
-                                        <TableColumn text="PROJECT" fx:id="projectColumn" prefWidth="100"/>
-                                        <TableColumn text="EXAM SCORE" fx:id="examScoreColumn" prefWidth="100"/>
-                                        <TableColumn text="CLASS(50%)" fx:id="classScoreColumn" prefWidth="100" />
-                                        <TableColumn text="EXAM(50%) " fx:id="calExamScoreColumn" prefWidth="100"/>
-                                    </columns>
-                                </TableView>
-
-                                <HBox spacing="15" alignment="CENTER_RIGHT">
-                                    <Button text="RESET TABLE"
-                                            onAction="#handleClearScores"
-                                            styleClass="text-button-blue"/>
-
-                                    <Button fx:id="saveScores"
-                                            text="SAVE SCORES"
-                                            onAction="#handleSaveScores"
-                                            styleClass="action-button-primary"
-                                            style="-fx-padding: 12 40;"/>
-                                </HBox>
-
-                                <VBox fx:id="saveScoresSemesterVBox" spacing="8" visible="false" managed="false">
-                                    <Label text="Select Semester *" styleClass="input-label"/>
-                                    <ComboBox fx:id="saveScoresSemesterComboBox"
-                                              promptText="Select Semester"
-                                              maxWidth="300"
-                                              styleClass="modern-combo"/>
-                                </VBox>
-
-                            </VBox>
-                        </VBox>
-                    </VBox>
-                </ScrollPane>
-
-                <!-- ADD NEW STUDENT PAGE -->
-                <ScrollPane fx:id="addNewStudentView" visible="false" managed="false" fitToWidth="true" styleClass="modern-scroll-pane">
-
-                    <VBox alignment="TOP_CENTER" spacing="30" styleClass="content-padding">
-
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #DBEAFE;">
-                                <Label text="🎓" style="-fx-font-size: 24px;"/>
-                            </StackPane>
-                            <Label text="STUDENT INFORMATION MANAGEMENT" styleClass="header-title"/>
-                            <Label text="Add or Update student information" styleClass="header-subtitle"/>
-                        </VBox>
-
-                        <!-- 🔘 TOGGLE BUTTONS -->
-                        <HBox spacing="10" alignment="CENTER">
-                            <Button fx:id="addStudentToggleBtn"
-                                    text="ADD STUDENT"
-                                    onAction="#showAddStudentCard"
-                                    styleClass="action-button-primary"/>
-
-                            <Button fx:id="updateStudentToggleBtn"
-                                    text="UPDATE STUDENT INFO"
-                                    onAction="#showUpdateInfoCard"
-                                    styleClass="action-button-primary"/>
-                        </HBox>
-
-                        <StackPane fx:id="studentInfoCardContainer" maxWidth="700">
-
-                            <!-- ADD STUDENT CARD -->
-                            <VBox fx:id="addStudentCard" spacing="25" styleClass="panel-card" maxWidth="700">
-
-                                <VBox spacing="15">
-                                    <Label text="Personal Information" styleClass="section-header-blue"/>
-
-                                    <HBox spacing="15">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="First Name *" styleClass="input-label"/>
-                                            <TextField fx:id="firstNameField" promptText="e.g. John" styleClass="modern-input"/>
-                                        </VBox>
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Last Name *" styleClass="input-label"/>
-                                            <TextField fx:id="lastNameField" promptText="e.g. Doe" styleClass="modern-input"/>
-                                        </VBox>
-                                    </HBox>
-
-                                    <HBox spacing="15">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Gender *" styleClass="input-label"/>
-                                            <ComboBox fx:id="genderComboBox" promptText="Select" maxWidth="Infinity" styleClass="modern-combo"/>
-                                        </VBox>
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Date of Birth *" styleClass="input-label"/>
-                                            <DatePicker fx:id="dateOfBirthPicker" promptText="MM/DD/YYYY" maxWidth="Infinity" styleClass="modern-date-picker"/>
-                                        </VBox>
-                                    </HBox>
-
-                                    <VBox spacing="8">
-                                        <Label text="Home Town *" styleClass="input-label"/>
-                                        <TextField fx:id="homeTownField" promptText="Enter student's home town" styleClass="modern-input"/>
-                                    </VBox>
-                                </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <VBox spacing="15">
-                                    <Label text="Parent/Guardian Information" styleClass="section-header-blue"/>
-
-                                    <VBox spacing="8">
-                                        <Label text="Parent/Guardian Name *" styleClass="input-label"/>
-                                        <TextField fx:id="parentNameField" promptText="Full name of primary contact" styleClass="modern-input"/>
-                                    </VBox>
-
-                                    <VBox spacing="8">
-                                        <Label text="Parent Phone Number *" styleClass="input-label"/>
-                                        <TextField fx:id="parentPhoneField" promptText="0XXXXXXXXX" styleClass="modern-input"/>
-                                    </VBox>
-                                </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <VBox spacing="15">
-                                    <Label text="Class Information" styleClass="section-header-blue"/>
-                                    <VBox spacing="8">
-                                        <Label text="Assigned Class/Level *" styleClass="input-label"/>
-                                        <ComboBox fx:id="classComboBox" promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
-                                        <Label text="💡 Ensure the class has available capacity before enrolling." styleClass="login-footer-label"/>
-                                    </VBox>
-                                </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <HBox spacing="15" alignment="CENTER">
-                                    <Button fx:id="saveAndClearBtn" text="Save Student" onAction="#handleSaveAndClear"
-                                            styleClass="action-button-mint" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                                </HBox>
-
-                                <VBox spacing="8" styleClass="alert-panel-info">
-                                    <HBox spacing="8" alignment="CENTER_LEFT">
-                                        <Label text="💡" style="-fx-font-size: 14px;"/>
-                                        <Label text="Quick Help" style="-fx-font-weight: bold; -fx-text-fill: #1E293B; -fx-font-size: 12px;"/>
-                                    </HBox>
-                                    <Label text="• Student ID will be generated automatically upon successful save." styleClass="login-footer-label" wrapText="true"/>
-                                </VBox>
-                            </VBox>
-
-                            <!-- UPDATE STUDENT INFO CARD -->
-                            <VBox fx:id="updateStudentInfoCard" spacing="25" styleClass="panel-card" maxWidth="700">
-
-                                <VBox fx:id="studentSearchFieldBox" spacing="10" alignment="CENTER_LEFT">
-                                    <Label text="Enter Student full name or student ID"
-                                           styleClass="input-label"/>
-                                    <TextField fx:id="studentSearchField"
-                                               promptText="eg. Richlove Benney or STD******"
-                                               styleClass="modern-input"/>
-
-                                    <VBox alignment="BOTTOM_RIGHT">
-                                        <Button fx:id="findStudentBtn"
-                                                text="FIND STUDENT"
-                                                onAction="#handleFindStudent"
-                                                styleClass="action-button-primary"/>
-                                    </VBox>
-                                </VBox>
-
-                                <VBox fx:id="personalInfo" spacing="15">
-                                    <VBox spacing="8" alignment="CENTER_LEFT">
-                                        <VBox spacing="8" >
-                                            <Label text="STUDENT ID:" styleClass="input-label"/>
-                                            <Label fx:id="studentIdLabel" text=" " styleClass="section-title-small"/>
-
-                                            <VBox spacing="8" alignment="BOTTOM_RIGHT">
-                                                <Label text="STUDENT STATUS:" styleClass="input-label"/>
-                                                <Label fx:id="studentStatusLabel" text=" " styleClass="section-title-small"/>
-                                            </VBox>
-                                        </VBox>
-
-                                        <Label text="GRADE NAME:" styleClass="input-label"/>
-                                        <Label fx:id="updateGradeNameLabel" text=" " styleClass="section-title-small"/>
-                                    </VBox>
-
+                                <VBox spacing="20" visible="false" managed="false">
                                     <Separator styleClass="content-separator"/>
 
-                                    <Label text="Personal Information" styleClass="section-header-blue"/>
+                                    <HBox alignment="CENTER_LEFT" spacing="20">
 
-                                    <HBox spacing="15">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="First Name *" styleClass="input-label"/>
-                                            <TextField fx:id="updateFirstNameField" promptText="e.g. John" styleClass="modern-input"/>
+                                        <!-- LEFT: Title -->
+                                        <VBox spacing="5">
+                                            <Label text="Student Ledger" styleClass="section-title"/>
+                                            <Label text="Double-click cells to edit scores" styleClass="login-footer-label"/>
                                         </VBox>
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Last Name *" styleClass="input-label"/>
-                                            <TextField fx:id="updateLastNameField" promptText="e.g. Doe" styleClass="modern-input"/>
+
+                                        <Region HBox.hgrow="ALWAYS"/>
+
+                                        <!-- RIGHT: Instructions -->
+                                        <VBox spacing="8"
+                                              maxWidth="600"
+                                              alignment="CENTER_RIGHT"
+                                              style="-fx-opacity: 0.7;">
+
+                                            <!-- Row 1 -->
+                                            <HBox spacing="20" alignment="CENTER_RIGHT">
+                                                <Label text="Exercise 1 &amp; 2 ≤ 20" styleClass="login-footer-label"/>
+                                                <Label text="Class Test &amp; Project ≤ 30" styleClass="login-footer-label"/>
+                                                <Label text="Enter exact Exam score" styleClass="login-footer-label"/>
+                                            </HBox>
+
+                                            <!-- Row 2 -->
+                                            <HBox spacing="20" alignment="CENTER_RIGHT">
+                                                <Label text="Press ENTER to commit" styleClass="login-footer-label"/>
+                                                <Label text="Real-time calculation" styleClass="login-footer-label"/>
+                                                <Label text="No manual calculation" styleClass="login-footer-label"/>
+                                                <Label text="Grades auto-calculated on save" styleClass="login-footer-label"/>
+                                            </HBox>
+
                                         </VBox>
+
                                     </HBox>
 
-                                    <HBox spacing="15">
+                                    <VBox fx:id="scores_SaveProgressBarVBox"
+                                          maxWidth="Infinity"
+                                          visible="false"
+                                          managed="false">
+                                        <ProgressBar fx:id="score_SaveProgressBar"
+                                                     progress="0.0"
+                                                     maxWidth="Infinity"
+                                                     styleClass="modern-progress-bar"/>
+                                    </VBox>
+
+                                    <TableView fx:id="studentsScoresTable"
+                                               editable="true"
+                                               styleClass="modern-table"
+                                               prefHeight="200">
+
+                                        <columns>
+                                            <TableColumn text="STUDENT ID" fx:id="studentIdColumn" prefWidth="100" />
+                                            <TableColumn text="STUDENT NAME" fx:id="studentNameColumn" prefWidth="180" />
+                                            <TableColumn text="EXERCISE 1" fx:id="exercise1Column" prefWidth="100"/>
+                                            <TableColumn text="CLASS TEST" fx:id="classTestColumn" prefWidth="100"/>
+                                            <TableColumn text="EXERCISE 2" fx:id="exercise2Column" prefWidth="100"/>
+                                            <TableColumn text="PROJECT" fx:id="projectColumn" prefWidth="100"/>
+                                            <TableColumn text="EXAM SCORE" fx:id="examScoreColumn" prefWidth="100"/>
+                                            <TableColumn text="CLASS(50%)" fx:id="classScoreColumn" prefWidth="100" />
+                                            <TableColumn text="EXAM(50%) " fx:id="calExamScoreColumn" prefWidth="100"/>
+                                        </columns>
+                                    </TableView>
+
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Gender *" styleClass="input-label"/>
-                                            <ComboBox fx:id="updateGenderComboBox"
-                                                      promptText="Select" maxWidth="300"
+                                            <Label text="Select Semester *" styleClass="input-label"/>
+                                            <ComboBox fx:id="saveScoresSemesterComboBox"
+                                                      promptText="Select Semester"
+                                                      maxWidth="300"
                                                       styleClass="modern-combo"/>
                                         </VBox>
+
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Date of Birth *" styleClass="input-label"/>
-                                            <DatePicker fx:id="updateDateOfBirthPicker"
-                                                        promptText="MM/DD/YYYY" maxWidth="300"
-                                                        styleClass="modern-date-picker"/>
+                                            <Button text="RESET TABLE"
+                                                    onAction="#handleClearScores"
+                                                    styleClass="text-button-blue"/>
+
+                                            <Button fx:id="saveScores"
+                                                    text="UPLOAD SCORES"
+                                                    onAction="#handleSaveScores"
+                                                    styleClass="action-button-primary"
+                                                    style="-fx-padding: 12 40;"/>
                                         </VBox>
                                     </HBox>
-
-                                    <VBox spacing="8">
-                                        <Label text="Home Town *" styleClass="input-label"/>
-                                        <TextField fx:id="updateHomeTownField" promptText="Enter student's home town" styleClass="modern-input"/>
-                                    </VBox>
                                 </VBox>
 
-                                <Separator styleClass="content-separator"/>
-
-                                <VBox fx:id="guardianInfo" spacing="15">
-                                    <Label text="Parent/Guardian Information" styleClass="section-header-blue"/>
-
-                                    <VBox spacing="8">
-                                        <Label text="Parent/Guardian Name *" styleClass="input-label"/>
-                                        <TextField fx:id="updateParentNameField" promptText="Full name of primary contact" styleClass="modern-input"/>
-                                    </VBox>
-
-                                    <VBox spacing="8">
-                                        <Label text="Parent Phone Number *" styleClass="input-label"/>
-                                        <TextField fx:id="updateParentPhoneField" promptText="0XXXXXXXXX" styleClass="modern-input"/>
-                                    </VBox>
-                                </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <VBox fx:id="gradeInfo" spacing="15">
-                                    <Label text="Class Information" styleClass="section-header-blue"/>
-                                    <VBox spacing="8">
-                                        <Label text="Assign Class/Level *" styleClass="input-label"/>
-                                        <ComboBox fx:id="updateClassComboBox" promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
-                                        <Label text="💡 Ensure the class has available capacity before enrolling." styleClass="login-footer-label"/>
-                                    </VBox>
-                                </VBox>
-
-                                <VBox fx:id="statusInfo" spacing="15">
-                                    <Label text="Status Information" styleClass="section-header-blue"/>
-                                    <VBox spacing="8">
-                                        <Label text="Select Status *" styleClass="input-label"/>
-                                        <ComboBox fx:id="updateStatusComboBox" promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
-                                </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <VBox fx:id="updateButtonVBox" spacing="15">
-                                    <Button fx:id="updateStudentInfoBtn" text="UPDATE INFO" onAction="#handleUpdateStudentInfo"
-                                            styleClass="action-button-primary" alignment="BOTTOM_LEFT" />
-
-                                    <VBox alignment="BOTTOM_RIGHT">
-                                        <Button text="CANCEL" onAction="#handleCancelInfoUpdate"
-                                                styleClass="action-button-red" alignment="BOTTOM_RIGHT" />
-                                    </VBox>
-                                </VBox>
                             </VBox>
-
-                        </StackPane>
-                    </VBox>
-                </ScrollPane>
-
-                <!-- ADD SUBJECT PAGE -->
-                <ScrollPane fx:id="addNewSubjectView"
-                            fitToWidth="true"
-                            visible="false"
-                            managed="false"
-                            styleClass="modern-scroll-pane">
-
-                    <VBox alignment="TOP_CENTER" spacing="30" styleClass="content-padding" maxWidth="900">
-
-                        <!-- Header -->
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #E0E7FF;">
-                                <Label text="📚" style="-fx-font-size: 26px;"/>
-                            </StackPane>
-
-                            <Label text="SUBJECT MANAGEMENT" styleClass="header-title"/>
-                            <Label text="Add subjects or print subject references"
-                                   styleClass="header-subtitle"/>
                         </VBox>
-
-                        <!-- 🔘 TOGGLE BUTTONS -->
-                        <HBox spacing="10" alignment="CENTER">
-                            <Button fx:id="addSubjectToggleBtn"
-                                    text="ADD SUBJECT"
-                                    onAction="#showAddSubjectCard"
-                                    styleClass="action-button-primary"/>
-
-                            <Button fx:id="printSubjectsToggleBtn"
-                                    text="PRINT CLASS SUBJECTS"
-                                    onAction="#showPrintSubjectCard"
-                                    styleClass="action-button-primary"/>
-                        </HBox>
-
-                        <StackPane fx:id="subjectCardContainer"
-                                   maxWidth="700">
-
-                            <!-- ADD SUBJECT CARD-->
-                            <VBox fx:id="addNewSubjectCard" spacing="25" styleClass="panel-card" maxWidth="700">
-
-                                <VBox spacing="8">
-                                    <Label text="Subject Name *" styleClass="input-label"/>
-                                    <TextField fx:id="subjectNameField"
-                                               promptText="e.g. Mathematics"
-                                               styleClass="modern-input"/>
-                                </VBox>
-
-                                <VBox spacing="8">
-                                    <Label text="SELECT GRADE" styleClass="input-label"/>
-                                    <ComboBox fx:id="gradeComboBox"
-                                              promptText="Select Class"
-                                              maxWidth="Infinity"
-                                              styleClass="modern-combo"/>
-                                </VBox>
-
-                                <Separator styleClass="content-separator"/>
-
-                                <HBox spacing="15" alignment="CENTER">
-                                    <Button fx:id="saveSubjectBtn"
-                                            text="Save Subject"
-                                            onAction="#handleAddSubject"
-                                            styleClass="action-button-primary"/>
-                                </HBox>
-
-                                <VBox spacing="8" styleClass="alert-panel-info">
-                                    <HBox spacing="8" alignment="CENTER_LEFT">
-                                        <Label text="💡"/>
-                                        <Label text="Tip"
-                                               style="-fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
-                                    </HBox>
-                                    <Label text="• Subjects are attached to the selected class"
-                                           styleClass="login-footer-label"
-                                           wrapText="true"/>
-                                </VBox>
-
-                            </VBox>
-
-                            <!-- PRINT SUBJECTS CARD -->
-                            <VBox fx:id="printClassSubjectsCard" styleClass="stat-card"
-                                  minWidth="350"
-                                  prefWidth="420"
-                                  maxWidth="700"
-                                  spacing="15">
-                                <Label text="🖨️ Print Subject List" styleClass="section-title-small"/>
-                                <Separator styleClass="content-separator"/>
-
-                                <HBox spacing="15" alignment="CENTER_LEFT">
-                                    <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                        <Label text="Select Class/Level" styleClass="input-label"/>
-                                        <ComboBox fx:id="printClassSubjectsComboBox" promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
-                                    </VBox>
-                                    <VBox spacing="5" alignment="BOTTOM_LEFT">
-                                        <Button fx:id="printSubjectDataBtn"
-                                                text="Print Subject List"
-                                                onAction="#handlePrintSubjectData"
-                                                styleClass="action-button-mint"/>
-                                    </VBox>
-                                </HBox>
-
-                                <Label text="💡 This will generate a list of all subjects in the selected class
-                                with their subject IDs for easy reference."
-                                       style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d; -fx-wrap-text: true;"/>
-                            </VBox>
-
-                        </StackPane>
-
                     </VBox>
                 </ScrollPane>
 
@@ -660,7 +390,7 @@
 
                             <VBox fx:id="viewResultsHBox" alignment="CENTER" spacing="15" maxWidth="1000">
 
-                                <HBox spacing="15" alignment="BOTTOM_LEFT">
+                                <HBox spacing="15" alignment="CENTER_LEFT">
 
                                     <VBox spacing="8" HBox.hgrow="ALWAYS">
                                         <Label text="Select Grade *" styleClass="input-label"/>
@@ -679,7 +409,7 @@
                                     </VBox>
                                 </HBox>
 
-                                <VBox alignment="BOTTOM_LEFT">
+                                <VBox alignment="CENTER_LEFT">
                                     <Button fx:id="loadClassResultsBtn"
                                             text="FETCH RESULTS"
                                             onAction="#handleLoadClassResults"
@@ -747,30 +477,6 @@
 
                                 </VBox>
 
-
-                                <Button fx:id="generateReportBtn"
-                                        text="DOWNLOAD SEMESTER REPORT"
-                                        onAction="#handleDownloadReports"
-                                        styleClass="action-button-primary"
-                                        style="-fx-padding: 12 40;"/>
-
-                                <HBox fx:id="resultsPassmarkHBox" spacing="15" alignment="CENTER_LEFT"
-                                      visible="false" managed="false">
-
-                                    <Label text="Enter total pass Score" styleClass="input-label"/>
-                                    <TextField fx:id="passScoreField"
-                                               styleClass="modern-input"
-                                               promptText="eg. 750"/>
-
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                        <Label text="Select Promotion Level *" styleClass="input-label"/>
-                                        <ComboBox fx:id="promotionGradeComboBox"
-                                                  promptText="Select grade to contain passed students"
-                                                  maxWidth="Infinity"
-                                                  styleClass="modern-combo"/>
-                                    </VBox>
-                                </HBox>
-
                                 <HBox spacing="15" alignment="CENTER_RIGHT">
                                     <Button fx:id="movePassedStudentsBtn"
                                             text="TRANSFER STUDENTS"
@@ -780,12 +486,12 @@
 
                                     <Region HBox.hgrow="ALWAYS"/>
 
-                                    <Button text="CLEAR RESULTS"
+                                    <Button text="CLOSE PANEL"
                                             onAction="#handleClearResults"
                                             styleClass="action-button-red"/>
                                 </HBox>
 
-                                <Label text="'Transfer Students' will transfer passed students to promotion class"
+                                <Label text="'Transfer Students button' will transfer eligible students to promotion class"
                                        styleClass="login-footer-label"/>
 
                             </VBox>

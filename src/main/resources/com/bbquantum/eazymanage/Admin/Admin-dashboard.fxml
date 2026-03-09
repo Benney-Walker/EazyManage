@@ -14,6 +14,10 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.CheckBox?>
+
 <StackPane xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.bbquantum.eazymanage.Controller.AdminController"
            fx:id="notification"
@@ -47,9 +51,6 @@
                             maxWidth="Infinity" styleClass="nav-button"/>
 
                     <Button fx:id="scoresNavBtn" text="MANAGE SCORES" onAction="#showManageScores"
-                            maxWidth="Infinity" styleClass="nav-button"/>
-
-                    <Button fx:id="subjectNavBtn" text="MANAGE SUBJECTS" onAction="#showManageSubjects"
                             maxWidth="Infinity" styleClass="nav-button"/>
 
                     <Button fx:id="reportsNavBtn" text="MANAGE RESULTS" onAction="#showManageResults"
@@ -94,6 +95,7 @@
                             styleClass="modern-scroll-pane">
 
                     <VBox spacing="30" styleClass="content-padding">
+
                         <HBox spacing="15" alignment="CENTER_LEFT">
                             <VBox spacing="5" HBox.hgrow="ALWAYS">
                                 <Label text="ADMINISTRATOR" styleClass="header-title"/>
@@ -107,32 +109,67 @@
                         </HBox>
 
                         <!-- Statistics Cards -->
-                        <GridPane hgap="25" vgap="25">
-                            <columnConstraints>
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            </columnConstraints>
+                        <VBox spacing="25" alignment="CENTER">
 
-                            <VBox styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                <HBox alignment="CENTER_LEFT" spacing="20">
-                                    <Label text="🎓" styleClass="card-icon-bg-blue"/>
-                                    <VBox spacing="5">
-                                        <Label text="ACTIVE SESSIONS" styleClass="card-label"/>
-                                        <Label fx:id="activeSessionsLabel" text="0" styleClass="card-value"/>
-                                    </VBox>
-                                </HBox>
-                            </VBox>
+                            <HBox spacing="20" alignment="CENTER">
 
-                            <VBox styleClass="stat-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                <HBox alignment="CENTER_LEFT" spacing="20">
-                                    <Label text="👥" styleClass="card-icon-bg-blue"/>
-                                    <VBox spacing="5">
-                                        <Label text="NOTIFICATIONS" styleClass="card-label"/>
-                                        <Label fx:id="notificationsLabel" text="0" styleClass="card-value"/>
-                                    </VBox>
-                                </HBox>
-                            </VBox>
-                        </GridPane>
+                                <VBox styleClass="stat-card" prefWidth="500">
+                                    <HBox alignment="CENTER_LEFT" spacing="20">
+                                        <Label text="🎓" styleClass="card-icon-bg-blue"/>
+                                        <VBox spacing="5">
+                                            <Label text="ACTIVE SESSIONS" styleClass="card-label"/>
+                                            <Label fx:id="activeSessionsLabel" text="0" styleClass="card-value"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+
+                                <VBox styleClass="stat-card" prefWidth="500">
+                                    <HBox alignment="CENTER_LEFT" spacing="20">
+                                        <Label text="👥" styleClass="card-icon-bg-blue"/>
+                                        <VBox spacing="5">
+                                            <Label text="NOTIFICATIONS" styleClass="card-label"/>
+                                            <Label fx:id="notificationsLabel" text="0" styleClass="card-value"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+
+                            <HBox spacing="20" alignment="CENTER">
+
+                                <VBox styleClass="card-add-student" prefWidth="500"
+                                      onMouseClicked="#showManageSemester">
+                                    <HBox alignment="CENTER_LEFT" spacing="20">
+                                        <Label text="👥" styleClass="card-icon-bg-blue"/>
+                                        <VBox spacing="5">
+                                            <Label text="MANAGE SEMESTERS" styleClass="action-card-title"/>
+                                            <Label text="Click to view page" styleClass="action-card-subtitle"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+
+                                <VBox styleClass="card-action-pink" prefWidth="500"
+                                      onMouseClicked="#showManageClasses">
+                                    <HBox alignment="CENTER_LEFT" spacing="20">
+                                        <Label text="👥" styleClass="card-icon-bg-blue"/>
+                                        <VBox spacing="5">
+                                            <Label text="MANAGE CLASSES" styleClass="action-card-title"/>
+                                            <Label text="Click to view page" styleClass="action-card-subtitle"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+
+                                <VBox styleClass="card-action-purple" prefWidth="500"
+                                      onMouseClicked="#showManageSubjects">
+                                    <HBox alignment="CENTER_LEFT" spacing="20">
+                                        <Label text="👥" styleClass="card-icon-bg-blue"/>
+                                        <VBox spacing="5">
+                                            <Label text="MANAGE SUBJECTS" styleClass="action-card-title"/>
+                                            <Label text="Click to view page" styleClass="action-card-subtitle"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+                        </VBox>
 
                         <Separator styleClass="content-separator"/>
 
@@ -178,7 +215,6 @@
                             </TableView>
 
                         </VBox>
-
                     </VBox>
                 </ScrollPane>
 
@@ -254,9 +290,14 @@
                             <VBox fx:id="updateClassInfoCard" spacing="25" maxWidth="700" styleClass="panel-card">
 
                                 <VBox fx:id="updateClassSearchArea" spacing="8" alignment="CENTER_LEFT">
-                                    <Label text="Select Grade" styleClass="input-label"/>
-                                    <ComboBox fx:id="updateClassSearchBox"
-                                               styleClass="modern-input"/>
+                                    <VBox spacing="10" alignment="CENTER_LEFT">
+
+                                        <Label text="Grade *" styleClass="input-label"/>
+                                        <ComboBox fx:id="updateClassSearchBox"
+                                                  promptText="Select grade"
+                                                  prefWidth="300"
+                                                  styleClass="modern-input"/>
+                                    </VBox>
 
                                     <VBox spacing="8" alignment="BOTTOM_RIGHT">
                                         <Button fx:id="searchClassBtn"
@@ -272,14 +313,14 @@
 
                                     <Separator styleClass="content-separator"/>
 
-                                    <VBox spacing="8">
+                                    <VBox spacing="8" alignment="CENTER_LEFT">
                                         <Label text="Class Name *" styleClass="input-label"/>
                                         <TextField fx:id="updateClassInfoNameField"
                                                    promptText="e.g. Grade_1, JHS_2, Form_3A"
                                                    styleClass="modern-input"/>
                                     </VBox>
 
-                                    <VBox spacing="8">
+                                    <VBox spacing="8" alignment="CENTER_LEFT">
                                         <Label text="Assign Instructor *" styleClass="input-label"/>
                                         <ComboBox fx:id="updateClassInfoStaffComboBox"
                                                   promptText="Select Instructor"
@@ -293,17 +334,13 @@
 
 
                                     <HBox spacing="15" alignment="CENTER_RIGHT">
-
                                         <Button fx:id="updateClassInfoBtn"
                                                 text="SAVE CHANGES"
                                                 onAction="#handleUpdateClassInfo"
                                                 styleClass="action-button-primary"/>
                                     </HBox>
-
                                 </VBox>
-
                             </VBox>
-
                         </StackPane>
                     </VBox>
                 </ScrollPane>
@@ -358,13 +395,19 @@
                                     </HBox>
 
                                     <HBox spacing="15">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Gender *" styleClass="input-label"/>
-                                            <ComboBox fx:id="genderComboBox" promptText="Select" maxWidth="Infinity" styleClass="modern-combo"/>
+                                            <ComboBox fx:id="genderComboBox"
+                                                      promptText="Select"
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-combo"/>
                                         </VBox>
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Date of Birth *" styleClass="input-label"/>
-                                            <DatePicker fx:id="dateOfBirthPicker" promptText="MM/DD/YYYY" maxWidth="Infinity" styleClass="modern-date-picker"/>
+                                            <DatePicker fx:id="dateOfBirthPicker"
+                                                        promptText="MM/DD/YYYY"
+                                                        maxWidth="Infinity"
+                                                        styleClass="modern-date-picker"/>
                                         </VBox>
                                     </HBox>
 
@@ -403,11 +446,15 @@
 
                                 <Separator styleClass="content-separator"/>
 
-                                <HBox spacing="15" alignment="CENTER">
+                                <HBox spacing="15" alignment="CENTER_RIGHT">
+                                    <Button text="CANCEL"
+                                            onAction="#handleClearAddStudentForm"
+                                            styleClass="action-button-red"/>
+
                                     <Button fx:id="saveAndClearBtn"
                                             text="ADD STUDENT"
                                             onAction="#handleSaveAndClear"
-                                            styleClass="action-button-mint" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                                            styleClass="action-button-primary"/>
                                 </HBox>
 
                                 <VBox spacing="8" styleClass="alert-panel-info">
@@ -424,28 +471,29 @@
 
                                 <VBox fx:id="studentSearchFieldBox" spacing="10" alignment="CENTER_LEFT">
 
-                                    <Label text="Select the specific grade to fetch students"
+                                    <Label text="Select the specific grade to fetch student"
                                            styleClass="section-header-blue"/>
 
-                                    <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <HBox spacing="20" alignment="CENTER_LEFT">
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Select Student"
                                                    styleClass="input-label"/>
                                             <ComboBox fx:id="student_SelectionBox"
                                                       promptText="Select Student"
+                                                      maxWidth="Infinity"
                                                       styleClass="modern-input"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Select grade"
                                                    styleClass="input-label"/>
                                             <ComboBox fx:id="student_classSelectionBox"
                                                       onMouseReleased="#LoadClassStudent"
+                                                      maxWidth="Infinity"
                                                       promptText="Select Student"
                                                       styleClass="modern-input"/>
                                         </VBox>
-
                                     </HBox>
 
                                     <VBox alignment="BOTTOM_RIGHT">
@@ -456,7 +504,7 @@
                                     </VBox>
                                 </VBox>
 
-                                <VBox fx:id="studentInfoPanel" spacing="10">
+                                <VBox fx:id="studentInfoPanel" spacing="10" visible="false" managed="false">
 
                                     <VBox spacing="15">
 
@@ -565,10 +613,8 @@
                                                 onAction="#handleCancelInfoUpdate"
                                                 styleClass="action-button-red"/>
                                     </HBox>
-
                                 </VBox>
                             </VBox>
-
                         </StackPane>
                     </VBox>
                 </ScrollPane>
@@ -583,16 +629,16 @@
 
 
                         <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #ECFEFF;">
+                            <StackPane styleClass="sidebar-logo-bg" >
                                 <Label text="G" style="-fx-font-size: 24px;"/>
                             </StackPane>
                             <Label text="ADD GRADING CRITERIA" styleClass="header-title"/>
                         </VBox>
 
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="700">
+                        <VBox spacing="25" styleClass="panel-card" maxWidth="700" alignment="CENTER">
 
-                            <Label text="Grade Details" styleClass="section-header-blue"/>
+                            <Label text="GRADE DETAILS" styleClass="section-header-blue"/>
 
                             <VBox spacing="10">
                                 <Label text="Grade Representation eg. 'A'" styleClass="input-label"/>
@@ -602,12 +648,12 @@
                             <HBox spacing="15">
                                 <VBox spacing="10" HBox.hgrow="ALWAYS">
                                     <Label text="Lower Limit eg. '80'" styleClass="input-label"/>
-                                    <TextField fx:id="lowerRangeField" promptText="80" styleClass="modern-date-picker"/>
+                                    <TextField fx:id="lowerRangeField" promptText="80" styleClass="modern-input"/>
                                 </VBox>
 
                                 <VBox spacing="10" HBox.hgrow="ALWAYS">
                                     <Label text="Upper Limit eg. '100'" styleClass="input-label"/>
-                                    <TextField fx:id="upperRangeField" promptText="100" styleClass="modern-date-picker"/>
+                                    <TextField fx:id="upperRangeField" promptText="100" styleClass="modern-input"/>
                                 </VBox>
                             </HBox>
 
@@ -624,7 +670,6 @@
                                         onAction="#handleSaveGradingCriteria"
                                         styleClass="action-button-primary"/>
                             </HBox>
-
                         </VBox>
                     </VBox>
                 </ScrollPane>
@@ -636,19 +681,17 @@
                             fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
-                    <VBox spacing="30" styleClass="content-padding">
+                    <VBox spacing="30" styleClass="content-padding" alignment="CENTER">
 
                         <VBox alignment="CENTER" spacing="10">
                             <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #FDF2F8;">
                                 <Label text="📝" style="-fx-font-size: 24px;"/>
                             </StackPane>
                             <Label text="ACADEMIC RESULTS ENTRY" styleClass="header-title"/>
-                            <Label text="Input and verify student performance scores" styleClass="header-subtitle"/>
+                            <Label text="Input student performance scores" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="1000">
-
-                            <Label text="Subject &amp; Class Selection" styleClass="section-header-blue"/>
+                        <VBox spacing="25" styleClass="panel-card" maxWidth="700">
 
                             <VBox fx:id="subjectResultSearchBox" spacing="15" alignment="BOTTOM_LEFT">
 
@@ -657,19 +700,21 @@
 
                                 <Separator styleClass="content-separator"/>
 
-                                <HBox spacing="10" alignment="CENTER_LEFT">
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                <HBox spacing="15" alignment="CENTER_LEFT">
+                                    <VBox spacing="8" prefWidth="300">
                                         <Label text="Select Subject" styleClass="input-label"/>
                                         <ComboBox fx:id="score_selectSubjectBox"
                                                   promptText="Select subject"
+                                                  maxWidth="Infinity"
                                                   styleClass="modern-input"/>
                                     </VBox>
 
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <VBox spacing="8" prefWidth="300">
                                         <Label text="Select Grade" styleClass="input-label"/>
                                         <ComboBox fx:id="score_SelectClassBox"
                                                   onMouseReleased="#fetchClassSubjects"
                                                    promptText="Select grade"
+                                                  maxWidth="Infinity"
                                                    styleClass="modern-input"/>
                                     </VBox>
                                 </HBox>
@@ -677,22 +722,24 @@
                                 <Button fx:id="score_LoadStudentsBtn"
                                         text="LOAD STUDENTS"
                                         onAction="#handleLoadStudentsForScores"
-                                        styleClass="action-button-primary"
-                                        style="-fx-padding: 12 30;"/>
+                                        styleClass="action-button-primary"/>
                             </VBox>
 
-                            <HBox fx:id="subjectInfoBox" spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
-                                  styleClass="alert-panel-info">
-                                <Label text="📚" styleClass="sidebar-logo-bg"/>
-                                <VBox spacing="2">
-                                    <Label fx:id="subjectNameLabel" text=" " styleClass="section-title"/>
-                                    <Label fx:id="subjectCodeLabel" text=" " styleClass="section-title"/>
-                                </VBox>
-                                <Region HBox.hgrow="ALWAYS"/>
-                                <Label text="Status: Ready for Entry" style="-fx-text-fill: #059669; -fx-font-weight: bold; -fx-font-size: 11px;"/>
-                            </HBox>
+                            <VBox fx:id="resultsTableContainer"
+                                  spacing="20" visible="false"
+                                  managed="false">
 
-                            <VBox fx:id="resultsTableContainer" spacing="20" visible="false" managed="false">
+                                <HBox fx:id="subjectInfoBox" spacing="15" alignment="CENTER_LEFT"
+                                      styleClass="alert-panel-info">
+                                    <Label text="📚" styleClass="sidebar-logo-bg"/>
+                                    <VBox spacing="2">
+                                        <Label fx:id="subjectNameLabel" text=" " styleClass="section-title"/>
+                                        <Label fx:id="subjectCodeLabel" text=" " styleClass="section-title"/>
+                                    </VBox>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label text="Status: Ready for Entry" style="-fx-text-fill: #059669; -fx-font-weight: bold; -fx-font-size: 11px;"/>
+                                </HBox>
+
                                 <Separator styleClass="content-separator"/>
 
                                 <HBox alignment="CENTER_LEFT" spacing="20">
@@ -725,11 +772,18 @@
                                             <Label text="No manual calculation" styleClass="login-footer-label"/>
                                             <Label text="Grades auto-calculated on save" styleClass="login-footer-label"/>
                                         </HBox>
-
                                     </VBox>
-
                                 </HBox>
 
+                                <VBox fx:id="scores_SaveProgressBarVBox"
+                                      maxWidth="Infinity"
+                                      visible="false"
+                                      managed="false">
+                                    <ProgressBar fx:id="score_SaveProgressBar"
+                                                 progress="0.0"
+                                                 maxWidth="Infinity"
+                                                 styleClass="modern-progress-bar"/>
+                                </VBox>
 
                                 <TableView fx:id="studentsScoresTable"
                                            editable="true"
@@ -771,15 +825,18 @@
                                                 onAction="#handleClearScoresTable"
                                                 styleClass="text-button-blue"/>
 
-                                        <Button fx:id="saveScores"
-                                                text="SAVE SCORES"
+                                        <Button text="CANCEL"
+                                                onAction="#handleCancelScores"
+                                                styleClass="action-button-red"/>
+
+                                        <Button fx:id="saveScoresBtn"
+                                                text="UPLOAD SCORES"
                                                 onAction="#handleSaveScores"
                                                 styleClass="action-button-primary"
                                                 style="-fx-padding: 12 40;"/>
 
                                     </HBox>
                                 </HBox>
-
                             </VBox>
                         </VBox>
                     </VBox>
@@ -792,7 +849,7 @@
                             managed="false"
                             styleClass="modern-scroll-pane">
 
-                    <VBox alignment="TOP_CENTER" spacing="30" styleClass="content-padding" maxWidth="900">
+                    <VBox alignment="CENTER" spacing="30" styleClass="content-padding" >
 
                         <!-- Header -->
                         <VBox alignment="CENTER" spacing="10">
@@ -801,7 +858,7 @@
                             </StackPane>
 
                             <Label text="SUBJECT MANAGEMENT" styleClass="header-title"/>
-                            <Label text="Add subjects or print subject references"
+                            <Label text="Add or update subject preferences"
                                    styleClass="header-subtitle"/>
                         </VBox>
 
@@ -862,16 +919,14 @@
                             </VBox>
 
                             <!-- UPDATES SUBJECTS CARD -->
-                            <VBox fx:id="updateSubjectsCard" styleClass="stat-card"
+                            <VBox fx:id="updateSubjectsCard" styleClass="panel-card"
                                   minWidth="350"
-                                  prefWidth="420"
-                                  maxWidth="700"
-                                  spacing="15">
+                                  maxWidth="700">
 
                                 <VBox fx:id="subjectSearchBox"
                                       spacing="10">
-                                    <HBox spacing="15" alignment="CENTER_LEFT">
-                                        <VBox spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                                    <HBox spacing="15" alignment="CENTER">
+                                        <VBox spacing="5" alignment="CENTER_LEFT" prefWidth="300">
                                             <Label text="Select Subject" styleClass="input-label"/>
                                             <ComboBox fx:id="subjectSelectionBox"
                                                       promptText="Select Grade"
@@ -880,7 +935,7 @@
                                                       styleClass="modern-combo"/>
                                         </VBox>
 
-                                        <VBox spacing="5" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                                        <VBox spacing="5" alignment="CENTER_LEFT" prefWidth="300">
                                             <Label text="Select Class/Grade" styleClass="input-label"/>
                                             <ComboBox fx:id="subject_gradeSelectionBox"
                                                       promptText="Select Grade"
@@ -938,13 +993,15 @@
                                                 text="DELETE SUBJECT"
                                                 onAction="#handleDeleteSubject"
                                                 styleClass="action-button-primary"/>
+
+                                        <Button text="CANCEL"
+                                                onAction="#handleCancelSubjectUpdate"
+                                                styleClass="action-button-red"/>
                                     </HBox>
 
                                 </VBox>
                             </VBox>
-
                         </StackPane>
-
                     </VBox>
                 </ScrollPane>
 
@@ -955,23 +1012,23 @@
                             fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
-                    <VBox spacing="30" styleClass="content-padding">
+                    <VBox spacing="30" styleClass="content-padding" alignment="CENTER">
 
                         <VBox alignment="CENTER" spacing="10">
                             <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #FDF2F8;">
                                 <Label text="📝" style="-fx-font-size: 24px;"/>
                             </StackPane>
                             <Label text="ACADEMIC REPORTS MANAGEMENT" styleClass="header-title"/>
-                            <Label text="View academic results and move passed students" styleClass="header-subtitle"/>
+                            <Label text="View academic results and generate reports" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="1000">
+                        <VBox spacing="25" styleClass="panel-card" maxWidth="700">
 
-                            <VBox fx:id="viewResultsFilterContainer" alignment="CENTER" spacing="15" maxWidth="1000">
+                            <VBox fx:id="viewResultsFilterContainer" alignment="CENTER" spacing="15" >
 
-                                <HBox spacing="15" alignment="BOTTOM_LEFT">
+                                <HBox spacing="15" alignment="CENTER">
 
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <VBox spacing="8" prefWidth="300">
                                         <Label text="Select Grade *" styleClass="input-label"/>
                                         <ComboBox fx:id="results_GradeSelectionBox"
                                                   promptText="Select Grade"
@@ -979,7 +1036,7 @@
                                                   styleClass="modern-combo"/>
                                     </VBox>
 
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <VBox spacing="8" prefWidth="300">
                                         <Label text="Select Semester *" styleClass="input-label"/>
                                         <ComboBox fx:id="results_SemesterSelectionBox"
                                                   promptText="Select Semester"
@@ -988,20 +1045,19 @@
                                     </VBox>
                                 </HBox>
 
-                                <VBox alignment="BOTTOM_LEFT">
+                                <VBox alignment="CENTER_RIGHT">
                                     <Button fx:id="loadClassResultsBtn"
                                             text="FETCH RESULTS"
                                             onAction="#handleLoadClassResults"
-                                            styleClass="action-button-primary"
-                                            style="-fx-padding: 12 30;"/>
+                                            styleClass="action-button-primary"/>
                                 </VBox>
                             </VBox>
 
                             <VBox fx:id="resultsDisplayPanel"
-                                  alignment="CENTER">
+                                  alignment="CENTER" styleClass="panel-card">
 
                                 <HBox spacing="15" alignment="CENTER_LEFT"
-                                      styleClass="alert-panel-info">
+                                      styleClass="sub-panel">
                                     <Label text="📚" styleClass="sidebar-logo-bg"/>
                                     <VBox spacing="2">
                                         <Label fx:id="gradeNameLabel" text=" " styleClass="section-title"/>
@@ -1065,15 +1121,35 @@
                                     </VBox>
 
                                     <HBox spacing="15" alignment="CENTER_RIGHT">
-                                        <Button fx:id="generateReportBtn"
-                                                text="DOWNLOAD TERM REPORTS"
-                                                onAction="#handleDownloadReports"
-                                                styleClass="action-button-primary"
-                                                style="-fx-padding: 12 40;"/>
+                                        <VBox fx:id="resultsPassMarkBox"
+                                              visible="false"
+                                              managed="false"
+                                              spacing="10" prefWidth="300">
+                                            <Label text="Enter passScore and selection promotion class"
+                                                   styleClass="input-label"/>
 
-                                        <Button text="CLEAR RESULTS"
-                                                onAction="#handleClearResults"
-                                                styleClass="action-button-red"/>
+                                            <TextField fx:id="passScoreField"
+                                                       promptText="Enter pass score eg.800"
+                                                       maxWidth="Infinity"
+                                                       styleClass="modern-input"/>
+
+                                            <ComboBox fx:id="promotionGradeComboBox"
+                                                      promptText="Select Grade"
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-combo"/>
+                                        </VBox>
+
+                                        <HBox spacing="10" prefWidth="300">
+                                            <Button fx:id="generateReportBtn"
+                                                    text="DOWNLOAD TERM REPORTS"
+                                                    onAction="#handleDownloadReports"
+                                                    styleClass="action-button-primary"
+                                                    style="-fx-padding: 12 40;"/>
+
+                                            <Button text="CLOSE PANEL"
+                                                    onAction="#handleClearResults"
+                                                    styleClass="action-button-red"/>
+                                        </HBox>
 
                                     </HBox>
                                 </VBox>
@@ -1088,38 +1164,43 @@
                             fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
-                    <VBox spacing="30" styleClass="content-padding">
+                    <VBox spacing="30" styleClass="content-padding" alignment="CENTER">
 
-                        <VBox alignment="CENTER_LEFT">
+                        <VBox spacing="10" alignment="CENTER">
+
+                            <Label text=" " styleClass="header-title"/>
                             <Label text="MANAGE STAFFS" styleClass="header-title"/>
+                            <Label text="Click to fetch and view staff Details" styleClass="header-title-small"/>
                         </VBox>
 
                         <!-- Search & Update Section -->
                         <StackPane fx:id="staffManagementContainer">
 
                             <VBox fx:id="staffListTableContainer"
-                                  spacing="10" styleClass="stat-card">
+                                  spacing="10" styleClass="table-container-card" maxWidth="700">
 
-                                <Label text="Select from the list to display staff data"
-                                       styleClass="section-title"/>
+                                <HBox spacing="25" alignment="CENTER_LEFT">
 
-                                <Separator styleClass="content-separator"/>
+                                    <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                        <Label text="Staff List" styleClass="section-title-small"/>
+                                    </VBox>
 
-                                <VBox alignment="CENTER_LEFT">
-                                    <Label text="Staff List" styleClass="section-title"/>
-                                </VBox>
+                                    <VBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                                        <Label text="Select from the list to display staff data"
+                                               styleClass="section-title-small"/>
+                                    </VBox>
+                                </HBox>
 
                                 <Separator styleClass="content-separator"/>
 
                                 <TableView fx:id="staffListTable"
-                                           maxHeight="500"
+                                           maxHeight="400"
                                            styleClass="modern-table">
 
                                     <columns>
                                         <TableColumn text="ID" fx:id="staffIdColumn" prefWidth="100"/>
                                         <TableColumn text="NAME" fx:id="staffNameColumn" prefWidth="180"/>
                                         <TableColumn text="STAFF ROLES" fx:id="staffRoleColumn" prefWidth="200"/>
-                                        <TableColumn text="GRADES" fx:id="staffGradeColumn" prefWidth="200"/>
                                     </columns>
 
                                     <placeholder>
@@ -1133,6 +1214,7 @@
                                   spacing="20"
                                   visible="false"
                                   managed="false"
+                                  maxWidth="700"
                                   styleClass="sub-panel">
 
                                 <HBox alignment="CENTER_LEFT" spacing="20">
@@ -1148,67 +1230,113 @@
                                 <Separator styleClass="content-separator"/>
 
                                 <!-- Editable Staff Information -->
-                                <GridPane hgap="20" vgap="15">
-                                    <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="50"/>
-                                        <ColumnConstraints hgrow="SOMETIMES" percentWidth="50"/>
-                                    </columnConstraints>
+                                <VBox spacing="15" alignment="CENTER">
 
-                                    <!-- First Name -->
-                                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                                        <Label text="First Name *" styleClass="input-label"/>
-                                        <TextField fx:id="editFirstNameField" styleClass="modern-input"/>
-                                    </VBox>
+                                    <HBox spacing="10" alignment="CENTER_LEFT" >
 
-                                    <!-- Last Name -->
-                                    <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                                        <Label text="Last Name *" styleClass="input-label"/>
-                                        <TextField fx:id="editLastNameField" styleClass="modern-input"/>
-                                    </VBox>
-
-                                    <!-- Email -->
-                                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
-                                        <Label text="Email *" styleClass="input-label"/>
-                                        <TextField fx:id="editEmailField" styleClass="modern-input"/>
-                                    </VBox>
-
-                                    <!-- Phone Number -->
-                                    <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                        <Label text="Phone Number *" styleClass="input-label"/>
-                                        <TextField fx:id="editPhoneField" styleClass="modern-input"/>
-                                    </VBox>
-
-                                    <!-- Date of Birth -->
-                                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="2">
-                                        <Label text="Date of Birth *" styleClass="input-label"/>
-                                        <DatePicker fx:id="editDateOfBirthPicker" maxWidth="Infinity" styleClass="modern-date-picker"/>
-                                    </VBox>
-
-                                    <!-- Gender -->
-                                    <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                                        <Label text="Gender *" styleClass="input-label"/>
-                                        <ComboBox fx:id="editGenderComboBox"
-                                                  promptText="Select gender"
-                                                  styleClass="modern-combo"
-                                                  maxWidth="300"/>
-                                    </VBox>
-
-                                    <!-- Role -->
-                                    <VBox spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
-                                        <VBox spacing="5" alignment="CENTER_LEFT">
-                                            <Label text="Role *" styleClass="input-label"/>
-                                            <ComboBox fx:id="editRoleComboBox"
-                                                      maxWidth="300"
-                                                      styleClass="modern-combo"/>
+                                        <!-- First Name -->
+                                        <VBox spacing="5" alignment="CENTER_LEFT" prefWidth="300">
+                                            <Label text="First Name *" styleClass="input-label"/>
+                                            <TextField fx:id="editFirstNameField"
+                                                       maxWidth="Infinity"
+                                                       styleClass="modern-input"/>
                                         </VBox>
-                                        <VBox spacing="5" alignment="CENTER_LEFT">
+
+                                        <!-- Last Name -->
+                                        <VBox spacing="5" alignment="CENTER_LEFT" prefWidth="300">
+                                            <Label text="Last Name *" styleClass="input-label"/>
+                                            <TextField fx:id="editLastNameField"
+                                                       maxWidth="Infinity"
+                                                       styleClass="modern-input"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <HBox spacing="10" alignment="CENTER_LEFT">
+
+                                        <!-- Email -->
+                                        <VBox spacing="5" alignment="CENTER_LEFT" prefWidth="300">
+                                            <Label text="Email *" styleClass="input-label"/>
+                                            <TextField fx:id="editEmailField"
+                                                       maxWidth="Infinity"
+                                                       styleClass="modern-input"/>
+                                        </VBox>
+
+                                        <!-- Phone Number -->
+                                        <VBox spacing="5" alignment="CENTER_LEFT" prefWidth="300">
+                                            <Label text="Phone Number *" styleClass="input-label"/>
+                                            <TextField fx:id="editPhoneField"
+                                                       maxWidth="Infinity"
+                                                       styleClass="modern-input"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <HBox spacing="10" alignment="CENTER_LEFT">
+
+                                        <!-- Date of Birth -->
+                                        <VBox spacing="5" prefWidth="300">
+                                            <Label text="Date of Birth *" styleClass="input-label"/>
+                                            <DatePicker fx:id="editDateOfBirthPicker"
+                                                        maxWidth="Infinity"
+                                                        styleClass="modern-date-picker"/>
+                                        </VBox>
+
+                                        <!-- Gender -->
+                                        <VBox spacing="5" prefWidth="300">
+                                            <Label text="Gender *" styleClass="input-label"/>
+                                            <ComboBox fx:id="editGenderComboBox"
+                                                      promptText="Select gender"
+                                                      styleClass="modern-combo"
+                                                      maxWidth="Infinity"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <Separator styleClass="content-separator"/>
+                                    <!-- Role -->
+                                    <VBox spacing="5" alignment="CENTER">
+                                        <Label text="Select Role(s) *" styleClass="input-label"/>
+
+                                        <HBox spacing="5" alignment="CENTER_LEFT">
+                                            <HBox spacing="8" alignment="CENTER">
+                                                <CheckBox fx:id="role1"
+                                                          styleClass="modern-checkbox"/>
+                                                <Label text="PRINCIPAL" styleClass="input-label"/>
+                                            </HBox>
+
+                                            <HBox spacing="8" alignment="CENTER">
+                                                <CheckBox fx:id="role2"
+                                                          styleClass="modern-checkbox"/>
+                                                <Label text="ACCOUNTANT" styleClass="input-label"/>
+                                            </HBox>
+
+                                            <HBox spacing="8" alignment="CENTER">
+                                                <CheckBox fx:id="role3"
+                                                          styleClass="modern-checkbox"/>
+                                                <Label text="TEACHING_STAFF" styleClass="input-label"/>
+                                            </HBox>
+
+                                            <HBox spacing="8" alignment="CENTER">
+                                                <CheckBox fx:id="role4"
+                                                          styleClass="modern-checkbox"/>
+                                                <Label text="GENERAL_STAFF" styleClass="input-label"/>
+                                            </HBox>
+
+                                            <HBox spacing="8" alignment="CENTER">
+                                                <CheckBox fx:id="role5"
+                                                          styleClass="modern-checkbox"/>
+                                                <Label text="ADMINISTRATOR" styleClass="input-label"/>
+                                            </HBox>
+                                        </HBox>
+
+                                        <Separator styleClass="content-separator"/>
+
+                                        <VBox spacing="5" alignment="CENTER_LEFT" prefWidth="300">
                                             <Label text="Status *" styleClass="input-label"/>
                                             <ComboBox fx:id="editStatusComboBox"
-                                                      maxWidth="300"
+                                                      maxWidth="Infinity"
                                                       styleClass="modern-combo"/>
                                         </VBox>
                                     </VBox>
-                                </GridPane>
+                                </VBox>
 
                                 <Separator styleClass="content-separator"/>
 
@@ -1219,7 +1347,7 @@
                                             styleClass="action-button-orange"/>
 
                                     <HBox spacing="15" alignment="CENTER_RIGHT">
-                                        <Button text="CANCEL"
+                                        <Button text="CANCEL OR CLOSE"
                                                 onAction="#handleCancelUpdate"
                                                 styleClass="action-button-red"/>
 
@@ -1230,8 +1358,43 @@
                                     </HBox>
                                 </HBox>
                             </VBox>
-                        </StackPane>
 
+                            <VBox fx:id="passwordResetBox"
+                                  spacing="10"
+                                  maxHeight="300"
+                                  maxWidth="400"
+                                  visible="false"
+                                  managed="false"
+                                  styleClass="sub-panel">
+                                <Label text="Enter new password" styleClass="input-label"/>
+
+                                <StackPane>
+                                    <PasswordField fx:id="passwordField"
+                                                   styleClass="enroll-input"/>
+
+                                    <TextField fx:id="newPasswordField"
+                                               styleClass="enroll-input"
+                                               visible="false"
+                                               managed="false"/>
+                                </StackPane>
+
+                                <Button text="Show Password" styleClass="action-button-mint"
+                                        onAction="#handleShowPassword"/>
+
+                                <Separator styleClass="content-separator"/>
+
+                                <HBox spacing="10">
+                                    <Button fx:id="okResetBtn"
+                                            text="OK"
+                                            styleClass="action-button-primary"
+                                            onAction="#handleResetPassword"/>
+
+                                    <Button text="CANCEL"
+                                            styleClass="action-button-red"
+                                            onAction="#handleCancelReset"/>
+                                </HBox>
+                            </VBox>
+                        </StackPane>
                     </VBox>
                 </ScrollPane>
 
@@ -1241,28 +1404,29 @@
                             fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
-                    <VBox spacing="30" styleClass="content-padding">
+                    <VBox spacing="30" styleClass="content-padding" alignment="CENTER">
 
-                        <VBox alignment="CENTER_LEFT">
+                        <VBox alignment="CENTER">
                             <Label text="VIEW SYSTEM LOGS" styleClass="header-title"/>
                         </VBox>
 
                         <VBox fx:id="logsSearchArea"
                               spacing="10"
                               alignment="CENTER_LEFT"
+                              maxWidth="700"
                               styleClass="sub-panel">
                             <Label text="Select fetch category for filtering activities"
                                    styleClass="input-label"/>
 
-                            <HBox spacing="10">
-                                <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                            <HBox spacing="15" alignment="CENTER">
+                                <VBox spacing="8" prefWidth="300">
                                     <Label text="Select Date *" styleClass="input-label"/>
                                     <DatePicker fx:id="filterDatePicker"
                                                 maxWidth="Infinity"
                                                 styleClass="modern-date-picker"/>
                                 </VBox>
 
-                                <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                <VBox spacing="8" prefWidth="300">
                                     <Label text="Select Staff" styleClass="input-label"/>
                                     <ComboBox fx:id="filterStaffBox"
                                               promptText="Select staff for filtering"
@@ -1270,13 +1434,23 @@
                                               styleClass="modern-combo"/>
                                 </VBox>
                             </HBox>
+
+                            <VBox spacing="8" alignment="CENTER_RIGHT">
+
+                                <Button fx:id="fetchSystemLogsBtn"
+                                        text="FETCH LOGS"
+                                        onAction="#handleFetchLogs"
+                                        styleClass="action-button-primary"/>
+                            </VBox>
                         </VBox>
 
                         <StackPane fx:id="logsCardContainer">
 
                             <VBox fx:id="activitiesListPanel"
                                   spacing="20"
-                                  styleClass="stat-card">
+                                  styleClass="table-container-card">
+
+                                <Label text="Filtered Activities" styleClass="section-title-small"/>
 
                                 <Separator styleClass="content-separator"/>
 
@@ -1367,13 +1541,178 @@
                                               editable="false"
                                               styleClass="text-data"/>
                                 </VBox>
-
                             </VBox>
-
                         </StackPane>
                     </VBox>
-
                 </ScrollPane>
+
+                <ScrollPane fx:id="manageSemesterView"
+                            visible="false"
+                            managed="false"
+                            fitToWidth="true"
+                            styleClass="modern-scroll-pane">
+
+                    <VBox spacing="30" styleClass="content-padding">
+
+                        <VBox alignment="CENTER" spacing="10">
+                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #DBEAFE;">
+                                <Label text="🎓" style="-fx-font-size: 24px;"/>
+                            </StackPane>
+                            <Label text="MANAGE SEMESTERS" styleClass="header-title"/>
+                            <Label text="Add or Update semester Data" styleClass="header-subtitle"/>
+                        </VBox>
+
+                        <!-- 🔘 TOGGLE BUTTONS -->
+                        <HBox spacing="10" alignment="CENTER">
+                            <Button fx:id="addSemesterToggleBtn"
+                                    text="ADD SEMESTER"
+                                    onAction="#showAddSemesterCard"
+                                    styleClass="action-button-primary"/>
+
+                            <Button fx:id="updateSemesterToggleBtn"
+                                    text="UPDATE SEMESTER INFO"
+                                    onAction="#showUpdateSemesterInfoCard"
+                                    styleClass="action-button-primary"/>
+                        </HBox>
+
+                        <StackPane>
+
+                            <VBox fx:id="addNewSemesterPanel"
+                                  spacing="15"
+                                  maxWidth="700"
+                                  styleClass="panel-card"
+                                  alignment="CENTER">
+
+                                <VBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="Enter Semester Name" styleClass="input-label"/>
+                                    <TextField fx:id="semesterNameField"
+                                               promptText="eg. First_Term"
+                                               styleClass="modern-input"/>
+                                </VBox>
+
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+
+                                    <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+
+                                        <Label text="Select Start Date" styleClass="input-label"/>
+                                        <DatePicker fx:id="semesterStartDate"
+                                                   promptText="eg. 1/8/2026"
+                                                   styleClass="modern-input"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+
+                                        <Label text="Select End Date" styleClass="input-label"/>
+                                        <DatePicker fx:id="semesterEndDate"
+                                                   promptText="eg. 1/8/2026"
+                                                   styleClass="modern-input"/>
+                                    </VBox>
+                                </HBox>
+
+                                <VBox spacing="8" alignment="CENTER_LEFT">
+                                    <Label text="Enter Academic year" styleClass="input-label"/>
+                                    <TextField fx:id="semesterAcademicYearField"
+                                               promptText="eg. 2025/2026"
+                                               styleClass="modern-date-picker"/>
+                                </VBox>
+
+                                <VBox spacing="8" alignment="CENTER_RIGHT">
+
+                                    <Button fx:id="addSemesterBtn"
+                                            text="ADD SEMESTER"
+                                            onAction="#handleAddSemester"
+                                            styleClass="action-button-primary"/>
+                                </VBox>
+                            </VBox>
+
+                            <VBox fx:id="updateSemesterPanel"
+                                  spacing="15"
+                                  maxWidth="700"
+                                  styleClass="panel-card"
+                                  alignment="CENTER">
+
+                                <VBox fx:id="updateSemesterSearchBox"
+                                      spacing="10"
+                                      alignment="CENTER_LEFT">
+
+                                    <Label text="Select semester" styleClass="input-label"/>
+                                    <ComboBox fx:id="semester_searchInfoBox"
+                                              promptText="Select Semester"
+                                              maxWidth="Infinity"
+                                              styleClass="modern-combo"/>
+
+                                    <VBox spacing="8" alignment="CENTER_RIGHT">
+
+                                        <Button fx:id="update_searchSemesterBtn"
+                                                text="FETCH DATA"
+                                                onAction="#handleFetchSemesterData"
+                                                styleClass="action-button-primary"/>
+                                    </VBox>
+                                </VBox>
+
+                                <VBox fx:id="updateSemesterResponsePanel"
+                                      visible="false"
+                                      managed="false"
+                                      maxWidth="700"
+                                      spacing="10"
+                                      alignment="CENTER">
+
+                                    <VBox spacing="8" alignment="CENTER_LEFT">
+                                        <Label text="Semester ID" styleClass="input-label"/>
+                                        <Label fx:id="updateSemesterIdLabel"
+                                                   styleClass="section-title-small"/>
+                                    </VBox>
+
+                                    <VBox spacing="8" alignment="CENTER_LEFT">
+                                        <Label text="Enter Semester Name" styleClass="input-label"/>
+                                        <TextField fx:id="updateSemesterNameField"
+                                                   promptText="eg. First_Term"
+                                                   styleClass="modern-input"/>
+                                    </VBox>
+
+                                    <HBox spacing="10" alignment="CENTER_LEFT">
+
+                                        <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+
+                                            <Label text="Select Start Date" styleClass="input-label"/>
+                                            <DatePicker fx:id="updateSemesterStartDate"
+                                                       promptText="eg. 1/8/2026"
+                                                       styleClass="modern-input"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+
+                                            <Label text="Select End Date" styleClass="input-label"/>
+                                            <DatePicker fx:id="updateSemesterEndDate"
+                                                       promptText="eg. 1/8/2026"
+                                                       styleClass="modern-input"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <VBox spacing="8" alignment="CENTER_LEFT">
+                                        <Label text="Enter Academic year" styleClass="input-label"/>
+                                        <TextField fx:id="updateSemesterAcademicYearField"
+                                                   promptText="eg. 2025/2026"
+                                                   styleClass="modern-date-picker"/>
+                                    </VBox>
+
+                                    <VBox spacing="10" alignment="CENTER_RIGHT">
+
+                                        <Button text="CLOSE PANEL"
+                                                onAction="#handleCancelSemesterUpdate"
+                                                styleClass="action-button-red"/>
+
+                                        <Button fx:id="updateSemesterBtn"
+                                                text="SAVE CHANGES"
+                                                onAction="#handleUpdateSemester"
+                                                styleClass="action-button-primary"/>
+                                    </VBox>
+                                </VBox>
+                            </VBox>
+                        </StackPane>
+                    </VBox>
+                </ScrollPane>
+
 
                 <!-- LOADING OVERLAY -->
                 <VBox fx:id="loadingOverlay"
@@ -1389,9 +1728,7 @@
                     <Label text="Loading dashboard..."
                            style="-fx-text-fill: #4682B4; -fx-font-size: 14;" />
                 </VBox>
-
             </StackPane>
         </center>
     </BorderPane>
-
 </StackPane>

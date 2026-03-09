@@ -7,16 +7,13 @@ public class ViewStaffList {
 
     private String staffName;
 
-    private String staffRole;
-
-    private List<String> assignedLevel;
+    private List<String> staffRoles;
 
     public ViewStaffList(String staffId, String staffName,
-                         String staffRole, List<String> assignedLevel) {
+                         List<String> staffRoles) {
         this.staffId = staffId;
         this.staffName = staffName;
-        this.staffRole = staffRole;
-        this.assignedLevel = assignedLevel;
+        this.staffRoles = staffRoles;
     }
 
     public String getStaffId() {
@@ -35,19 +32,11 @@ public class ViewStaffList {
         this.staffName = staffName;
     }
 
-    public String getStaffRole() {
-        return staffRole;
+    public List<String> getStaffRoles() {
+        return staffRoles;
     }
 
-    public void setStaffRole(String staffRole) {
-        this.staffRole = staffRole;
-    }
-
-    public List<String> getAssignedLevel() {
-        return assignedLevel;
-    }
-
-    public void setAssignedLevel(List<String> assignedLevel) {
-        this.assignedLevel = assignedLevel;
+    public void setStaffRoles(List<String> staffRoles) {
+        this.staffRoles = staffRoles;
     }
 }

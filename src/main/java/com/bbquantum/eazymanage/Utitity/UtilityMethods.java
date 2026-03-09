@@ -1,13 +1,13 @@
 package com.bbquantum.eazymanage.Utitity;
 
 import com.bbquantum.eazymanage.CacheClasses.*;
-import com.bbquantum.eazymanage.DTO.Academics.PrintLevelSubjects;
-import com.bbquantum.eazymanage.DTO.Academics.StudentListPrint;
-import com.bbquantum.eazymanage.DTO.Academics.SubjectScores;
-import com.bbquantum.eazymanage.DTO.Academics.SubjectsHolder;
+import com.bbquantum.eazymanage.Constants.StaffRoles;
+import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Finance.GradeFeesReport;
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
+import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
 import com.bbquantum.eazymanage.DTO.Institution.FindAndUpdateClassInfo;
+import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
 import javafx.animation.FadeTransition;
@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UtilityMethods {
@@ -60,6 +61,17 @@ public class UtilityMethods {
     //Stores students for scores input
     public static SubjectScores subjectScores;
 
+    //Holds subject data for upload and retrieval
+    public static SubjectDTO subjectData;
+
+    //Contains students results
+    public static List<ViewClassSemesterReport> classResults;
+
+    // Stores retrieved fees report from backend
+    public static StudentFeesPaymentDisplay paymentRecords;
+
+    //Holds staff roles for update
+    public static List<StaffRoles> staffRoles = new ArrayList<>();
 
     public static void clearSession() {
 
@@ -84,7 +96,7 @@ public class UtilityMethods {
         feesProgressBarFromBackend = 0.0;
 
         // Clear reports / temp objects
-        ApiUtilityClass.paymentRecords = null;
+        paymentRecords = null;
     }
 
     public static void showError(StackPane notification, String message) {

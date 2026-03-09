@@ -1,13 +1,24 @@
 package com.bbquantum.eazymanage.DTO.Academics;
 
 public class AssignSubject {
+    private String staffId;
+
     private String subjectName;
 
     private String gradeId;
 
-    public AssignSubject(String subjectName, String gradeId) {
+    public AssignSubject(String staffId, String subjectName, String gradeId) {
+        this.staffId = staffId;
         this.subjectName = subjectName;
         this.gradeId = gradeId;
+    }
+
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
     }
 
     public String getSubjectName() {

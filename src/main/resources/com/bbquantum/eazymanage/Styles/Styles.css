@@ -520,6 +520,7 @@
 }
 
 .modern-input,
+.modern-checkbox,
 .modern-combo,
 .modern-date-picker {
     -fx-background-radius: 8;

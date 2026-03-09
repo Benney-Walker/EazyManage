@@ -1,12 +1,12 @@
 package com.bbquantum.eazymanage.Utitity;
 
-import com.bbquantum.eazymanage.CacheClasses.*;
 import com.bbquantum.eazymanage.Controller.*;
 import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Finance.*;
 import com.bbquantum.eazymanage.DTO.Institution.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
@@ -44,11 +44,8 @@ public class ApiUtilityClass {
     //Counter for loading Dashboards
     int counter = 0;
 
-    //Holds semester information for update
-    public FindSemester semester;
-
-    //Contains students results
-    public List<ViewClassSemesterReport> viewClassSemesterReports;
+    //Auth Token
+    String token = SessionManager.getToken();
 
     public String errorMessageContainer = "";
     public String successMessageContainer = "";
@@ -64,14 +61,12 @@ public class ApiUtilityClass {
 
     public final String FINANCE_URL = BASE_URL + "/api/finance";
     public final String STAFF_URL = BASE_URL + "/api/staff";
-    public final String STUDENT_URL = BASE_URL + "/api/principal";
+    public final String STUDENT_URL = BASE_URL + "/api/student";
     public final String ADMIN_URL = BASE_URL + "/api/admin";
 
     public final String API_VERSION_1 = "/v1";
     public final String API_VERSION_2 = "/v2";
 
-    // Stores retrieved fees report from backend
-    public static StudentFeesPaymentDisplay paymentRecords;
     // Store student results
     public StudentResult studentResult;
 
@@ -307,10 +302,13 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = STUDENT_URL + API_VERSION_2 + "/total-students/" + staffId;
+                String url = STUDENT_URL + API_VERSION_1 + "/total-students/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url)).GET().build();
+                        .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
+                        .GET()
+                        .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
@@ -363,14 +361,16 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = STAFF_URL + API_VERSION_2 + "/total-staffs/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/total-staffs/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println("Message: " + response.body());
                 if (response.statusCode() ==  200) {
                     return response.body();
                 }
@@ -421,10 +421,11 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = FINANCE_URL + API_VERSION_2 + "/total-fees/" + staffId;
+                String url = FINANCE_URL + API_VERSION_1 + "/total-fees/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -479,10 +480,11 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = FINANCE_URL + API_VERSION_2 + "/fees-paid/" + staffId;
+                String url = FINANCE_URL + API_VERSION_1 + "/fees-paid/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -551,8 +553,8 @@ public class ApiUtilityClass {
                 String url = STUDENT_URL + API_VERSION_1 + "/absent-students/" + staffId;
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
-                        .header("Accept", "application/json")
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -610,14 +612,6 @@ public class ApiUtilityClass {
 
     public void loadCachedStaffList(String staffId, StackPane notification,
                                     Runnable onSuccess, Runnable onFailure) {
-        List<StaffCaching> staffCachings = UtilityMethods.staffCacheManager.getCachedStaffList();
-        if (staffCachings != null && !staffCachings.isEmpty()) {
-            if (UtilityMethods.staffCacheManager.isCacheValid()) {
-                counter ++;
-                checkCounter(counter, onSuccess, null);
-                return;
-            }
-        }
 
         Type staffListType = new TypeToken<List<StaffCaching>>() {}.getType();
 
@@ -628,11 +622,12 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
-                        .header("Accept", "application/json")
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                System.out.println(response.body());
                 if (response.statusCode() == 200) {
                     return gson.fromJson(response.body(), staffListType);
                 }
@@ -651,6 +646,7 @@ public class ApiUtilityClass {
                 checkCounter(counter, onSuccess, null);
                 return;
             }
+
             counter ++;
             checkCounter(counter, onSuccess, onFailure);
         });
@@ -695,6 +691,7 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -765,6 +762,7 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -815,24 +813,17 @@ public class ApiUtilityClass {
     public void loadClassSummaryFees(String staffId, StackPane notification,
                                      Runnable onSuccess, Runnable onFailure) {
 
-        List<ClassFeesSummary> cachedClassFees = UtilityMethods.feesCacheManager.getClassFeesSummaryCache();
-        if (cachedClassFees != null && !cachedClassFees.isEmpty()) {
-            if (UtilityMethods.feesCacheManager.isCachedClassFeesValid()) {
-                counter++;
-                checkCounter(counter, onSuccess, null);
-                return;
-            }
-        }
 
         Type classFeesList = new TypeToken<ArrayList<ClassFeesSummary>>() {}.getType();
 
         Task<List<ClassFeesSummary>> task = new Task<>() {
             @Override
             protected List<ClassFeesSummary> call() throws Exception {
-                String url = FINANCE_URL + API_VERSION_2 + "/class-summary-fees/" + staffId;
+                String url = FINANCE_URL + API_VERSION_1 + "/class-summary-fees/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -888,10 +879,11 @@ public class ApiUtilityClass {
         Task<List<GradeInformation>> task = new Task<>() {
             @Override
             protected List<GradeInformation> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_2 + "/load-staff-grades/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/load-staff-grades/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -908,7 +900,6 @@ public class ApiUtilityClass {
 
         task.setOnSucceeded(event -> {
             List<GradeInformation> gradesInformation = task.getValue();
-            System.out.println("success");
             if (gradesInformation != null && !gradesInformation.isEmpty()) {
                 UtilityMethods.gradeInfoCacheManager.setGradesInformation(gradesInformation);
                 counter ++;
@@ -940,13 +931,13 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void enrollNewStudent(String firstName, String lastName, String levelId, String gender,
+    public void enrollNewStudent(String staffId, String firstName, String lastName, String levelId, String gender,
                                  LocalDate dateOfBirth, String hometown, String parentName, String guardianContact,
-                                 String staffId, Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/add-new-student";
+                String url = STUDENT_URL + API_VERSION_1 + "/add-new-student";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("firstName", firstName);
@@ -958,11 +949,11 @@ public class ApiUtilityClass {
                 requestBody.addProperty("parentName", parentName);
                 requestBody.addProperty("guardianContact", guardianContact);
                 requestBody.addProperty("staffId", staffId);
-                System.out.println(gson.toJson(requestBody));
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -971,7 +962,6 @@ public class ApiUtilityClass {
                     return response.body();
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -1012,10 +1002,11 @@ public class ApiUtilityClass {
         Task<SubjectScores> task = new Task<>() {
             @Override
             protected SubjectScores call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/load-subject-students/" + subjectId;
+                String url = STUDENT_URL + API_VERSION_1 + "/load-subject-students/" + subjectId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -1062,7 +1053,7 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/save-subject-scores";
+                String url = STUDENT_URL + API_VERSION_1 + "/save-subject-scores";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", scores.getStudentId());
@@ -1077,7 +1068,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -1125,12 +1117,13 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/add-new-grade" +
+                String url = ADMIN_URL + API_VERSION_1 + "/add-new-class" +
                         "?gradeName=" + gradeName +
                         "&instructorId=" + instructorId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();
 
@@ -1174,17 +1167,19 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void recoverPassword(String staffId, String newPassword,
-                                Runnable onSuccess,
-                                Runnable onFailure, Runnable onNetworkIssue) {
+    public void recoverPassword(String staffId, String newPasswordStaffId, String newPassword,
+                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/reset-staff-password/" +
-                        staffId + "/" + newPassword;
+                String url = ADMIN_URL + API_VERSION_1 + "/reset-staff-password?" +
+                        "staffId=" + staffId +
+                        "&newPasswordStaffId=" + newPasswordStaffId +
+                        "&newPassword=" + newPassword;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();
 
@@ -1234,13 +1229,14 @@ public class ApiUtilityClass {
         Task<StudentFeesPaymentDisplay> task = new Task<>() {
             @Override
             protected StudentFeesPaymentDisplay call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/search-fees-report" +
+                String url = FINANCE_URL + API_VERSION_1 + "/search-fees-report" +
                         "?studentId=" + studentId +
                         "&semesterId=" + semesterId +
                         "&gradeId=" + gradeId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -1257,8 +1253,8 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            paymentRecords = task.getValue();
-            if (paymentRecords != null) {
+            UtilityMethods.paymentRecords = task.getValue();
+            if (UtilityMethods.paymentRecords != null) {
                 successMessageContainer = "Successfully loaded report";
                 onSuccess.run();
                 return;
@@ -1294,10 +1290,11 @@ public class ApiUtilityClass {
         Task<List<FeesSummaryTable>> task = new Task<>() {
             @Override
             protected List<FeesSummaryTable> call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + ownUrl;
+                String url = FINANCE_URL + API_VERSION_1 + ownUrl;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -1345,24 +1342,16 @@ public class ApiUtilityClass {
     public void loadAllStaffList(String staffId, StackPane notification,
                                  Runnable onSuccess, Runnable onFailure) {
 
-        List<ViewStaffList> staffList = UtilityMethods.staffListCacheManager.getCachedStaffList();
-        if (staffList != null && !staffList.isEmpty()) {
-            if (UtilityMethods.staffListCacheManager.isCacheValid()) {
-                counter ++;
-                checkCounter(counter, onSuccess, null);
-                return;
-            }
-        }
-
         Type staffListList = new TypeToken<ArrayList<ViewStaffList>>() {}.getType();
 
         Task<List<ViewStaffList>> task = new Task<>() {
             @Override
             protected List<ViewStaffList> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_2 + "/staff-list/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/staff-list/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -1416,10 +1405,11 @@ public class ApiUtilityClass {
         Task<FindStaffResponse> task = new Task<>() {
             @Override
             protected FindStaffResponse call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/find-staff-by-id/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/find-staff-by-id/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -1462,17 +1452,18 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void searchStudentData(String studentId, String staffId,
+    public void searchStudentData(String staffId, String studentId,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         Task<UpdateStudentPersonalData> task = new Task<>() {
             @Override
             protected UpdateStudentPersonalData call() throws Exception {
-                String url = STUDENT_URL + API_VERSION_2 + "/find-student/"
-                        + studentId + "/" + staffId;
+                String url = STUDENT_URL + API_VERSION_1 + "/find-student/"
+                        + studentId + "/" +  staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -1520,7 +1511,7 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/update-student-data";
+                String url = STUDENT_URL + API_VERSION_1 + "/update-student-data";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", updateStudentPersonalData.getStudentId());
@@ -1536,7 +1527,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -1554,7 +1546,6 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if (status != null) {
-                successMessageContainer = "";
                 successMessageContainer = status;
                 onSuccess.run();
                 return;
@@ -1587,13 +1578,14 @@ public class ApiUtilityClass {
         Task<StudentResult> task = new Task<>() {
             @Override
             protected StudentResult call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/search-student-results" +
+                String url = STUDENT_URL + API_VERSION_1 + "/search-student-results" +
                         "?studentId=" + studentId +
                         "&semesterId=" + semesterId +
                         "&classId=" + classId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -1643,13 +1635,14 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/add-new-fees" +
+                String url = FINANCE_URL + API_VERSION_1 + "/add-new-fees" +
                         "?gradeId=" + gradeId +
                         "&semesterId=" + semesterId +
                         "&feesAmount=" + feesAmount;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();
 
@@ -1694,8 +1687,8 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void addNewSemester(String semesterName, LocalDate startDate,
-                                LocalDate endDate, String academicYear, String currentStaffId,
+    public void addNewSemester(String staffId, String semesterName, LocalDate startDate,
+                                LocalDate endDate, String academicYear,
                                 Runnable onSuccess,  Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -1703,66 +1696,16 @@ public class ApiUtilityClass {
                 String url = ADMIN_URL + API_VERSION_1 + "/add-semester";
 
                 JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("staffId", staffId);
                 requestBody.addProperty("semesterName", semesterName);
                 requestBody.addProperty("startDate", startDate.toString());
                 requestBody.addProperty("endDate", endDate.toString());
                 requestBody.addProperty("academicYear", academicYear);
-                requestBody.addProperty("staffId", currentStaffId);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
-                return jsonResponse.get("status").getAsString();
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            String status = task.getValue();
-            if ("success".equals(status)) {
-                onSuccess.run();
-                UtilityMethods.semesterCachingManager.clearCachedSemesters();
-            } else {
-                onFailure.run();
-            }
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
-            }
-        });
-
-        new Thread(task).start();
-    }
-
-    public void addNewSubject(AssignSubject assignment,
-                               Runnable onSuccess,  Runnable onFailure, Runnable onNetworkIssue) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/add-subject";
-
-                JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("subjectName", assignment.getSubjectName());
-                requestBody.addProperty("gradeId", assignment.getGradeId());
-                System.out.println(assignment.getGradeId());
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -1771,7 +1714,6 @@ public class ApiUtilityClass {
                     return response.body();
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -1783,7 +1725,64 @@ public class ApiUtilityClass {
                 onFailure.run();
                 return;
             }
-            successMessageContainer = "";
+
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not save Semester";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void addNewSubject(AssignSubject assignment,
+                               Runnable onSuccess,  Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = ADMIN_URL + API_VERSION_1 + "/add-subject";
+
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("subjectName", assignment.getSubjectName());
+                requestBody.addProperty("gradeId", assignment.getGradeId());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) {
+                onFailure.run();
+                return;
+            }
+
             successMessageContainer = response;
             onSuccess.run();
         });
@@ -1812,7 +1811,7 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/add-fees-payment";
+                String url = FINANCE_URL + API_VERSION_2 + "/add-fees-payment";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", studentId);
@@ -1823,7 +1822,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -1867,160 +1867,9 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void fetchAndSaveStudentList(String levelId, String levelName,
-                                        Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Type listType = new TypeToken<List<StudentListPrint>>() {}.getType();
-
-        Task<List<StudentListPrint>> task = new Task<>() {
-            @Override
-            protected List<StudentListPrint> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/print-student-list/" + levelId;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-                if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), listType);
-                }
-
-                errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            List<StudentListPrint> students = task.getValue();
-            if (students == null) {
-                onFailure.run();
-                return;
-            }
-
-            if (students.isEmpty()) {
-                errorMessageContainer = "Class list is empty";
-                onFailure.run();
-                return;
-            }
-
-            // Show save dialog
-            Platform.runLater(() -> {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save Student List");
-                fileChooser.setInitialFileName(levelName + "_Student_List.csv");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
-                        new FileChooser.ExtensionFilter("Text Files", "*.txt")
-                );
-
-                Stage stage = (Stage) principalController.printStudentDataBtn.getScene().getWindow();
-                File file = fileChooser.showSaveDialog(stage);
-
-                if (file != null) {
-                    try {
-                        UtilityMethods.saveStudentListToFile(students, file, levelName);
-                        successMessageContainer = "List successfully saved";
-                        onSuccess.run();
-                    } catch (Exception e) {
-                        errorMessageContainer = e.getMessage();
-                        onFailure.run();
-                    }
-                } else {
-                    errorMessageContainer = "Could not generate class list";
-                    onFailure.run();
-                }
-            });
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-
-            errorMessageContainer = "Could not generate class list";
-            onFailure.run();
-        });
-
-        new Thread(task).start();
-    }
-
-    public void refreshRecentFeesTransactions(String staffId,
-                                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        UtilityMethods.feesCacheManager.clearRecentPaymentCache();
-
-        Type listType = new TypeToken<List<RecentPaymentTable>>() {}.getType();
-
-        Task<List<RecentPaymentTable>> task = new Task<>() {
-            @Override
-            protected List<RecentPaymentTable> call() throws Exception {
-                String url = BASE_URL + API_VERSION_1 + "/recent-fees-transactions/" + staffId;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .header("Accept", "application/json")
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-                if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), listType);
-                } else {
-                    System.out.println(response.body());
-                    return null;
-                }
-
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            List<RecentPaymentTable> recentPayments = task.getValue();
-            if (recentPayments == null || recentPayments.isEmpty()) {
-                onFailure.run();
-                return;
-            }
-
-            UtilityMethods.feesCacheManager.setRecentPaymentCache(recentPayments);
-            onSuccess.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
-            }
-        });
-
-        new Thread(task).start();
-    }
-
     public void fetchRecentFeesTransactions(String staffId, StackPane notification,
                                             Runnable onSuccess, Runnable onFailure) {
 
-            List<RecentPaymentTable> recentPaymentsTable = UtilityMethods.feesCacheManager.getRecentPaymentCache();
-            if (recentPaymentsTable != null && !recentPaymentsTable.isEmpty()) {
-                if (UtilityMethods.feesCacheManager.isCachedRecentPaymentValid()) {
-                    counter++;
-                    checkCounter(counter, onSuccess, null);
-                    return;
-                }
-            }
 
         Type listType = new TypeToken<List<RecentPaymentTable>>() {}.getType();
 
@@ -2031,8 +1880,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
-                        .header("Accept", "application/json")
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -2041,7 +1890,6 @@ public class ApiUtilityClass {
                     return gson.fromJson(response.body(), listType);
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -2049,7 +1897,7 @@ public class ApiUtilityClass {
 
         task.setOnSucceeded(event -> {
             List<RecentPaymentTable> recentPayments = task.getValue();
-            if (recentPayments != null || !recentPayments.isEmpty()) {
+            if (recentPayments != null && !recentPayments.isEmpty()) {
                 UtilityMethods.feesCacheManager.setRecentPaymentCache(recentPayments);
                 counter++;
                 checkCounter(counter, onSuccess, null);
@@ -2068,7 +1916,6 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onFailure, null);
                 return;
@@ -2087,7 +1934,7 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/set-grades";
+                String url = ADMIN_URL + API_VERSION_1 + "/set-grades";
 
                 JsonObject responseBody = new JsonObject();
                 responseBody.addProperty("staffId", staffId);
@@ -2098,7 +1945,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(responseBody.toString()))
                         .build();
 
@@ -2136,23 +1984,28 @@ public class ApiUtilityClass {
                 return;
             }
 
-            errorMessageContainer = "Could not add Grades";
+            errorMessageContainer = "Could not add Grade criteria";
             onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void downloadStudentsReport(String levelId, String semesterId, String promotionGradeId,
+    public void downloadStudentsReport(String staffId, String levelId, String semesterId, String promotionGradeId, String passScore,
                                        Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<byte[]> task = new Task<>() {
             @Override
             protected byte[] call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/generate-class-report/" +
-                        levelId + "/" + semesterId + "/" + promotionGradeId;
+                String url = ADMIN_URL + API_VERSION_2 + "/generate-class-report?" +
+                        "staffId=" + staffId +
+                        "&levelId=" + levelId +
+                        "&semesterId=" + semesterId +
+                        "&promotionGradeId=" + promotionGradeId +
+                        "&passScore=" + passScore;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -2233,11 +2086,13 @@ public class ApiUtilityClass {
         Task<List<ViewClassSemesterReport>> task = new Task<>() {
             @Override
             protected List<ViewClassSemesterReport> call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/view-class-results/"
-                        + levelId + "/" + semesterId;
+                String url = STAFF_URL + API_VERSION_1 + "/view-class-results?" +
+                        "levelId=" + levelId +
+                        "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -2253,8 +2108,8 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            viewClassSemesterReports = task.getValue();
-            if (viewClassSemesterReports != null) {
+            UtilityMethods.classResults = task.getValue();
+            if (UtilityMethods.classResults != null) {
                 onSuccess.run();
                 return;
             }
@@ -2281,19 +2136,16 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void movePassedStudents(String levelId, String semesterId, String passTotalScore, String nextLevelId,
-                                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+    public void movePassedStudents(String levelId,
+                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/generate-and-move-students/" +
-                        "levelId=" + levelId +
-                        "&semesterId=" + semesterId +
-                        "&passTotalScore=" + passTotalScore +
-                        "&nextLevelId=" + nextLevelId;
+                String url = STAFF_URL + API_VERSION_1 + "/move-students/" + levelId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();
 
@@ -2303,7 +2155,6 @@ public class ApiUtilityClass {
                     return response.body();
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -2330,6 +2181,7 @@ public class ApiUtilityClass {
                 return;
             }
 
+            errorMessageContainer = "Could not move passed students";
             onFailure.run();
         });
 
@@ -2344,11 +2196,12 @@ public class ApiUtilityClass {
         Task<List<StudentAttendance>> task = new Task<>() {
             @Override
             protected List<StudentAttendance> call() throws Exception {
-                String url = BASE_URL + API_VERSION_1 + "/load-students-for-attendance/" +
+                String url = STUDENT_URL + API_VERSION_1 + "/load-students-for-attendance/" +
                         levelId + "/" + date;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -2357,7 +2210,6 @@ public class ApiUtilityClass {
                     return gson.fromJson(response.body(), listType);
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -2395,7 +2247,8 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_1 + "/mark-attendance";
+                String url = STAFF_URL + API_VERSION_1 + "/mark-attendance";
+
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", studentId);
                 requestBody.addProperty("staffId", staffId);
@@ -2404,7 +2257,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -2451,7 +2305,7 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_1 + "/update-attendance?" +
+                String url = STAFF_URL + API_VERSION_1 + "/update-attendance?" +
                         "studentId=" + studentId +
                         "&staffId=" + staffId +
                         "&levelId=" + levelId +
@@ -2460,6 +2314,7 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .PUT(HttpRequest.BodyPublishers.noBody())
                         .build();
 
@@ -2499,91 +2354,13 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void printSubjectList(String levelId, String levelName,
-                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Type listType = new TypeToken<List<PrintLevelSubjects>>() {}.getType();
-
-        Task<List<PrintLevelSubjects>> task = new Task<>() {
-            @Override
-            protected List<PrintLevelSubjects> call() throws Exception {
-                String url = BASE_URL + API_VERSION_1 + "/print-subjects/" + levelId;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), listType);
-                }
-
-                errorMessageContainer = "";
-                errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            List<PrintLevelSubjects> response = task.getValue();
-            if (response == null) {
-                onFailure.run();
-                return;
-            }
-
-            Platform.runLater(() -> {
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Save Subject List");
-                fileChooser.setInitialFileName(levelName + "_Subject_List.csv");
-                fileChooser.getExtensionFilters().addAll(
-                        new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
-                        new FileChooser.ExtensionFilter("Text Files", "*.txt")
-                );
-
-                Stage stage = (Stage) staffController.printSubjectDataBtn.getScene().getWindow();
-                File file = fileChooser.showSaveDialog(stage);
-
-                if (file != null) {
-                    try {
-                        UtilityMethods.saveSubjectListToFile(response, file, levelName);
-                        onSuccess.run();
-                    } catch (Exception e) {
-                        errorMessageContainer = "";
-                        errorMessageContainer = e.getMessage();
-                        onFailure.run();
-                    }
-                } else {
-                    errorMessageContainer = "Could not download subject list";
-                    onFailure.run();
-                }
-            });
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-
-            onFailure.run();
-        });
-
-        new Thread(task).start();
-    }
-
-    public void findClassInfo(String searchParameter, String staffId,
+    public void findClassInfo(String levelId, String staffId,
                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<FindAndUpdateClassInfo> task = new Task<>() {
             @Override
             protected FindAndUpdateClassInfo call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/find-and-update-classes/" +
-                        searchParameter + "/" + staffId;
+                String url = ADMIN_URL + API_VERSION_1 + "/find-class-info/" +
+                        levelId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -2595,7 +2372,6 @@ public class ApiUtilityClass {
                     return gson.fromJson(response.body(), FindAndUpdateClassInfo.class);
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -2623,6 +2399,7 @@ public class ApiUtilityClass {
                 return;
             }
 
+            errorMessageContainer = "Could not fetch class Info";
             onFailure.run();
         });
 
@@ -2634,7 +2411,8 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/update-class-info";
+                String url = ADMIN_URL + API_VERSION_1 + "/update-class-info";
+
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("levelId", updateInfo.getLevelId());
                 requestBody.addProperty("levelName", updateInfo.getLevelName());
@@ -2642,7 +2420,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -2651,7 +2430,6 @@ public class ApiUtilityClass {
                     return response.body();
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -2680,6 +2458,7 @@ public class ApiUtilityClass {
                 return;
             }
 
+            errorMessageContainer = "Could not update grade info";
             onFailure.run();
         });
 
@@ -2691,7 +2470,8 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/update-staff-info";
+                String url = ADMIN_URL + API_VERSION_1 + "/update-staff-info";
+
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("staffId", info.getStaffId());
                 requestBody.addProperty("firstName", info.getFirstName());
@@ -2700,13 +2480,20 @@ public class ApiUtilityClass {
                 requestBody.addProperty("dateOfBirth", info.getDateOfBirth());
                 requestBody.addProperty("email", info.getEmail());
                 requestBody.addProperty("phoneNumber", info.getPhoneNumber());
-                requestBody.addProperty("staffRole", info.getStaffRole());
+
+                JsonArray rolesArray = new JsonArray();
+                if (info.getStaffRoles() != null) {
+                    info.getStaffRoles().forEach(rolesArray::add);
+                }
+
+                requestBody.add("staffRoles", rolesArray);
                 requestBody.addProperty("staffStatus",  info.getStaffStatus());
                 requestBody.addProperty("dateOfRegistration", info.getDateOfRegistration());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -2715,7 +2502,6 @@ public class ApiUtilityClass {
                     return response.body();
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -2744,6 +2530,7 @@ public class ApiUtilityClass {
                 return;
             }
 
+            errorMessageContainer = "Could update info";
             onFailure.run();
         });
 
@@ -2755,10 +2542,11 @@ public class ApiUtilityClass {
         Task<FindSemester> task = new Task<>() {
             @Override
             protected FindSemester call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/search-semester/" + semesterId;
+                String url = ADMIN_URL + API_VERSION_1 + "/search-semester/" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .headers("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -2774,8 +2562,8 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            semester = task.getValue();
-            if (semester == null) {
+            adminController.semester = task.getValue();
+            if (adminController.semester == null) {
                 onFailure.run();
                 return;
             }
@@ -2795,6 +2583,7 @@ public class ApiUtilityClass {
                 return;
             }
 
+            errorMessageContainer = "Could not get Semester Data";
             onFailure.run();
         });
 
@@ -2806,7 +2595,7 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/update-semester-info";
+                String url = ADMIN_URL + API_VERSION_1 + "/update-semester-info";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("semesterID", info.getSemesterID());
@@ -2817,7 +2606,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -2855,6 +2645,7 @@ public class ApiUtilityClass {
                 return;
             }
 
+            errorMessageContainer = "Could not update semester info";
             onFailure.run();
         });
 
@@ -2866,11 +2657,12 @@ public class ApiUtilityClass {
         Task<FetchFeesDetails> task = new Task<>() {
             @Override
             protected FetchFeesDetails call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/fetch-fees-details/" +
+                String url = FINANCE_URL + API_VERSION_1 + "/fetch-fees-details/" +
                         semesterId + "/" + levelId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -2879,7 +2671,6 @@ public class ApiUtilityClass {
                     return gson.fromJson(response.body(), FetchFeesDetails.class);
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -2920,7 +2711,7 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/update-semester-fees";
+                String url = FINANCE_URL + API_VERSION_1 + "/update-semester-fees";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("amount", update.getAmount());
@@ -2929,7 +2720,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -2981,11 +2773,13 @@ public class ApiUtilityClass {
         Task<List<StudentPaymentRecords>> task = new Task<>() {
             @Override
             protected List<StudentPaymentRecords> call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/fetch-payment-records/"
-                        + studentId + "/" + semesterId;
+                String url = FINANCE_URL + API_VERSION_1 + "/fetch-payment-records?"
+                        + "studentId=" + studentId
+                        + "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -3034,11 +2828,12 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/delete-payment-record/"
+                String url = FINANCE_URL + API_VERSION_1 + "/delete-payment-record/"
                         + transactionId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .DELETE()
                         .build();
 
@@ -3087,7 +2882,7 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/update-payment-details";
+                String url = FINANCE_URL + API_VERSION_1 + "/update-payment-details";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("paymentId", update.getPaymentId());
@@ -3101,7 +2896,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -3154,6 +2950,7 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -3204,11 +3001,12 @@ public class ApiUtilityClass {
         Task<List<GradeFeesReport>> task = new Task<>() {
             @Override
             protected List<GradeFeesReport> call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/fetch-grade-fees-report/"
+                String url = FINANCE_URL + API_VERSION_1 + "/fetch-grade-fees-report/"
                         + levelId + "/" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -3263,6 +3061,7 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -3323,6 +3122,7 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -3377,6 +3177,7 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -3415,8 +3216,172 @@ public class ApiUtilityClass {
             errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
+
+        new Thread(task).start();
     }
 
+    public void fetchSubjectData(String staffId, String subjectId,
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        Task<SubjectDTO> task = new Task<>() {
+            @Override
+            protected SubjectDTO call() throws Exception {
+                String url = ADMIN_URL + API_VERSION_1 + "/load-subject-data/" + staffId + "/" + subjectId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return gson.fromJson(response.body(), SubjectDTO.class);
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            UtilityMethods.subjectData = task.getValue();
+            if (UtilityMethods.subjectData != null) {
+                onSuccess.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not get Records";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void updateSubjectDetails(SubjectDTO data,
+                                     Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                String url = ADMIN_URL + API_VERSION_1 + "/update-subject-details";
+
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("subjectId", data.getSubjectId());
+                requestBody.addProperty("subjectName", data.getSubjectName());
+                requestBody.addProperty("levelId", data.getLevelId());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers("Authorization", "Bearer " + token,
+                                "Content-Type", "application/json")
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.getAsString()))
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            successMessageContainer = task.getValue();
+            if (successMessageContainer != null) {
+                onSuccess.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not update Records";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void deleteSubject(String staffId, String subjectId,
+                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<String>() {
+            @Override
+            protected String call() throws Exception {
+                String url = ADMIN_URL + API_VERSION_1 + "/delete-subject/" + staffId + "/" + subjectId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
+                        .DELETE()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String  response = task.getValue();
+            if (response != null) {
+                onSuccess.run();
+                return;
+            }
+
+            onFailure.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+
+            errorMessageContainer = "Could not delete Record";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
 
     private void checkCounter(int counter, Runnable onSuccess, Runnable onFailure) {
         if (principalController != null && financeController == null

@@ -363,17 +363,27 @@
                                 <VBox spacing="15">
                                     <Label text="Student Details" styleClass="section-header-blue"/>
 
-                                    <HBox spacing="15">
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Student ID *" styleClass="input-label"/>
-                                            <TextField fx:id="newPaymentStudentIdField"
-                                                       promptText="Enter Student ID"
-                                                       onKeyReleased="#handleCheckStudentName"
+                                            <Label text="Student *" styleClass="input-label"/>
+                                            <ComboBox fx:id="newPaymentStudentSelection"
+                                                       promptText="Select student"
                                                        styleClass="modern-input"/>
                                         </VBox>
+
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Class *" styleClass="input-label"/>
+                                            <ComboBox fx:id="newPaymentClassSelection"
+                                                      promptText="Select Grade"
+                                                      onMouseReleased="#handleFetchStudents"
+                                                      styleClass="modern-input"/>
+                                        </VBox>
+
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
                                             <Label text="Semester *" styleClass="input-label"/>
-                                            <ComboBox fx:id="newPaymentSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                            <ComboBox fx:id="newPaymentSemesterComboBox"
+                                                      promptText="Select term"
+                                                      styleClass="modern-combo"/>
                                         </VBox>
                                     </HBox>
                                 </VBox>
@@ -431,14 +441,27 @@
 
                                 <VBox fx:id="paymentSearchArea" spacing="15">
                                     <Label text="Student Details" styleClass="section-header-blue"/>
-                                    <HBox spacing="15">
+                                    <HBox spacing="15" alignment="CENTER_LEFT">
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Student ID *" styleClass="input-label"/>
-                                            <TextField fx:id="searchPaymentStudentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
+                                            <Label text="Student *" styleClass="input-label"/>
+                                            <ComboBox fx:id="searchPaymentStudentSelectionBox"
+                                                       promptText="Select student"
+                                                       styleClass="modern-input"/>
                                         </VBox>
+
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Grade *" styleClass="input-label"/>
+                                            <ComboBox fx:id="searchPaymentClassSelectionBox"
+                                                      promptText="Select student"
+                                                      onMouseReleased="#handleGetStudents"
+                                                      styleClass="modern-input"/>
+                                        </VBox>
+
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
                                             <Label text="Semester *" styleClass="input-label"/>
-                                            <ComboBox fx:id="searchPaymentSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                            <ComboBox fx:id="searchPaymentSemesterComboBox"
+                                                      promptText="Select Term"
+                                                      styleClass="modern-combo"/>
                                         </VBox>
                                     </HBox>
 
@@ -597,24 +620,27 @@
                                     <HBox spacing="10" alignment="CENTER_LEFT" >
 
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Student ID *" styleClass="input-label"/>
-                                            <TextField fx:id="reportSearchStudentIdField" promptText="Enter Student ID" styleClass="modern-input"/>
+                                            <Label text="Student *" styleClass="input-label"/>
+                                            <ComboBox fx:id="reportStudentSelectionBox"
+                                                      disable="true"
+                                                      promptText="Select student"
+                                                      styleClass="modern-input"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                            <Label text="Select Grade *" styleClass="input-label"/>
+                                            <ComboBox fx:id="reportSearchClassComboBox"
+                                                      promptText="Select Grade"
+                                                      onMouseReleased="#handleFetchGradeStudents"
+                                                      styleClass="modern-combo"/>
                                         </VBox>
 
                                         <VBox spacing="8" HBox.hgrow="ALWAYS">
                                             <Label text="Semester" styleClass="input-label"/>
                                             <ComboBox fx:id="reportSearchSemesterComboBox"
-                                                      promptText="Selected semester" maxWidth="Infinity" styleClass="modern-combo"/>
-                                        </VBox>
-
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Select Grade" styleClass="input-label"/>
-                                            <ComboBox fx:id="reportSearchClassComboBox"
-                                                      promptText="Select Grade"
-                                                      maxWidth="Infinity"
+                                                      promptText="Selected semester"
                                                       styleClass="modern-combo"/>
                                         </VBox>
-
                                     </HBox>
 
                                     <Separator styleClass="content-separator"/>

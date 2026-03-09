@@ -1,5 +1,7 @@
 package com.bbquantum.eazymanage.DTO.Institution;
 
+import java.util.List;
+
 public class FindStaffResponse {
     private String staffId;
 
@@ -15,7 +17,7 @@ public class FindStaffResponse {
 
     private String phoneNumber;
 
-    private String staffRole;
+    private List<String> staffRoles;
 
     private String staffStatus;
 
@@ -25,7 +27,7 @@ public class FindStaffResponse {
 
     public FindStaffResponse(String staffId, String firstName, String surname, String gender,
                              String dateOfBirth, String email, String phoneNumber,
-                             String staffRole, String staffStatus, String dateOfRegistration) {
+                             List<String> staffRoles, String staffStatus, String dateOfRegistration) {
         this.staffId = staffId;
         this.firstName = firstName;
         this.surname = surname;
@@ -33,7 +35,7 @@ public class FindStaffResponse {
         this.dateOfBirth = dateOfBirth;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.staffRole = staffRole;
+        this.staffRoles = staffRoles;
         this.staffStatus = staffStatus;
         this.dateOfRegistration = dateOfRegistration;
     }
@@ -94,12 +96,12 @@ public class FindStaffResponse {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getStaffRole() {
-        return staffRole;
+    public List<String> getStaffRoles() {
+        return staffRoles;
     }
 
-    public void setStaffRole(String staffRole) {
-        this.staffRole = staffRole;
+    public void setStaffRoles(List<String> staffRoles) {
+        this.staffRoles = staffRoles;
     }
 
     public String getStaffStatus() {

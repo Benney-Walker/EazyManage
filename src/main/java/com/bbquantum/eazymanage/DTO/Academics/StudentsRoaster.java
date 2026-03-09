@@ -7,12 +7,6 @@ public class StudentsRoaster {
 
     private String studentGender;
 
-    private String homeTown;
-
-    private String guardianName;
-
-    private String guardianContact;
-
     public String getStudentId() {
         return studentId;
     }
@@ -35,29 +29,5 @@ public class StudentsRoaster {
 
     public void setStudentGender(String studentGender) {
         this.studentGender = studentGender;
-    }
-
-    public String getHomeTown() {
-        return homeTown;
-    }
-
-    public void setHomeTown(String homeTown) {
-        this.homeTown = homeTown;
-    }
-
-    public String getGuardianName() {
-        return guardianName;
-    }
-
-    public void setGuardianName(String guardianName) {
-        this.guardianName = guardianName;
-    }
-
-    public String getGuardianContact() {
-        return guardianContact;
-    }
-
-    public void setGuardianContact(String guardianContact) {
-        this.guardianContact = guardianContact;
     }
 }
