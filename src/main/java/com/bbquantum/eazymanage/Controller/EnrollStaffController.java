@@ -1,5 +1,6 @@
 package com.bbquantum.eazymanage.Controller;
 
+import com.bbquantum.eazymanage.Constants.Gender;
 import com.bbquantum.eazymanage.Constants.StaffRoles;
 import com.bbquantum.eazymanage.DTO.Institution.EnrollmentResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
@@ -33,9 +34,7 @@ public class EnrollStaffController {
     @FXML private VBox formPanel;
     @FXML private TextField firstNameField;
     @FXML private TextField lastNameField;
-    @FXML private RadioButton maleRadio;
-    @FXML private RadioButton femaleRadio;
-    @FXML private ToggleGroup genderGroup;
+    @FXML private ComboBox<Gender> genderComboBox;
     @FXML private DatePicker dateOfBirthPicker;
 
     // Contact Info
@@ -64,6 +63,7 @@ public class EnrollStaffController {
     @FXML
     public void initialize() {
         roleComboBox.getItems().addAll(StaffRoles.values());
+        genderComboBox.getItems().addAll(Gender.values());
 
         successPanel.setVisible(false);
         successPanel.setManaged(false);
@@ -127,8 +127,9 @@ public class EnrollStaffController {
         }
 
         // Gender
-        if (!maleRadio.isSelected() && !femaleRadio.isSelected()) {
-            showError("Please select gender");
+        Gender selectedGender = genderComboBox.getSelectionModel().getSelectedItem();
+        if (selectedGender == null) {
+            showError("Please select a gender");
             return false;
         }
 
@@ -313,7 +314,8 @@ public class EnrollStaffController {
     }
 
     private String getSelectedGender() {
-        return maleRadio.isSelected() ? "Male" : "Female";
+        Gender gender = genderComboBox.getSelectionModel().getSelectedItem();
+        return gender.name();
     }
 
 

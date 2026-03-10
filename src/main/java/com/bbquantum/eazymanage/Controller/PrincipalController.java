@@ -501,6 +501,13 @@ public class PrincipalController implements Initializable {
     @FXML
     private void showStaffDashboard() {
         loadStaffDashboardData();
+
+        staffDetailsPanel.setVisible(false);
+        staffDetailsPanel.setManaged(false);
+
+        staffManagementContainer.setVisible(true);
+        staffManagementContainer.setManaged(true);
+
         switchView(staffDashboardView, staffDashboardBtn);
     }
 
@@ -520,10 +527,19 @@ public class PrincipalController implements Initializable {
 
         loadStudentDashboardData();
 
+        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        if (cachedGrades != null && !cachedGrades.isEmpty()) {
+            if (resultsClassComboBox.getItems().isEmpty()) {
+                resultsClassComboBox.getItems().addAll(cachedGrades);
+            }
+        }
+
         List<SemesterCaching> semesterCaching = UtilityMethods.semesterCachingManager.getCachedSemesters();
         if (semesterCaching != null && !semesterCaching.isEmpty()) {
             resultsSemesterComboBox.getItems().setAll(semesterCaching);
         }
+
+        results_StudentSelectionBox.setDisable(true);
 
         switchView(studentDashboardView, studentDashboardBtn);
     }
@@ -569,11 +585,14 @@ public class PrincipalController implements Initializable {
         GradeCaching selectedGrade = classLevelComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) return;
 
-        UtilityMethods.showSuccess(notification, "Fetching grade students");
+        System.out.println("Happened");
+
+        showLoading();
         apiUtilityClass.loadClassStudents(selectedGrade.getLevelId(), staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
+                        hideLoading();
                         studentSelectionBox.getItems().clear();
                         studentSelectionBox.getItems().addAll(UtilityMethods.studentsHolder);
                         UtilityMethods.showSuccess(notification, "Students loaded");
@@ -583,12 +602,14 @@ public class PrincipalController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network error! Check your connection");
                     });
                 });
@@ -782,11 +803,12 @@ public class PrincipalController implements Initializable {
         GradeCaching selectedGrade = resultsClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) return;
 
-        UtilityMethods.showSuccess(notification, "Fetching students");
+        showLoading();
         apiUtilityClass.loadClassStudents(selectedGrade.getLevelId(), staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
+                        hideLoading();
                         results_StudentSelectionBox.getItems().clear();
                         results_StudentSelectionBox.getItems().addAll(UtilityMethods.studentsHolder);
                         results_StudentSelectionBox.setDisable(false);
@@ -796,12 +818,14 @@ public class PrincipalController implements Initializable {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network error! Check your connection");
                     });
                 });
@@ -918,14 +942,18 @@ public class PrincipalController implements Initializable {
 
     @FXML
     public void showUpdateInfoCard() {
+        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        if (cachedGrades != null && !cachedGrades.isEmpty()) {
+            if (studentSearchClassBox.getItems().isEmpty()) {
+                studentSearchClassBox.getItems().addAll(cachedGrades);
+            }
+        }
 
         studentDetailsPanel.setVisible(false);
         studentDetailsPanel.setManaged(false);
 
         studentSearchFieldBox.setVisible(true);
         studentSearchFieldBox.setManaged(true);
-
-        studentSearchComboBox.setDisable(true);
 
         switchPageCards(updateStudentInfoCard, addStudentCard,
                 updateStudentToggleBtn, addStudentToggleBtn);
@@ -963,11 +991,12 @@ public class PrincipalController implements Initializable {
         GradeCaching selectedGrade = studentSearchClassBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) return;
 
-        UtilityMethods.showSuccess(notification, "Fetching grade students");
+        showLoading();
         apiUtilityClass.loadClassStudents(selectedGrade.getLevelId(), staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
+                        hideLoading();
                         studentSearchComboBox.getItems().clear();
                         studentSearchComboBox.getItems().addAll(UtilityMethods.studentsHolder);
                         studentSearchComboBox.setDisable(false);
@@ -977,12 +1006,14 @@ public class PrincipalController implements Initializable {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network error! Check your connection");
                     });
                 });
@@ -1157,23 +1188,27 @@ public class PrincipalController implements Initializable {
     }
 
     private void handleSearchStaff(String staffId) {
+        showLoading();
 
         apiUtilityClass.searchStaffData(staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
+                        hideLoading();
                         displayStaffDetails(apiUtilityClass.findStaffResponse);
                     });
                 },
                 () -> {
             //On failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network Error! Check your connection and try again");
                     });
                 });
@@ -1269,6 +1304,10 @@ public class PrincipalController implements Initializable {
     private void loadStaffDashboardData() {
         totalStaffCountLabel.setText(
                 String.valueOf(UtilityMethods.totalStaffFromBackend)
+        );
+
+        teachingStaffCountLabel.setText(
+                String.valueOf(UtilityMethods.totalTeachingStaff)
         );
 
         List<ViewStaffList> staffList = UtilityMethods.staffListCacheManager.getCachedStaffList();
@@ -1432,10 +1471,13 @@ public class PrincipalController implements Initializable {
 
 
         editGenderComboBox.getItems().addAll(Gender.values());
-        editGenderComboBox.setValue(Gender.valueOf(staff.getGender()));
+        editGenderComboBox.setValue(Gender.valueOf(staff.getGender().toUpperCase()));
 
         staffDetailsPanel.setVisible(true);
         staffDetailsPanel.setManaged(true);
+
+        staffManagementContainer.setVisible(false);
+        staffManagementContainer.setManaged(false);
     }
 
     private void setRoleCheckBoxes() {

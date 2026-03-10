@@ -66,6 +66,35 @@ public class AuthController {
     @FXML private VBox info;
     @FXML private Hyperlink enrollPrincipal;
 
+    @FXML
+    private void initialize() {
+        // Enter on username → move focus to password
+        usernameField.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                // Focus whichever password field is currently visible
+                if (passwordField.isVisible()) {
+                    passwordField.requestFocus();
+                } else {
+                    passwordTextField.requestFocus();
+                }
+            }
+        });
+
+        // Enter on passwordField → trigger login
+        passwordField.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                handleLogin();
+            }
+        });
+
+        // Enter on passwordTextField (show password mode) → trigger login
+        passwordTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.ENTER) {
+                handleLogin();
+            }
+        });
+    }
+
     /* ================= FORM SWITCHING ================= */
 
     @FXML

@@ -5,15 +5,14 @@
 
 <?import java.net.URL?>
 <StackPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.bbquantum.eazymanage.Controller.FinanceController"
-            fx:id="notification">
+           fx:controller="com.bbquantum.eazymanage.Controller.FinanceController"
+           fx:id="notification">
 
     <BorderPane styleClass="principal-root">
         <stylesheets>
             <URL value="@../Styles/Styles.css"/>
         </stylesheets>
 
-        <!-- LEFT SIDEBAR - Navigation -->
         <left>
             <VBox prefWidth="250" minWidth="250" styleClass="sidebar">
 
@@ -66,20 +65,19 @@
         </left>
 
         <center>
-            <!-- RIGHT CONTENT AREA -->
             <StackPane fx:id="contentArea" styleClass="main-content-bg">
 
-                <!-- MAIN DASHBOARD -->
                 <ScrollPane fx:id="dashboardView" fitToWidth="true" styleClass="modern-scroll-pane">
                     <VBox spacing="30" styleClass="content-padding">
 
                         <HBox alignment="CENTER_LEFT">
                             <VBox spacing="5">
                                 <Label text="Accountant Dashboard" styleClass="header-title"/>
-                                <Label fx:id="dateTimeLabel"  styleClass="header-subtitle"/>
+                                <Label fx:id="dateTimeLabel" styleClass="header-subtitle"/>
                             </VBox>
                             <Region HBox.hgrow="ALWAYS"/>
                         </HBox>
+
                         <HBox alignment="CENTER_RIGHT">
                             <Button fx:id="refreshDashboardBtn" text="REFRESH DASHBOARD" onAction="#refreshDashboard"
                                     styleClass="action-button-outline"/>
@@ -133,22 +131,22 @@
                                 <ColumnConstraints hgrow="SOMETIMES" percentWidth="33.3"/>
                             </columnConstraints>
 
-                            <VBox styleClass="card-action-purple" alignment="CENTER" spacing="12"
-                                  GridPane.columnIndex="0" onMouseClicked="#showAddFees">
+                            <VBox styleClass="card-action-purple" onMouseClicked="#showAddFees" alignment="CENTER" spacing="12"
+                                  GridPane.columnIndex="0">
                                 <Label text="MANAGE" styleClass="action-card-title"/>
                                 <Label text="SEMESTER FEES" styleClass="action-card-title"/>
                                 <Label text="Add or update semester fees info" styleClass="action-card-subtitle"/>
                             </VBox>
 
-                            <VBox styleClass="card-action-pink" alignment="CENTER" spacing="12"
-                                  GridPane.columnIndex="1" onMouseClicked="#showRecordPayment">
+                            <VBox styleClass="card-action-pink" onMouseClicked="#showRecordPayment" alignment="CENTER" spacing="12"
+                                  GridPane.columnIndex="1">
                                 <Label text="MANAGE" styleClass="action-card-title"/>
                                 <Label text="PAYMENTS" styleClass="action-card-title"/>
                                 <Label text="Update student fee status" styleClass="action-card-subtitle"/>
                             </VBox>
 
-                            <VBox styleClass="card-action-cyan" alignment="CENTER" spacing="12"
-                                  GridPane.columnIndex="2" onMouseClicked="#showSearchReport">
+                            <VBox styleClass="card-action-cyan" onMouseClicked="#showSearchReport" alignment="CENTER" spacing="12"
+                                  GridPane.columnIndex="2">
                                 <Label text="FETCH" styleClass="action-card-title"/>
                                 <Label text="FEES REPORT" styleClass="action-card-title"/>
                                 <Label text="View audit history" styleClass="action-card-subtitle"/>
@@ -181,7 +179,6 @@
                     </VBox>
                 </ScrollPane>
 
-                <!-- ADD SEMESTER FEES VIEW -->
                 <ScrollPane fx:id="addSemesterFeesView" visible="false" managed="false" fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
@@ -192,7 +189,6 @@
                             <Label text="Set financial requirements for the current academic term" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
                             <Button fx:id="addSemesterFeesToggleBtn"
                                     text="ADD NEW FEES"
@@ -207,7 +203,7 @@
 
                         <StackPane maxWidth="700">
 
-                            <VBox fx:id="addSemesterFeesCard" spacing="25" styleClass="panel-card" maxWidth="550">
+                            <VBox fx:id="addSemesterFeesCard" spacing="25" styleClass="panel-card" maxWidth="700">
 
                                 <Label text="Fee Configuration" styleClass="section-header-blue"/>
 
@@ -217,15 +213,21 @@
                                         <TextField fx:id="feesAmountField" promptText="e.g. 3500.00" styleClass="modern-input"/>
                                     </VBox>
 
-                                    <HBox spacing="15">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <HBox spacing="15" >
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Semester" styleClass="input-label"/>
-                                            <ComboBox fx:id="feesSemesterComboBox" promptText="Select Term" maxWidth="Infinity" styleClass="modern-combo"/>
+                                            <ComboBox fx:id="feesSemesterComboBox"
+                                                      maxWidth="Infinity"
+                                                      promptText="Select Term"
+                                                      styleClass="modern-combo"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Class/Level" styleClass="input-label"/>
-                                            <ComboBox fx:id="feesClassComboBox" promptText="Select Level" maxWidth="Infinity" styleClass="modern-combo"/>
+                                            <ComboBox fx:id="feesClassComboBox"
+                                                      promptText="Select Level"
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-combo"/>
                                         </VBox>
                                     </HBox>
                                 </VBox>
@@ -259,7 +261,7 @@
                                 <VBox fx:id="feesSearchArea" spacing="15" maxWidth="550">
                                     <Label text="Select the specific term and grade for the fees" styleClass="section-header-blue"/>
                                     <HBox spacing="15">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Term" styleClass="input-label"/>
                                             <ComboBox fx:id="searchFeesSemesterComboBox"
                                                       promptText="Select Term"
@@ -267,7 +269,7 @@
                                                       styleClass="modern-combo"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Class/Level" styleClass="input-label"/>
                                             <ComboBox fx:id="searchFeesClassComboBox"
                                                       promptText="Select Level"
@@ -329,8 +331,7 @@
                     </VBox>
                 </ScrollPane>
 
-                <!-- RECORD PAYMENT VIEW -->
-                <ScrollPane fx:id="manageFeesPaymentPayment" visible="false" managed="false" fitToWidth="true"
+                <ScrollPane fx:id="manageFeesPaymentRecords" visible="false" managed="false" fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
                     <VBox alignment="TOP_CENTER" spacing="30" styleClass="content-padding">
@@ -343,7 +344,6 @@
                             <Label text="Log incoming tuition and school fees" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
                             <Button fx:id="addNewPaymentToggleBtn"
                                     text="ADD NEW PAYMENT"
@@ -364,25 +364,28 @@
                                     <Label text="Student Details" styleClass="section-header-blue"/>
 
                                     <HBox spacing="15" alignment="CENTER_LEFT">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Student *" styleClass="input-label"/>
                                             <ComboBox fx:id="newPaymentStudentSelection"
-                                                       promptText="Select student"
-                                                       styleClass="modern-input"/>
-                                        </VBox>
-
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Class *" styleClass="input-label"/>
-                                            <ComboBox fx:id="newPaymentClassSelection"
-                                                      promptText="Select Grade"
-                                                      onMouseReleased="#handleFetchStudents"
+                                                      promptText="Select student"
+                                                      maxWidth="Infinity"
                                                       styleClass="modern-input"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
+                                            <Label text="Class *" styleClass="input-label"/>
+                                            <ComboBox fx:id="newPaymentClassSelection"
+                                                      promptText="Select Grade"
+                                                      onAction="#handleFetchStudents"
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-input"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Semester *" styleClass="input-label"/>
                                             <ComboBox fx:id="newPaymentSemesterComboBox"
                                                       promptText="Select term"
+                                                      maxWidth="Infinity"
                                                       styleClass="modern-combo"/>
                                         </VBox>
                                     </HBox>
@@ -441,25 +444,30 @@
 
                                 <VBox fx:id="paymentSearchArea" spacing="15">
                                     <Label text="Student Details" styleClass="section-header-blue"/>
+
                                     <HBox spacing="15" alignment="CENTER_LEFT">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Student *" styleClass="input-label"/>
                                             <ComboBox fx:id="searchPaymentStudentSelectionBox"
-                                                       promptText="Select student"
-                                                       styleClass="modern-input"/>
-                                        </VBox>
-
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Grade *" styleClass="input-label"/>
-                                            <ComboBox fx:id="searchPaymentClassSelectionBox"
                                                       promptText="Select student"
-                                                      onMouseReleased="#handleGetStudents"
+                                                      maxWidth="Infinity"
                                                       styleClass="modern-input"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
+                                            <Label text="Grade *" styleClass="input-label"/>
+                                            <ComboBox fx:id="searchPaymentClassSelectionBox"
+                                                      promptText="Select student"
+                                                      maxWidth="Infinity"
+                                                      onAction="#handleGetStudents"
+                                                      styleClass="modern-input"/>
+                                        </VBox>
+
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Semester *" styleClass="input-label"/>
                                             <ComboBox fx:id="searchPaymentSemesterComboBox"
+                                                      maxWidth="Infinity"
                                                       promptText="Select Term"
                                                       styleClass="modern-combo"/>
                                         </VBox>
@@ -582,7 +590,6 @@
                 </ScrollPane>
 
 
-                <!-- SEARCH FEES REPORT VIEW -->
                 <ScrollPane fx:id="searchStudentReportView" visible="false" managed="false" fitToWidth="true"
                             styleClass="modern-scroll-pane">
 
@@ -596,7 +603,6 @@
                             <Label text="Search student or Grade's financial history and generate statements" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
                             <Button fx:id="studentPayReportToggleBtn"
                                     text="STUDENT REPORT"
@@ -611,7 +617,6 @@
 
                         <StackPane maxWidth="900">
 
-                            <!-- Student Payment Records Search -->
                             <VBox fx:id="studentPaymentRecordsCard" spacing="25" styleClass="panel-card" maxWidth="900">
                                 <Label text="Filter Criteria" styleClass="section-header-blue"/>
 
@@ -619,26 +624,29 @@
 
                                     <HBox spacing="10" alignment="CENTER_LEFT" >
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Student *" styleClass="input-label"/>
                                             <ComboBox fx:id="reportStudentSelectionBox"
                                                       disable="true"
+                                                      maxWidth="Infinity"
                                                       promptText="Select student"
                                                       styleClass="modern-input"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Select Grade *" styleClass="input-label"/>
                                             <ComboBox fx:id="reportSearchClassComboBox"
                                                       promptText="Select Grade"
-                                                      onMouseReleased="#handleFetchGradeStudents"
+                                                      maxWidth="Infinity"
+                                                      onAction="#handleFetchGradeStudents"
                                                       styleClass="modern-combo"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Semester" styleClass="input-label"/>
                                             <ComboBox fx:id="reportSearchSemesterComboBox"
                                                       promptText="Selected semester"
+                                                      maxWidth="Infinity"
                                                       styleClass="modern-combo"/>
                                         </VBox>
                                     </HBox>
@@ -728,7 +736,6 @@
                                 </VBox>
                             </VBox>
 
-                            <!-- Grade payment records search -->
                             <VBox fx:id="gradePaymentRecordsCard" spacing="25" styleClass="panel-card" maxWidth="900">
                                 <Label text="Filter Criteria" styleClass="section-header-blue"/>
 
@@ -738,19 +745,22 @@
                                     <Label text="Select filters to fetch payment records"
                                            styleClass="section-title-small"/>
 
-                                    <HBox spacing="25">
+                                    <HBox spacing="20">
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Semester" styleClass="input-label"/>
                                             <ComboBox fx:id="gradePaymentsReportSemesterComboBox"
                                                       promptText="Select Semester"
-                                                      maxWidth="Infinity" styleClass="modern-combo"/>
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-combo"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="8" prefWidth="300">
                                             <Label text="Class/Level" styleClass="input-label"/>
                                             <ComboBox fx:id="gradePaymentsReportClassComboBox"
-                                                      promptText="Select Grade" maxWidth="Infinity" styleClass="modern-combo"/>
+                                                      promptText="Select Grade"
+                                                      maxWidth="Infinity"
+                                                      styleClass="modern-combo"/>
                                         </VBox>
 
                                     </HBox>
@@ -840,7 +850,6 @@
                     </VBox>
                 </ScrollPane>
 
-                <!-- LOADING OVERLAY -->
                 <VBox fx:id="loadingOverlay"
                       alignment="CENTER"
                       spacing="15"

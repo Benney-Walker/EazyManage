@@ -489,7 +489,7 @@
                                             <Label text="Select grade"
                                                    styleClass="input-label"/>
                                             <ComboBox fx:id="student_classSelectionBox"
-                                                      onMouseReleased="#LoadClassStudent"
+                                                      onAction="#LoadClassStudent"
                                                       maxWidth="Infinity"
                                                       promptText="Select Student"
                                                       styleClass="modern-input"/>
@@ -712,7 +712,7 @@
                                     <VBox spacing="8" prefWidth="300">
                                         <Label text="Select Grade" styleClass="input-label"/>
                                         <ComboBox fx:id="score_SelectClassBox"
-                                                  onMouseReleased="#fetchClassSubjects"
+                                                  onAction="#fetchClassSubjects"
                                                    promptText="Select grade"
                                                   maxWidth="Infinity"
                                                    styleClass="modern-input"/>
@@ -940,7 +940,7 @@
                                             <ComboBox fx:id="subject_gradeSelectionBox"
                                                       promptText="Select Grade"
                                                       maxWidth="Infinity"
-                                                      onMouseReleased="#handleFetchSubjects"
+                                                      onAction="#handleFetchSubjects"
                                                       styleClass="modern-combo"/>
                                         </VBox>
                                     </HBox>

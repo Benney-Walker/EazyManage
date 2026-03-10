@@ -127,6 +127,14 @@ public class ApiUtilityClass {
                     });
                 });
 
+        loadTotalTeachingStaff(principalId, notification, onSuccess,
+                () -> {
+                    //On Failure
+                    Platform.runLater(() -> {
+                        UtilityMethods.showError(notification, errorMessageContainer);
+                    });
+                });
+
         loadTotalStudents(principalId, notification, onSuccess,
                 () -> {
                     //On Failure
@@ -385,6 +393,65 @@ public class ApiUtilityClass {
             String response = task.getValue();
             if (response != null) {
                 UtilityMethods.totalStaffFromBackend = Long.parseLong(response);
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
+            }
+
+            counter ++;
+            checkCounter(counter, onSuccess, onFailure);
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                counter ++;
+                checkCounter(counter, onSuccess, null);
+                return;
+            }
+
+            counter ++;
+            checkCounter(counter, onFailure, onFailure);
+        });
+
+        new Thread(task).start();
+    }
+
+    public void loadTotalTeachingStaff(String staffId,  StackPane notification,
+                               Runnable onSuccess, Runnable onFailure) {
+
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = STAFF_URL + API_VERSION_1 + "/total-teaching-staffs/" + staffId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() ==  200) {
+                    return response.body();
+                }
+
+                errorMessageContainer = "";
+                errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response != null) {
+                UtilityMethods.totalTeachingStaff = Long.parseLong(response);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -3386,7 +3453,7 @@ public class ApiUtilityClass {
     private void checkCounter(int counter, Runnable onSuccess, Runnable onFailure) {
         if (principalController != null && financeController == null
                 && staffController == null && adminController == null) {
-            int initialCounter = 10;
+            int initialCounter = 11;
             if (counter == initialCounter) {
                 onSuccess.run();
                 this.counter = 0;

@@ -101,7 +101,7 @@ public class FinanceController implements Initializable {
     @FXML private Button updateFeesBtn;
 
     //RECORD PAYMENT VIEW
-    @FXML private ScrollPane manageFeesPaymentPayment;
+    @FXML private ScrollPane manageFeesPaymentRecords;
 
     @FXML private Button addNewPaymentToggleBtn;
     @FXML private Button updatePaymentDetailsToggleBtn;
@@ -317,7 +317,7 @@ public class FinanceController implements Initializable {
 
     @FXML
     public void showRecordPayment() {
-        switchView(manageFeesPaymentPayment, recordPaymentBtn);
+        switchView(manageFeesPaymentRecords, recordPaymentBtn);
         showAddNewPaymentCard();
     }
 
@@ -474,11 +474,13 @@ public class FinanceController implements Initializable {
         GradeCaching selectedGrade = newPaymentClassSelection.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) return;
 
+        showLoading();
         String gradeId = selectedGrade.getLevelId();
         apiUtilityClass.loadClassStudents(gradeId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
+                        hideLoading();
                         newPaymentStudentSelection.getItems().clear();
                         newPaymentStudentSelection.getItems().addAll(UtilityMethods.studentsHolder);
                         newPaymentStudentSelection.setDisable(false);
@@ -488,12 +490,14 @@ public class FinanceController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
@@ -575,24 +579,22 @@ public class FinanceController implements Initializable {
     }
 
     private void clearPaymentForm() {
-        newPaymentStudentSelection.getSelectionModel().clearSelection();
-        newPaymentStudentSelection.setDisable(true);
         newPaymentAmountField.clear();
         newPaymentPayerNameField.clear();
         newPaymentPayerPhoneField.clear();
-        newPaymentSemesterComboBox.getSelectionModel().clearSelection();
     }
 
     public void handleFetchGradeStudents() {
         GradeCaching selectedGrade = reportSearchClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) return;
 
-        UtilityMethods.showSuccess(notification, "Fetching grade students");
+        showLoading();
         String gradeId = selectedGrade.getLevelId();
         apiUtilityClass.loadClassStudents(gradeId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
+                        hideLoading();
                         reportStudentSelectionBox.getItems().clear();
                         reportStudentSelectionBox.getItems().addAll(UtilityMethods.studentsHolder);
                         reportStudentSelectionBox.setDisable(false);
@@ -603,12 +605,14 @@ public class FinanceController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
@@ -845,6 +849,13 @@ public class FinanceController implements Initializable {
             }
         }
 
+        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        if (cachedGrades != null && !cachedGrades.isEmpty()) {
+            if (searchPaymentClassSelectionBox.getItems().isEmpty()) {
+                searchPaymentClassSelectionBox.getItems().addAll(cachedGrades);
+            }
+        }
+
         paymentDetailsArea.setVisible(false);
         paymentDetailsArea.setManaged(false);
 
@@ -975,13 +986,14 @@ public class FinanceController implements Initializable {
         GradeCaching selectedGrade = searchPaymentClassSelectionBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) return;
 
-        UtilityMethods.showSuccess(notification, "Fetching students");
+        showLoading();
         String gradeId = selectedGrade.getLevelId();
 
         apiUtilityClass.loadClassStudents(gradeId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
+                        hideLoading();
                         searchPaymentStudentSelectionBox.getItems().clear();
                         searchPaymentStudentSelectionBox.getItems().addAll(UtilityMethods.studentsHolder);
                         searchPaymentStudentSelectionBox.setDisable(false);
@@ -992,12 +1004,14 @@ public class FinanceController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
@@ -1388,8 +1402,8 @@ public class FinanceController implements Initializable {
         dashboardView.setManaged(false);
         addSemesterFeesView.setVisible(false);
         addSemesterFeesView.setManaged(false);
-        manageFeesPaymentPayment.setVisible(false);
-        manageFeesPaymentPayment.setManaged(false);
+        manageFeesPaymentRecords.setVisible(false);
+        manageFeesPaymentRecords.setManaged(false);
         searchStudentReportView.setVisible(false);
         searchStudentReportView.setManaged(false);
 

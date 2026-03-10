@@ -234,11 +234,12 @@
 
                             <VBox fx:id="score_subjectSelectionBox"
                                   spacing="10"
-                                  alignment="CENTER">
+                                  alignment="CENTER"
+                                  maxWidth="700">
 
                                 <Label text="Subject Selection Panel" styleClass="section-header-blue"/>
 
-                                <HBox spacing="15" alignment="CENTER">
+                                <HBox spacing="15" alignment="CENTER_LEFT">
                                     <VBox spacing="8" prefWidth="300">
                                         <Label text="Select subject *" styleClass="input-label"/>
                                         <ComboBox fx:id="score_subSelectionBox"
@@ -252,7 +253,7 @@
                                         <ComboBox fx:id="score_classSelectionBox"
                                                   promptText="Select class"
                                                   maxWidth="Infinity"
-                                                  onMouseClicked="#fetchGradeSubjects"
+                                                  onAction="#fetchGradeSubjects"
                                                   styleClass="modern-combo"/>
                                     </VBox>
                                 </HBox>
@@ -388,23 +389,23 @@
 
                         <VBox spacing="25" styleClass="panel-card" maxWidth="1000">
 
-                            <VBox fx:id="viewResultsHBox" alignment="CENTER" spacing="15" maxWidth="1000">
+                            <VBox fx:id="viewResultsHBox" alignment="CENTER" spacing="15">
 
                                 <HBox spacing="15" alignment="CENTER_LEFT">
 
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <VBox spacing="8" prefWidth="300">
                                         <Label text="Select Grade *" styleClass="input-label"/>
                                         <ComboBox fx:id="resultsGradeComboBox"
                                                   promptText="Select Grade"
-                                                  maxWidth="300"
+                                                  maxWidth="Infinity"
                                                   styleClass="modern-combo"/>
                                     </VBox>
 
-                                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                    <VBox spacing="8" prefWidth="300">
                                         <Label text="Select Semester *" styleClass="input-label"/>
                                         <ComboBox fx:id="resultsSemesterComboBox"
                                                   promptText="Select Semester"
-                                                  maxWidth="300"
+                                                  maxWidth="Infinity"
                                                   styleClass="modern-combo"/>
                                     </VBox>
                                 </HBox>
@@ -480,7 +481,6 @@
                                 <HBox spacing="15" alignment="CENTER_RIGHT">
                                     <Button fx:id="movePassedStudentsBtn"
                                             text="TRANSFER STUDENTS"
-                                            disable="true"
                                             onAction="#handleMovePassedStudents"
                                             styleClass="action-button-primary"/>
 
@@ -529,18 +529,18 @@
                         <StackPane fx:id="attendanceCardContainer" maxWidth="700">
 
                             <!-- MARK ATTENDANCE PANEL -->
-                            <VBox fx:id="markAttendancePanel" spacing="25" styleClass="panel-card" maxWidth="1000">
+                            <VBox fx:id="markAttendancePanel" spacing="25" styleClass="panel-card" maxWidth="700">
 
                                 <VBox fx:id="markAttendanceSelection" spacing="8" >
-                                    <HBox spacing="15" alignment="BOTTOM_LEFT">
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
-                                            <Label text="Select Grade *" styleClass="input-label"/>
-                                            <ComboBox fx:id="markAttendanceGradeComboBox"
-                                                      promptText="Select Grade"
-                                                      prefWidth="250"
-                                                      styleClass="modern-combo" />
-                                        </VBox>
-                                    </HBox>
+
+                                    <VBox spacing="10" >
+                                        <Label text="Select Grade *" styleClass="input-label"/>
+                                        <ComboBox fx:id="markAttendanceGradeComboBox"
+                                                  promptText="Select Grade"
+                                                  prefWidth="250"
+                                                  styleClass="modern-combo" />
+                                    </VBox>
+
                                     <VBox spacing="10" >
                                         <Button fx:id="markAttendanceBtn"
                                                 text="FETCH STUDENTS"
@@ -613,22 +613,23 @@
                                                       prefWidth="250" styleClass="modern-combo" />
                                         </VBox>
 
-                                        <DatePicker
-                                                fx:id="updateAttendanceDatePicker" visible="false" managed="false"
-                                                promptText="previous days cannot be updated"
-                                                maxWidth="200"
-                                                HBox.hgrow="ALWAYS"
-                                                styleClass="modern-date-picker"/>
+                                        <VBox spacing="10" prefWidth="300">
+
+                                            <Label text="Select Data *" styleClass="input-label"/>
+                                            <DatePicker fx:id="updateAttendanceDatePicker"
+                                                    promptText="Select Date"
+                                                    maxWidth="Infinity"
+                                                    styleClass="modern-date-picker"/>
+                                        </VBox>
                                     </HBox>
-                                    <VBox spacing="15" >
+
+                                    <VBox spacing="15" alignment="CENTER_RIGHT">
+
                                         <Button fx:id="updateAttendanceBtn"
                                                 text="FETCH STUDENTS"
                                                 onAction="#loadAttendanceForUpdate"
-                                                styleClass="action-button-primary" alignment="BOTTOM_LEFT" style="-fx-padding: 12 30;"/>
-
+                                                styleClass="action-button-primary"/>
                                     </VBox>
-
-                                    <Label text="Previous days cannot be edited" styleClass="login-footer-label"/>
                                 </VBox>
 
                                 <HBox fx:id="updateAttendanceInfoBox" spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"

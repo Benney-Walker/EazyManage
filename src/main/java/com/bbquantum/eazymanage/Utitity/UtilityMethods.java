@@ -42,6 +42,7 @@ public class UtilityMethods {
     // System own variables
     public static Long totalStudentsFromBackend = 0L;
     public static Long totalStaffFromBackend = 0L;
+    public static Long totalTeachingStaff = 0L;
     public static Double totalSemesterFeesFromBackend = 0D;
     public static Double feesPaidFromBackend = 0D;
     public static Double feesProgressBarFromBackend = 0D;

@@ -651,7 +651,7 @@ public class StaffController implements Initializable {
         GradeInformation selectedGrade = score_classSelectionBox.getSelectionModel().getSelectedItem();
         if ( selectedGrade == null) return;
 
-        UtilityMethods.showSuccess(notification, "Loading grade subjects");
+        showLoading();
 
         apiUtilityClass.loadClassSubjects(selectedGrade.getGradeId(), staffId,
                 () -> {
@@ -660,18 +660,21 @@ public class StaffController implements Initializable {
                         score_subSelectionBox.getItems().clear();
                         score_subSelectionBox.getItems().addAll(UtilityMethods.subjectsHolder);
                         score_subSelectionBox.setDisable(false);
+                        hideLoading();
                         UtilityMethods.showSuccess(notification, "Subjects loaded");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network error! Check your internet connection");
                     });
                 });
@@ -1326,10 +1329,12 @@ public class StaffController implements Initializable {
     }
 
     private void handleFindStudent(String studentId) {
+        showLoading();
         apiUtilityClass.searchStudentData(staffId, studentId,
                 () -> {
                     // On Success
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showSuccess(notification, "Student Found");
                         studentInfoDisplayPanel(UtilityMethods.updateStudentPersonalData);
                         studentPersonalInfo.setVisible(true);
@@ -1342,12 +1347,14 @@ public class StaffController implements Initializable {
                 () -> {
                     //On failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });

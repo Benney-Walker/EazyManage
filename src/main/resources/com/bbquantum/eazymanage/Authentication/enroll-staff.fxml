@@ -54,19 +54,12 @@
                     </HBox>
 
                     <HBox spacing="20">
-                        <VBox spacing="6">
+                        <VBox spacing="6" prefWidth="300">
                             <Label text="Gender *" styleClass="enroll-label"/>
-                            <HBox spacing="20">
-                                <RadioButton fx:id="maleRadio" text="Male" styleClass="enroll-radio">
-                                    <toggleGroup>
-                                        <ToggleGroup fx:id="genderGroup"/>
-                                    </toggleGroup>
-                                </RadioButton>
-                                <RadioButton fx:id="femaleRadio"
-                                             text="Female"
-                                             toggleGroup="$genderGroup"
-                                             styleClass="enroll-radio"/>
-                            </HBox>
+                            <ComboBox fx:id="genderComboBox"
+                                      promptText="Select Gender"
+                                      maxWidth="Infinity"
+                                      styleClass="modern-combo"/>
                         </VBox>
 
                         <VBox spacing="6" HBox.hgrow="ALWAYS">
