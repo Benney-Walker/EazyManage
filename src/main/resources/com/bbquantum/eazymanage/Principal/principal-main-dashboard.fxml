@@ -8,14 +8,15 @@
             fx:controller="com.bbquantum.eazymanage.Controller.PrincipalController"
             fx:id="notification">
 
+    <stylesheets>
+        <URL value="@../Styles/Styles.css"/>
+    </stylesheets>
+
     <BorderPane styleClass="principal-root">
-        <stylesheets>
-            <URL value="@../Styles/Styles.css"/>
-        </stylesheets>
 
         <!-- LEFT SIDEBAR - Navigation -->
         <left>
-            <VBox prefWidth="250" styleClass="sidebar">
+            <VBox fx:id="navContentPage" prefWidth="250" styleClass="sidebar">
 
                 <VBox alignment="CENTER" spacing="10" styleClass="sidebar-header">
                     <StackPane styleClass="logo-container">
@@ -67,7 +68,7 @@
                         </VBox>
                     </HBox>
 
-                    <Button fx:id="logoutButton" text="LOGOUT" onAction="#handleLogout"
+                    <Button fx:id="switchRole" text="SWITCH ROLE" onAction="#handleOpenSwitchRole"
                             maxWidth="Infinity" styleClass="logout-button"/>
                 </VBox>
             </VBox>
@@ -1186,7 +1187,6 @@
                     <Label text="Loading dashboard..."
                            style="-fx-text-fill: white; -fx-font-size: 14;" />
                 </VBox>
-
             </StackPane>
         </center>
     </BorderPane>

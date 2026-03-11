@@ -56,7 +56,7 @@ public class FinanceController implements Initializable {
     @FXML private Button searchReportBtn;
     @FXML private Label accountantNameLabel;
     @FXML private Label institutionNameLabel;
-    @FXML private Button logoutButton;
+    @FXML private Button switchRole;
 
     //MAIN DASHBOARD VIEW
     @FXML private StackPane contentArea;
@@ -328,25 +328,24 @@ public class FinanceController implements Initializable {
     }
 
     @FXML
-    public void handleLogout() throws IOException {
-        UtilityMethods.clearSession();
+    public void handleOpenSwitchRole() throws IOException {
         // Close the login window
-        Stage financeDashboard = (Stage) logoutButton.getScene().getWindow();
+        Stage financeDashboard = (Stage) switchRole.getScene().getWindow();
 
         // Load the appropriate dashboard
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/auth-container.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/SwitchRole/SwitchRole.fxml"));
         Scene scene = new Scene(loader.load());
 
         // Create new stage for dashboard
-        Stage loginStage = new Stage();
-        loginStage.setTitle("EazyManage - Authentication");
-        loginStage.setScene(scene);
-        loginStage.sizeToScene();
-        loginStage.setResizable(false);
+        Stage switchRoleStage = new Stage();
+        switchRoleStage.setTitle("EazyManage - Authentication");
+        switchRoleStage.setScene(scene);
+        switchRoleStage.sizeToScene();
+        switchRoleStage.setResizable(false);
 
         // Close login and show dashboard
         financeDashboard.close();
-        loginStage.show();
+        switchRoleStage.show();
     }
 
     @FXML

@@ -26,6 +26,7 @@ import javafx.util.converter.DefaultStringConverter;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Ref;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,9 +73,32 @@ public class AdminController implements Initializable {
     //MAIN CONTENT
     @FXML private StackPane contentArea;
 
+    //PAGE HEADERS
+    @FXML private HBox dashboardHeader;
+    @FXML private HBox manageClassHeader;
+    @FXML private HBox manageStudentHeader;
+    @FXML private HBox gradingCriteriaHeader;
+    @FXML private HBox subjectScoresHeader;
+    @FXML private HBox manageSubjectHeader;
+    @FXML private HBox manageReportsHeader;
+    @FXML private HBox manageStaffHeader;
+    @FXML private HBox systemLogsHeader;
+    @FXML private HBox manageSemesterHeader;
+
+    //PAGE HEADER CONTROLLERS — for wiring the refresh button
+    @FXML private RefreshController dashboardHeaderController;
+    @FXML private RefreshController manageClassHeaderController;
+    @FXML private RefreshController manageStudentHeaderController;
+    @FXML private RefreshController gradingCriteriaHeaderController;
+    @FXML private RefreshController subjectScoresHeaderController;
+    @FXML private RefreshController manageSubjectHeaderController;
+    @FXML private RefreshController manageReportsHeaderController;
+    @FXML private RefreshController manageStaffHeaderController;
+    @FXML private RefreshController systemLogsHeaderController;
+    @FXML private RefreshController manageSemesterHeaderController;
+
     //DASHBOARD VIEW
     @FXML private ScrollPane dashboardView;
-    @FXML private Label dateTimeLabel;
     @FXML private Label activeSessionsLabel;
     @FXML private Label notificationsLabel;
 
@@ -255,7 +279,8 @@ public class AdminController implements Initializable {
     @FXML private VBox resultsPassMarkBox;
     @FXML private TextField passScoreField;
     @FXML private ComboBox<GradeCaching> promotionGradeComboBox;
-    @FXML private Button generateReportBtn;
+    @FXML
+    public Button generateReportBtn;
 
     //MANAGE STAFF VIEW
     @FXML private ScrollPane manageStaffView;
@@ -688,18 +713,22 @@ public class AdminController implements Initializable {
 
     @FXML
     public void showManageStudent() {
+        setHeaderTitle(manageStudentHeader, "MANAGE STUDENTS");
+
         switchView(studentNavBtn, manageStudentView);
         showAddStudentCard();
     }
 
     @FXML
     public void showGradingCriteria() {
+        setHeaderTitle(gradingCriteriaHeader, "MANAGE GRADING SYSTEM");
+
         switchView(gradeCriteriaNavBtn, gradingCriteriaView);
     }
 
     @FXML
     public void showManageScores() {
-        score_selectSubjectBox.setDisable(true);
+
 
         List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
@@ -707,18 +736,21 @@ public class AdminController implements Initializable {
                 score_SelectClassBox.getItems().addAll(cachedGrades);
             }
         }
+        setHeaderTitle(subjectScoresHeader, "MANAGE SCORES");
 
         switchView(scoresNavBtn, subjectScoresView);
     }
 
     @FXML
     public void showManageSemester() {
+        setHeaderTitle(manageSemesterHeader, "MANAGE SEMESTERS");
         switchView(dashboardBtn, manageSemesterView);
 
         showAddSemesterCard();
     }
 
     public void showManageClasses() {
+        setHeaderTitle(manageClassHeader, "MANAGE CLASSES");
         switchView(dashboardBtn, manageClassView);
 
         showAddClassCard();
@@ -726,6 +758,7 @@ public class AdminController implements Initializable {
 
     @FXML
     public void showManageSubjects() {
+        setHeaderTitle(manageSubjectHeader, "MANAGE SUBJECTS");
         switchView(dashboardBtn, manageSubjectView);
 
         showAddSubjectCard();
@@ -750,6 +783,7 @@ public class AdminController implements Initializable {
         resultsDisplayPanel.setVisible(false);
         resultsDisplayPanel.setManaged(false);
 
+        setHeaderTitle(manageReportsHeader, "MANAGE RESULTS");
         switchView(reportsNavBtn, manageReportsView);
     }
 
@@ -765,6 +799,7 @@ public class AdminController implements Initializable {
             }
         }
 
+        setHeaderTitle(manageStaffHeader, "MANAGE STAFFS");
         switchView(staffNavButton, manageStaffView);
     }
 
@@ -783,6 +818,7 @@ public class AdminController implements Initializable {
             }
         }
 
+        setHeaderTitle(systemLogsHeader, "VIEW SYSTEM LOGS");
         switchView(logsNavBtn, systemLogsView);
     }
 
@@ -811,7 +847,7 @@ public class AdminController implements Initializable {
         showLoading();
         apiUtilityClass.loadAdminDashboard(staffId, notification,
                 () -> {
-            //On Success
+                    //On Success
                     Platform.runLater(() -> {
                         loadDashboardData();
 
@@ -925,14 +961,14 @@ public class AdminController implements Initializable {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(searchClassBtn, "FIND CLASS");
+                        UtilityMethods.notProcessingButton(searchClassBtn, "FETCH GRADE INFO");
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(searchClassBtn, "FIND CLASS");
+                        UtilityMethods.notProcessingButton(searchClassBtn, "FETCH GRADE INFO");
                         UtilityMethods.showError(notification, "Network error! Check your connection and try again");
                     });
                 });
@@ -1017,7 +1053,6 @@ public class AdminController implements Initializable {
         }
 
         student_SelectionBox.getSelectionModel().clearSelection();
-        student_SelectionBox.setDisable(true);
 
         student_classSelectionBox.getSelectionModel().clearSelection();
 
@@ -1033,24 +1068,28 @@ public class AdminController implements Initializable {
         }
 
         String levelId = selectedGrade.getLevelId();
+        showLoading();
         apiUtilityClass.loadClassStudents(levelId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
+                        student_SelectionBox.getItems().clear();
                         student_SelectionBox.getItems().addAll(UtilityMethods.studentsHolder);
-                        student_SelectionBox.setDisable(false);
+                        hideLoading();
                         UtilityMethods.showSuccess(notification, "Students Fetched. You can select student now");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network error! Check your connection and try again");
                     });
                 });
@@ -1072,13 +1111,13 @@ public class AdminController implements Initializable {
         String studentId = student.getStudentId();
         UtilityMethods.processingButton(findStudentBtn);
 
-        apiUtilityClass.searchStudentData(studentId, staffId,
+        apiUtilityClass.searchStudentData(staffId, studentId,
                 () -> {
                     // On Success
                     Platform.runLater(() -> {
                         UtilityMethods.notProcessingButton(findStudentBtn, "FETCH DETAILS");
-                        UtilityMethods.showSuccess(notification, "Student Found");
                         studentInfoUpdatePanel(UtilityMethods.updateStudentPersonalData);
+                        UtilityMethods.showSuccess(notification, "Student Found");
                     });
                 },
                 () -> {
@@ -1141,27 +1180,32 @@ public class AdminController implements Initializable {
             return;
         }
 
+        showLoading();
         String levelId = selectedGrade.getLevelId();
         apiUtilityClass.loadClassSubjects(levelId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
+                        score_selectSubjectBox.setDisable(false);
                         if (UtilityMethods.subjectsHolder != null) {
+                            score_selectSubjectBox.getItems().clear();
                             score_selectSubjectBox.getItems().addAll(UtilityMethods.subjectsHolder);
-                            score_selectSubjectBox.setDisable(false);
                         }
+                        hideLoading();
                         UtilityMethods.showSuccess(notification, "Subjects loaded successfully. You can select now");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On NetworkIssue
                     Platform.runLater(() -> {
+                        hideLoading();
                         UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
@@ -1319,8 +1363,6 @@ public class AdminController implements Initializable {
             }
         }
 
-        subjectSelectionBox.setDisable(true);
-
         UtilityMethods.switchPageCards(updateSubjectsCard, addNewSubjectCard,
                 updateSubjectToggleBtn, addSubjectToggleBtn);
     }
@@ -1377,13 +1419,15 @@ public class AdminController implements Initializable {
         if (selectedGrade == null) {
             return;
         }
+        showLoading();
 
-        UtilityMethods.showError(notification, "Loading class subjects");
          apiUtilityClass.loadClassSubjects(selectedGrade.getLevelId(), staffId,
                  () -> {
              //On Success
                      Platform.runLater(() -> {
+                         hideLoading();
                          if (UtilityMethods.subjectsHolder != null && !UtilityMethods.subjectsHolder.isEmpty()) {
+                             subjectSelectionBox.getItems().clear();
                              subjectSelectionBox.getItems().addAll(UtilityMethods.subjectsHolder);
                          }
 
@@ -1393,12 +1437,14 @@ public class AdminController implements Initializable {
                  () -> {
              //On Failure
                      Platform.runLater(() -> {
+                         hideLoading();
                          UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
                      });
                  },
                  () -> {
              //On Network Issue
                      Platform.runLater(() -> {
+                         hideLoading();
                          UtilityMethods.showError(notification, "Network error! Check your network connection and try again!");
                      });
                  });
@@ -1902,6 +1948,19 @@ public class AdminController implements Initializable {
 
     public void initializeAfterLogin() {
         apiUtilityClass = new ApiUtilityClass(this);
+
+        // Wire refresh button on all headers
+        dashboardHeaderController.setOnRefresh(this::refreshDashboard);
+        manageClassHeaderController.setOnRefresh(this::refreshDashboard);
+        manageStudentHeaderController.setOnRefresh(this::refreshDashboard);
+        gradingCriteriaHeaderController.setOnRefresh(this::refreshDashboard);
+        subjectScoresHeaderController.setOnRefresh(this::refreshDashboard);
+        manageSubjectHeaderController.setOnRefresh(this::refreshDashboard);
+        manageReportsHeaderController.setOnRefresh(this::refreshDashboard);
+        manageStaffHeaderController.setOnRefresh(this::refreshDashboard);
+        systemLogsHeaderController.setOnRefresh(this::refreshDashboard);
+        manageSemesterHeaderController.setOnRefresh(this::refreshDashboard);
+
         setActiveButton(dashboardBtn);
         loadStaffInfo();
         showLoading();
@@ -1914,6 +1973,14 @@ public class AdminController implements Initializable {
                         hideLoading();
                     });
                 });
+    }
+
+    private void setHeaderTitle(HBox headerRoot, String title) {
+        if (headerRoot == null) return;           // ← crash-proof line 1
+        Label titleLabel = (Label) headerRoot.lookup("#pageTitleLabel");
+        if (titleLabel != null) {                 // ← crash-proof line 2
+            titleLabel.setText(title);
+        }
     }
 
     private void fillSemesterDataPanel() {
@@ -2422,7 +2489,7 @@ public class AdminController implements Initializable {
         if (updateGenderComboBox.getItems().isEmpty()) {
             updateGenderComboBox.getItems().addAll(Gender.values());
         }
-        updateGenderComboBox.getSelectionModel().select(Gender.valueOf(data.getGender()));
+        updateGenderComboBox.getSelectionModel().select(Gender.valueOf(data.getGender().toUpperCase()));
         updateDateOfBirthPicker.setValue(LocalDate.parse(data.getDateOfBirth()));
 
         updateHomeTownField.setText(data.getHomeTown());
@@ -2465,12 +2532,15 @@ public class AdminController implements Initializable {
     }
 
     private void loadDashboardData() {
+
         List<LogsDetails> cachedLogs = UtilityMethods.systemLogsCacheManager.getCachedSystemLogs();
         if (cachedLogs != null) {
             if (recentActivitiesTable.getItems().isEmpty()) {
                 recentActivitiesTable.getItems().addAll(cachedLogs);
             }
         }
+
+        setHeaderTitle(dashboardHeader, "ADMIN DASHBOARD");
     }
 
     private void loadStaffInfo() {
@@ -2635,41 +2705,36 @@ public class AdminController implements Initializable {
     }
 
     private void getStaffRoles(List<String> roles) {
+        UtilityMethods.staffRoles.clear();
         for (String role : roles) {
             UtilityMethods.staffRoles.add(StaffRoles.valueOf(role));
         }
     }
 
     private void setRoleCheckBoxes() {
+        // 1. Reset all to false first so we start with a clean slate
+        role1.setSelected(false);
+        role2.setSelected(false);
+        role3.setSelected(false);
+        role4.setSelected(false);
+        role5.setSelected(false);
+
+        // 2. Loop through the list and only set TRUE when a match is found
         for (StaffRoles staffRole : UtilityMethods.staffRoles) {
             if (staffRole.equals(StaffRoles.PRINCIPAL)) {
                 role1.setSelected(true);
-            } else {
-                role1.setSelected(false);
             }
-
             if (staffRole.equals(StaffRoles.ACCOUNTANT)) {
                 role2.setSelected(true);
-            } else {
-                role2.setSelected(false);
             }
-
             if (staffRole.equals(StaffRoles.TEACHING_STAFF)) {
                 role3.setSelected(true);
-            } else {
-                role3.setSelected(false);
             }
-
             if (staffRole.equals(StaffRoles.GENERAL_STAFF)) {
                 role4.setSelected(true);
-            } else {
-                role4.setSelected(false);
             }
-
             if (staffRole.equals(StaffRoles.ADMINISTRATOR)){
                 role5.setSelected(true);
-            } else {
-                role5.setSelected(false);
             }
         }
     }

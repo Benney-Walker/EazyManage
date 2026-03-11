@@ -4,6 +4,7 @@ import com.bbquantum.eazymanage.Constants.Gender;
 import com.bbquantum.eazymanage.Constants.StaffRoles;
 import com.bbquantum.eazymanage.DTO.Institution.EnrollmentResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
+import com.google.gson.JsonArray;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,13 +19,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 public class EnrollStaffController {
 
     // Backend configuration
-    private static final String BASE_URL = "http://localhost:8080/api/auth";
+    private static final String BASE_URL = "https://eazymanagesoftware.up.railway.app/api/auth";
     private static final String ENROLL_ENDPOINT = "/v1/enroll-new-staff";
 
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
@@ -97,6 +101,9 @@ public class EnrollStaffController {
 
         setLoadingState(true);
 
+        List<String> roles = new ArrayList<>();
+        roles.add(roleComboBox.getSelectionModel().getSelectedItem().name());
+
         enrollToBackend(
                 firstNameField.getText().trim(),
                 lastNameField.getText().trim(),
@@ -105,7 +112,7 @@ public class EnrollStaffController {
                 emailField.getText().trim(),
                 phoneNumberField.getText().trim(),
                 institutionIdField.getText().trim(),
-                String.valueOf(roleComboBox.getValue()),
+                roles,
                 passwordField.getText()
         );
     }
@@ -199,7 +206,7 @@ public class EnrollStaffController {
      * Enroll staff to backend
      */
     private void enrollToBackend(String firstName, String lastName, String gender, LocalDate dateOfBirth,
-                                 String email, String phoneNumber, String institutionId, String role, String password) {
+                                 String email, String phoneNumber, String institutionId, List<String> role, String password) {
         Task<EnrollmentResponse> task = new Task<>() {
             @Override
             protected EnrollmentResponse call() throws Exception {
@@ -216,8 +223,11 @@ public class EnrollStaffController {
                 requestBody.addProperty("institutionId", institutionId);
                 requestBody.addProperty("password", password);
 
-                // Set status based on role (adjust if needed)
-                requestBody.addProperty("role", role);
+                JsonArray roles = new JsonArray();
+                if (role != null) {
+                    role.forEach(roles::add);
+                }
+                requestBody.add("roles", roles);
 
                 // Build HTTP request
                 HttpRequest request = HttpRequest.newBuilder()

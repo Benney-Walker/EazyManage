@@ -15,7 +15,7 @@ public class EazyManage extends Application {
     public void start(Stage stage) throws IOException {
         String token = SessionManager.getToken();
 
-        if (!token.isEmpty() && SessionManager.isTokenExpired()) {
+        if (!token.isEmpty() && !SessionManager.isTokenExpired()) {
             String username = SessionManager.getUserName();
             String roles = SessionManager.getRole();
             String staffId = SessionManager.getUserId();

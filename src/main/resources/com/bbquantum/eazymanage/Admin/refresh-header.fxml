@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.RefreshController"
+      spacing="15"
+      alignment="CENTER_LEFT">
+
+    <VBox spacing="5" HBox.hgrow="ALWAYS">
+        <Label fx:id="pageTitleLabel"
+               text=" "
+               styleClass="header-title"/>
+    </VBox>
+
+    <VBox alignment="BOTTOM_RIGHT" HBox.hgrow="ALWAYS">
+        <Button fx:id="refreshBtn" text="REFRESH"
+                onAction="#refreshDashboard"
+                styleClass="action-button-outline"/>
+    </VBox>
+
+</HBox>

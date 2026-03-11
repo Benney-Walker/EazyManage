@@ -220,7 +220,7 @@
                 <!-- NEW SUBJECT SCORES PAGE -->
                 <ScrollPane fx:id="AddNewSubjectScoresView" visible="false" managed="false" fitToWidth="true" styleClass="modern-scroll-pane">
 
-                    <VBox spacing="30" styleClass="content-padding">
+                    <VBox alignment="CENTER" spacing="30" styleClass="content-padding">
 
                         <VBox alignment="CENTER" spacing="10">
                             <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #FDF2F8;">
@@ -230,7 +230,7 @@
                             <Label text="Input and verify student performance scores" styleClass="header-subtitle"/>
                         </VBox>
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="800">
+                        <VBox spacing="25" styleClass="panel-card" maxWidth="1000">
 
                             <VBox fx:id="score_subjectSelectionBox"
                                   spacing="10"
@@ -265,11 +265,13 @@
                                         style="-fx-padding: 12 30;"/>
                             </VBox>
 
+                            <Separator styleClass="content-separator"/>
+
                             <VBox fx:id="score_studentListPanel"
                                   spacing="10"
                                   alignment="CENTER">
 
-                                <HBox spacing="15" alignment="CENTER_LEFT" visible="false" managed="false"
+                                <HBox spacing="15" alignment="CENTER_LEFT"
                                       styleClass="alert-panel-info">
                                     <Label text="📚" styleClass="sidebar-logo-bg"/>
                                     <VBox spacing="2">
@@ -280,7 +282,7 @@
                                     <Label text="Status: Ready for Entry" style="-fx-text-fill: #059669; -fx-font-weight: bold; -fx-font-size: 11px;"/>
                                 </HBox>
 
-                                <VBox spacing="20" visible="false" managed="false">
+                                <VBox spacing="20" >
                                     <Separator styleClass="content-separator"/>
 
                                     <HBox alignment="CENTER_LEFT" spacing="20">
@@ -319,9 +321,7 @@
                                     </HBox>
 
                                     <VBox fx:id="scores_SaveProgressBarVBox"
-                                          maxWidth="Infinity"
-                                          visible="false"
-                                          managed="false">
+                                          maxWidth="Infinity">
                                         <ProgressBar fx:id="score_SaveProgressBar"
                                                      progress="0.0"
                                                      maxWidth="Infinity"
@@ -355,17 +355,21 @@
                                                       styleClass="modern-combo"/>
                                         </VBox>
 
-                                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                                        <HBox spacing="8" >
                                             <Button text="RESET TABLE"
                                                     onAction="#handleClearScores"
                                                     styleClass="text-button-blue"/>
+
+                                            <Button text="CANCEL"
+                                                    onAction="#handleCancelScoreUpload"
+                                                    styleClass="action-button-red"/>
 
                                             <Button fx:id="saveScores"
                                                     text="UPLOAD SCORES"
                                                     onAction="#handleSaveScores"
                                                     styleClass="action-button-primary"
                                                     style="-fx-padding: 12 40;"/>
-                                        </VBox>
+                                        </HBox>
                                     </HBox>
                                 </VBox>
 

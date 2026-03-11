@@ -105,7 +105,7 @@ public class StaffController implements Initializable {
 
     @FXML private VBox score_subjectSelectionBox;
     @FXML private ComboBox<SubjectsHolder> score_subSelectionBox;
-    @FXML private ComboBox<GradeInformation> score_classSelectionBox;
+    @FXML private ComboBox<GradeCaching> score_classSelectionBox;
     @FXML private Button loadSubjectStudentsBtn;
 
     @FXML private VBox score_studentListPanel;
@@ -556,9 +556,20 @@ public class StaffController implements Initializable {
     @FXML
     public void showAddResults() {
         studentsScoresTable.getItems().clear();
-        score_subSelectionBox.setDisable(true);
+        score_subSelectionBox.getItems().clear();
 
-        score_classSelectionBox.getItems().addAll(gradeInformation);
+        score_studentListPanel.setVisible(false);
+        score_studentListPanel.setManaged(false);
+
+        score_subjectSelectionBox.setVisible(true);
+        score_subjectSelectionBox.setManaged(true);
+
+        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        if (cachedGrades != null && !cachedGrades.isEmpty()) {
+            if (score_classSelectionBox.getItems().isEmpty()) {
+                score_classSelectionBox.getItems().addAll(cachedGrades);
+            }
+        }
 
         SwitchView(addResultsBtn, AddNewSubjectScoresView);
     }
@@ -647,19 +658,19 @@ public class StaffController implements Initializable {
         loadDashBoardData(gradeInformation.get(currentDisplayIndex));
     }
 
+    @FXML
     public void fetchGradeSubjects() {
-        GradeInformation selectedGrade = score_classSelectionBox.getSelectionModel().getSelectedItem();
+        GradeCaching selectedGrade = score_classSelectionBox.getSelectionModel().getSelectedItem();
         if ( selectedGrade == null) return;
 
         showLoading();
 
-        apiUtilityClass.loadClassSubjects(selectedGrade.getGradeId(), staffId,
+        apiUtilityClass.loadClassSubjects(selectedGrade.getLevelId(), staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         score_subSelectionBox.getItems().clear();
                         score_subSelectionBox.getItems().addAll(UtilityMethods.subjectsHolder);
-                        score_subSelectionBox.setDisable(false);
                         hideLoading();
                         UtilityMethods.showSuccess(notification, "Subjects loaded");
                     });
@@ -731,8 +742,18 @@ public class StaffController implements Initializable {
     }
 
     @FXML
+    public void handleCancelScoreUpload() {
+        score_studentListPanel.setVisible(false);
+        score_studentListPanel.setManaged(false);
+
+        score_subjectSelectionBox.setVisible(true);
+        score_subjectSelectionBox.setManaged(true);
+    }
+
+    @FXML
     public void handleSaveScores() {
         String subjectId = subjectCodeLabel.getText();
+        System.out.println("SUBJECT ID: " + subjectId);
         SemesterCaching selectedSemester = saveScoresSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
             UtilityMethods.showError(notification, "Semester not selected");
@@ -1146,11 +1167,11 @@ public class StaffController implements Initializable {
             return;
         }
 
-        StudentsScoresTable student =
+        StudentsScoresTable studentScores =
                 UtilityMethods.subjectScores.getScoresTable().get(currentUploadIndex);
 
         apiUtilityClass.saveStudentScores(
-                student, scoresInfo,
+                studentScores, scoresInfo,
                 () -> {
                     // On Success
                     Platform.runLater(() -> {
@@ -1426,13 +1447,20 @@ public class StaffController implements Initializable {
 
     private void displaySubjectStudents(SubjectScores subjectScores) {
         subjectNameLabel.setText(subjectScores.getSubjectName());
+
+        System.out.println("SUBJECT ID: " + subjectScores.getSubjectId());
         subjectCodeLabel.setText(subjectScores.getSubjectId());
 
         List<StudentsScoresTable> scores = subjectScores.getScoresTable();
         if (scores != null) {
             studentsScoresTable.getItems().setAll(scores);
-        } else {
-            studentsScoresTable.getItems().clear();
+        }
+
+        List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
+            if (saveScoresSemesterComboBox.getItems().isEmpty()) {
+                saveScoresSemesterComboBox.getItems().addAll(cachedSemesters);
+            }
         }
 
         score_studentListPanel.setVisible(true);

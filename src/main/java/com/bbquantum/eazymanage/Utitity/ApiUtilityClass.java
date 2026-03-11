@@ -30,7 +30,7 @@ import java.util.List;
 
 public class ApiUtilityClass {
 
-    public String applicationVersion = "V 2.2.0";
+    public final String applicationVersion = "V 2.5.9.2";
 
     // Controllers - only one will be set at a time
     private final PrincipalController principalController;
@@ -42,11 +42,12 @@ public class ApiUtilityClass {
     public FindStaffResponse findStaffResponse;
 
     //Counter for loading Dashboards
-    int counter = 0;
+    private int counter = 0;
 
     //Auth Token
-    String token = SessionManager.getToken();
+    private final String token = SessionManager.getToken();
 
+    //Backend response messages
     public String errorMessageContainer = "";
     public String successMessageContainer = "";
 
@@ -57,12 +58,12 @@ public class ApiUtilityClass {
             .create();
 
     // Backend Configuration
-    public final String BASE_URL = "http://localhost:8080";
+    public final String BASE_URL = "https://eazymanagesoftware.up.railway.app";
 
-    public final String FINANCE_URL = BASE_URL + "/api/finance";
-    public final String STAFF_URL = BASE_URL + "/api/staff";
-    public final String STUDENT_URL = BASE_URL + "/api/student";
-    public final String ADMIN_URL = BASE_URL + "/api/admin";
+    private final String FINANCE_URL = BASE_URL + "/api/finance";
+    private final String STAFF_URL = BASE_URL + "/api/staff";
+    private final String STUDENT_URL = BASE_URL + "/api/student";
+    private final String ADMIN_URL = BASE_URL + "/api/admin";
 
     public final String API_VERSION_1 = "/v1";
     public final String API_VERSION_2 = "/v2";
@@ -235,6 +236,7 @@ public class ApiUtilityClass {
     }
 
     public void loadStaffDashboardData(String staffId, StackPane notification, Runnable onSuccess) {
+
         loadGradesFromBackend(staffId, notification, onSuccess,
                 () -> {
             //On Failure
@@ -261,6 +263,7 @@ public class ApiUtilityClass {
     }
 
     public void loadAdminDashboard(String staffId, StackPane notification, Runnable onSuccess) {
+
         fetchRecentSystemLogs(staffId, notification, onSuccess,
                 () -> {
             //On Failure
@@ -1090,6 +1093,10 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
+            if (UtilityMethods.subjectScores != null) {
+                UtilityMethods.subjectScores = null;
+            }
+
             UtilityMethods.subjectScores = task.getValue();
             if (UtilityMethods.subjectScores == null) {
                 onFailure.run();
@@ -2107,7 +2114,7 @@ public class ApiUtilityClass {
 
                     chooser.setInitialFileName("Students Report.pdf");
 
-                    Window window = staffController.generateReportBtn.getScene().getWindow();
+                    Window window = adminController.generateReportBtn.getScene().getWindow();
                     File file = chooser.showSaveDialog(window);
 
 
@@ -2153,7 +2160,7 @@ public class ApiUtilityClass {
         Task<List<ViewClassSemesterReport>> task = new Task<>() {
             @Override
             protected List<ViewClassSemesterReport> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/view-class-results?" +
+                String url = STAFF_URL + API_VERSION_2 + "/view-class-results?" +
                         "levelId=" + levelId +
                         "&semesterId=" + semesterId;
 
@@ -2431,6 +2438,7 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
+                        .header("Authorization", "Bearer " + token)
                         .GET()
                         .build();
 
@@ -3204,6 +3212,10 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
+            if (UtilityMethods.studentsHolder != null && !UtilityMethods.studentsHolder.isEmpty()) {
+                UtilityMethods.studentsHolder.clear();
+            }
+
             UtilityMethods.studentsHolder  = task.getValue();
             if (UtilityMethods.studentsHolder != null && !UtilityMethods.studentsHolder.isEmpty()) {
                 onSuccess.run();
@@ -3259,6 +3271,10 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
+            if (UtilityMethods.subjectsHolder != null && !UtilityMethods.subjectsHolder.isEmpty()) {
+                UtilityMethods.subjectsHolder.clear();
+            }
+
             UtilityMethods.subjectsHolder  = task.getValue();
             if (UtilityMethods.subjectsHolder == null || UtilityMethods.subjectsHolder.isEmpty()) {
                 onFailure.run();
@@ -3356,7 +3372,7 @@ public class ApiUtilityClass {
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
                                 "Content-Type", "application/json")
-                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.getAsString()))
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());

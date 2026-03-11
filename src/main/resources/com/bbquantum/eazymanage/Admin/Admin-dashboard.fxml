@@ -96,17 +96,17 @@
 
                     <VBox spacing="30" styleClass="content-padding">
 
-                        <HBox spacing="15" alignment="CENTER_LEFT">
-                            <VBox spacing="5" HBox.hgrow="ALWAYS">
-                                <Label text="ADMINISTRATOR" styleClass="header-title"/>
-                                <Label fx:id="dateTimeLabel" text=" " styleClass="header-subtitle"/>
-                            </VBox>
-
-                            <VBox alignment="BOTTOM_RIGHT" HBox.hgrow="ALWAYS">
-                                <Button text="REFRESH DASHBOARD" onAction="#refreshDashboard"
-                                        styleClass="action-button-outline"/>
-                            </VBox>
-                        </HBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — dashboardView ═══
+                             Title    : "ADMINISTRATOR"
+                             Subtitle : dateTimeLabel (dynamic — set from AdminController)
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               dashboardViewRefreshHeaderController.setTitle("ADMINISTRATOR");
+                               dashboardViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                               dateTimeLabel = dashboardViewRefreshHeaderController.getSubtitleLabel();
+                        ═══════════════════════════════════════════════════ -->
+                        <fx:include fx:id="dashboardHeader"
+                                    source="refresh-header.fxml"/>
 
                         <!-- Statistics Cards -->
                         <VBox spacing="25" alignment="CENTER">
@@ -226,14 +226,17 @@
 
                     <VBox spacing="30" alignment="TOP_CENTER" styleClass="content-padding">
 
-
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #DBEAFE;">
-                                <Label text="🏫" style="-fx-font-size: 24px;"/>
-                            </StackPane>
-                            <Label text="MANAGE CLASSES" styleClass="header-title"/>
-                            <Label text="Add  or update exiting grade info." styleClass="header-subtitle"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — manageClassView ═══
+                             Title    : "MANAGE CLASSES"
+                             Subtitle : "Add or update existing grade info."
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               manageClassViewRefreshHeaderController.setTitle("MANAGE CLASSES");
+                               manageClassViewRefreshHeaderController.setSubtitle("Add or update existing grade info.");
+                               manageClassViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ═══════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="manageClassHeader"
+                                    source="refresh-header.fxml"/>
 
 
                         <HBox spacing="10" alignment="CENTER">
@@ -354,13 +357,17 @@
 
                     <VBox alignment="TOP_CENTER" spacing="30" styleClass="content-padding">
 
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #DBEAFE;">
-                                <Label text="🎓" style="-fx-font-size: 24px;"/>
-                            </StackPane>
-                            <Label text="STUDENT INFORMATION MANAGEMENT" styleClass="header-title"/>
-                            <Label text="Add or Update student information" styleClass="header-subtitle"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — manageStudentView ═══
+                             Title    : "STUDENT INFORMATION MANAGEMENT"
+                             Subtitle : "Add or Update student information"
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               manageStudentViewRefreshHeaderController.setTitle("STUDENT INFORMATION MANAGEMENT");
+                               manageStudentViewRefreshHeaderController.setSubtitle("Add or Update student information");
+                               manageStudentViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ══════════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="manageStudentHeader"
+                                    source="refresh-header.fxml"/>
 
                         <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
@@ -491,7 +498,7 @@
                                             <ComboBox fx:id="student_classSelectionBox"
                                                       onAction="#LoadClassStudent"
                                                       maxWidth="Infinity"
-                                                      promptText="Select Student"
+                                                      promptText="Select Grade"
                                                       styleClass="modern-input"/>
                                         </VBox>
                                     </HBox>
@@ -627,13 +634,16 @@
 
                     <VBox spacing="30" styleClass="content-padding" alignment="TOP_CENTER">
 
-
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" >
-                                <Label text="G" style="-fx-font-size: 24px;"/>
-                            </StackPane>
-                            <Label text="ADD GRADING CRITERIA" styleClass="header-title"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — gradingCriteriaView ═══
+                             Title    : "ADD GRADING CRITERIA"
+                             Subtitle : (none — subtitle hidden automatically)
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               gradingCriteriaViewRefreshHeaderController.setTitle("ADD GRADING CRITERIA");
+                               gradingCriteriaViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ══════════════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="gradingCriteriaHeader"
+                                    source="refresh-header.fxml"/>
 
 
                         <VBox spacing="25" styleClass="panel-card" maxWidth="700" alignment="CENTER">
@@ -683,13 +693,17 @@
 
                     <VBox spacing="30" styleClass="content-padding" alignment="CENTER">
 
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #FDF2F8;">
-                                <Label text="📝" style="-fx-font-size: 24px;"/>
-                            </StackPane>
-                            <Label text="ACADEMIC RESULTS ENTRY" styleClass="header-title"/>
-                            <Label text="Input student performance scores" styleClass="header-subtitle"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — subjectScoresView ═══
+                             Title    : "ACADEMIC RESULTS ENTRY"
+                             Subtitle : "Input student performance scores"
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               subjectScoresViewRefreshHeaderController.setTitle("ACADEMIC RESULTS ENTRY");
+                               subjectScoresViewRefreshHeaderController.setSubtitle("Input student performance scores");
+                               subjectScoresViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ══════════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="subjectScoresHeader"
+                                    source="refresh-header.fxml"/>
 
                         <VBox spacing="25" styleClass="panel-card" maxWidth="700">
 
@@ -713,9 +727,9 @@
                                         <Label text="Select Grade" styleClass="input-label"/>
                                         <ComboBox fx:id="score_SelectClassBox"
                                                   onAction="#fetchClassSubjects"
-                                                   promptText="Select grade"
+                                                  promptText="Select grade"
                                                   maxWidth="Infinity"
-                                                   styleClass="modern-input"/>
+                                                  styleClass="modern-input"/>
                                     </VBox>
                                 </HBox>
 
@@ -851,16 +865,17 @@
 
                     <VBox alignment="CENTER" spacing="30" styleClass="content-padding" >
 
-                        <!-- Header -->
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #E0E7FF;">
-                                <Label text="📚" style="-fx-font-size: 26px;"/>
-                            </StackPane>
-
-                            <Label text="SUBJECT MANAGEMENT" styleClass="header-title"/>
-                            <Label text="Add or update subject preferences"
-                                   styleClass="header-subtitle"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — manageSubjectView ═══
+                             Title    : "SUBJECT MANAGEMENT"
+                             Subtitle : "Add or update subject preferences"
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               manageSubjectViewRefreshHeaderController.setTitle("SUBJECT MANAGEMENT");
+                               manageSubjectViewRefreshHeaderController.setSubtitle("Add or update subject preferences");
+                               manageSubjectViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ══════════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="manageSubjectHeader"
+                                    source="refresh-header.fxml"/>
 
                         <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
@@ -931,7 +946,6 @@
                                             <ComboBox fx:id="subjectSelectionBox"
                                                       promptText="Select Grade"
                                                       maxWidth="Infinity"
-                                                      disable="true"
                                                       styleClass="modern-combo"/>
                                         </VBox>
 
@@ -1014,15 +1028,19 @@
 
                     <VBox spacing="30" styleClass="content-padding" alignment="CENTER">
 
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #FDF2F8;">
-                                <Label text="📝" style="-fx-font-size: 24px;"/>
-                            </StackPane>
-                            <Label text="ACADEMIC REPORTS MANAGEMENT" styleClass="header-title"/>
-                            <Label text="View academic results and generate reports" styleClass="header-subtitle"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — manageReportsView ═══
+                             Title    : "ACADEMIC REPORTS MANAGEMENT"
+                             Subtitle : "View academic results and generate reports"
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               manageReportsViewRefreshHeaderController.setTitle("ACADEMIC REPORTS MANAGEMENT");
+                               manageReportsViewRefreshHeaderController.setSubtitle("View academic results and generate reports");
+                               manageReportsViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ══════════════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="manageReportsHeader"
+                                    source="refresh-header.fxml"/>
 
-                        <VBox spacing="25" styleClass="panel-card" maxWidth="700">
+                        <VBox spacing="25" styleClass="panel-card" maxWidth="900">
 
                             <VBox fx:id="viewResultsFilterContainer" alignment="CENTER" spacing="15" >
 
@@ -1139,7 +1157,7 @@
                                                       styleClass="modern-combo"/>
                                         </VBox>
 
-                                        <HBox spacing="10" prefWidth="300">
+                                        <HBox spacing="10" prefWidth="400">
                                             <Button fx:id="generateReportBtn"
                                                     text="DOWNLOAD TERM REPORTS"
                                                     onAction="#handleDownloadReports"
@@ -1166,12 +1184,17 @@
 
                     <VBox spacing="30" styleClass="content-padding" alignment="CENTER">
 
-                        <VBox spacing="10" alignment="CENTER">
-
-                            <Label text=" " styleClass="header-title"/>
-                            <Label text="MANAGE STAFFS" styleClass="header-title"/>
-                            <Label text="Click to fetch and view staff Details" styleClass="header-title-small"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — manageStaffView ═══
+                             Title    : "MANAGE STAFFS"
+                             Subtitle : "Click to fetch and view staff details"
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               manageStaffViewRefreshHeaderController.setTitle("MANAGE STAFFS");
+                               manageStaffViewRefreshHeaderController.setSubtitle("Click to fetch and view staff details");
+                               manageStaffViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ════════════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="manageStaffHeader"
+                                    source="refresh-header.fxml"/>
 
                         <!-- Search & Update Section -->
                         <StackPane fx:id="staffManagementContainer">
@@ -1406,9 +1429,16 @@
 
                     <VBox spacing="30" styleClass="content-padding" alignment="CENTER">
 
-                        <VBox alignment="CENTER">
-                            <Label text="VIEW SYSTEM LOGS" styleClass="header-title"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — systemLogsView ═══
+                             Title    : "VIEW SYSTEM LOGS"
+                             Subtitle : (none — subtitle hidden automatically)
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               systemLogsViewRefreshHeaderController.setTitle("VIEW SYSTEM LOGS");
+                               systemLogsViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ═══════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="systemLogsHeader"
+                                    source="refresh-header.fxml"/>
 
                         <VBox fx:id="logsSearchArea"
                               spacing="10"
@@ -1554,13 +1584,17 @@
 
                     <VBox spacing="30" styleClass="content-padding">
 
-                        <VBox alignment="CENTER" spacing="10">
-                            <StackPane styleClass="sidebar-logo-bg" style="-fx-background-color: #DBEAFE;">
-                                <Label text="🎓" style="-fx-font-size: 24px;"/>
-                            </StackPane>
-                            <Label text="MANAGE SEMESTERS" styleClass="header-title"/>
-                            <Label text="Add or Update semester Data" styleClass="header-subtitle"/>
-                        </VBox>
+                        <!-- ═══ REUSABLE REFRESH HEADER — manageSemesterView ═══
+                             Title    : "MANAGE SEMESTERS"
+                             Subtitle : "Add or Update semester Data"
+                             Refresh  : #refreshDashboard
+                             Init in AdminController.initialize():
+                               manageSemesterViewRefreshHeaderController.setTitle("MANAGE SEMESTERS");
+                               manageSemesterViewRefreshHeaderController.setSubtitle("Add or Update semester Data");
+                               manageSemesterViewRefreshHeaderController.setOnRefreshAction(this::refreshDashboard);
+                        ═══════════════════════════════════════════════════════════ -->
+                        <fx:include fx:id="manageSemesterHeader"
+                                    source="refresh-header.fxml"/>
 
                         <!-- 🔘 TOGGLE BUTTONS -->
                         <HBox spacing="10" alignment="CENTER">
@@ -1596,16 +1630,16 @@
 
                                         <Label text="Select Start Date" styleClass="input-label"/>
                                         <DatePicker fx:id="semesterStartDate"
-                                                   promptText="eg. 1/8/2026"
-                                                   styleClass="modern-input"/>
+                                                    promptText="eg. 1/8/2026"
+                                                    styleClass="modern-input"/>
                                     </VBox>
 
                                     <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
 
                                         <Label text="Select End Date" styleClass="input-label"/>
                                         <DatePicker fx:id="semesterEndDate"
-                                                   promptText="eg. 1/8/2026"
-                                                   styleClass="modern-input"/>
+                                                    promptText="eg. 1/8/2026"
+                                                    styleClass="modern-input"/>
                                     </VBox>
                                 </HBox>
 
@@ -1660,7 +1694,7 @@
                                     <VBox spacing="8" alignment="CENTER_LEFT">
                                         <Label text="Semester ID" styleClass="input-label"/>
                                         <Label fx:id="updateSemesterIdLabel"
-                                                   styleClass="section-title-small"/>
+                                               styleClass="section-title-small"/>
                                     </VBox>
 
                                     <VBox spacing="8" alignment="CENTER_LEFT">
@@ -1676,16 +1710,16 @@
 
                                             <Label text="Select Start Date" styleClass="input-label"/>
                                             <DatePicker fx:id="updateSemesterStartDate"
-                                                       promptText="eg. 1/8/2026"
-                                                       styleClass="modern-input"/>
+                                                        promptText="eg. 1/8/2026"
+                                                        styleClass="modern-input"/>
                                         </VBox>
 
                                         <VBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
 
                                             <Label text="Select End Date" styleClass="input-label"/>
                                             <DatePicker fx:id="updateSemesterEndDate"
-                                                       promptText="eg. 1/8/2026"
-                                                       styleClass="modern-input"/>
+                                                        promptText="eg. 1/8/2026"
+                                                        styleClass="modern-input"/>
                                         </VBox>
                                     </HBox>
 

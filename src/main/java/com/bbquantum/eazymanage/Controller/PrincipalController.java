@@ -47,6 +47,9 @@ public class PrincipalController implements Initializable {
     //Store logged in staff Id from login
     public String staffId;
 
+    //Stores staff role
+    private static String staffRole;
+
     //Get refreshed staff list
     public List<ViewStaffList> refreshedStaffViewList;
     //Store fees filter
@@ -54,12 +57,13 @@ public class PrincipalController implements Initializable {
 
     //LEFT SIDEBAR - Navigation side
     @FXML public StackPane notification;
+    @FXML private VBox navContentPage;
     @FXML public Label versionLabel;
     @FXML private Button mainDashboardBtn;
     @FXML private Button staffDashboardBtn;
     @FXML private Button financeDashboardBtn;
     @FXML private Button studentDashboardBtn;
-    @FXML private Button logoutButton;
+    @FXML private Button switchRole;
 
     //User info
     @FXML private Label principalNameLabel;
@@ -542,28 +546,6 @@ public class PrincipalController implements Initializable {
         results_StudentSelectionBox.setDisable(true);
 
         switchView(studentDashboardView, studentDashboardBtn);
-    }
-
-    @FXML
-    public void handleLogout() throws IOException {
-        UtilityMethods.clearSession();
-        // Close the login window
-        Stage principalDashboard = (Stage) logoutButton.getScene().getWindow();
-
-        // Load the appropriate dashboard
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/auth-container.fxml"));
-        Scene scene = new Scene(loader.load());
-
-        // Create new stage for dashboard
-        Stage loginStage = new Stage();
-        loginStage.setTitle("EazyManage - Authentication");
-        loginStage.setScene(scene);
-        loginStage.sizeToScene();
-        loginStage.setResizable(false);
-
-        // Close login and show dashboard
-        principalDashboard.close();
-        loginStage.show();
     }
 
     @FXML
@@ -1101,13 +1083,33 @@ public class PrincipalController implements Initializable {
                 });
     }
 
+    @FXML
+    public void handleOpenSwitchRole() throws IOException {
+        // Close the login window
+        Stage principalDashboard = (Stage) switchRole.getScene().getWindow();
 
+        // Load the appropriate dashboard
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/SwitchRole/SwitchRole.fxml"));
+        Scene scene = new Scene(loader.load());
+
+        // Create new stage for dashboard
+        Stage switchRoleStage = new Stage();
+        switchRoleStage.setTitle("EazyManage - Authentication");
+        switchRoleStage.setScene(scene);
+        switchRoleStage.sizeToScene();
+        switchRoleStage.setResizable(false);
+
+
+
+        // Close login and show dashboard
+        principalDashboard.close();
+        switchRoleStage.show();
+    }
 
 
     /*=========== Utility methods for the Class ==============*/
 
 
-    @FXML
     public void initializeAfterLogin() {
         apiUtilityClass = new ApiUtilityClass(this);
         setActiveButton(mainDashboardBtn);
@@ -1122,6 +1124,14 @@ public class PrincipalController implements Initializable {
                         hideLoading();
                     });
                 });
+    }
+
+    public void setStaffRole(String staffRole) {
+        PrincipalController.staffRole = staffRole;
+    }
+
+    public static String getStaffRole() {
+        return staffRole;
     }
 
     private void loadFinanceDashboard() {
@@ -1169,7 +1179,7 @@ public class PrincipalController implements Initializable {
         }
 
         if (role2.isSelected()) {
-            selectedRoles.add(StaffRoles.ADMINISTRATOR.name());
+            selectedRoles.add(StaffRoles.ACCOUNTANT.name());
         }
 
         if (role3.isSelected()) {
@@ -1240,10 +1250,17 @@ public class PrincipalController implements Initializable {
             return false;
         }
 
-        if (!role1.isSelected() || !role2.isSelected() || !role3.isSelected() ||
-                !role4.isSelected() || !role5.isSelected()) {
-            UtilityMethods.showError(notification, "Please select at least one role");
-            return false;
+        if (!role1.isSelected()) {
+            if (!role2.isSelected()) {
+                if (!role3.isSelected()) {
+                    if (!role4.isSelected()) {
+                        if (!role5.isSelected()) {
+                            UtilityMethods.showError(notification, "Please select at least one role");
+                            return false;
+                        }
+                    }
+                }
+            }
         }
 
         if (editGenderComboBox.getSelectionModel().getSelectedItem() == null) {
@@ -1481,22 +1498,35 @@ public class PrincipalController implements Initializable {
     }
 
     private void setRoleCheckBoxes() {
+        // 1. Reset all to false first so we start with a clean slate
+        role1.setSelected(false);
+        role2.setSelected(false);
+        role3.setSelected(false);
+        role4.setSelected(false);
+        role5.setSelected(false);
+
+        // 2. Loop through the list and only set TRUE when a match is found
         for (StaffRoles staffRole : UtilityMethods.staffRoles) {
             if (staffRole.equals(StaffRoles.PRINCIPAL)) {
                 role1.setSelected(true);
-            } else if (staffRole.equals(StaffRoles.ACCOUNTANT)) {
+            }
+            if (staffRole.equals(StaffRoles.ACCOUNTANT)) {
                 role2.setSelected(true);
-            } else if (staffRole.equals(StaffRoles.TEACHING_STAFF)) {
+            }
+            if (staffRole.equals(StaffRoles.TEACHING_STAFF)) {
                 role3.setSelected(true);
-            } else if (staffRole.equals(StaffRoles.GENERAL_STAFF)) {
+            }
+            if (staffRole.equals(StaffRoles.GENERAL_STAFF)) {
                 role4.setSelected(true);
-            } else if (staffRole.equals(StaffRoles.ADMINISTRATOR)){
+            }
+            if (staffRole.equals(StaffRoles.ADMINISTRATOR)){
                 role5.setSelected(true);
             }
         }
     }
 
     private void getStaffRoles(List<String> roles) {
+        UtilityMethods.staffRoles.clear();
         for (String role : roles) {
             UtilityMethods.staffRoles.add(StaffRoles.valueOf(role));
         }

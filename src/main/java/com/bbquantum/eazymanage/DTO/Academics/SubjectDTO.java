@@ -1,7 +1,6 @@
 package com.bbquantum.eazymanage.DTO.Academics;
 
 public class SubjectDTO {
-    private String staffId;
 
     private String subjectId;
 
@@ -9,19 +8,10 @@ public class SubjectDTO {
 
     private String levelId;
 
-    public SubjectDTO(String staffId, String subjectId, String subjectName, String levelId) {
-        this.staffId = staffId;
+    public SubjectDTO(String subjectId, String subjectName, String levelId) {
         this.subjectId = subjectId;
         this.subjectName = subjectName;
         this.levelId = levelId;
-    }
-
-    public String getStaffId() {
-        return staffId;
-    }
-
-    public void setStaffId(String staffId) {
-        this.staffId = staffId;
     }
 
     public String getSubjectId() {

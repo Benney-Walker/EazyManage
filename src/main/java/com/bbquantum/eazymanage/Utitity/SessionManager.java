@@ -53,7 +53,9 @@ public class SessionManager {
         String token = getToken();
         long expiryTime = preferences.getLong(TOKEN_EXPIRATION_TIME, 0);
 
-        return !token.isEmpty() && System.currentTimeMillis() < expiryTime;
+        if (!token.isEmpty() && System.currentTimeMillis() < expiryTime) return false;
+
+        return true;
     }
 
     public static void clearSession() {

@@ -26,4 +26,9 @@ public class SubjectsHolder {
     public void setSubjectName(String subjectName) {
         this.subjectName = subjectName;
     }
+
+    @Override
+    public String toString(){
+        return subjectName;
+    }
 }

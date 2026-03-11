@@ -1,5 +1,6 @@
 package com.bbquantum.eazymanage.Controller;
 
+import com.bbquantum.eazymanage.Constants.StaffRoles;
 import com.bbquantum.eazymanage.DTO.Institution.LoginResponse;
 import com.bbquantum.eazymanage.DTO.Institution.SubscriptionResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
@@ -32,7 +33,7 @@ public class AuthController {
 
     /* ================= BACKEND CONFIG ================= */
 
-    private static final String BASE_URL = "http://localhost:8080/api/auth";
+    private static final String BASE_URL = "https://eazymanagesoftware.up.railway.app/api/auth";
     private static final String LOGIN_ENDPOINT = "/v1/staff-login";
 
     private static final String SUBSCRIBE_ENDPOINT = "/v1/school-subscription";
@@ -388,6 +389,7 @@ public class AuthController {
             principalController.setInstitutionName(institutionName);
             principalController.setStaffId(staffId);
             principalController.setPrincipalName(staffFullName);
+            principalController.setStaffRole(role);
 
             principalController.initializeAfterLogin();
         }
