@@ -30,7 +30,7 @@ import java.util.List;
 
 public class ApiUtilityClass {
 
-    public final String applicationVersion = "V 2.5.9.2";
+    public final String applicationVersion = "V 2.5.9.4";
 
     // Controllers - only one will be set at a time
     private final PrincipalController principalController;

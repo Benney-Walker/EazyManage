@@ -1453,7 +1453,11 @@ public class StaffController implements Initializable {
 
         List<StudentsScoresTable> scores = subjectScores.getScoresTable();
         if (scores != null) {
-            studentsScoresTable.getItems().setAll(scores);
+            if (studentsScoresTable.getItems().isEmpty()) {
+                studentsScoresTable.getItems().addAll(scores);
+            } else {
+                studentsScoresTable.getItems().setAll(scores);
+            }
         }
 
         List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();

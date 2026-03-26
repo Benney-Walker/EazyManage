@@ -1056,6 +1056,12 @@ public class AdminController implements Initializable {
 
         student_classSelectionBox.getSelectionModel().clearSelection();
 
+        studentInfoPanel.setVisible(false);
+        studentInfoPanel.setManaged(false);
+
+        studentSearchFieldBox.setVisible(true);
+        studentSearchFieldBox.setManaged(true);
+
         UtilityMethods.switchPageCards(updateStudentInfoCard, addStudentCard,
                 updateStudentToggleBtn, addStudentToggleBtn);
     }
@@ -1318,6 +1324,8 @@ public class AdminController implements Initializable {
     public void handleCancelScores() {
         resultsTableContainer.setVisible(false);
         resultsTableContainer.setManaged(false);
+
+        score_selectSubjectBox.setDisable(false);
 
         subjectResultSearchBox.setVisible(true);
         subjectResultSearchBox.setManaged(true);
@@ -2314,6 +2322,8 @@ public class AdminController implements Initializable {
             resultsTableContainer.setVisible(false);
             resultsTableContainer.setManaged(false);
 
+            score_selectSubjectBox.setDisable(false);
+
             subjectResultSearchBox.setVisible(true);
             subjectResultSearchBox.setManaged(true);
 
@@ -2362,7 +2372,11 @@ public class AdminController implements Initializable {
 
         List<StudentsScoresTable> scores = subjectScores.getScoresTable();
         if (scores != null && !scores.isEmpty()) {
-            studentsScoresTable.getItems().addAll(scores);
+            if (!studentsScoresTable.getItems().isEmpty()) {
+                studentsScoresTable.getItems().setAll(scores);
+            } else {
+                studentsScoresTable.getItems().addAll(scores);
+            }
         }
 
         List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
