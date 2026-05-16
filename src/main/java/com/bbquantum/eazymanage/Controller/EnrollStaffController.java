@@ -2,9 +2,11 @@ package com.bbquantum.eazymanage.Controller;
 
 import com.bbquantum.eazymanage.Constants.Gender;
 import com.bbquantum.eazymanage.Constants.StaffRoles;
-import com.bbquantum.eazymanage.DTO.Institution.EnrollmentResponse;
+import com.bbquantum.eazymanage.DTO.Auth.EnrollmentResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
+import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -28,8 +30,8 @@ import com.google.gson.JsonObject;
 public class EnrollStaffController {
 
     // Backend configuration
-    private static final String BASE_URL = "https://eazymanagesoftware.up.railway.app/api/auth";
-    private static final String ENROLL_ENDPOINT = "/v1/enroll-new-staff";
+    private static final String BASE_URL = UtilityClass.BASE_URL;
+    private static final String ENROLL_ENDPOINT = "/auth/v1/enroll-new-staff";
 
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
     private final Gson gson = new Gson();
@@ -242,16 +244,13 @@ public class EnrollStaffController {
 
                 // Parse response based on your backend structure
                 if (response.statusCode() == 200) {
-                    JsonObject jsonResponse = gson.fromJson(response.body(), JsonObject.class);
-
-                    String status = jsonResponse.get("status").getAsString();
-                    String message = jsonResponse.get("message").getAsString();
-
-                    return new EnrollmentResponse(true, message, "Enrollment successful", password);
-
-                } else {
-                    return new EnrollmentResponse(false, null, response.body(), null);
+                    return new EnrollmentResponse(true, response.body());
+                } else if (response.statusCode() == 500){
+                    JsonObject json = JsonParser.parseString(response.body()).getAsJsonObject();
+                    return new EnrollmentResponse(false, json.get("message").getAsString());
                 }
+
+                return new EnrollmentResponse(false, response.body());
             }
         };
 
@@ -265,7 +264,7 @@ public class EnrollStaffController {
                 return;
             }
 
-            showSuccess(response.getStaffId());
+            showSuccess(response.getMessage());
         });
 
         // Handle failure
