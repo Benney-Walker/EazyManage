@@ -13,7 +13,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import java.io.File;
@@ -30,7 +29,7 @@ import java.util.List;
 
 public class ApiUtilityClass {
 
-    public final String applicationVersion = "V 2.5.9.4";
+    public final String applicationVersion = "V 2.6.1";
 
     // Controllers - only one will be set at a time
     private final PrincipalController principalController;
@@ -58,12 +57,12 @@ public class ApiUtilityClass {
             .create();
 
     // Backend Configuration
-    public final String BASE_URL = "https://eazymanagesoftware.up.railway.app";
+    public final String BASE_URL = UtilityClass.BASE_URL;
 
-    private final String FINANCE_URL = BASE_URL + "/api/finance";
-    private final String STAFF_URL = BASE_URL + "/api/staff";
-    private final String STUDENT_URL = BASE_URL + "/api/student";
-    private final String ADMIN_URL = BASE_URL + "/api/admin";
+    private final String FINANCE_URL = BASE_URL + "/finance";
+    private final String STAFF_URL = BASE_URL + "/staff";
+    private final String STUDENT_URL = BASE_URL + "/student";
+    private final String ADMIN_URL = BASE_URL + "/admin";
 
     public final String API_VERSION_1 = "/v1";
     public final String API_VERSION_2 = "/v2";
@@ -108,7 +107,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -116,7 +115,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -124,7 +123,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -132,7 +131,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -140,7 +139,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -148,7 +147,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -156,7 +155,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -164,7 +163,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -172,7 +171,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -180,7 +179,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -188,7 +187,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
     }
@@ -198,7 +197,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -206,7 +205,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -214,7 +213,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -222,7 +221,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -230,7 +229,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
     }
@@ -241,7 +240,7 @@ public class ApiUtilityClass {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -249,7 +248,7 @@ public class ApiUtilityClass {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -257,7 +256,7 @@ public class ApiUtilityClass {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
     }
@@ -268,7 +267,7 @@ public class ApiUtilityClass {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -276,7 +275,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -284,7 +283,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -292,7 +291,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
 
@@ -300,7 +299,7 @@ public class ApiUtilityClass {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.showError(notification, errorMessageContainer);
+                        UtilityClass.showError(notification, errorMessageContainer);
                     });
                 });
     }
@@ -335,7 +334,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             String response = task.getValue();
             if (response != null) {
-                UtilityMethods.totalStudentsFromBackend = Long.parseLong(response);
+                UtilityClass.totalStudentsFromBackend = Long.parseLong(response);
                 counter++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -353,7 +352,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -395,7 +394,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             String response = task.getValue();
             if (response != null) {
-                UtilityMethods.totalStaffFromBackend = Long.parseLong(response);
+                UtilityClass.totalStaffFromBackend = Long.parseLong(response);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -413,7 +412,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -454,7 +453,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             String response = task.getValue();
             if (response != null) {
-                UtilityMethods.totalTeachingStaff = Long.parseLong(response);
+                UtilityClass.totalTeachingStaff = Long.parseLong(response);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -472,7 +471,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -491,11 +490,12 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = FINANCE_URL + API_VERSION_1 + "/total-fees/" + staffId;
+                String url = FINANCE_URL + API_VERSION_1 + "/total-fees";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -513,7 +513,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             String response = task.getValue();
             if (response != null) {
-                UtilityMethods.totalSemesterFeesFromBackend = Double.parseDouble(response);
+                UtilityClass.totalSemesterFeesFromBackend = Double.parseDouble(response);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -531,7 +531,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -550,11 +550,12 @@ public class ApiUtilityClass {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = FINANCE_URL + API_VERSION_1 + "/fees-paid/" + staffId;
+                String url = FINANCE_URL + API_VERSION_1 + "/fees-paid";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -572,7 +573,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             String response = task.getValue();
             if (response != null) {
-                UtilityMethods.feesPaidFromBackend =  Double.parseDouble(response);
+                UtilityClass.feesPaidFromBackend =  Double.parseDouble(response);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -590,7 +591,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet connection.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet connection.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -606,9 +607,9 @@ public class ApiUtilityClass {
     public void loadAbsentStudents(String staffId, StackPane notification,
                                    Runnable onSuccess, Runnable onFailure) {
 
-        List<AbsenteesView> cachedStudents = UtilityMethods.cacheManager.getCachedAbsenteeStudents();
+        List<AbsenteesView> cachedStudents = UtilityClass.cacheManager.getCachedAbsenteeStudents();
         if (cachedStudents != null && !cachedStudents.isEmpty()) {
-            if (UtilityMethods.cacheManager.isCacheValid()) {
+            if (UtilityClass.cacheManager.isCacheValid()) {
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -654,7 +655,7 @@ public class ApiUtilityClass {
                 return;
             }
 
-            UtilityMethods.cacheManager.setCachedAbsenteeStudents(students);
+            UtilityClass.cacheManager.setCachedAbsenteeStudents(students);
             counter ++;
             checkCounter(counter, onSuccess, onFailure);
         });
@@ -667,7 +668,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -688,11 +689,12 @@ public class ApiUtilityClass {
         Task<List<StaffCaching>> task = new Task<>() {
             @Override
             protected List<StaffCaching> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/load-staffs-info/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/load-staffs-info";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -702,7 +704,6 @@ public class ApiUtilityClass {
                     return gson.fromJson(response.body(), staffListType);
                 }
 
-                errorMessageContainer = "";
                 errorMessageContainer = response.body();
                 return null;
             }
@@ -711,7 +712,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             List<StaffCaching> staffs = task.getValue();
             if (staffs != null) {
-                UtilityMethods.staffCacheManager.setStaffList(staffs);
+                UtilityClass.staffCacheManager.setStaffList(staffs);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -729,7 +730,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -744,8 +745,8 @@ public class ApiUtilityClass {
     public void loadGradesFromBackend(String staffId, StackPane notification,
                                       Runnable onSuccess, Runnable onFailure) {
 
-        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
-        if (cachedGrades != null && !cachedGrades.isEmpty() && UtilityMethods.gradeCacheManager.isCachedGradesValid()) {
+        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
+        if (cachedGrades != null && !cachedGrades.isEmpty() && UtilityClass.gradeCacheManager.isCachedGradesValid()) {
             counter++;
             checkCounter(counter, onSuccess, null);
             return;
@@ -757,11 +758,12 @@ public class ApiUtilityClass {
         Task<List<GradeCaching>> task = new Task<>() {
             @Override
             protected List<GradeCaching> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/load-levels/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/load-levels";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -780,7 +782,7 @@ public class ApiUtilityClass {
             System.out.println("success");
 
             if (gradesList != null && !gradesList.isEmpty()) {
-                UtilityMethods.gradeCacheManager.setCachedGrades(gradesList);
+                UtilityClass.gradeCacheManager.setCachedGrades(gradesList);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -798,7 +800,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -814,9 +816,9 @@ public class ApiUtilityClass {
     public void loadSemestersFromBackend(String staffId, StackPane notification,
                                          Runnable onSuccess, Runnable onFailure) {
 
-        List<SemesterCaching> semesterCaching = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> semesterCaching = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesterCaching != null && !semesterCaching.isEmpty()) {
-            if (UtilityMethods.semesterCachingManager.isSemesterCacheValid()) {
+            if (UtilityClass.semesterCachingManager.isSemesterCacheValid()) {
                 counter++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -828,11 +830,12 @@ public class ApiUtilityClass {
         Task<List<SemesterCaching>> task = new Task<>() {
             @Override
             protected List<SemesterCaching> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/load-semesters/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/load-semesters";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -848,9 +851,9 @@ public class ApiUtilityClass {
 
         task.setOnSucceeded(event -> {
             List<SemesterCaching> semesterCachingList = task.getValue();
-            System.out.println("success");
+
             if (semesterCachingList != null && !semesterCachingList.isEmpty()) {
-                UtilityMethods.semesterCachingManager.setCachedSemesters(semesterCachingList);
+                UtilityClass.semesterCachingManager.setCachedSemesters(semesterCachingList);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -867,7 +870,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -911,7 +914,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             List<ClassFeesSummary> classFeesSummaryList = task.getValue();
             if (classFeesSummaryList != null && !classFeesSummaryList.isEmpty()) {
-                UtilityMethods.feesCacheManager.setClassFeesSummaryCache(classFeesSummaryList);
+                UtilityClass.feesCacheManager.setClassFeesSummaryCache(classFeesSummaryList);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -928,7 +931,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -971,7 +974,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             List<GradeInformation> gradesInformation = task.getValue();
             if (gradesInformation != null && !gradesInformation.isEmpty()) {
-                UtilityMethods.gradeInfoCacheManager.setGradesInformation(gradesInformation);
+                UtilityClass.gradeInfoCacheManager.setGradesInformation(gradesInformation);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -988,7 +991,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -1018,12 +1021,12 @@ public class ApiUtilityClass {
                 requestBody.addProperty("hometown", hometown);
                 requestBody.addProperty("parentName", parentName);
                 requestBody.addProperty("guardianContact", guardianContact);
-                requestBody.addProperty("staffId", staffId);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -1076,7 +1079,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -1093,12 +1097,12 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            if (UtilityMethods.subjectScores != null) {
-                UtilityMethods.subjectScores = null;
+            if (UtilityClass.subjectScores != null) {
+                UtilityClass.subjectScores = null;
             }
 
-            UtilityMethods.subjectScores = task.getValue();
-            if (UtilityMethods.subjectScores == null) {
+            UtilityClass.subjectScores = task.getValue();
+            if (UtilityClass.subjectScores == null) {
                 onFailure.run();
                 return;
             }
@@ -1122,7 +1126,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void saveStudentScores(StudentsScoresTable scores, String scoresInfo,
+    public void saveStudentScores(StudentsScoresTable scores, String subjectId, String semesterId, String staffId,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -1131,7 +1135,6 @@ public class ApiUtilityClass {
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", scores.getStudentId());
-                requestBody.addProperty("scoresInfo", scoresInfo);
                 requestBody.addProperty("exercise1Score", scores.getExercise1Score());
                 requestBody.addProperty("classTestScore", scores.getClassTestScore());
                 requestBody.addProperty("exercise2Score", scores.getExercise2Score());
@@ -1143,13 +1146,16 @@ public class ApiUtilityClass {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId,
+                                "subjectId", subjectId,
+                                "semesterId", semesterId)
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Successful";
                 }
 
                 errorMessageContainer = "";
@@ -1186,7 +1192,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void addNewGrade(String gradeName, String instructorId,
+    public void addNewGrade(String staffId, String gradeName, String instructorId,
                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -1197,13 +1203,14 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Class added successfully";
                 }
 
                 errorMessageContainer = response.body();
@@ -1298,7 +1305,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void fetchStudentPaymentRecords(String studentId, String semesterId, String gradeId,
+    public void fetchStudentPaymentRecords(String staffId, String studentId, String semesterId, String gradeId,
                                            Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<StudentFeesPaymentDisplay> task = new Task<>() {
             @Override
@@ -1310,7 +1317,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -1327,8 +1335,8 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            UtilityMethods.paymentRecords = task.getValue();
-            if (UtilityMethods.paymentRecords != null) {
+            UtilityClass.paymentRecords = task.getValue();
+            if (UtilityClass.paymentRecords != null) {
                 successMessageContainer = "Successfully loaded report";
                 onSuccess.run();
                 return;
@@ -1421,11 +1429,12 @@ public class ApiUtilityClass {
         Task<List<ViewStaffList>> task = new Task<>() {
             @Override
             protected List<ViewStaffList> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/staff-list/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/staff-list";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -1443,7 +1452,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             List<ViewStaffList> staffViewList = task.getValue();
             if (staffViewList != null && !staffViewList.isEmpty()) {
-                UtilityMethods.staffListCacheManager.setStaffList(staffViewList);
+                UtilityClass.staffListCacheManager.setStaffList(staffViewList);
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -1460,7 +1469,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onFailure, null);
                 return;
@@ -1473,17 +1482,18 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void searchStaffData(String staffId,
+    public void searchStaffData(String searchId, String staffId,
                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         Task<FindStaffResponse> task = new Task<>() {
             @Override
             protected FindStaffResponse call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/find-staff-by-id/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/find-staff-by-id/" + searchId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -1532,12 +1542,12 @@ public class ApiUtilityClass {
         Task<UpdateStudentPersonalData> task = new Task<>() {
             @Override
             protected UpdateStudentPersonalData call() throws Exception {
-                String url = STUDENT_URL + API_VERSION_1 + "/find-student/"
-                        + studentId + "/" +  staffId;
+                String url = STUDENT_URL + API_VERSION_1 + "/find-student/" + studentId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -1552,8 +1562,8 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-             UtilityMethods.updateStudentPersonalData = task.getValue();
-            if(UtilityMethods.updateStudentPersonalData == null) {
+             UtilityClass.updateStudentPersonalData = task.getValue();
+            if(UtilityClass.updateStudentPersonalData == null) {
                 onFailure.run();
                 return;
             }
@@ -1580,7 +1590,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void updateStudentPersonalData(UpdateStudentPersonalData updateStudentPersonalData,
+    public void updateStudentPersonalData(UpdateStudentPersonalData data, String staffId,
                                            Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -1588,21 +1598,22 @@ public class ApiUtilityClass {
                 String url = STUDENT_URL + API_VERSION_1 + "/update-student-data";
 
                 JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("studentId", updateStudentPersonalData.getStudentId());
-                requestBody.addProperty("gender", updateStudentPersonalData.getGender());
-                requestBody.addProperty("dateOfBirth", updateStudentPersonalData.getDateOfBirth().toString());
-                requestBody.addProperty("parentName", updateStudentPersonalData.getParentName());
-                requestBody.addProperty("parentPhoneNumber", updateStudentPersonalData.getParentPhoneNumber());
-                requestBody.addProperty("status", updateStudentPersonalData.getStatus());
-                requestBody.addProperty("firstName", updateStudentPersonalData.getFirstName());
-                requestBody.addProperty("lastName", updateStudentPersonalData.getLastName());
-                requestBody.addProperty("gradeId", updateStudentPersonalData.getGradeId());
-                requestBody.addProperty("homeTown", updateStudentPersonalData.getHomeTown());
+                requestBody.addProperty("studentId", data.getStudentId());
+                requestBody.addProperty("gender", data.getGender());
+                requestBody.addProperty("dateOfBirth", data.getDateOfBirth());
+                requestBody.addProperty("parentName", data.getParentName());
+                requestBody.addProperty("parentPhoneNumber", data.getParentPhoneNumber());
+                requestBody.addProperty("status", data.getStatus());
+                requestBody.addProperty("firstName", data.getFirstName());
+                requestBody.addProperty("lastName", data.getLastName());
+                requestBody.addProperty("gradeId", data.getGradeId());
+                requestBody.addProperty("homeTown", data.getHomeTown());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -1704,7 +1715,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void addNewFees(String gradeId, String semesterId, String feesAmount,
+    public void addNewFees(String staffId, String gradeId, String semesterId, String feesAmount,
                            Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -1716,7 +1727,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();
 
@@ -1770,7 +1782,6 @@ public class ApiUtilityClass {
                 String url = ADMIN_URL + API_VERSION_1 + "/add-semester";
 
                 JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("staffId", staffId);
                 requestBody.addProperty("semesterName", semesterName);
                 requestBody.addProperty("startDate", startDate.toString());
                 requestBody.addProperty("endDate", endDate.toString());
@@ -1779,13 +1790,14 @@ public class ApiUtilityClass {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Successfull";
                 }
 
                 errorMessageContainer = response.body();
@@ -1879,7 +1891,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void addNewFeesPayment(String studentId, String semesterId,
+    public void addNewFeesPayment(String staffId, String studentId, String semesterId,
                                   String amountPaid, String payerName, String payerPhone,
                                   Runnable onSuccess,  Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
@@ -1897,7 +1909,8 @@ public class ApiUtilityClass {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -1950,11 +1963,12 @@ public class ApiUtilityClass {
         Task<List<RecentPaymentTable>> task = new Task<>() {
             @Override
             protected List<RecentPaymentTable> call() throws Exception {
-                String url = FINANCE_URL + API_VERSION_1 + "/recent-fees-transactions/" + staffId;
+                String url = FINANCE_URL + API_VERSION_1 + "/recent-fees-transactions";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -1972,7 +1986,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             List<RecentPaymentTable> recentPayments = task.getValue();
             if (recentPayments != null && !recentPayments.isEmpty()) {
-                UtilityMethods.feesCacheManager.setRecentPaymentCache(recentPayments);
+                UtilityClass.feesCacheManager.setRecentPaymentCache(recentPayments);
                 counter++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -2011,7 +2025,6 @@ public class ApiUtilityClass {
                 String url = ADMIN_URL + API_VERSION_1 + "/set-grades";
 
                 JsonObject responseBody = new JsonObject();
-                responseBody.addProperty("staffId", staffId);
                 responseBody.addProperty("lowerRange", gradingCriteria.getLowerRange());
                 responseBody.addProperty("upperRange", gradingCriteria.getUpperRange());
                 responseBody.addProperty("grade", gradingCriteria.getGrade());
@@ -2020,14 +2033,15 @@ public class ApiUtilityClass {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .POST(HttpRequest.BodyPublishers.ofString(responseBody.toString()))
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Successful";
                 }
 
                 errorMessageContainer = response.body();
@@ -2182,8 +2196,8 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            UtilityMethods.classResults = task.getValue();
-            if (UtilityMethods.classResults != null) {
+            UtilityClass.classResults = task.getValue();
+            if (UtilityClass.classResults != null) {
                 onSuccess.run();
                 return;
             }
@@ -2438,7 +2452,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -2453,8 +2468,8 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            UtilityMethods.findAndUpdateClassInfo = task.getValue();
-            if (UtilityMethods.findAndUpdateClassInfo == null) {
+            UtilityClass.findAndUpdateClassInfo = task.getValue();
+            if (UtilityClass.findAndUpdateClassInfo == null) {
                 onFailure.run();
                 return;
             }
@@ -2481,7 +2496,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void updateClassInfo(FindAndUpdateClassInfo updateInfo,
+    public void updateClassInfo(FindAndUpdateClassInfo updateInfo, String staffId,
                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -2496,7 +2511,8 @@ public class ApiUtilityClass {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -2540,7 +2556,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void updateStaffInfo(FindStaffResponse info,
+    public void updateStaffInfo(FindStaffResponse info, String staffId,
                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -2568,13 +2584,14 @@ public class ApiUtilityClass {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Successfull";
                 }
 
                 errorMessageContainer = response.body();
@@ -2727,7 +2744,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void fetchFeesDetails(String semesterId, String levelId,
+    public void fetchFeesDetails(String staffId, String semesterId, String levelId,
                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<FetchFeesDetails> task = new Task<>() {
             @Override
@@ -2737,7 +2754,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -2781,7 +2799,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void updateSemesterFees(FetchFeesDetails update,
+    public void updateSemesterFees(String staffId, FetchFeesDetails update,
                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -2796,7 +2814,8 @@ public class ApiUtilityClass {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffid", staffId)
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -2840,7 +2859,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void fetchPaymentRecord(String studentId, String semesterId,
+    public void fetchPaymentRecord(String staffId, String studentId, String levelId, String semesterId,
                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         Type listType = new TypeToken<List<StudentPaymentRecords>>() {}.getType();
@@ -2850,11 +2869,13 @@ public class ApiUtilityClass {
             protected List<StudentPaymentRecords> call() throws Exception {
                 String url = FINANCE_URL + API_VERSION_1 + "/fetch-payment-records?"
                         + "studentId=" + studentId
+                        + "&levelId=" + levelId
                         + "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -2898,7 +2919,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void deletePaymentRecord(String transactionId,
+    public void deletePaymentRecord(String staffId, String transactionId,
                                     Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -2908,7 +2929,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .DELETE()
                         .build();
 
@@ -2952,7 +2974,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void updatePaymentDetails(StudentPaymentRecords update,
+    public void updatePaymentDetails(String staffId, StudentPaymentRecords update,
                                      Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -2972,7 +2994,8 @@ public class ApiUtilityClass {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -3069,7 +3092,7 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
-    public void fetchGradeFeesRecords(String levelId, String semesterId,
+    public void fetchGradeFeesRecords(String staffId, String levelId, String semesterId,
                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Type listType = new TypeToken<List<GradeFeesReport>>() {}.getType();
 
@@ -3081,7 +3104,8 @@ public class ApiUtilityClass {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffid", staffId)
                         .GET()
                         .build();
 
@@ -3132,11 +3156,12 @@ public class ApiUtilityClass {
         Task<List<LogsDetails>> task = new Task<>() {
             @Override
             protected List<LogsDetails> call() throws Exception {
-                String url = ADMIN_URL + API_VERSION_1 + "/recentLogs/" + staffId;
+                String url = ADMIN_URL + API_VERSION_1 + "/recentLogs";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -3154,7 +3179,7 @@ public class ApiUtilityClass {
         task.setOnSucceeded(event -> {
             List<LogsDetails> response = task.getValue();
             if (response != null) {
-                UtilityMethods.systemLogsCacheManager.setCachedSystemLogs(response);
+                UtilityClass.systemLogsCacheManager.setCachedSystemLogs(response);
                 counter++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -3172,7 +3197,7 @@ public class ApiUtilityClass {
 
             if (ex instanceof java.net.ConnectException ||
                     (msg != null && msg.contains("Connection refused"))) {
-                UtilityMethods.showError(notification, "Cannot connect to server. Check your internet.");
+                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter ++;
                 checkCounter(counter, onSuccess, null);
                 return;
@@ -3193,11 +3218,12 @@ public class ApiUtilityClass {
         Task<List<StudentsHolder>> task = new Task<>() {
             @Override
             protected List<StudentsHolder> call() throws Exception {
-                String url = STUDENT_URL + API_VERSION_1 + "/load-students/" + levelId + "/" + staffId;
+                String url = STUDENT_URL + API_VERSION_1 + "/load-students/" + levelId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -3212,12 +3238,12 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            if (UtilityMethods.studentsHolder != null && !UtilityMethods.studentsHolder.isEmpty()) {
-                UtilityMethods.studentsHolder.clear();
+            if (UtilityClass.studentsHolder != null && !UtilityClass.studentsHolder.isEmpty()) {
+                UtilityClass.studentsHolder.clear();
             }
 
-            UtilityMethods.studentsHolder  = task.getValue();
-            if (UtilityMethods.studentsHolder != null && !UtilityMethods.studentsHolder.isEmpty()) {
+            UtilityClass.studentsHolder  = task.getValue();
+            if (UtilityClass.studentsHolder != null && !UtilityClass.studentsHolder.isEmpty()) {
                 onSuccess.run();
                 return;
             }
@@ -3252,11 +3278,12 @@ public class ApiUtilityClass {
         Task<List<SubjectsHolder>> task = new Task<>() {
             @Override
             protected List<SubjectsHolder> call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/load-subjects/" + levelId + "/" + staffId;
+                String url = STAFF_URL + API_VERSION_1 + "/load-subjects/" + levelId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
+                        .headers("Authorization", "Bearer " + token,
+                                "staffid", staffId)
                         .GET()
                         .build();
 
@@ -3271,12 +3298,12 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            if (UtilityMethods.subjectsHolder != null && !UtilityMethods.subjectsHolder.isEmpty()) {
-                UtilityMethods.subjectsHolder.clear();
+            if (UtilityClass.subjectsHolder != null && !UtilityClass.subjectsHolder.isEmpty()) {
+                UtilityClass.subjectsHolder.clear();
             }
 
-            UtilityMethods.subjectsHolder  = task.getValue();
-            if (UtilityMethods.subjectsHolder == null || UtilityMethods.subjectsHolder.isEmpty()) {
+            UtilityClass.subjectsHolder  = task.getValue();
+            if (UtilityClass.subjectsHolder == null || UtilityClass.subjectsHolder.isEmpty()) {
                 onFailure.run();
                 return;
             }
@@ -3328,8 +3355,8 @@ public class ApiUtilityClass {
         };
 
         task.setOnSucceeded(event -> {
-            UtilityMethods.subjectData = task.getValue();
-            if (UtilityMethods.subjectData != null) {
+            UtilityClass.subjectData = task.getValue();
+            if (UtilityClass.subjectData != null) {
                 onSuccess.run();
                 return;
             }
