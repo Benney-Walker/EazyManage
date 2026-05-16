@@ -5,7 +5,7 @@ import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
-import com.bbquantum.eazymanage.Utitity.UtilityMethods;
+import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
@@ -35,8 +35,9 @@ public class FinanceController implements Initializable {
     //CONTROLLER OWN VARIABLES
     private ApiUtilityClass apiUtilityClass;
     public String staffId;
-    public String institutionName;
-    public String accountantName;
+    private String institutionName;
+    private String accountantName;
+    private static String staffRole;
 
     //Hold fees Details for update
     public FetchFeesDetails feesDetails;
@@ -373,79 +374,79 @@ public class FinanceController implements Initializable {
     @FXML
     public void handleSaveSemesterFees() {
         String feesAmount = feesAmountField.getText();
-        if (feesAmount == null || feesAmount.isBlank()) {  // 👈 Also check isBlank()
-            UtilityMethods.showError(notification, "Please enter fees amount");
+        if (Integer.parseInt(feesAmount) < 0 || feesAmount.isBlank()) {
+            UtilityClass.showError(notification, "Fees amount invalid");
             return;
         }
 
         SemesterCaching selectedItem = feesSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
-            UtilityMethods.showError(notification, "Please select a semester from the semester list");
+            UtilityClass.showError(notification, "Please select a semester from the semester list");
             return;
         }
         String semesterId = selectedItem.getSemesterId();
 
         GradeCaching selectedItemGrade = feesClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedItemGrade == null) {
-            UtilityMethods.showError(notification, "Please select a grade from the grade list");
+            UtilityClass.showError(notification, "Please select a grade from the grade list");
             return;
         }
         String gradeId = selectedItemGrade.getLevelId();
-        UtilityMethods.processingButton(saveFeesBtn);
+        UtilityClass.processingButton(saveFeesBtn);
 
-        apiUtilityClass.addNewFees(gradeId, semesterId, feesAmount,
+        apiUtilityClass.addNewFees(staffId, gradeId, semesterId, feesAmount,
                 () -> {
             // On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveFeesBtn, "SAVE FEES");
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.notProcessingButton(saveFeesBtn, "SAVE FEES");
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
                     });
                 },
                 () -> {
             // On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveFeesBtn, "SAVE FEES");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(saveFeesBtn, "SAVE FEES");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
             //On Network Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveFeesBtn, "SAVE FEES");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(saveFeesBtn, "SAVE FEES");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
 
     public void handleUpdateSemesterFees() {
         String feesAmount = updateFeesAmountField.getText().trim();
-        if (feesAmount.isEmpty()) {
-            UtilityMethods.showError(notification, "Please enter fees amount");
+        if (Integer.parseInt(feesAmount) < 0 || feesAmount.isBlank()) {
+            UtilityClass.showError(notification, "Invalid fees amount");
             return;
         }
 
         SemesterCaching selectedSemester = updateFeesSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            UtilityMethods.showError(notification, "Please select a semester");
+            UtilityClass.showError(notification, "Please select a semester");
             return;
         }
 
         GradeCaching selectedGrade = updateFeesClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) {
-            UtilityMethods.showError(notification, "Please select a grade");
+            UtilityClass.showError(notification, "Please select a grade");
             return;
         }
 
-        UtilityMethods.processingButton(updateFeesBtn);
+        UtilityClass.processingButton(updateFeesBtn);
         feesDetails.setAmount(feesAmount);
         feesDetails.setSemesterId(selectedSemester.getSemesterId());
         feesDetails.setLevelId(selectedGrade.getLevelId());
 
-        apiUtilityClass.updateSemesterFees(feesDetails,
+        apiUtilityClass.updateSemesterFees(staffId, feesDetails,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateFeesBtn, "SAVE CHANGES");
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.notProcessingButton(updateFeesBtn, "SAVE CHANGES");
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         feesDetailsArea.setVisible(false);
                         feesDetailsArea.setManaged(false);
 
@@ -456,15 +457,15 @@ public class FinanceController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateFeesBtn, "SAVE CHANGES");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(updateFeesBtn, "SAVE CHANGES");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateFeesBtn, "SAVE CHANGES");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(updateFeesBtn, "SAVE CHANGES");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -481,23 +482,23 @@ public class FinanceController implements Initializable {
                     Platform.runLater(() -> {
                         hideLoading();
                         newPaymentStudentSelection.getItems().clear();
-                        newPaymentStudentSelection.getItems().addAll(UtilityMethods.studentsHolder);
+                        newPaymentStudentSelection.getItems().addAll(UtilityClass.studentsHolder);
                         newPaymentStudentSelection.setDisable(false);
-                        UtilityMethods.showSuccess(notification, "Successfully loaded students");
+                        UtilityClass.showSuccess(notification, "Successfully loaded students");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -505,28 +506,28 @@ public class FinanceController implements Initializable {
     @FXML
     public void handleSavePayment() {
         if (newPaymentStudentSelection.isDisable()) {
-            UtilityMethods.showError(notification, "Please select grade to load students");
+            UtilityClass.showError(notification, "Please select grade to load students");
             return;
         }
 
         StudentsHolder student = newPaymentStudentSelection.getSelectionModel().getSelectedItem();
         if (student == null) {
-            UtilityMethods.showError(notification, "Please select a student");
+            UtilityClass.showError(notification, "Please select a student");
             return;
         }
 
         // Validate semester
         SemesterCaching selectedSemester = newPaymentSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            UtilityMethods.showError(notification, "Please select a semester from the semester list");
+            UtilityClass.showError(notification, "Please select a semester from the semester list");
             return;
         }
         String semesterId = selectedSemester.getSemesterId();
 
         // Validate amount paid
         String amountPaidText = newPaymentAmountField.getText();
-        if (amountPaidText == null || amountPaidText.isBlank()) {
-            UtilityMethods.showError(notification, "Please enter amount paid");
+        if (Integer.parseInt(amountPaidText) < 0 || amountPaidText.isBlank()) {
+            UtilityClass.showError(notification, "Amount can't be negative");
             return;
         }
 
@@ -535,44 +536,44 @@ public class FinanceController implements Initializable {
         try {
             amountPaid = Double.parseDouble(amountPaidText);
         } catch (NumberFormatException e) {
-            UtilityMethods.showError(notification, "Please enter a valid amount");
+            UtilityClass.showError(notification, "Please enter a valid amount");
             return;
         }
 
         // Validate payer name
         String payerName = newPaymentPayerNameField.getText();
         if (payerName == null || payerName.isBlank()) {
-            UtilityMethods.showError(notification, "Please enter payer name");
+            UtilityClass.showError(notification, "Please enter payer name");
             return;
         }
 
         // Validate payer phone
         String payerPhone = newPaymentPayerPhoneField.getText();
-        if (payerPhone == null || payerPhone.isBlank()) {
-            UtilityMethods.showError(notification, "Please enter payer phone");
+        if (payerPhone.length() != 10) {
+            UtilityClass.showError(notification, "Please enter valid phone number");
             return;
         }
 
-        apiUtilityClass.addNewFeesPayment(student.getStudentId(), semesterId, String.valueOf(amountPaid), payerName, payerPhone,
+        apiUtilityClass.addNewFeesPayment(staffId, student.getStudentId(), semesterId, String.valueOf(amountPaid), payerName, payerPhone,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveFeesPaymentBtn, "SAVE PAYMENT");
+                        UtilityClass.notProcessingButton(saveFeesPaymentBtn, "SAVE PAYMENT");
                         clearPaymentForm();
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
 
                     });
                 }, () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveFeesBtn, "SAVE PAYMENT");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(saveFeesBtn, "SAVE PAYMENT");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveFeesBtn, "SAVE PAYMENT");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(saveFeesBtn, "SAVE PAYMENT");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -595,24 +596,24 @@ public class FinanceController implements Initializable {
                     Platform.runLater(() -> {
                         hideLoading();
                         reportStudentSelectionBox.getItems().clear();
-                        reportStudentSelectionBox.getItems().addAll(UtilityMethods.studentsHolder);
+                        reportStudentSelectionBox.getItems().addAll(UtilityClass.studentsHolder);
                         reportStudentSelectionBox.setDisable(false);
 
-                        UtilityMethods.showSuccess(notification, "Successfully loaded students");
+                        UtilityClass.showSuccess(notification, "Successfully loaded students");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -620,49 +621,49 @@ public class FinanceController implements Initializable {
     @FXML
     public void handleSearchFeesReport() {
         if (reportStudentSelectionBox.isDisable()) {
-            UtilityMethods.showError(notification, "Please select a class to fetch students");
+            UtilityClass.showError(notification, "Please select a class to fetch students");
             return;
         }
 
         StudentsHolder student = reportStudentSelectionBox.getSelectionModel().getSelectedItem();
         if (student == null) {
-            UtilityMethods.showError(notification, "Please select a student");
+            UtilityClass.showError(notification, "Please select a student");
             return;
         }
 
         SemesterCaching selectedSemester = reportSearchSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            UtilityMethods.showError(notification, "Please select a semester");
+            UtilityClass.showError(notification, "Please select a semester");
             return;
         }
 
         GradeCaching selectedGrade = reportSearchClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) {
-            UtilityMethods.showError(notification, "Please select a grade");
+            UtilityClass.showError(notification, "Please select a grade");
             return;
         }
 
-        UtilityMethods.processingButton(searchFeesReportBtn);
-        apiUtilityClass.fetchStudentPaymentRecords(student.getStudentId(), selectedSemester.getSemesterId(), selectedGrade.getLevelId(),
+        UtilityClass.processingButton(searchFeesReportBtn);
+        apiUtilityClass.fetchStudentPaymentRecords(staffId, student.getStudentId(), selectedSemester.getSemesterId(), selectedGrade.getLevelId(),
                 () -> {
                     // On success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(searchFeesReportBtn, "FETCH RECORDS");
-                        displayFeesReport(UtilityMethods.paymentRecords);
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.notProcessingButton(searchFeesReportBtn, "FETCH RECORDS");
+                        displayFeesReport(UtilityClass.paymentRecords);
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
                     });
                 },
                 () -> {
                     // On failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(searchFeesReportBtn, "FETCH RECORDS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(searchFeesReportBtn, "FETCH RECORDS");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 }, () -> {
             //On Network Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(searchFeesReportBtn, "FETCH RECORDS");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(searchFeesReportBtn, "FETCH RECORDS");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -705,8 +706,8 @@ public class FinanceController implements Initializable {
         String gradeName = reportResponseClassLabel.getText();
         String semesterName = reportResponseSemesterLabel.getText();
 
-        UtilityMethods.processingButton(printStudentPayReportBtn);
-        UtilityMethods.showSuccess(notification, "Keep working while we prepare your report");
+        UtilityClass.processingButton(printStudentPayReportBtn);
+        UtilityClass.showSuccess(notification, "Keep working while we prepare your report");
         Platform.runLater(() -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Subject List");
@@ -721,18 +722,18 @@ public class FinanceController implements Initializable {
 
             if (file != null) {
                 try {
-                    UtilityMethods.saveStudentPayRecordsListToFile(
-                            UtilityMethods.paymentRecords.getPaymentHistory(),
+                    UtilityClass.saveStudentPayRecordsListToFile(
+                            UtilityClass.paymentRecords.getPaymentHistory(),
                             file, gradeName, semesterName, studentName, studentId
                     );
-                    UtilityMethods.showSuccess(notification, "Successfully saved payment records to file");
-                    UtilityMethods.notProcessingButton(printStudentPayReportBtn, "EXPORT TO EXCEL");
+                    UtilityClass.showSuccess(notification, "Successfully saved payment records to file");
+                    UtilityClass.notProcessingButton(printStudentPayReportBtn, "EXPORT TO EXCEL");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    UtilityMethods.showError(notification, "Could not export file");
+                    UtilityClass.showError(notification, "Could not export file");
                 }
             } else {
-                UtilityMethods.showError(notification, "Could not export file");
+                UtilityClass.showError(notification, "Could not export file");
             }
         });
     }
@@ -742,8 +743,8 @@ public class FinanceController implements Initializable {
         String levelName = gradePaymentsReportNameLabel.getText();
         String semesterName = gradePaymentsReportSemesterLabel.getText();
 
-        UtilityMethods.processingButton(gradePaymentsExportReportBtn);
-        UtilityMethods.showSuccess(notification, "Keep working while we prepare your report");
+        UtilityClass.processingButton(gradePaymentsExportReportBtn);
+        UtilityClass.showSuccess(notification, "Keep working while we prepare your report");
         Platform.runLater(() -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Subject List");
@@ -758,17 +759,17 @@ public class FinanceController implements Initializable {
 
             if (file != null) {
                 try {
-                    UtilityMethods.saveGradePayRecordsListToFile(gradeFeesReport,
+                    UtilityClass.saveGradePayRecordsListToFile(gradeFeesReport,
                             file, levelName, semesterName
                     );
-                    UtilityMethods.showSuccess(notification, "Successfully saved payment records to file");
-                    UtilityMethods.notProcessingButton(gradePaymentsExportReportBtn, "EXPORT TO EXCEL");
+                    UtilityClass.showSuccess(notification, "Successfully saved payment records to file");
+                    UtilityClass.notProcessingButton(gradePaymentsExportReportBtn, "EXPORT TO EXCEL");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    UtilityMethods.showError(notification, "Could not export file");
+                    UtilityClass.showError(notification, "Could not export file");
                 }
             } else {
-                UtilityMethods.showError(notification, "Could not export file");
+                UtilityClass.showError(notification, "Could not export file");
             }
         });
     }
@@ -793,14 +794,14 @@ public class FinanceController implements Initializable {
     @FXML
     public void showAddSemesterFeesCard() {
 
-        List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
             if (feesSemesterComboBox.getItems().isEmpty()) {
                 feesSemesterComboBox.getItems().addAll(cachedSemesters);
             }
         }
 
-        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             if (feesClassComboBox.getItems().isEmpty()) {
                 feesClassComboBox.getItems().addAll(cachedGrades);
@@ -815,7 +816,7 @@ public class FinanceController implements Initializable {
     public void showAddNewPaymentCard() {
         newPaymentStudentSelection.setDisable(true);
 
-        List<SemesterCaching> semesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null && !semesters.isEmpty()) {
             if (newPaymentSemesterComboBox.getItems().isEmpty()) {
                 Platform.runLater(() -> {
@@ -824,7 +825,7 @@ public class FinanceController implements Initializable {
             }
         }
 
-        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             if (newPaymentClassSelection.getItems().isEmpty()) {
                 Platform.runLater(() -> {
@@ -841,14 +842,14 @@ public class FinanceController implements Initializable {
     public void showPaymentDetailsCard() {
         searchPaymentStudentSelectionBox.setDisable(true);
 
-        List<SemesterCaching> semesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null && !semesters.isEmpty()) {
             if (searchPaymentSemesterComboBox.getItems().isEmpty()) {
                 searchPaymentSemesterComboBox.getItems().addAll(semesters);
             }
         }
 
-        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             if (searchPaymentClassSelectionBox.getItems().isEmpty()) {
                 searchPaymentClassSelectionBox.getItems().addAll(cachedGrades);
@@ -869,14 +870,14 @@ public class FinanceController implements Initializable {
     }
 
      public void showFetchStudentPayReportCard() {
-        List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
             if (reportSearchSemesterComboBox.getItems().isEmpty()) {
                 reportSearchSemesterComboBox.getItems().addAll(cachedSemesters);
             }
         }
 
-         List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+         List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
          if (cachedGrades != null && !cachedGrades.isEmpty()) {
              if (reportSearchClassComboBox.getItems().isEmpty()) {
                  reportSearchClassComboBox.getItems().addAll(cachedGrades);
@@ -888,14 +889,14 @@ public class FinanceController implements Initializable {
      }
 
      public void showFetchGradePayReportCard() {
-         List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+         List<SemesterCaching> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
          if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
              if (gradePaymentsReportSemesterComboBox.getItems().isEmpty()) {
                  gradePaymentsReportSemesterComboBox.getItems().addAll(cachedSemesters);
              }
          }
 
-         List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+         List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
          if (cachedGrades != null && !cachedGrades.isEmpty()) {
              if (gradePaymentsReportClassComboBox.getItems().isEmpty()) {
                  gradePaymentsReportClassComboBox.getItems().addAll(cachedGrades);
@@ -914,14 +915,14 @@ public class FinanceController implements Initializable {
 
     @FXML
     public void showUpdateSemesterFeesCard() {
-        List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
             if (searchFeesSemesterComboBox.getItems().isEmpty()) {
                 searchFeesSemesterComboBox.getItems().addAll(cachedSemesters);
             }
         }
 
-        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             if (searchFeesClassComboBox.getItems().isEmpty()) {
                 searchFeesClassComboBox.getItems().addAll(cachedGrades);
@@ -942,40 +943,40 @@ public class FinanceController implements Initializable {
     public void handleFetchFeesDetails() {
         SemesterCaching selectedSemester = searchFeesSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            UtilityMethods.showError(notification, "Please select a Term");
+            UtilityClass.showError(notification, "Please select a Term");
             return;
         }
 
         GradeCaching selectedGrade = searchFeesClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) {
-            UtilityMethods.showError(notification, "Please select a Grade");
+            UtilityClass.showError(notification, "Please select a Grade");
             return;
         }
 
-        UtilityMethods.processingButton(fetchFeesDetailsBtn);
+        UtilityClass.processingButton(fetchFeesDetailsBtn);
         String semesterId = selectedSemester.getSemesterId();
         String levelId = selectedGrade.getLevelId();
-        apiUtilityClass.fetchFeesDetails(semesterId, levelId,
+        apiUtilityClass.fetchFeesDetails(staffId, semesterId, levelId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(fetchFeesDetailsBtn, "FETCH FEES DETAILS");
+                        UtilityClass.notProcessingButton(fetchFeesDetailsBtn, "FETCH FEES DETAILS");
                         fillFeesDetailsArea(feesDetails);
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(fetchFeesDetailsBtn, "FETCH FEES DETAILS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(fetchFeesDetailsBtn, "FETCH FEES DETAILS");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(fetchFeesDetailsBtn, "FETCH FEES DETAILS");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(fetchFeesDetailsBtn, "FETCH FEES DETAILS");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -994,24 +995,24 @@ public class FinanceController implements Initializable {
                     Platform.runLater(() -> {
                         hideLoading();
                         searchPaymentStudentSelectionBox.getItems().clear();
-                        searchPaymentStudentSelectionBox.getItems().addAll(UtilityMethods.studentsHolder);
+                        searchPaymentStudentSelectionBox.getItems().addAll(UtilityClass.studentsHolder);
                         searchPaymentStudentSelectionBox.setDisable(false);
 
-                        UtilityMethods.showSuccess(notification, "Students fetched successfully");
+                        UtilityClass.showSuccess(notification, "Students fetched successfully");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On network Issue
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1019,29 +1020,35 @@ public class FinanceController implements Initializable {
     @FXML
     public void handleFetchPayment() {
         if (searchPaymentStudentSelectionBox.isDisable()) {
-            UtilityMethods.showError(notification, "Please select grade to load students");
+            UtilityClass.showError(notification, "Please select grade to load students");
+            return;
+        }
+
+        GradeCaching selectedGrade = searchPaymentClassSelectionBox.getSelectionModel().getSelectedItem();
+        if (selectedGrade == null) {
+            UtilityClass.showError(notification, "Select grade");
             return;
         }
 
         StudentsHolder selectedStudent = searchPaymentStudentSelectionBox.getSelectionModel().getSelectedItem();
         if (selectedStudent == null) {
-            UtilityMethods.showError(notification, "Please select a student");
+            UtilityClass.showError(notification, "Please select a student");
             return;
         }
 
         SemesterCaching selectedSemester = searchPaymentSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            UtilityMethods.showError(notification, "Please select a Term");
+            UtilityClass.showError(notification, "Please select a Term");
             return;
         }
 
-        UtilityMethods.processingButton(fetchPaymentDetailsBtn);
-        apiUtilityClass.fetchPaymentRecord(selectedStudent.getStudentId(), selectedSemester.getSemesterId(),
+        UtilityClass.processingButton(fetchPaymentDetailsBtn);
+        apiUtilityClass.fetchPaymentRecord(staffId, selectedStudent.getStudentId(), selectedGrade.getLevelId(), selectedSemester.getSemesterId(),
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(fetchPaymentDetailsBtn, "FETCH PAYMENT RECORDS");
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.notProcessingButton(fetchPaymentDetailsBtn, "FETCH PAYMENT RECORDS");
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
 
                         paymentRecordsTableView.getItems().clear();
                         paymentRecordsTableView.getItems().addAll(studentPaymentRecords);
@@ -1059,15 +1066,15 @@ public class FinanceController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(fetchPaymentDetailsBtn, "FETCH PAYMENT RECORDS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(fetchPaymentDetailsBtn, "FETCH PAYMENT RECORDS");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(fetchPaymentDetailsBtn, "FETCH PAYMENT RECORDS");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(fetchPaymentDetailsBtn, "FETCH PAYMENT RECORDS");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1079,25 +1086,25 @@ public class FinanceController implements Initializable {
 
         SemesterCaching selectedSemester = updatePaymentSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            UtilityMethods.showError(notification, "Please select a Term");
+            UtilityClass.showError(notification, "Please select a Term");
             return;
         }
 
         String amount = updatePaymentAmountField.getText().trim();
-        if (amount.isEmpty()) {
-            UtilityMethods.showError(notification, "Please enter amount");
+        if (Integer.parseInt(amount) < 0 || amount.isBlank()) {
+            UtilityClass.showError(notification, "Please enter amount");
             return;
         }
 
         String paidBy = updatePaymentPayerNameField.getText().trim();
         if (paidBy.isEmpty()) {
-            UtilityMethods.showError(notification, "Please enter payee name");
+            UtilityClass.showError(notification, "Please enter payee name");
             return;
         }
 
         String contact = updatePaymentPayerPhoneField.getText().trim();
         if (contact.length() < 10) {
-            UtilityMethods.showError(notification, "Please enter valid contact number");
+            UtilityClass.showError(notification, "Please enter valid contact number");
             return;
         }
 
@@ -1113,13 +1120,13 @@ public class FinanceController implements Initializable {
             }
         }
 
-        UtilityMethods.processingButton(updateFeesPaymentBtn);
-        apiUtilityClass.updatePaymentDetails(update,
+        UtilityClass.processingButton(updateFeesPaymentBtn);
+        apiUtilityClass.updatePaymentDetails(staffId, update,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateFeesPaymentBtn, "SAVE CHANGES");
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.notProcessingButton(updateFeesPaymentBtn, "SAVE CHANGES");
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         paymentDetailsArea.setVisible(false);
                         paymentDetailsArea.setManaged(false);
 
@@ -1129,15 +1136,15 @@ public class FinanceController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateFeesPaymentBtn, "SAVE CHANGES");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(updateFeesPaymentBtn, "SAVE CHANGES");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateFeesPaymentBtn, "SAVE CHANGES");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(updateFeesPaymentBtn, "SAVE CHANGES");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1145,14 +1152,14 @@ public class FinanceController implements Initializable {
     @FXML
     public void handleDeletePayment() {
         String transactionId = transactionIdLabel.getText().trim();
-        UtilityMethods.processingButton(deleteFeesPaymentBtn);
+        UtilityClass.processingButton(deleteFeesPaymentBtn);
 
-        apiUtilityClass.deletePaymentRecord(transactionId,
+        apiUtilityClass.deletePaymentRecord(staffId, transactionId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(deleteFeesPaymentBtn, "DELETE RECORD");
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.notProcessingButton(deleteFeesPaymentBtn, "DELETE RECORD");
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         paymentDetailsArea.setVisible(false);
                         paymentDetailsArea.setManaged(false);
 
@@ -1162,15 +1169,15 @@ public class FinanceController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(deleteFeesPaymentBtn, "DELETE RECORD");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(deleteFeesPaymentBtn, "DELETE RECORD");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(deleteFeesPaymentBtn, "DELETE RECORD");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(deleteFeesPaymentBtn, "DELETE RECORD");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1194,39 +1201,39 @@ public class FinanceController implements Initializable {
     public void handleFetchGradeFeesReport() {
         SemesterCaching selectedSemester = gradePaymentsReportSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            UtilityMethods.showError(notification, "Please select a Semester");
+            UtilityClass.showError(notification, "Please select a Semester");
             return;
         }
 
         GradeCaching selectedGrade = gradePaymentsReportClassComboBox.getSelectionModel().getSelectedItem();
         if (selectedGrade == null) {
-            UtilityMethods.showError(notification, "Please select a Grade");
+            UtilityClass.showError(notification, "Please select a Grade");
             return;
         }
 
-        UtilityMethods.processingButton(gradePaymentsReportBtn);
-        apiUtilityClass.fetchGradeFeesRecords(selectedGrade.getLevelId(), selectedSemester.getSemesterId(),
+        UtilityClass.processingButton(gradePaymentsReportBtn);
+        apiUtilityClass.fetchGradeFeesRecords(staffId, selectedGrade.getLevelId(), selectedSemester.getSemesterId(),
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
+                        UtilityClass.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
                         populateGradePaymentsReportResponsePanel(gradeFeesReport,
                                 selectedGrade, selectedSemester.getSemesterName());
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
-                        UtilityMethods.showError(notification, "Network Error! Please check your network connection");
+                        UtilityClass.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
+                        UtilityClass.showError(notification, "Network Error! Please check your network connection");
                     });
                 });
     }
@@ -1286,7 +1293,7 @@ public class FinanceController implements Initializable {
         updatePaymentStudentIdField.setText(paymentRecord.getStudentId());
         updatePaymentStudentIdField.setDisable(true);
 
-        List<SemesterCaching> cached = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> cached = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (cached != null && !cached.isEmpty()) {
             if (updatePaymentSemesterComboBox.getItems().isEmpty()) {
                 updatePaymentSemesterComboBox.getItems().addAll(cached);
@@ -1309,7 +1316,7 @@ public class FinanceController implements Initializable {
         updateFeesAmountField.setText(data.getAmount());
 
         //Get fee semester
-        List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
             SemesterCaching feesSemester = null;
             for (SemesterCaching semester : cachedSemesters) {
@@ -1325,7 +1332,7 @@ public class FinanceController implements Initializable {
             updateFeesSemesterComboBox.getSelectionModel().select(feesSemester);
         }
 
-        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             GradeCaching feesGrade = null;
             for (GradeCaching grade : cachedGrades) {
@@ -1349,18 +1356,23 @@ public class FinanceController implements Initializable {
     }
 
     public void setStaffId(String accountantId) {
-
         this.staffId = accountantId;
     }
 
     public void setInstitutionName(String institutionName) {
-
         this.institutionName = institutionName;
     }
 
     public void setStaffName(String accountantName) {
-
         this.accountantName = accountantName;
+    }
+
+    public void setStaffRole(String staffRole) {
+        this.staffRole = staffRole;
+    }
+
+    public static String getStaffRole() {
+        return staffRole;
     }
 
     private void displayFeesReport(StudentFeesPaymentDisplay data) {
@@ -1454,8 +1466,8 @@ public class FinanceController implements Initializable {
     private void loadDashboardData() {
         updateDateTime();
 
-        Double totalFees = UtilityMethods.totalSemesterFeesFromBackend;
-        Double paidFees = UtilityMethods.feesPaidFromBackend;
+        Double totalFees = UtilityClass.totalSemesterFeesFromBackend;
+        Double paidFees = UtilityClass.feesPaidFromBackend;
         Double outstanding = totalFees - paidFees;
 
         totalFeesLabel.setText(String.format("%.2f", totalFees));
@@ -1466,7 +1478,7 @@ public class FinanceController implements Initializable {
         percentageLabel.setText(String.format("%.2f", progress * 100) + "%");
         progressBar.setProgress(progress);
 
-        List<RecentPaymentTable> recentPaymentTransactions = UtilityMethods.feesCacheManager.getRecentPaymentCache();
+        List<RecentPaymentTable> recentPaymentTransactions = UtilityClass.feesCacheManager.getRecentPaymentCache();
         if (recentPaymentTransactions != null) {
             recentPaymentsTable.getItems().setAll(recentPaymentTransactions);
         }
