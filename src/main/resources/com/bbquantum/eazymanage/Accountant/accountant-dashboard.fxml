@@ -58,7 +58,7 @@
                         </VBox>
                     </HBox>
 
-                    <Button fx:id="switchRole" text="SWITCH ROLE" onAction="#handleOpenSwitchRole" maxWidth="Infinity"
+                    <Button fx:id="switchRole" text="SWITCH DASHBOARD" onAction="#handleOpenSwitchRole" maxWidth="Infinity"
                             styleClass="logout-button"/>
                 </VBox>
             </VBox>
