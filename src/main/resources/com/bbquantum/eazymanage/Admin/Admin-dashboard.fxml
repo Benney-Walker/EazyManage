@@ -77,9 +77,9 @@
                                    styleClass="user-label-sub"/>
                         </VBox>
                     </HBox>
-                    <Button fx:id="logoutButton"
-                            text="LOGOUT"
-                            onAction="#handleLogout"
+                    <Button fx:id="switchRole"
+                            text="SWITCH DASHBOARD"
+                            onAction="#handleOpenSwitchRole"
                             maxWidth="Infinity"
                             styleClass="logout-button"/>
                 </VBox>
@@ -460,7 +460,7 @@
 
                                     <Button fx:id="saveAndClearBtn"
                                             text="ADD STUDENT"
-                                            onAction="#handleSaveAndClear"
+                                            onAction="#handleSaveStudent"
                                             styleClass="action-button-primary"/>
                                 </HBox>
 
