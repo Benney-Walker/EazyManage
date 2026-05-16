@@ -24,4 +24,6 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.DTO.Finance to com.google.gson;
     exports com.bbquantum.eazymanage.DTO.Institution;
     opens com.bbquantum.eazymanage.DTO.Institution to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Auth;
+    opens com.bbquantum.eazymanage.DTO.Auth to com.google.gson;
 }
