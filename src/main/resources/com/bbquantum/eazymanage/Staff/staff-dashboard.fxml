@@ -51,7 +51,9 @@
                             <Label fx:id="institutionalNameLabel" text="Institution Name" style="-fx-text-fill: #94A3B8; -fx-font-size: 11px;"/>
                         </VBox>
                     </HBox>
-                    <Button fx:id="logoutButton" text="Logout" onAction="#handleLogout" maxWidth="Infinity" styleClass="logout-button"/>
+                    <Button fx:id="switchRole" text="SWITCH DASHBOARD"
+                            onAction="#handleOpenSwitchRole" maxWidth="Infinity"
+                            styleClass="logout-button"/>
                 </VBox>
             </VBox>
         </left>

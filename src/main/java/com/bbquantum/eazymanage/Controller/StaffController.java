@@ -9,7 +9,7 @@ import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
 import com.bbquantum.eazymanage.Utitity.RadioStatusCell;
 import com.bbquantum.eazymanage.Utitity.StudentAttendanceUI;
 import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
-import com.bbquantum.eazymanage.Utitity.UtilityMethods;
+import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -82,7 +82,7 @@ public class StaffController implements Initializable {
     @FXML private Button addSubjectBtn;
     @FXML private Button resultsBtn;
     @FXML private Button attendanceBtn;
-    @FXML private Button logoutButton;
+    @FXML private Button switchRole;
     @FXML private Label staffNameLabel;
     @FXML private Label institutionalNameLabel;
 
@@ -315,13 +315,13 @@ public class StaffController implements Initializable {
 
         exercise1Column.setOnEditCommit(event -> {
             if (!event.getNewValue().matches("\\d+(\\.\\d+)?")) {
-                UtilityMethods.showError(notification, "Only numbers allowed");
+                UtilityClass.showError(notification, "Only numbers allowed");
                 studentsScoresTable.refresh();
                 return;
             }
 
             if (Double.parseDouble(event.getNewValue()) > 20) {
-                UtilityMethods.showError(notification, "Exercise 1 shouldn't be more than 20");
+                UtilityClass.showError(notification, "Exercise 1 shouldn't be more than 20");
                 studentsScoresTable.refresh();
                 return;
             }
@@ -334,13 +334,13 @@ public class StaffController implements Initializable {
 
         classTestColumn.setOnEditCommit(event -> {
             if (!event.getNewValue().matches("\\d+(\\.\\d+)?")) {
-                UtilityMethods.showError(notification, "Only numbers allowed");
+                UtilityClass.showError(notification, "Only numbers allowed");
                 studentsScoresTable.refresh();
                 return;
             }
 
             if (Double.parseDouble(event.getNewValue()) > 30) {
-                UtilityMethods.showError(notification, "Class Test shouldn't be more than 30");
+                UtilityClass.showError(notification, "Class Test shouldn't be more than 30");
                 studentsScoresTable.refresh();
                 return;
             }
@@ -353,13 +353,13 @@ public class StaffController implements Initializable {
 
         exercise2Column.setOnEditCommit(event -> {
             if (!event.getNewValue().matches("\\d+(\\.\\d+)?")) {
-                UtilityMethods.showError(notification, "Only numbers allowed");
+                UtilityClass.showError(notification, "Only numbers allowed");
                 studentsScoresTable.refresh();
                 return;
             }
 
             if (Double.parseDouble(event.getNewValue()) > 20) {
-                UtilityMethods.showError(notification, "Exercise 2 shouldn't be more than 20");
+                UtilityClass.showError(notification, "Exercise 2 shouldn't be more than 20");
                 studentsScoresTable.refresh();
                 return;
             }
@@ -372,13 +372,13 @@ public class StaffController implements Initializable {
 
         projectColumn.setOnEditCommit(event -> {
             if (!event.getNewValue().matches("\\d+(\\.\\d+)?")) {
-                UtilityMethods.showError(notification, "Only numbers allowed");
+                UtilityClass.showError(notification, "Only numbers allowed");
                 studentsScoresTable.refresh();
                 return;
             }
 
             if (Double.parseDouble(event.getNewValue()) > 30) {
-                UtilityMethods.showError(notification, "Project score shouldn't be more than 30");
+                UtilityClass.showError(notification, "Project score shouldn't be more than 30");
                 studentsScoresTable.refresh();
                 return;
             }
@@ -391,7 +391,7 @@ public class StaffController implements Initializable {
 
         examScoreColumn.setOnEditCommit(event -> {
             if (!event.getNewValue().matches("\\d+(\\.\\d+)?")) {
-                UtilityMethods.showError(notification, "Only numbers allowed");
+                UtilityClass.showError(notification, "Only numbers allowed");
                 studentsScoresTable.refresh();
                 return;
             }
@@ -538,7 +538,7 @@ public class StaffController implements Initializable {
 
     @FXML
     public void showDashboard() {
-        gradeInformation = UtilityMethods.gradeInfoCacheManager.getGradesInformation();
+        gradeInformation = UtilityClass.gradeInfoCacheManager.getGradesInformation();
         if (gradeInformation != null && !gradeInformation.isEmpty()) {
             loadDashBoardData(gradeInformation.getFirst());
             startDashboardChanges();
@@ -564,7 +564,7 @@ public class StaffController implements Initializable {
         score_subjectSelectionBox.setVisible(true);
         score_subjectSelectionBox.setManaged(true);
 
-        List<GradeCaching> cachedGrades = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()) {
             if (score_classSelectionBox.getItems().isEmpty()) {
                 score_classSelectionBox.getItems().addAll(cachedGrades);
@@ -588,22 +588,23 @@ public class StaffController implements Initializable {
     }
 
     @FXML
-    public void handleLogout() throws IOException {
-        UtilityMethods.clearSession();
-        Stage staffDashboard = (Stage) logoutButton.getScene().getWindow();
+    public void handleOpenSwitchRole() throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/auth-container.fxml"));
+        Stage staffDashboard = (Stage) switchRole.getScene().getWindow();
+
+        // Load the appropriate dashboard
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/SwitchRole/SwitchRole.fxml"));
         Scene scene = new Scene(loader.load());
 
         // Create new stage for dashboard
-        Stage loginStage = new Stage();
-        loginStage.setTitle("EazyManage - Authentication");
-        loginStage.setScene(scene);
-        loginStage.sizeToScene();
-        loginStage.setResizable(false);
+        Stage switchRoleStage = new Stage();
+        switchRoleStage.setTitle("EazyManage - User Roles");
+        switchRoleStage.setScene(scene);
+        switchRoleStage.sizeToScene();
+        switchRoleStage.setResizable(false);
 
         staffDashboard.close();
-        loginStage.show();
+        switchRoleStage.show();
     }
 
     @FXML
@@ -613,7 +614,7 @@ public class StaffController implements Initializable {
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        gradeInformation = UtilityMethods.gradeInfoCacheManager.getGradesInformation();
+                        gradeInformation = UtilityClass.gradeInfoCacheManager.getGradesInformation();
                         if (gradeInformation != null && !gradeInformation.isEmpty()) {
                             loadDashBoardData(gradeInformation.getFirst());
                             startDashboardChanges();
@@ -627,7 +628,7 @@ public class StaffController implements Initializable {
     @FXML
     public void showPreviousClass() {
         if (gradeInformation.size() <= 1) {
-            UtilityMethods.showError(notification, "Sorry, you've been assigned to only one class");
+            UtilityClass.showError(notification, "Sorry, you've been assigned to only one class");
             return;
         }
 
@@ -644,7 +645,7 @@ public class StaffController implements Initializable {
     @FXML
     public void showNextClass() {
         if (gradeInformation.size() <= 1) {
-            UtilityMethods.showError(notification, "Sorry, you've been assigned to only one class");
+            UtilityClass.showError(notification, "Sorry, you've been assigned to only one class");
             return;
         }
 
@@ -670,23 +671,23 @@ public class StaffController implements Initializable {
             //On Success
                     Platform.runLater(() -> {
                         score_subSelectionBox.getItems().clear();
-                        score_subSelectionBox.getItems().addAll(UtilityMethods.subjectsHolder);
+                        score_subSelectionBox.getItems().addAll(UtilityClass.subjectsHolder);
                         hideLoading();
-                        UtilityMethods.showSuccess(notification, "Subjects loaded");
+                        UtilityClass.showSuccess(notification, "Subjects loaded");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, "Network error! Check your internet connection");
+                        UtilityClass.showError(notification, "Network error! Check your internet connection");
                     });
                 });
     }
@@ -695,17 +696,17 @@ public class StaffController implements Initializable {
     public void handleLoadStudentsForScores() {
         SubjectsHolder selectedSubject = score_subSelectionBox.getSelectionModel().getSelectedItem();
         if (selectedSubject == null) {
-            UtilityMethods.showError(notification, "Subject not selected");
+            UtilityClass.showError(notification, "Subject not selected");
             return;
         }
-        UtilityMethods.processingButton(loadSubjectStudentsBtn);
+        UtilityClass.processingButton(loadSubjectStudentsBtn);
         apiUtilityClass.loadSubjectStudents(selectedSubject.getSubjectId(), staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(loadSubjectStudentsBtn, "LOAD STUDENTS");
-                        displaySubjectStudents(UtilityMethods.subjectScores);
-                        UtilityMethods.showSuccess(notification, "Successfully loaded students");
+                        UtilityClass.notProcessingButton(loadSubjectStudentsBtn, "LOAD STUDENTS");
+                        displaySubjectStudents(UtilityClass.subjectScores);
+                        UtilityClass.showSuccess(notification, "Successfully loaded students");
 
                         score_subjectSelectionBox.setVisible(false);
                         score_subjectSelectionBox.setManaged(false);
@@ -714,15 +715,15 @@ public class StaffController implements Initializable {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(loadSubjectStudentsBtn, "LOAD STUDENTS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(loadSubjectStudentsBtn, "LOAD STUDENTS");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 ()-> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(loadSubjectStudentsBtn, "LOAD STUDENTS");
-                        UtilityMethods.showError(notification, "Network error! Check your network connection and try again!");
+                        UtilityClass.notProcessingButton(loadSubjectStudentsBtn, "LOAD STUDENTS");
+                        UtilityClass.showError(notification, "Network error! Check your network connection and try again!");
                     });
                 });
     }
@@ -756,39 +757,36 @@ public class StaffController implements Initializable {
         System.out.println("SUBJECT ID: " + subjectId);
         SemesterCaching selectedSemester = saveScoresSemesterComboBox.getSelectionModel().getSelectedItem();
         if (selectedSemester == null) {
-            UtilityMethods.showError(notification, "Semester not selected");
+            UtilityClass.showError(notification, "Semester not selected");
             return;
         }
 
-        UtilityMethods.processingButton(saveScores);
+        UtilityClass.processingButton(saveScores);
         String semesterId = selectedSemester.getSemesterId();
-
-        String scoresInfo =
-                subjectId + "_" + semesterId + "_" + staffId; //It combines subject Id, staff and semesterId for saving and activity tracking
 
         scores_SaveProgressBarVBox.setVisible(true);
         scores_SaveProgressBarVBox.setManaged(true);
 
-        uploadNextScore(scoresInfo);
+        uploadNextScore(subjectId, semesterId, staffId);
     }
 
     @FXML
     public void handleLoadClassResults() {
         resultGrade = resultsGradeComboBox.getSelectionModel().getSelectedItem();
         if (resultGrade == null) {
-            UtilityMethods.showError(notification, "Please select a grade to load");
+            UtilityClass.showError(notification, "Please select a grade to load");
             return;
         }
 
         resultSemester = resultsSemesterComboBox.getSelectionModel().getSelectedItem();
         if (resultSemester == null) {
-            UtilityMethods.showError(notification, "Select Semester to Load Results");
+            UtilityClass.showError(notification, "Select Semester to Load Results");
             return;
         }
 
         String gradeId = resultGrade.getGradeId();
         String semesterId = resultSemester.getSemesterId();
-        UtilityMethods.processingButton(loadClassResultsBtn);
+        UtilityClass.processingButton(loadClassResultsBtn);
 
         loadClassResults(gradeId, semesterId);
     }
@@ -798,13 +796,13 @@ public class StaffController implements Initializable {
 
         String currentGradeId = resultGrade.getGradeId();
 
-        UtilityMethods.processingButton(movePassedStudentsBtn);
+        UtilityClass.processingButton(movePassedStudentsBtn);
         apiUtilityClass.movePassedStudents(currentGradeId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(movePassedStudentsBtn, "TRANSFER STUDENTS");
-                        UtilityMethods.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.notProcessingButton(movePassedStudentsBtn, "TRANSFER STUDENTS");
+                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
                         resultsPassmarkHBox.setVisible(false);
                         resultsPassmarkHBox.setManaged(false);
                         movePassedStudentsBtn.setDisable(true);
@@ -812,15 +810,15 @@ public class StaffController implements Initializable {
                 }, () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(movePassedStudentsBtn, "TRANSFER STUDENTS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(movePassedStudentsBtn, "TRANSFER STUDENTS");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                         movePassedStudentsBtn.setDisable(true);
                     });
                 }, () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(movePassedStudentsBtn, "TRANSFER STUDENTS");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(movePassedStudentsBtn, "TRANSFER STUDENTS");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                         movePassedStudentsBtn.setDisable(true);
                     });
                 });
@@ -852,11 +850,11 @@ public class StaffController implements Initializable {
     public void loadAttendanceStudents() {
         GradeCaching gradeCaching = markAttendanceGradeComboBox.getSelectionModel().getSelectedItem();
         if (gradeCaching == null) {
-            UtilityMethods.showError(notification, "Select Grade");
+            UtilityClass.showError(notification, "Select Grade");
             return;
         }
 
-        UtilityMethods.processingButton(markAttendanceBtn);
+        UtilityClass.processingButton(markAttendanceBtn);
         String levelId = gradeCaching.getLevelId();
 
         apiUtilityClass.loadStudentsForAttendance(levelId, "no_date",
@@ -870,22 +868,22 @@ public class StaffController implements Initializable {
 
                         displayAttendanceList(gradeCaching);
 
-                        UtilityMethods.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
-                        UtilityMethods.showSuccess(notification, "Students Loaded Successfully");
+                        UtilityClass.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
+                        UtilityClass.showSuccess(notification, "Students Loaded Successfully");
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
             //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -894,7 +892,7 @@ public class StaffController implements Initializable {
     public void loadAttendanceForUpdate() {
         GradeCaching gradeCaching = updateAttendanceGradeComboBox.getSelectionModel().getSelectedItem();
         if (gradeCaching == null) {
-            UtilityMethods.showError(notification, "Select Grade");
+            UtilityClass.showError(notification, "Select Grade");
             return;
         }
         String levelId = gradeCaching.getLevelId();
@@ -906,18 +904,18 @@ public class StaffController implements Initializable {
 
         selectedAttendanceDate = updateAttendanceDatePicker.getValue();
         if (selectedAttendanceDate == null) {
-            UtilityMethods.showError(notification, "Select Date to update");
+            UtilityClass.showError(notification, "Select Date to update");
             return;
         }
 
         if (selectedAttendanceDate.isBefore(LocalDate.now())) {
-            UtilityMethods.showError(notification, "You can't update previous attendance records");
+            UtilityClass.showError(notification, "You can't update previous attendance records");
             return;
         }
 
         String date = selectedAttendanceDate.toString();
 
-        UtilityMethods.processingButton(updateAttendanceBtn);
+        UtilityClass.processingButton(updateAttendanceBtn);
 
         apiUtilityClass.loadStudentsForAttendance(levelId, date,
                 () -> {
@@ -942,22 +940,22 @@ public class StaffController implements Initializable {
                         updateAttendanceTableContainer.setVisible(true);
                         updateAttendanceTableContainer.setManaged(true);
 
-                        UtilityMethods.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
-                        UtilityMethods.showSuccess(notification, "Students Loaded Successfully");
+                        UtilityClass.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
+                        UtilityClass.showSuccess(notification, "Students Loaded Successfully");
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -987,7 +985,7 @@ public class StaffController implements Initializable {
 
     @FXML
     public void handleSaveAttendance() {
-        UtilityMethods.processingButton(saveAttendanceBtn);
+        UtilityClass.processingButton(saveAttendanceBtn);
         ObservableList<StudentAttendanceUI> attendanceList = markAttendanceTable.getItems();
 
         if (studentAttendanceList.isEmpty()) {
@@ -1006,7 +1004,7 @@ public class StaffController implements Initializable {
 
     @FXML
     public void handleUpdateAttendance() {
-        UtilityMethods.processingButton(updateAndSaveAttendanceBtn);
+        UtilityClass.processingButton(updateAndSaveAttendanceBtn);
         ObservableList<StudentAttendanceUI> attendanceList = markAttendanceTable.getItems();
 
         if (studentAttendanceList.isEmpty()) {
@@ -1025,7 +1023,7 @@ public class StaffController implements Initializable {
     public void displayMarkAttendanceCard() {
         markAttendanceGradeComboBox.getSelectionModel().clearSelection();
 
-        List<GradeCaching> gradeCaching = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> gradeCaching = UtilityClass.gradeCacheManager.getGradesCache();
         if (gradeCaching != null && !gradeCaching.isEmpty()) {
             if (markAttendanceGradeComboBox.getItems().isEmpty()) {
                 markAttendanceGradeComboBox.getItems().addAll(gradeCaching);
@@ -1040,14 +1038,14 @@ public class StaffController implements Initializable {
         markAttendanceSelection.setVisible(true);
         markAttendanceSelection.setManaged(true);
 
-        UtilityMethods.switchPageCards(markAttendancePanel, updateAttendancePanel, markAttendanceCard, updateAttendanceCard);
+        UtilityClass.switchPageCards(markAttendancePanel, updateAttendancePanel, markAttendanceCard, updateAttendanceCard);
     }
 
     @FXML
     public void displayUpdateAttendanceCard() {
         updateAttendanceGradeComboBox.getSelectionModel().clearSelection();
 
-        List<GradeCaching> gradeCaching = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> gradeCaching = UtilityClass.gradeCacheManager.getGradesCache();
         if (gradeCaching != null && !gradeCaching.isEmpty()) {
             if (updateAttendanceGradeComboBox.getItems().isEmpty()) {
                 updateAttendanceGradeComboBox.getItems().addAll(gradeCaching);
@@ -1063,7 +1061,7 @@ public class StaffController implements Initializable {
         updateAttendanceSelection.setVisible(true);
         updateAttendanceSelection.setManaged(true);
 
-        UtilityMethods.switchPageCards(updateAttendancePanel, markAttendancePanel, updateAttendanceCard, markAttendanceCard);
+        UtilityClass.switchPageCards(updateAttendancePanel, markAttendancePanel, updateAttendanceCard, markAttendanceCard);
     }
 
 
@@ -1079,7 +1077,7 @@ public class StaffController implements Initializable {
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        gradeInformation = UtilityMethods.gradeInfoCacheManager.getGradesInformation();
+                        gradeInformation = UtilityClass.gradeInfoCacheManager.getGradesInformation();
                         if (gradeInformation != null && !gradeInformation.isEmpty()) {
                             loadDashBoardData(gradeInformation.getFirst());
                             startDashboardChanges();
@@ -1095,16 +1093,16 @@ public class StaffController implements Initializable {
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(loadClassResultsBtn, "Fetch Results");
-                        UtilityMethods.showSuccess(notification, "Results successfully loaded");
-                        populateClassResults(UtilityMethods.classResults);
+                        UtilityClass.notProcessingButton(loadClassResultsBtn, "Fetch Results");
+                        UtilityClass.showSuccess(notification, "Results successfully loaded");
+                        populateClassResults(UtilityClass.classResults);
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(loadClassResultsBtn, "Fetch Results");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(loadClassResultsBtn, "Fetch Results");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
 
                         resultsInfoBox.setVisible(false);
                         resultsInfoBox.setManaged(false);
@@ -1114,8 +1112,8 @@ public class StaffController implements Initializable {
                 }, () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(loadClassResultsBtn, "Fetch Results");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.notProcessingButton(loadClassResultsBtn, "Fetch Results");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
@@ -1130,14 +1128,14 @@ public class StaffController implements Initializable {
         classResultsTableContainer.setVisible(false);
         classResultsTableContainer.setManaged(false);
 
-        List<GradeInformation> gradesInformation = UtilityMethods.gradeInfoCacheManager.getGradesInformation();
+        List<GradeInformation> gradesInformation = UtilityClass.gradeInfoCacheManager.getGradesInformation();
         if (gradesInformation != null && !gradesInformation.isEmpty()) {
             if (resultsGradeComboBox.getItems().isEmpty()) {
                 resultsGradeComboBox.getItems().addAll(gradesInformation);
             }
         }
 
-        List<SemesterCaching> semesterCaching = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> semesterCaching = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesterCaching != null && !semesterCaching.isEmpty()) {
             if (resultsSemesterComboBox.getItems().isEmpty()) {
                 resultsSemesterComboBox.getItems().addAll(semesterCaching);
@@ -1145,18 +1143,18 @@ public class StaffController implements Initializable {
         }
     }
 
-    private void uploadNextScore(String scoresInfo) {
+    private void uploadNextScore(String subjectId, String semesterId, String staffId) {
         if (
-                currentUploadIndex >= UtilityMethods.subjectScores.getScoresTable().size()
+                currentUploadIndex >= UtilityClass.subjectScores.getScoresTable().size()
         ) {
-            UtilityMethods.notProcessingButton(saveScores, "UPLOAD SCORES");
+            UtilityClass.notProcessingButton(saveScores, "UPLOAD SCORES");
 
             score_SaveProgressBar.setProgress(0.0);
             scores_SaveProgressBarVBox.setVisible(false);
             scores_SaveProgressBarVBox.setManaged(false);
 
             currentUploadIndex = 0;
-            UtilityMethods.subjectScores = null;
+            UtilityClass.subjectScores = null;
 
             score_studentListPanel.setVisible(false);
             score_studentListPanel.setManaged(false);
@@ -1168,35 +1166,35 @@ public class StaffController implements Initializable {
         }
 
         StudentsScoresTable studentScores =
-                UtilityMethods.subjectScores.getScoresTable().get(currentUploadIndex);
+                UtilityClass.subjectScores.getScoresTable().get(currentUploadIndex);
 
         apiUtilityClass.saveStudentScores(
-                studentScores, scoresInfo,
+                studentScores, subjectId, semesterId, staffId,
                 () -> {
                     // On Success
                     Platform.runLater(() -> {
                         currentUploadIndex++;
 
                         double progress =
-                                (double)  currentUploadIndex / UtilityMethods.subjectScores.getScoresTable().size();
+                                (double)  currentUploadIndex / UtilityClass.subjectScores.getScoresTable().size();
 
                         score_SaveProgressBar.setProgress(progress);
 
-                        uploadNextScore(scoresInfo);
+                        uploadNextScore(subjectId, semesterId, staffId);
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveScores, "CONTINUE");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(saveScores, "CONTINUE");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveScores, "CONTINUE");
-                        UtilityMethods.showError(notification,
+                        UtilityClass.notProcessingButton(saveScores, "CONTINUE");
+                        UtilityClass.showError(notification,
                                 "Network Error! Fix connection and click Continue.");
                     });
                 }
@@ -1243,15 +1241,15 @@ public class StaffController implements Initializable {
 
                 () -> {
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveAttendanceBtn, "CONTINUE");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(saveAttendanceBtn, "CONTINUE");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
 
                 () -> {
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(saveAttendanceBtn, "CONTINUE");
-                        UtilityMethods.showError(notification,
+                        UtilityClass.notProcessingButton(saveAttendanceBtn, "CONTINUE");
+                        UtilityClass.showError(notification,
                                 "Network Error! Fix connection and click Continue.");
                     });
                 }
@@ -1261,8 +1259,8 @@ public class StaffController implements Initializable {
     private boolean checkUploadAttendanceIndex() {
         if (currentUploadIndex >= studentAttendanceList.size()) {
             // Finished
-            UtilityMethods.notProcessingButton(saveAttendanceBtn, "SAVE ATTENDANCE");
-            UtilityMethods.showSuccess(notification, "Attendance Saved Successfully");
+            UtilityClass.notProcessingButton(saveAttendanceBtn, "SAVE ATTENDANCE");
+            UtilityClass.showSuccess(notification, "Attendance Saved Successfully");
 
             attendanceSaveProgressBar.setProgress(0.0);
             attendanceSaveProgressBarVBox.setVisible(false);
@@ -1310,24 +1308,24 @@ public class StaffController implements Initializable {
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateAndSaveAttendanceBtn, "CONTINUE");
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.notProcessingButton(updateAndSaveAttendanceBtn, "CONTINUE");
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
-                        UtilityMethods.notProcessingButton(updateAndSaveAttendanceBtn, "CONTINUE");
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and Click on Continue");
+                        UtilityClass.notProcessingButton(updateAndSaveAttendanceBtn, "CONTINUE");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and Click on Continue");
                     });
                 });
     }
 
     private boolean checkUploadIndex() {
         if (currentUploadIndex >= studentAttendanceList.size()) {
-            UtilityMethods.notProcessingButton(updateAndSaveAttendanceBtn, "SAVE ATTENDANCE");
+            UtilityClass.notProcessingButton(updateAndSaveAttendanceBtn, "SAVE ATTENDANCE");
 
-            UtilityMethods.showSuccess(notification, "Attendance Saved Successfully");
+            UtilityClass.showSuccess(notification, "Attendance Saved Successfully");
 
             attendanceSaveProgressBar.setProgress(0.0);
             attendanceSaveProgressBarVBox.setVisible(false);
@@ -1356,8 +1354,8 @@ public class StaffController implements Initializable {
                     // On Success
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showSuccess(notification, "Student Found");
-                        studentInfoDisplayPanel(UtilityMethods.updateStudentPersonalData);
+                        UtilityClass.showSuccess(notification, "Student Found");
+                        studentInfoDisplayPanel(UtilityClass.updateStudentPersonalData);
                         studentPersonalInfo.setVisible(true);
                         studentPersonalInfo.setManaged(true);
 
@@ -1369,20 +1367,20 @@ public class StaffController implements Initializable {
                     //On failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
                     });
                 },
                 () -> {
                     //On Network Issue
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityMethods.showError(notification, "Network Error! Check your network connection and try again");
+                        UtilityClass.showError(notification, "Network Error! Check your network connection and try again");
                     });
                 });
     }
 
     private void studentInfoDisplayPanel(UpdateStudentPersonalData data) {
-        List<GradeCaching> gradeCachings  = UtilityMethods.gradeCacheManager.getGradesCache();
+        List<GradeCaching> gradeCachings  = UtilityClass.gradeCacheManager.getGradesCache();
         GradeCaching updateGrade = null;
         if (gradeCachings != null && !gradeCachings.isEmpty()) {
             for (GradeCaching gradeCaching1 : gradeCachings) {
@@ -1460,7 +1458,7 @@ public class StaffController implements Initializable {
             }
         }
 
-        List<SemesterCaching> cachedSemesters = UtilityMethods.semesterCachingManager.getCachedSemesters();
+        List<SemesterCaching> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
             if (saveScoresSemesterComboBox.getItems().isEmpty()) {
                 saveScoresSemesterComboBox.getItems().addAll(cachedSemesters);
