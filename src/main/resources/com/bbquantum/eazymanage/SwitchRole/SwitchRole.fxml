@@ -54,19 +54,19 @@
 
         <HBox spacing="10">
             <Button fx:id="roleSwitchBtn"
-                    text="SWITCH"
+                    text="VIEW PAGE"
                     styleClass="action-button-primary"
                     onAction="#handleSwitchRoles"/>
-
-            <Button fx:id="cancelBtn"
-                    text="CANCEL"
-                    styleClass="action-button-red"
-                    onAction="#handleCancelSwitch"/>
 
             <Button fx:id="logoutButton"
                     text="SIGN OUT"
                     styleClass="action-button-orange"
                     onAction="#handleLogout"/>
         </HBox>
+
+        <Label fx:id="errorMessageLabel"
+               visible="false"
+               managed="false"
+               styleClass="message-error"/>
     </VBox>
 </StackPane>
