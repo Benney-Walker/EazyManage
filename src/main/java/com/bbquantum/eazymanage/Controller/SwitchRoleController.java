@@ -1,8 +1,8 @@
 package com.bbquantum.eazymanage.Controller;
 
-import com.bbquantum.eazymanage.Constants.StaffRoles;
 import com.bbquantum.eazymanage.Utitity.SessionManager;
-import com.bbquantum.eazymanage.Utitity.UtilityMethods;
+import com.bbquantum.eazymanage.Utitity.UtilityClass;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,13 +12,13 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.List;
 
 public class SwitchRoleController {
     //Controller own variables
-    private String initialRole;
     private String username;
     private String roles;
     private String staffId;
@@ -34,11 +34,12 @@ public class SwitchRoleController {
     @FXML private Button roleStaffBtn;
     @FXML private Button roleFinanceBtn;
     @FXML private Button roleSwitchBtn;
-    @FXML private Button cancelBtn;
     @FXML private Button logoutButton;
 
+    @FXML private Label errorMessageLabel;
+
     public void initialize() {
-        if (!isTokenValid()) {
+        if (SessionManager.isTokenExpired()) {
             disAblePage();
         }
 
@@ -98,53 +99,7 @@ public class SwitchRoleController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
         Scene scene = new Scene(loader.load(), width, height);
 
-        AuthController.findController(selectedRole, staffId, organizationName, username, loader);
-
-        Stage stage = (Stage) roleSwitchBtn.getScene().getWindow();
-
-        Stage newStage = new Stage();
-        newStage.setTitle("Eazy Manage");
-        newStage.getIcons().add(
-                new Image(getClass().getResourceAsStream(
-                        "/com/bbquantum/eazymanage/Assets/EazyManage.png"
-                ))
-        );
-        newStage.setScene(scene);
-        newStage.setMaximized(true);
-
-        stage.close();
-        newStage.show();
-    }
-
-    @FXML
-    public void handleCancelSwitch() throws IOException {
-        String fxmlFile = "";
-        int width = 1200;
-        int height = 800;
-
-        switch (initialRole) {
-            case "PRINCIPAL":
-                fxmlFile = "/com/bbquantum/eazymanage/Principal/principal-main-dashboard.fxml";
-                break;
-
-            case "ACCOUNTANT":
-                fxmlFile = "/com/bbquantum/eazymanage/Accountant/accountant-dashboard.fxml";
-                break;
-
-            case "TEACHING_STAFF":
-                fxmlFile = "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
-                break;
-
-            case "ADMINISTRATOR":
-                fxmlFile = "/com/bbquantum/eazymanage/Admin/Admin-dashboard.fxml";
-                break;
-
-        }
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-        Scene scene = new Scene(loader.load(), width, height);
-
-        AuthController.findController(initialRole, staffId, organizationName, username, loader);
+        UtilityClass.findController(selectedRole, staffId, organizationName, username, loader);
 
         Stage stage = (Stage) roleSwitchBtn.getScene().getWindow();
 
@@ -164,7 +119,7 @@ public class SwitchRoleController {
 
     @FXML
     public void handleLogout() throws IOException {
-        UtilityMethods.clearSession();
+        UtilityClass.clearSession();
 
         Stage switchRolePage = (Stage) logoutButton.getScene().getWindow();
 
@@ -184,14 +139,7 @@ public class SwitchRoleController {
 
     /*----------------- UTILITY METHODS FOR CONTROLLER -------------*/
 
-    private boolean isTokenValid() {
-        if (SessionManager.isTokenExpired()) return false;
-
-        return true;
-    }
-
     private void getStaffCredentials() {
-        initialRole = PrincipalController.getStaffRole();
 
         username = SessionManager.getUserName();
         roles = SessionManager.getRole();
@@ -220,20 +168,6 @@ public class SwitchRoleController {
         if (roles.contains("TEACHING_STAFF")) {
             roleStaffBtn.setDisable(false);
         }
-
-        setInitialButton();
-    }
-
-    private void setInitialButton() {
-        if (initialRole.equals("ADMINISTRATOR") ) {
-            setActiveRoleBtn(roleAdminBtn);
-        } else if (initialRole.equals("TEACHING_STAFF") ) {
-            setActiveRoleBtn(roleStaffBtn);
-        } else if (initialRole.equals("ACCOUNTANT") ) {
-            setActiveRoleBtn(roleFinanceBtn);
-        } else if (initialRole.equals("PRINCIPAL") ) {
-            setActiveRoleBtn(rolePrincipalBtn);
-        }
     }
 
     private void disAblePage() {
@@ -243,13 +177,12 @@ public class SwitchRoleController {
         roleFinanceBtn.setDisable(true);
 
         roleSwitchBtn.setDisable(true);
-        cancelBtn.setDisable(true);
 
-        UtilityMethods.showError(notification, "Session Expired. Click the sign out button to open login page");
+        showError("Session Expired. Click the sign out button to open login page");
     }
 
     private void logOut(Button button) throws IOException {
-        UtilityMethods.clearSession();
+        UtilityClass.clearSession();
 
         Stage  stage = (Stage) button.getScene().getWindow();
 
@@ -279,5 +212,20 @@ public class SwitchRoleController {
         roleFinanceBtn.setStyle(INACTIVEBTN);
 
         activeRoleBtn.setStyle(ACTIVEBTN);
+    }
+
+    private void showError(String message) {
+        errorMessageLabel.setText(message);
+
+        errorMessageLabel.setVisible(true);
+        errorMessageLabel.setManaged(true);
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished( event -> {
+            errorMessageLabel.setVisible(false);
+            errorMessageLabel.setManaged(false);
+        });
+
+        delay.play();
     }
 }
