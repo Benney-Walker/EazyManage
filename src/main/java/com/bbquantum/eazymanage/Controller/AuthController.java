@@ -1,12 +1,14 @@
 package com.bbquantum.eazymanage.Controller;
 
-import com.bbquantum.eazymanage.Constants.StaffRoles;
-import com.bbquantum.eazymanage.DTO.Institution.LoginResponse;
-import com.bbquantum.eazymanage.DTO.Institution.SubscriptionResponse;
+import com.bbquantum.eazymanage.DTO.Auth.LoginResponse;
+import com.bbquantum.eazymanage.DTO.Auth.SubscriptionResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
 import com.bbquantum.eazymanage.Utitity.SessionManager;
+import com.bbquantum.eazymanage.Utitity.ThemeManager;
+import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.concurrent.Task;
@@ -24,8 +26,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class AuthController {
     /* ================= CONTROLLER OWN VARIABLES ================= */
@@ -33,10 +33,11 @@ public class AuthController {
 
     /* ================= BACKEND CONFIG ================= */
 
-    private static final String BASE_URL = "https://eazymanagesoftware.up.railway.app/api/auth";
-    private static final String LOGIN_ENDPOINT = "/v1/staff-login";
+    private static final String BASE_URL = UtilityClass.BASE_URL;
 
-    private static final String SUBSCRIBE_ENDPOINT = "/v1/school-subscription";
+    private static final String LOGIN_ENDPOINT = "/auth/v1/staff-login";
+
+    private static final String SUBSCRIBE_ENDPOINT = "/auth/v1/school-subscription";
 
     private final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
     private final Gson gson = new Gson();
@@ -131,6 +132,7 @@ public class AuthController {
             );
             stage.setTitle("Enroll Principal");
             stage.setScene(scene);
+            ThemeManager.getInstance().register(scene);
 
             // Close subscription window
             Stage currentStage = (Stage) enrollPrincipal.getScene().getWindow();
@@ -186,7 +188,33 @@ public class AuthController {
                     return gson.fromJson(response.body(), LoginResponse.class);
                 }
 
-                errorMessageContainer = response.body();
+                if (response.statusCode() == 500) {
+                    JsonObject jsonObject = JsonParser.parseString(response.body())
+                                    .getAsJsonObject();
+
+                    errorMessageContainer = jsonObject.get("message")
+                                    .getAsString();
+                    return null;
+                }
+
+                if (response.statusCode() == 401) {
+                    JsonObject jsonObject = JsonParser.parseString(response.body())
+                            .getAsJsonObject();
+
+                    errorMessageContainer = jsonObject.get("message")
+                            .getAsString();
+                    return null;
+                }
+
+                if (response.statusCode() == 403) {
+                    JsonObject jsonObject = JsonParser.parseString(response.body())
+                            .getAsJsonObject();
+
+                    errorMessageContainer = jsonObject.get("message")
+                            .getAsString();
+                    return null;
+                }
+
                 return null;
             }
         };
@@ -201,8 +229,7 @@ public class AuthController {
                 return;
             }
 
-            String rolesHeader = response.getRoles().stream()
-                            .collect(Collectors.joining(","));
+            String rolesHeader = String.join(",", response.getRoles());
 
             SessionManager.clearSession();
 
@@ -213,12 +240,20 @@ public class AuthController {
                     response.getInstitutionName(),
                     rolesHeader);
 
+            if (response.getRoles().size() > 1) {
+                try {
+                    openRoleSelectionBox();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            } else {
+                String role = response.getRoles().getFirst();
                 openDashboardByRole(
-                        response.getRoles(),
-                        response.getStaffId(),
+                        role,
+                        staffId,
                         response.getInstitutionName(),
-                        response.getStaffName()
-                );
+                        response.getStaffName());
+            }
         });
 
         task.setOnFailed(e -> {
@@ -267,11 +302,14 @@ public class AuthController {
                 HttpResponse<String> response =
                         httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-                JsonObject json = gson.fromJson(response.body(), JsonObject.class);
+                if (response.statusCode() == 200) {
+                    return new SubscriptionResponse(true, response.body());
+                } else if (response.statusCode() == 500) {
+                    JsonObject res = JsonParser.parseString(response.body()).getAsJsonObject();
+                    return new SubscriptionResponse(false, res.get("message").getAsString());
+                }
 
-                return "success".equals(json.get("status").getAsString())
-                        ? new SubscriptionResponse(true, json.get("message").getAsString(), "OK")
-                        : new SubscriptionResponse(false, null, json.get("message").getAsString());
+                return new SubscriptionResponse(false, response.body());
             }
         };
 
@@ -282,9 +320,9 @@ public class AuthController {
             SubscriptionResponse response = task.getValue();
 
             if (response.isSuccess()) {
-                showSuccess("Activation successful", response.getInstitutionId());
+                showSuccess("Activation successful", response.getMessage());
             } else {
-                showError("Failed to activate Institution");
+                showError(response.getMessage());
             }
         });
 
@@ -297,32 +335,28 @@ public class AuthController {
         new Thread(task).start();
     }
 
-    /* ================= ENROLL STAFF ================= */
+    /* ================= ROLES SELECTION BOX ================= */
+    public void openRoleSelectionBox() throws IOException {
 
-    @FXML
-    private void handleEnrollNewStaff() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/bbquantum/eazymanage/Authentication/enroll-staff.fxml"));
-            Scene scene = new Scene(loader.load(), 600, 600);
+        Stage authPage = (Stage) loginButton.getScene().getWindow();
 
-            Stage stage = (Stage) loginForm.getScene().getWindow();
-            stage.setScene(scene);
-            stage.getIcons().add(
-                    new Image(getClass().getResourceAsStream(
-                            "/com/bbquantum/eazymanage/Assets/EazyManage.png"
-                    ))
-            );
-            stage.setTitle("Enroll New Staff");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/SwitchRole/SwitchRole.fxml"));
+        Scene scene = new Scene(loader.load());
+
+        Stage switchRoleStage = new Stage();
+        switchRoleStage.setTitle("EazyManage - User Roles");
+        switchRoleStage.setScene(scene);
+        ThemeManager.getInstance().register(scene);
+        switchRoleStage.sizeToScene();
+        switchRoleStage.setResizable(false);
+
+        authPage.close();
+        switchRoleStage.show();
     }
 
     /* ================= DASHBOARD ROUTING ================= */
 
-    public void openDashboardByRole(List<String> roles, String staffId, String institutionName, String staffFullName) {
-        String role = roles.getFirst();
+    public void openDashboardByRole(String role, String staffId, String institutionName, String staffFullName) {
 
         try {
             String fxmlFile;
@@ -348,7 +382,6 @@ public class AuthController {
                     break;
 
                 default:
-                    showError("Staff not allowed on system " + role);
                     return;
             }
 
@@ -357,7 +390,7 @@ public class AuthController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Scene scene = new Scene(loader.load(), width, height);
 
-            findController(role, staffId, institutionName, staffFullName, loader);
+            UtilityClass.findController(role, staffId, institutionName, staffFullName, loader);
 
             // Close the login window
             Stage loginStage = (Stage) loginButton.getScene().getWindow();
@@ -371,6 +404,7 @@ public class AuthController {
             );
             dashboardStage.setTitle("Eazy Manage");
             dashboardStage.setScene(scene);
+            ThemeManager.getInstance().register(scene);
             dashboardStage.setMaximized(true);
 
             // Close login and show dashboard
@@ -383,42 +417,26 @@ public class AuthController {
         }
     }
 
-    public static void findController(String role, String staffId, String institutionName, String staffFullName, FXMLLoader loader) {
-        if (role.equals("PRINCIPAL")) {
-            PrincipalController principalController = loader.getController();
-            principalController.setInstitutionName(institutionName);
-            principalController.setStaffId(staffId);
-            principalController.setPrincipalName(staffFullName);
-            principalController.setStaffRole(role);
+    /* ================= ENROLL STAFF ================= */
 
-            principalController.initializeAfterLogin();
-        }
+    @FXML
+    private void handleEnrollNewStaff() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/bbquantum/eazymanage/Authentication/enroll-staff.fxml"));
+            Scene scene = new Scene(loader.load(), 600, 600);
 
-        if (role.equals("ACCOUNTANT")) {
-            FinanceController financeController = loader.getController();
-            financeController.setInstitutionName(institutionName);
-            financeController.setStaffId(staffId);
-            financeController.setStaffName(staffFullName);
-
-            financeController.initializeAfterLogin();
-        }
-
-        if (role.equals("TEACHING_STAFF")) {
-            StaffController staffController = loader.getController();
-            staffController.setInstitutionName(institutionName);
-            staffController.setStaffId(staffId);
-            staffController.setStaffFullName(staffFullName);
-
-            staffController.initializeAfterLogin();
-        }
-
-        if (role.equals("ADMINISTRATOR")) {
-            AdminController adminController = loader.getController();
-            adminController.setInstitutionName(institutionName);
-            adminController.setStaffId(staffId);
-            adminController.setStaffFullName(staffFullName);
-
-            adminController.initializeAfterLogin();
+            Stage stage = (Stage) loginForm.getScene().getWindow();
+            stage.setScene(scene);
+            ThemeManager.getInstance().register(scene);
+            stage.getIcons().add(
+                    new Image(getClass().getResourceAsStream(
+                            "/com/bbquantum/eazymanage/Assets/EazyManage.png"
+                    ))
+            );
+            stage.setTitle("Enroll New Staff");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
