@@ -1,0 +1,141 @@
+/* ============================================================================
+   EazyManage — Slate Emerald LIGHT theme
+   ----------------------------------------------------------------------------
+   Defines all design tokens as JavaFX looked-up colors on .root.
+   Components in components.css reference these names only (never raw hex),
+   so swapping to dark-theme.css re-skins the entire app.
+
+   Source palette (from the design brief):
+     Background    #F8FAFC / #F1F5F9
+     Card          #FFFFFF
+     Sidebar       #0F172A / hover #1E293B / active #10B981
+     Accent        Emerald #10B981, Sky #38BDF8
+     Text          Primary #0F172A, Secondary #64748B, Muted #94A3B8
+     States        Success #10B981, Warning #F59E0B, Error #EF4444
+============================================================================ */
+
+.root {
+    /* ----- Backgrounds & surfaces ----- */
+    -color-bg:               #F8FAFC;   /* page background */
+    -color-bg-alt:           #F1F5F9;   /* alternate / inset background */
+    -color-surface:          #FFFFFF;   /* cards, panels, dialogs */
+    -color-surface-alt:      #F8FAFC;   /* striped rows, subtle panels */
+    -color-surface-elevated: #FFFFFF;   /* dropdowns, popovers */
+
+    /* Glass surface — used SPARINGLY for overlays, dialogs, floating panels */
+    -color-glass:            rgba(255, 255, 255, 0.72);
+    -color-glass-border:     rgba(15, 23, 42, 0.08);
+
+    /* ----- Sidebar ----- */
+    -color-sidebar:          #0F172A;
+    -color-sidebar-hover:    #1E293B;
+    -color-sidebar-active:   #10B981;
+    -color-sidebar-text:     #CBD5E1;
+    -color-sidebar-text-active: #FFFFFF;
+    -color-sidebar-text-muted:  #64748B;
+    -color-sidebar-divider:  #1E293B;
+
+    /* ----- Text ----- */
+    -color-text-primary:     #0F172A;
+    -color-text-secondary:   #64748B;
+    -color-text-muted:       #94A3B8;
+    -color-text-inverse:     #FFFFFF;
+
+    /* ----- Accent (Emerald) ----- */
+    -color-accent:           #10B981;
+    -color-accent-hover:     #059669;
+    -color-accent-pressed:   #047857;
+    -color-accent-subtle:    rgba(16, 185, 129, 0.12);
+    -color-accent-on:        #FFFFFF;     /* text on emerald */
+
+    /* ----- Secondary accent (Sky Blue) ----- */
+    -color-info:             #38BDF8;
+    -color-info-hover:       #0EA5E9;
+    -color-info-subtle:      rgba(56, 189, 248, 0.12);
+    -color-info-on:          #0F172A;
+
+    /* ----- State colors ----- */
+    -color-success:          #10B981;
+    -color-success-subtle:   rgba(16, 185, 129, 0.12);
+    -color-warning:          #F59E0B;
+    -color-warning-subtle:   rgba(245, 158, 11, 0.14);
+    -color-error:            #EF4444;
+    -color-error-subtle:     rgba(239, 68, 68, 0.12);
+
+    /* ----- Borders & dividers ----- */
+    -color-border:           #E2E8F0;
+    -color-border-strong:    #CBD5E1;
+    -color-border-subtle:    #F1F5F9;
+    -color-divider:          #E2E8F0;
+
+    /* ----- Interactive states ----- */
+    -color-hover:            #F1F5F9;
+    -color-pressed:          #E2E8F0;
+    -color-selected:         rgba(16, 185, 129, 0.10);
+    -color-focus-ring:       rgba(16, 185, 129, 0.40);
+
+    /* ----- Inputs ----- */
+    -color-input-bg:         #FFFFFF;
+    -color-input-border:     #CBD5E1;
+    -color-input-border-focus: #10B981;
+    -color-input-placeholder:  #94A3B8;
+    -color-input-disabled-bg:  #F1F5F9;
+
+    /* ----- Tables ----- */
+    -color-table-header-bg:  #F8FAFC;
+    -color-table-header-text:#475569;
+    -color-table-row:        #FFFFFF;
+    -color-table-row-alt:    #F8FAFC;
+    -color-table-row-hover:  #F1F5F9;
+    -color-table-row-selected: rgba(16, 185, 129, 0.10);
+    -color-table-border:     #E2E8F0;
+
+    /* ----- Buttons (filled defaults) ----- */
+    -color-btn-primary-bg:        #10B981;
+    -color-btn-primary-bg-hover:  #059669;
+    -color-btn-primary-text:      #FFFFFF;
+
+    -color-btn-secondary-bg:        #FFFFFF;
+    -color-btn-secondary-bg-hover:  #F1F5F9;
+    -color-btn-secondary-text:      #0F172A;
+    -color-btn-secondary-border:    #CBD5E1;
+
+    -color-btn-ghost-bg-hover:    #F1F5F9;
+    -color-btn-ghost-text:        #0F172A;
+
+    -color-btn-danger-bg:         #EF4444;
+    -color-btn-danger-bg-hover:   #DC2626;
+    -color-btn-danger-text:       #FFFFFF;
+
+    /* ----- Tabs ----- */
+    -color-tab-bg:           #F1F5F9;
+    -color-tab-bg-active:    #FFFFFF;
+    -color-tab-text:         #64748B;
+    -color-tab-text-active:  #0F172A;
+    -color-tab-indicator:    #10B981;
+    -color-tab-border:       #E2E8F0;
+
+    /* ----- Notification center ----- */
+    -color-notif-unread-dot: #10B981;
+    -color-notif-info:       #38BDF8;
+    -color-notif-warning:    #F59E0B;
+    -color-notif-urgent:     #EF4444;
+
+    /* ----- Shadows (light theme uses soft shadows) ----- */
+    -color-shadow:           rgba(15, 23, 42, 0.08);
+    -color-shadow-strong:    rgba(15, 23, 42, 0.16);
+
+    /* ----- Scrollbar ----- */
+    -color-scrollbar-thumb:       #CBD5E1;
+    -color-scrollbar-thumb-hover: #94A3B8;
+
+    /* ----- Tooltip ----- */
+    -color-tooltip-bg:       #0F172A;
+    -color-tooltip-text:     #F8FAFC;
+
+    /* ----- Sync / status indicator dots ----- */
+    -color-sync-synced:      #10B981;
+    -color-sync-pending:     #F59E0B;
+    -color-sync-failed:      #EF4444;
+    -color-sync-offline:     #94A3B8;
+}

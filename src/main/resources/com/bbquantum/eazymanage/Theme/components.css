@@ -1,0 +1,760 @@
+/* ============================================================================
+   EazyManage — Component Library
+   ----------------------------------------------------------------------------
+   Reusable component classes. References ONLY token names (-color-*) defined
+   in light-theme.css / dark-theme.css. Never hardcodes a hex color.
+
+   To use a component in an FXML:
+       <Button styleClass="btn btn-primary" text="Save"/>
+
+   Sections:
+     1. Buttons
+     2. Cards & widgets
+     3. Inputs & forms
+     4. Tables
+     5. Sidebar (collapsible, role-aware)
+     6. Tabs (workspace)
+     7. Badges & status pills
+     8. Notifications (toast + center)
+     9. Dialogs & overlays (with subtle glass)
+    10. Floating Action Button
+    11. Utility classes (spacing, status dots, dividers)
+============================================================================ */
+
+
+/* ============================================================================
+   1. BUTTONS
+============================================================================ */
+
+.btn {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+    -fx-background-insets: 0;
+    -fx-effect: null;
+}
+
+.btn:disabled {
+    -fx-opacity: 0.55;
+    -fx-cursor: default;
+}
+
+/* Primary — emerald fill */
+.btn-primary {
+    -fx-background-color: -color-btn-primary-bg;
+    -fx-text-fill:        -color-btn-primary-text;
+}
+.btn-primary:hover  { -fx-background-color: -color-btn-primary-bg-hover; }
+.btn-primary:pressed{ -fx-background-color: -color-accent-pressed; }
+
+/* Secondary — outlined */
+.btn-secondary {
+    -fx-background-color: -color-btn-secondary-bg;
+    -fx-text-fill:        -color-btn-secondary-text;
+    -fx-border-color:     -color-btn-secondary-border;
+    -fx-border-width:     1;
+}
+.btn-secondary:hover { -fx-background-color: -color-btn-secondary-bg-hover; }
+
+/* Ghost — no background until hover */
+.btn-ghost {
+    -fx-background-color: transparent;
+    -fx-text-fill:        -color-btn-ghost-text;
+}
+.btn-ghost:hover { -fx-background-color: -color-btn-ghost-bg-hover; }
+
+/* Danger */
+.btn-danger {
+    -fx-background-color: -color-btn-danger-bg;
+    -fx-text-fill:        -color-btn-danger-text;
+}
+.btn-danger:hover { -fx-background-color: -color-btn-danger-bg-hover; }
+
+/* Sizes */
+.btn-sm { -fx-font-size: 12px; -fx-padding: 6 12 6 12; }
+.btn-lg { -fx-font-size: 14px; -fx-padding: 10 20 10 20; }
+
+/* Icon-only square button (e.g. sidebar collapse, table row action) */
+.btn-icon {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 6 8 6 8;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.btn-icon:hover  { -fx-background-color: -color-hover; -fx-text-fill: -color-text-primary; }
+
+
+/* ============================================================================
+   2. CARDS & DASHBOARD WIDGETS
+============================================================================ */
+
+.card {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, -color-shadow, 12, 0, 0, 2);
+}
+
+/* Quieter card — no shadow, for grid layouts */
+.card-flat {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 20;
+}
+
+/* Glass card — sparingly: dialogs, floating panels, overlays */
+.card-glass {
+    -fx-background-color: -color-glass;
+    -fx-background-radius: 14;
+    -fx-border-color: -color-glass-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 24, 0.1, 0, 6);
+}
+
+/* Stat / metric card — dashboard top-row widgets */
+.stat-card {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 18;
+    -fx-spacing: 6;
+    -fx-effect: dropshadow(gaussian, -color-shadow, 8, 0, 0, 1);
+}
+.stat-card-label { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: -color-text-muted; }
+.stat-card-value { -fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: -color-text-primary; }
+.stat-card-delta-up   { -fx-text-fill: -color-success; -fx-font-size: 12px; -fx-font-weight: 600; }
+.stat-card-delta-down { -fx-text-fill: -color-error;   -fx-font-size: 12px; -fx-font-weight: 600; }
+
+/* Card icon plate (left-of-value icon background) */
+.card-icon-plate {
+    -fx-background-radius: 10;
+    -fx-min-width: 40; -fx-min-height: 40;
+    -fx-max-width: 40; -fx-max-height: 40;
+    -fx-alignment: center;
+}
+.card-icon-plate-accent  { -fx-background-color: -color-accent-subtle; }
+.card-icon-plate-info    { -fx-background-color: -color-info-subtle; }
+.card-icon-plate-warning { -fx-background-color: -color-warning-subtle; }
+.card-icon-plate-error   { -fx-background-color: -color-error-subtle; }
+
+
+/* ============================================================================
+   3. INPUTS & FORMS
+============================================================================ */
+
+.field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 0 0 4 0;
+}
+
+.input,
+.input:focused,
+.text-field.input,
+.password-field.input {
+    -fx-background-color: -color-input-bg;
+    -fx-text-fill: -color-text-primary;
+    -fx-prompt-text-fill: -color-input-placeholder;
+    -fx-border-color: -color-input-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+    -fx-font-size: 13px;
+}
+
+.input:focused {
+    -fx-border-color: -color-input-border-focus;
+}
+
+.input:disabled {
+    -fx-background-color: -color-input-disabled-bg;
+    -fx-opacity: 0.85;
+}
+
+/* ComboBox & ChoiceBox styled like input */
+.combo-box.input,
+.choice-box.input {
+    -fx-padding: 4 8 4 8;
+}
+.combo-box.input .list-cell { -fx-text-fill: -color-text-primary; -fx-padding: 4 8 4 8; }
+.combo-box.input .arrow,
+.choice-box.input .arrow { -fx-background-color: -color-text-secondary; }
+.combo-box-popup .list-view {
+    -fx-background-color: -color-surface-elevated;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, -color-shadow, 12, 0, 0, 4);
+}
+.combo-box-popup .list-view .list-cell:hover     { -fx-background-color: -color-hover; }
+.combo-box-popup .list-view .list-cell:selected  { -fx-background-color: -color-selected; -fx-text-fill: -color-text-primary; }
+
+/* Date picker uses input class plus tweaks */
+.date-picker.input .arrow-button { -fx-background-color: transparent; -fx-padding: 0 8 0 8; }
+.date-picker.input .arrow-button .arrow { -fx-background-color: -color-text-secondary; }
+.date-picker-popup {
+    -fx-background-color: -color-surface-elevated;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, -color-shadow, 12, 0, 0, 4);
+}
+
+/* CheckBox / RadioButton */
+.check-box, .radio-button { -fx-text-fill: -color-text-primary; }
+.check-box .box, .radio-button .radio {
+    -fx-background-color: -color-input-bg;
+    -fx-border-color: -color-input-border;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+.radio-button .radio { -fx-border-radius: 50; -fx-background-radius: 50; }
+.check-box:selected .box, .radio-button:selected .radio {
+    -fx-background-color: -color-accent;
+    -fx-border-color: -color-accent;
+}
+.check-box:selected .mark        { -fx-background-color: -color-accent-on; }
+.radio-button:selected .dot      { -fx-background-color: -color-accent-on; }
+
+/* Inline error / success message */
+.field-error    { -fx-text-fill: -color-error;   -fx-font-size: 12px; -fx-padding: 4 0 0 0; }
+.field-success  { -fx-text-fill: -color-success; -fx-font-size: 12px; -fx-padding: 4 0 0 0; }
+.field-help     { -fx-text-fill: -color-text-muted; -fx-font-size: 12px; -fx-padding: 4 0 0 0; }
+
+
+/* ============================================================================
+   4. TABLES — modern, with row hover, sticky-feeling header
+============================================================================ */
+
+.table {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 0;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table .column-header-background {
+    -fx-background-color: -color-table-header-bg;
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 0;
+}
+
+.table .column-header,
+.table .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent -color-table-border transparent transparent;
+    -fx-border-width: 0 1 1 0;
+    -fx-padding: 12 14 12 14;
+}
+
+.table .column-header .label {
+    -fx-text-fill: -color-table-header-text;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+}
+
+.table .table-row-cell {
+    -fx-background-color: -color-table-row;
+    -fx-border-color: transparent transparent -color-table-border transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-table-cell-border-color: transparent;
+    -fx-cell-size: 40;
+}
+
+.table .table-row-cell:odd { -fx-background-color: -color-table-row-alt; }
+
+.table .table-row-cell:hover {
+    -fx-background-color: -color-table-row-hover;
+}
+
+.table .table-row-cell:selected {
+    -fx-background-color: -color-table-row-selected;
+    -fx-text-background-color: -color-text-primary;
+}
+
+.table .table-row-cell:selected .table-cell { -fx-text-fill: -color-text-primary; }
+
+.table .table-cell {
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 0 14 0 14;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent;
+}
+
+.table .placeholder .label { -fx-text-fill: -color-text-muted; }
+
+/* Table toolbar — search + filters above the table */
+.table-toolbar {
+    -fx-padding: 12 16 12 16;
+    -fx-spacing: 12;
+    -fx-alignment: center-left;
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 12 12 0 0;
+    -fx-border-color: transparent transparent -color-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+
+/* ============================================================================
+   5. SIDEBAR — modern, collapsible, role-aware
+   ---------------------------------------------------------------------------
+   Structure:
+     <VBox styleClass="sidebar">
+       <VBox styleClass="sidebar-header"> ... </VBox>
+       <VBox styleClass="sidebar-section">
+         <Label styleClass="sidebar-section-title" text="OPERATIONS"/>
+         <Button styleClass="sidebar-item, sidebar-item-active" text="Dashboard"/>
+         <Button styleClass="sidebar-item" text="Attendance"/>
+       </VBox>
+       <VBox styleClass="sidebar-footer"> ... </VBox>
+     </VBox>
+
+   For the collapsed state, apply additionally: styleClass="sidebar-collapsed"
+   on the root sidebar VBox. Width handled in Java (240px expanded / 68px collapsed).
+============================================================================ */
+
+.sidebar {
+    -fx-background-color: -color-sidebar;
+    -fx-min-width: 240;
+    -fx-pref-width: 240;
+    -fx-padding: 16 0 16 0;
+    -fx-spacing: 4;
+}
+
+.sidebar-collapsed {
+    -fx-min-width: 68;
+    -fx-pref-width: 68;
+    -fx-max-width: 68;
+}
+
+.sidebar-header {
+    -fx-padding: 0 16 16 16;
+    -fx-spacing: 4;
+}
+
+.sidebar-brand {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-sidebar-text-active;
+}
+
+.sidebar-org {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-sidebar-text-muted;
+}
+
+.sidebar-divider {
+    -fx-background-color: -color-sidebar-divider;
+    -fx-pref-height: 1;
+    -fx-min-height: 1;
+    -fx-max-height: 1;
+}
+
+.sidebar-section { -fx-spacing: 2; -fx-padding: 8 8 8 8; }
+
+.sidebar-section-title {
+    -fx-padding: 6 12 6 12;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-sidebar-text-muted;
+}
+
+.sidebar-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-sidebar-text;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+    -fx-padding: 10 12 10 12;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-alignment: center-left;
+    -fx-graphic-text-gap: 12;
+    -fx-min-width: 0;
+}
+
+.sidebar-item:hover {
+    -fx-background-color: -color-sidebar-hover;
+    -fx-text-fill: -color-sidebar-text-active;
+}
+
+/* Active item — emerald left bar + emerald text */
+.sidebar-item-active {
+    -fx-background-color: -color-sidebar-hover;
+    -fx-text-fill: -color-sidebar-text-active;
+    -fx-border-color: -color-sidebar-active transparent transparent transparent;
+    -fx-border-width: 0 0 0 3;
+    -fx-border-insets: 0 0 0 -8;
+}
+
+.sidebar-footer {
+    -fx-padding: 12 16 0 16;
+    -fx-spacing: 4;
+}
+
+
+/* ============================================================================
+   6. TABS — multi-tab workspace
+   ---------------------------------------------------------------------------
+   For the open-tabs strip across the top of the workspace. NOT TabPane — built
+   on HBox with Buttons styled below, so we can render close-buttons inline
+   and the indicator bar precisely.
+============================================================================ */
+
+.tab-bar {
+    -fx-background-color: -color-bg-alt;
+    -fx-padding: 0 8 0 8;
+    -fx-spacing: 2;
+    -fx-border-color: transparent transparent -color-tab-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.workspace-tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-tab-text;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 8 8 0 0;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 2 0;
+}
+
+.workspace-tab:hover {
+    -fx-background-color: -color-hover;
+    -fx-text-fill: -color-text-primary;
+}
+
+.workspace-tab-active {
+    -fx-background-color: -color-tab-bg-active;
+    -fx-text-fill: -color-tab-text-active;
+    -fx-border-color: transparent transparent -color-tab-indicator transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-font-weight: 600;
+}
+
+.workspace-tab-close {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-muted;
+    -fx-font-size: 14px;
+    -fx-padding: 0 4 0 4;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+.workspace-tab-close:hover { -fx-background-color: -color-pressed; -fx-text-fill: -color-error; }
+
+/* If app uses native TabPane somewhere, style it consistently */
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 8 14 8 14;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab .tab-label { -fx-text-fill: -color-tab-text; }
+.tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label { -fx-text-fill: -color-tab-text-active; }
+.tab-pane > .tab-header-area { -fx-padding: 0 8 0 8; }
+.tab-pane > .tab-header-background { -fx-background-color: -color-bg-alt; }
+
+
+/* ============================================================================
+   7. BADGES & STATUS PILLS
+============================================================================ */
+
+.badge {
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 3 8 3 8;
+    -fx-background-radius: 6;
+}
+.badge-accent  { -fx-background-color: -color-accent-subtle;  -fx-text-fill: -color-accent; }
+.badge-info    { -fx-background-color: -color-info-subtle;    -fx-text-fill: -color-info; }
+.badge-success { -fx-background-color: -color-success-subtle; -fx-text-fill: -color-success; }
+.badge-warning { -fx-background-color: -color-warning-subtle; -fx-text-fill: -color-warning; }
+.badge-error   { -fx-background-color: -color-error-subtle;   -fx-text-fill: -color-error; }
+.badge-neutral { -fx-background-color: -color-hover;          -fx-text-fill: -color-text-secondary; }
+
+/* Priority pills — for broadcast / notifications */
+.priority-info    { -fx-background-color: -color-info-subtle;    -fx-text-fill: -color-info;
+    -fx-padding: 3 8 3 8; -fx-background-radius: 6; -fx-font-size: 11px; -fx-font-weight: 600; }
+.priority-warning { -fx-background-color: -color-warning-subtle; -fx-text-fill: -color-warning;
+    -fx-padding: 3 8 3 8; -fx-background-radius: 6; -fx-font-size: 11px; -fx-font-weight: 600; }
+.priority-urgent  { -fx-background-color: -color-error-subtle;   -fx-text-fill: -color-error;
+    -fx-padding: 3 8 3 8; -fx-background-radius: 6; -fx-font-size: 11px; -fx-font-weight: 600; }
+
+
+/* ============================================================================
+   8. NOTIFICATIONS — toast + notification center
+============================================================================ */
+
+.toast {
+    -fx-background-color: -color-surface-elevated;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-padding: 12 16 12 16;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 18, 0.1, 0, 6);
+}
+.toast-info    { -fx-border-color: -color-info; }
+.toast-success { -fx-border-color: -color-success; }
+.toast-warning { -fx-border-color: -color-warning; }
+.toast-error   { -fx-border-color: -color-error; }
+
+.toast-title   { -fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: -color-text-primary; }
+.toast-message { -fx-font-size: 12px; -fx-text-fill: -color-text-secondary; }
+
+/* Notification center dropdown panel */
+.notif-center {
+    -fx-background-color: -color-surface-elevated;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-padding: 0;
+    -fx-min-width: 360;
+    -fx-pref-width: 360;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 24, 0.1, 0, 8);
+}
+
+.notif-center-header {
+    -fx-padding: 14 16 14 16;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -color-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.notif-item {
+    -fx-padding: 12 16 12 16;
+    -fx-spacing: 4;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -color-border-subtle transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-cursor: hand;
+}
+.notif-item:hover { -fx-background-color: -color-hover; }
+
+.notif-item-unread { -fx-background-color: -color-accent-subtle; }
+
+.notif-item-title    { -fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: -color-text-primary; }
+.notif-item-body     { -fx-font-size: 12px; -fx-text-fill: -color-text-secondary; }
+.notif-item-timestamp{ -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
+
+.notif-unread-dot {
+    -fx-background-color: -color-notif-unread-dot;
+    -fx-background-radius: 50;
+    -fx-min-width: 8; -fx-min-height: 8;
+    -fx-max-width: 8; -fx-max-height: 8;
+}
+
+/* Bell button — top bar icon button that opens the center */
+.notif-bell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 6 8 6 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+.notif-bell:hover { -fx-background-color: -color-hover; -fx-text-fill: -color-text-primary; }
+
+.notif-bell-count {
+    -fx-background-color: -color-error;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-padding: 1 5 1 5;
+    -fx-background-radius: 50;
+}
+
+
+/* ============================================================================
+   9. DIALOGS & OVERLAYS (subtle glass — use carefully)
+============================================================================ */
+
+.dialog-backdrop {
+    /* Apply to a StackPane that wraps the modal content */
+    -fx-background-color: rgba(15, 23, 42, 0.40);
+}
+
+.dialog {
+    -fx-background-color: -color-surface-elevated;
+    -fx-background-radius: 14;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 14;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 32, 0.15, 0, 10);
+    -fx-max-width: 520;
+}
+
+.dialog-glass {
+    -fx-background-color: -color-glass;
+    -fx-background-radius: 16;
+    -fx-border-color: -color-glass-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 40, 0.15, 0, 12);
+    -fx-max-width: 520;
+}
+
+.dialog-title  { -fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: -color-text-primary; }
+.dialog-body   { -fx-font-size: 13px; -fx-text-fill: -color-text-secondary; }
+.dialog-actions{ -fx-spacing: 8; -fx-alignment: center-right; -fx-padding: 16 0 0 0; }
+
+
+/* ============================================================================
+   10. FLOATING ACTION BUTTON (FAB)
+   ---------------------------------------------------------------------------
+   Use sparingly for the most important per-screen action:
+     - Add Student (admin students screen)
+     - Upload Scores (teacher results screen)
+     - Record Payment (accountant finance screen)
+============================================================================ */
+
+.fab {
+    -fx-background-color: -color-accent;
+    -fx-text-fill: -color-accent-on;
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-padding: 14 20 14 20;
+    -fx-background-radius: 50;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 16, 0.2, 0, 6);
+}
+.fab:hover    { -fx-background-color: -color-accent-hover; }
+.fab:pressed  { -fx-background-color: -color-accent-pressed; }
+
+/* Circular icon-only variant */
+.fab-circle {
+    -fx-background-color: -color-accent;
+    -fx-text-fill: -color-accent-on;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+    -fx-min-width: 56; -fx-min-height: 56;
+    -fx-max-width: 56; -fx-max-height: 56;
+    -fx-background-radius: 50;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, -color-shadow-strong, 16, 0.2, 0, 6);
+}
+.fab-circle:hover { -fx-background-color: -color-accent-hover; }
+
+
+/* ============================================================================
+   11. UTILITIES — spacing, status dots, dividers
+============================================================================ */
+
+/* Spacing helpers — use on VBox / HBox via styleClass */
+.gap-2  { -fx-spacing: 2; }
+.gap-4  { -fx-spacing: 4; }
+.gap-8  { -fx-spacing: 8; }
+.gap-12 { -fx-spacing: 12; }
+.gap-16 { -fx-spacing: 16; }
+.gap-24 { -fx-spacing: 24; }
+
+.pad-8     { -fx-padding: 8; }
+.pad-12    { -fx-padding: 12; }
+.pad-16    { -fx-padding: 16; }
+.pad-24    { -fx-padding: 24; }
+.pad-32    { -fx-padding: 32; }
+
+/* Divider line */
+.divider-h {
+    -fx-background-color: -color-divider;
+    -fx-pref-height: 1; -fx-min-height: 1; -fx-max-height: 1;
+}
+.divider-v {
+    -fx-background-color: -color-divider;
+    -fx-pref-width: 1; -fx-min-width: 1; -fx-max-width: 1;
+}
+
+/* Status dots for sync state, online indicator, etc */
+.status-dot {
+    -fx-min-width: 8; -fx-min-height: 8;
+    -fx-max-width: 8; -fx-max-height: 8;
+    -fx-background-radius: 50;
+}
+.status-dot-synced  { -fx-background-color: -color-sync-synced; }
+.status-dot-pending { -fx-background-color: -color-sync-pending; }
+.status-dot-failed  { -fx-background-color: -color-sync-failed; }
+.status-dot-offline { -fx-background-color: -color-sync-offline; }
+.status-dot-online  { -fx-background-color: -color-success; }
+
+/* Avatar circle (initials) */
+.avatar {
+    -fx-background-color: -color-accent-subtle;
+    -fx-background-radius: 50;
+    -fx-min-width: 32; -fx-min-height: 32;
+    -fx-max-width: 32; -fx-max-height: 32;
+    -fx-alignment: center;
+}
+.avatar-label { -fx-text-fill: -color-accent; -fx-font-weight: 700; -fx-font-size: 13px; }
+.avatar-lg { -fx-min-width: 48; -fx-min-height: 48; -fx-max-width: 48; -fx-max-height: 48; }
+
+
+/* ============================================================================
+   TOP BAR — shell header (search, notif bell, theme toggle, user menu)
+============================================================================ */
+
+.topbar {
+    -fx-background-color: -color-surface;
+    -fx-padding: 12 20 12 20;
+    -fx-spacing: 16;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent transparent -color-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.topbar-search {
+    -fx-background-color: -color-bg-alt;
+    -fx-border-color: transparent;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 12 8 12;
+    -fx-prompt-text-fill: -color-text-muted;
+    -fx-text-fill: -color-text-primary;
+    -fx-pref-width: 320;
+}
+.topbar-search:focused { -fx-border-color: -color-input-border-focus; -fx-background-color: -color-input-bg; }
+
+
+/* ============================================================================
+   PAGE LAYOUT helpers
+============================================================================ */
+
+.page {
+    -fx-background-color: -color-bg;
+    -fx-padding: 24;
+    -fx-spacing: 20;
+}
+
+.page-header {
+    -fx-spacing: 4;
+}
+
+.page-title    { -fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: -color-text-primary; }
+.page-subtitle { -fx-font-size: 13px; -fx-text-fill: -color-text-secondary; }
+
+.section-header {
+    -fx-padding: 0 0 8 0;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+}
+.section-title { -fx-font-size: 15px; -fx-font-weight: 600; -fx-text-fill: -color-text-primary; }

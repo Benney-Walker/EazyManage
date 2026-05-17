@@ -1,0 +1,193 @@
+/* ============================================================================
+   EazyManage — Theme Tokens (theme-agnostic base)
+   ----------------------------------------------------------------------------
+   This file is loaded FIRST by every screen that uses the new design system.
+   It contains:
+     • base typography rules
+     • base scrollbar / focus / selection styling
+     • shared structural styles
+   It does NOT define colors. Colors live in light-theme.css / dark-theme.css
+   as JavaFX looked-up colors on .root (e.g. -color-bg, -color-surface, ...).
+
+   Spacing rhythm (use as -fx-padding / -fx-spacing):
+     2  4  8  12  16  24  32  48  64
+   Radius rhythm:
+     4  8  12  16  20
+============================================================================ */
+
+
+/* ---------------------------------------------------------------------------
+   Base typography
+   - System font stack: Inter falls back to platform default if not installed
+--------------------------------------------------------------------------- */
+.root {
+    -fx-font-family: "Inter", "Segoe UI", "SF Pro Text", "Helvetica Neue", sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-smoothing-type: lcd;
+    -fx-focus-color: -color-accent;
+    -fx-faint-focus-color: transparent;
+}
+
+.text-primary   { -fx-text-fill: -color-text-primary; }
+.text-secondary { -fx-text-fill: -color-text-secondary; }
+.text-muted     { -fx-text-fill: -color-text-muted; }
+.text-success   { -fx-text-fill: -color-success; }
+.text-warning   { -fx-text-fill: -color-warning; }
+.text-error     { -fx-text-fill: -color-error; }
+.text-accent    { -fx-text-fill: -color-accent; }
+
+.text-display    { -fx-font-size: 28px; -fx-font-weight: bold;   -fx-text-fill: -color-text-primary; }
+.text-title      { -fx-font-size: 20px; -fx-font-weight: bold;   -fx-text-fill: -color-text-primary; }
+.text-subtitle   { -fx-font-size: 16px; -fx-font-weight: 600;    -fx-text-fill: -color-text-primary; }
+.text-body       { -fx-font-size: 13px; -fx-font-weight: normal; -fx-text-fill: -color-text-primary; }
+.text-caption    { -fx-font-size: 12px; -fx-font-weight: normal; -fx-text-fill: -color-text-secondary; }
+.text-eyebrow    {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text-muted;
+}
+.text-metric     { -fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: -color-text-primary; }
+
+
+/* ---------------------------------------------------------------------------
+   Surfaces — backgrounds and base containers
+--------------------------------------------------------------------------- */
+.surface-app {
+    /* The outermost workspace background */
+    -fx-background-color: -color-bg;
+}
+
+.surface-base {
+    /* Slightly inset panels (e.g. content gutters under tabs) */
+    -fx-background-color: -color-bg-alt;
+}
+
+.surface-card {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Scrollbar — slim, modern, theme-aware
+--------------------------------------------------------------------------- */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 2;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: -color-scrollbar-thumb;
+    -fx-background-radius: 8;
+    -fx-background-insets: 2;
+}
+
+.scroll-bar .thumb:hover,
+.scroll-bar .thumb:pressed {
+    -fx-background-color: -color-scrollbar-thumb-hover;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button,
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-shape: " ";
+}
+
+.scroll-bar:horizontal { -fx-pref-height: 10; }
+.scroll-bar:vertical   { -fx-pref-width: 10; }
+
+
+/* ---------------------------------------------------------------------------
+   Focus ring — accessible but quiet
+--------------------------------------------------------------------------- */
+.focusable:focused,
+.button:focused,
+.text-field:focused,
+.password-field:focused,
+.text-area:focused,
+.combo-box:focused,
+.choice-box:focused,
+.toggle-button:focused,
+.check-box:focused,
+.radio-button:focused {
+    -fx-effect: dropshadow(gaussian, -color-focus-ring, 6, 0, 0, 0);
+}
+
+
+/* ---------------------------------------------------------------------------
+   Selection (text fields, lists)
+--------------------------------------------------------------------------- */
+.text-input {
+    -fx-highlight-fill: -color-accent-subtle;
+    -fx-highlight-text-fill: -color-text-primary;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Tooltip
+--------------------------------------------------------------------------- */
+.tooltip {
+    -fx-background-color: -color-tooltip-bg;
+    -fx-text-fill: -color-tooltip-text;
+    -fx-background-radius: 6;
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 12px;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Separators
+--------------------------------------------------------------------------- */
+.separator .line {
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 0 1 0;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Context menu (right-click)
+--------------------------------------------------------------------------- */
+.context-menu {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 8;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 4;
+    -fx-effect: dropshadow(gaussian, -color-shadow, 12, 0, 0, 4);
+}
+
+.menu-item {
+    -fx-background-radius: 4;
+    -fx-padding: 6 12 6 12;
+}
+
+.menu-item:focused,
+.menu-item:hover {
+    -fx-background-color: -color-hover;
+}
+
+.menu-item .label {
+    -fx-text-fill: -color-text-primary;
+}
