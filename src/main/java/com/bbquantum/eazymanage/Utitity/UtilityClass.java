@@ -2,18 +2,22 @@ package com.bbquantum.eazymanage.Utitity;
 
 import com.bbquantum.eazymanage.CacheClasses.*;
 import com.bbquantum.eazymanage.Constants.StaffRoles;
+import com.bbquantum.eazymanage.Controller.AdminController;
+import com.bbquantum.eazymanage.Controller.FinanceController;
+import com.bbquantum.eazymanage.Controller.PrincipalController;
+import com.bbquantum.eazymanage.Controller.StaffController;
 import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Finance.GradeFeesReport;
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
 import com.bbquantum.eazymanage.DTO.Institution.FindAndUpdateClassInfo;
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -27,7 +31,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UtilityMethods {
+public class UtilityClass {
+
+    public static final String BASE_URL = "http://localhost:8080/api";
 
     // Cache Managers
     public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
@@ -74,6 +80,7 @@ public class UtilityMethods {
     //Holds staff roles for update
     public static List<StaffRoles> staffRoles = new ArrayList<>();
 
+    // Clears session Data
     public static void clearSession() {
 
         SessionManager.clearSession();
@@ -148,32 +155,6 @@ public class UtilityMethods {
     public static void setActiveToggle(Button active, Button inactive) {
         active.setStyle("-fx-background-color: #4f46e5; -fx-text-fill: white;");
         inactive.setStyle("-fx-background-color: transparent; -fx-text-fill: #334155;");
-    }
-
-    public static void saveSubjectListToFile(List<PrintLevelSubjects> subjects, File file, String levelName) throws Exception {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-            // Header
-            writer.println("========================================");
-            writer.println("         SUBJECT LIST - " + levelName);
-            writer.println("========================================");
-            writer.println();
-            writer.println(String.format("%-5s | %-20s | %-30s", "No.", "Student ID", "Full Name"));
-            writer.println("---------------------------------------------------");
-
-            // Data rows
-            int count = 1;
-            for (PrintLevelSubjects subject : subjects) {
-                writer.println(String.format("%-5d | %-20s | %-30s",
-                        count++,
-                        subject.getSubjectId(),
-                        subject.getSubjectName()));
-            }
-
-            writer.println();
-            writer.println("---------------------------------------------------");
-            writer.println("Total Subjects: " + subjects.size());
-            writer.println("Generated on: " + LocalDate.now());
-        }
     }
 
     public static void saveStudentPayRecordsListToFile(List<PaymentHistory> records,
@@ -279,33 +260,43 @@ public class UtilityMethods {
         }
     }
 
+    public static void findController(String role, String staffId, String institutionName, String staffFullName, FXMLLoader loader) {
+        if (role.equals("PRINCIPAL")) {
+            PrincipalController principalController = loader.getController();
+            principalController.setInstitutionName(institutionName);
+            principalController.setStaffId(staffId);
+            principalController.setPrincipalName(staffFullName);
+            principalController.setStaffRole(role);
 
-    public static void saveStudentListToFile(List<StudentListPrint> students, File file, String levelName) throws Exception {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-            // Header
-            writer.println("========================================");
-            writer.println("         STUDENT LIST - " + levelName);
-            writer.println("========================================");
-            writer.println();
-            writer.println(String.format("%-5s | %-20s | %-30s",
-                    "No.",
-                    "Student ID",
-                    "Full Name"));
-            writer.println("---------------------------------------------------");
+            principalController.initializeAfterLogin();
+        }
 
-            // Data rows
-            int count = 1;
-            for (StudentListPrint student : students) {
-                writer.println(String.format("%-5d | %-20s | %-30s",
-                        count++,
-                        student.getStudentId(),
-                        student.getFullName()));
-            }
+        if (role.equals("ACCOUNTANT")) {
+            FinanceController financeController = loader.getController();
+            financeController.setInstitutionName(institutionName);
+            financeController.setStaffId(staffId);
+            financeController.setStaffName(staffFullName);
+            financeController.setStaffRole(role);
 
-            writer.println();
-            writer.println("---------------------------------------------------");
-            writer.println("Total Students: " + students.size());
-            writer.println("Generated on: " + LocalDate.now());
+            financeController.initializeAfterLogin();
+        }
+
+        if (role.equals("TEACHING_STAFF")) {
+            StaffController staffController = loader.getController();
+            staffController.setInstitutionName(institutionName);
+            staffController.setStaffId(staffId);
+            staffController.setStaffFullName(staffFullName);
+
+            staffController.initializeAfterLogin();
+        }
+
+        if (role.equals("ADMINISTRATOR")) {
+            AdminController adminController = loader.getController();
+            adminController.setInstitutionName(institutionName);
+            adminController.setStaffId(staffId);
+            adminController.setStaffFullName(staffFullName);
+
+            adminController.initializeAfterLogin();
         }
     }
 }
