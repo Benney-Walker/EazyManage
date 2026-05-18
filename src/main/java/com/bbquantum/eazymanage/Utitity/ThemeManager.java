@@ -27,11 +27,10 @@ public class ThemeManager {
     private static final String PREF_KEY = "eazymanage.theme";
 
     // Classpath resource locations for the design system files
-
-    private static final String TOKENS_CSS     = "com/bbquantum/eazymanage/Theme/token.css";
-    private static final String LIGHT_CSS      = "com/bbquantum/eazymanage/Theme/light-theme.css";
-    private static final String DARK_CSS       = "com/bbquantum/eazymanage/Theme/dark-theme.css";
-    private static final String COMPONENTS_CSS = "com/bbquantum/eazymanage/Theme/components.css";
+    private static final String TOKENS_CSS     = "/com/bbquantum/eazymanage/Theme/tokens.css";
+    private static final String LIGHT_CSS      = "/com/bbquantum/eazymanage/Theme/light-theme.css";
+    private static final String DARK_CSS       = "/com/bbquantum/eazymanage/Theme/dark-theme.css";
+    private static final String COMPONENTS_CSS = "/com/bbquantum/eazymanage/Theme/components.css";
 
     //State
     private AppTheme currentTheme;
@@ -130,13 +129,14 @@ public class ThemeManager {
         String components = url(COMPONENTS_CSS);
 
         if (tokens == null || themeCss == null || components == null) {
+            System.out.println("token " + tokens + " or theme " + themeCss + " or components " + components);
             System.out.println("[ThemeManager] Could not resolve one or more theme stylesheets on the classpath.");
             return;
         }
 
         // Strip any previously-added theme sheets so toggling doesn't accumulate.
         sheets.removeIf(s ->
-                s.endsWith("token.css")
+                s.endsWith("tokens.css")
         || s.endsWith("light-theme.css")
         || s.endsWith("dark-theme.css")
         || s.endsWith("components.css"));
