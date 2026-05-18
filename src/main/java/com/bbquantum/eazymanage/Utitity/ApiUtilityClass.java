@@ -4,6 +4,10 @@ import com.bbquantum.eazymanage.Controller.*;
 import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Finance.*;
 import com.bbquantum.eazymanage.DTO.Institution.*;
+import com.bbquantum.eazymanage.Services.ApiCore;
+import com.bbquantum.eazymanage.Services.AttendanceService;
+import com.bbquantum.eazymanage.Services.AuthService;
+import com.bbquantum.eazymanage.Services.StudentService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -69,6 +73,30 @@ public class ApiUtilityClass {
 
     // Store student results
     public StudentResult studentResult;
+
+    // ====================================================================
+    // Phase 3: extracted services
+    // --------------------------------------------------------------------
+    // {@link ApiCore} holds the HttpClient, Gson, URL roots and bearer
+    // token that the migrated services need. During this transition the
+    // {@code httpClient} / {@code gson} / {@code token} fields above still
+    // exist as their own instances — the unmigrated method bodies in this
+    // class reference them by name and cannot be touched yet. Subsequent
+    // Phase 3 deliveries will migrate the remaining methods and finally
+    // delete those duplicate fields.
+    //
+    // Each service receives both the {@code ApiCore} (for HTTP/JSON) and
+    // a reference to this facade (so they can write to the legacy public
+    // fields {@code errorMessageContainer} / {@code successMessageContainer}
+    // that controllers read directly).
+    // ====================================================================
+    private final ApiCore core = new ApiCore();
+
+    private final AuthService authService = new AuthService(core, this);
+
+    private final AttendanceService attendanceService = new AttendanceService(core, this);
+
+    private final StudentService studentService = new StudentService(core, this);
 
     // PRINCIPAL CONSTRUCTOR
     public ApiUtilityClass(PrincipalController principalController) {
@@ -1248,61 +1276,12 @@ public class ApiUtilityClass {
         new Thread(task).start();
     }
 
+
+
     public void recoverPassword(String staffId, String newPasswordStaffId, String newPassword,
                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = ADMIN_URL + API_VERSION_1 + "/reset-staff-password?" +
-                        "staffId=" + staffId +
-                        "&newPasswordStaffId=" + newPasswordStaffId +
-                        "&newPassword=" + newPassword;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
-                        .POST(HttpRequest.BodyPublishers.noBody())
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-                if (response.statusCode() == 200) {
-                    return response.body();
-                }
-
-                errorMessageContainer = "";
-                errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            String status = task.getValue();
-            if (status == null) {
-                onFailure.run();
-                return;
-            }
-
-            successMessageContainer = status;
-            onSuccess.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-
-            onFailure.run();
-        });
-
-        new Thread(task).start();
+        authService.recoverPassword(staffId, newPasswordStaffId, newPassword,
+                onSuccess, onFailure, onNetworkIssue);
     }
 
     public void fetchStudentPaymentRecords(String staffId, String studentId, String semesterId, String gradeId,
@@ -1539,122 +1518,13 @@ public class ApiUtilityClass {
     public void searchStudentData(String staffId, String studentId,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
-        Task<UpdateStudentPersonalData> task = new Task<>() {
-            @Override
-            protected UpdateStudentPersonalData call() throws Exception {
-                String url = STUDENT_URL + API_VERSION_1 + "/find-student/" + studentId;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .headers("Authorization", "Bearer " + token,
-                                "staffId", staffId)
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), UpdateStudentPersonalData.class);
-                }
-
-                errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-             UtilityClass.updateStudentPersonalData = task.getValue();
-            if(UtilityClass.updateStudentPersonalData == null) {
-                onFailure.run();
-                return;
-            }
-
-            onSuccess.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-
-            errorMessageContainer = "Could load student data";
-            onFailure.run();
-        });
-
-        new Thread(task).start();
+        studentService.searchStudentData(staffId, studentId, onSuccess, onFailure, onNetworkIssue);
     }
 
     public void updateStudentPersonalData(UpdateStudentPersonalData data, String staffId,
                                            Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = STUDENT_URL + API_VERSION_1 + "/update-student-data";
 
-                JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("studentId", data.getStudentId());
-                requestBody.addProperty("gender", data.getGender());
-                requestBody.addProperty("dateOfBirth", data.getDateOfBirth());
-                requestBody.addProperty("parentName", data.getParentName());
-                requestBody.addProperty("parentPhoneNumber", data.getParentPhoneNumber());
-                requestBody.addProperty("status", data.getStatus());
-                requestBody.addProperty("firstName", data.getFirstName());
-                requestBody.addProperty("lastName", data.getLastName());
-                requestBody.addProperty("gradeId", data.getGradeId());
-                requestBody.addProperty("homeTown", data.getHomeTown());
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json",
-                                "staffId", staffId)
-                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return response.body();
-                }
-
-                errorMessageContainer = "";
-                errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            String status = task.getValue();
-            if (status != null) {
-                successMessageContainer = status;
-                onSuccess.run();
-                return;
-            }
-
-            onFailure.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-
-            onFailure.run();
-        });
-
-        new Thread(task).start();
+        studentService.updateStudentPersonalData(data, staffId, onSuccess, onFailure, onNetworkIssue);
     }
 
     public void SearchStudentResults(String studentId, String semesterId, String classId,
@@ -2279,167 +2149,26 @@ public class ApiUtilityClass {
     public void loadStudentsForAttendance(String levelId, String date,
                                           Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
-        Type listType = new TypeToken<List<StudentAttendance>>() {}.getType();
-
-        Task<List<StudentAttendance>> task = new Task<>() {
-            @Override
-            protected List<StudentAttendance> call() throws Exception {
-                String url = STUDENT_URL + API_VERSION_1 + "/load-students-for-attendance/" +
-                        levelId + "/" + date;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return gson.fromJson(response.body(), listType);
-                }
-
-                errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            staffController.studentAttendances = task.getValue();
-            if (staffController.studentAttendances == null) {
-                onFailure.run();
-                return;
-            }
-            onSuccess.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-
-            onFailure.run();
-        });
-
-        new Thread(task).start();
+        // The Consumer here is what used to be the direct controller assignment
+        // inside the task's setOnSucceeded. Keeping it on this side preserves the
+        // service's freedom from controller types.
+        attendanceService.loadStudentsForAttendance(levelId, date,
+                result -> staffController.studentAttendances = result,
+                onSuccess, onFailure, onNetworkIssue);
     }
 
     public void markStudentAttendance(String studentId, String staffId, String levelId, String status,
                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/mark-attendance";
 
-                JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("studentId", studentId);
-                requestBody.addProperty("staffId", staffId);
-                requestBody.addProperty("levelId", levelId);
-                requestBody.addProperty("status", status);
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .headers("Authorization", "Bearer " + token,
-                                "Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return response.body();
-                }
-
-                errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            String response = task.getValue();
-            if (response == null) {
-                onFailure.run();
-                return;
-            }
-
-            onSuccess.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-
-            onFailure.run();
-        });
-
-        new Thread(task).start();
+        attendanceService.markStudentAttendance(studentId, staffId, levelId, status,
+                onSuccess, onFailure, onNetworkIssue);
     }
 
     public void updateAttendance(String studentId, String staffId, String levelId, String status, String dateMarked,
                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = STAFF_URL + API_VERSION_1 + "/update-attendance?" +
-                        "studentId=" + studentId +
-                        "&staffId=" + staffId +
-                        "&levelId=" + levelId +
-                        "&status=" + status +
-                        "&dateMarked=" + dateMarked;
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
-                        .PUT(HttpRequest.BodyPublishers.noBody())
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return response.body();
-                }
-                errorMessageContainer = response.body();
-                System.out.println(errorMessageContainer);
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            String response = task.getValue();
-            if (response == null) {
-                onFailure.run();
-                return;
-            }
-            onSuccess.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-            } else {
-                onNetworkIssue.run();
-            }
-        });
-
-        new Thread(task).start();
+        attendanceService.updateAttendance(studentId, staffId, levelId, status, dateMarked,
+                onSuccess, onFailure, onNetworkIssue);
     }
 
     public void findClassInfo(String levelId, String staffId,
@@ -3041,55 +2770,8 @@ public class ApiUtilityClass {
 
     public void getStudentName(String studentId,
                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = BASE_URL + API_VERSION_2 + "/get-student-name/" + studentId;
 
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + token)
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return response.body();
-                }
-
-                errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            String response = task.getValue();
-            if (response == null) {
-                onFailure.run();
-                return;
-            }
-
-            successMessageContainer = response;
-            onSuccess.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-
-            errorMessageContainer = "Could not get Student name";
-            onFailure.run();
-        });
-
-        new Thread(task).start();
+        studentService.getStudentName(studentId, onSuccess, onFailure, onNetworkIssue);
     }
 
     public void fetchGradeFeesRecords(String staffId, String levelId, String semesterId,
