@@ -12,10 +12,13 @@ module com.bbquantum.eazymanage {
     exports com.bbquantum.eazymanage;
     exports com.bbquantum.eazymanage.CacheClasses;
     exports com.bbquantum.eazymanage.Controller;
+    exports com.bbquantum.eazymanage.Shell;
+    exports com.bbquantum.eazymanage.Services;
 
 
     opens com.bbquantum.eazymanage to javafx.fxml;
     opens com.bbquantum.eazymanage.Controller to javafx.fxml;
+    opens com.bbquantum.eazymanage.Shell to javafx.fxml;
 
     opens com.bbquantum.eazymanage.CacheClasses to com.google.gson;
     exports com.bbquantum.eazymanage.DTO.Academics;
