@@ -33,7 +33,7 @@ import java.util.List;
 
 public class UtilityClass {
 
-    public static final String BASE_URL = "http://localhost:8080/api";
+    public static final String BASE_URL = "https://schoolmanagementsystem-eazymanage.up.railway.app/api";
 
     // Cache Managers
     public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
