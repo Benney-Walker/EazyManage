@@ -181,27 +181,6 @@ public class SwitchRoleController {
         showError("Session Expired. Click the sign out button to open login page");
     }
 
-    private void logOut(Button button) throws IOException {
-        UtilityClass.clearSession();
-
-        Stage  stage = (Stage) button.getScene().getWindow();
-
-        // Load the appropriate dashboard
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/auth-container.fxml"));
-        Scene scene = new Scene(loader.load());
-
-        // Create new stage for dashboard
-        Stage loginStage = new Stage();
-        loginStage.setTitle("EazyManage - Authentication");
-        loginStage.setScene(scene);
-        loginStage.sizeToScene();
-        loginStage.setResizable(false);
-
-        // Close login and show dashboard
-        stage.close();
-        loginStage.show();
-    }
-
     private void setActiveRoleBtn(Button activeRoleBtn) {
         String ACTIVEBTN = "-fx-background-color: #4f46e5; -fx-text-fill: white;";
         String INACTIVEBTN = "-fx-background-color: transparent; -fx-text-fill: #334155;";
