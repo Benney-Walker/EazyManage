@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import java.net.URL?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Shell.AppShellController"
+            styleClass="workspace-shell">
+
+    <stylesheets>
+        <URL value="@../Theme/shell.css"/>
+    </stylesheets>
+
+    <!--
+    ================================================================
+    LEFT — Collapsible sidebar
+    ================================================================
+    -->
+    <left>
+        <VBox fx:id="sidebar" styleClass="sidebar">
+
+            <!-- Header: brand mark, app name, institution name -->
+            <VBox styleClass="sidebar-header" spacing="10">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <StackPane styleClass="brand-mark">
+                        <Label styleClass="brand-mark-label" text="E"/>
+                    </StackPane>
+                    <VBox spacing="0">
+                        <Label fx:id="brandLabel" styleClass="sidebar-brand" text="EazyManage"/>
+                        <Label fx:id="orgLabel"   styleClass="sidebar-org"   text=" "/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <Region styleClass="sidebar-divider"/>
+
+            <!-- Body: scrollable nav sections populated by AppShellController -->
+            <ScrollPane fx:id="navScroll"
+                        styleClass="sidebar-scroll"
+                        fitToWidth="true"
+                        hbarPolicy="NEVER"
+                        VBox.vgrow="ALWAYS">
+                <VBox fx:id="navContainer" styleClass="sidebar-nav"/>
+            </ScrollPane>
+
+            <Region styleClass="sidebar-divider"/>
+
+            <!-- Footer: avatar, identity, logout -->
+            <HBox styleClass="sidebar-footer" alignment="CENTER_LEFT" spacing="10">
+                <StackPane styleClass="avatar">
+                    <Label fx:id="userInitialsLabel" styleClass="avatar-label" text="?"/>
+                </StackPane>
+                <VBox HBox.hgrow="ALWAYS" spacing="2">
+                    <Label fx:id="userNameLabel" styleClass="sidebar-user-name" text=" "/>
+                    <Label fx:id="userRoleLabel" styleClass="sidebar-user-role" text=" "/>
+                </VBox>
+                <Button fx:id="logoutButton"
+                        onAction="#onLogout"
+                        styleClass="sidebar-icon-button"
+                        text="⎋">
+                    <tooltip><Tooltip text="Sign out"/></tooltip>
+                </Button>
+            </HBox>
+        </VBox>
+    </left>
+
+    <!-- ================================================================
+         CENTER — Top bar, tab strip, content area
+         ================================================================ -->
+    <center>
+        <VBox styleClass="workspace-content">
+
+            <!-- Top bar -->
+            <HBox styleClass="topbar" alignment="CENTER_LEFT" spacing="12">
+                <Button fx:id="sidebarToggle"
+                        onAction="#onToggleSidebar"
+                        styleClass="topbar-icon-btn"
+                        text="≡">
+                    <tooltip><Tooltip text="Toggle sidebar"/></tooltip>
+                </Button>
+
+                <TextField fx:id="searchField"
+                           promptText="Search students, classes, payments…"
+                           styleClass="topbar-search"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Notification bell with unread-count badge -->
+                <StackPane fx:id="notifBellWrapper">
+                    <Button fx:id="notifBell"
+                            onAction="#onOpenNotifications"
+                            styleClass="topbar-icon-btn"
+                            text="🔔">
+                        <tooltip><Tooltip text="Notifications"/></tooltip>
+                    </Button>
+                    <Label fx:id="notifBellCount"
+                           styleClass="notif-bell-count"
+                           StackPane.alignment="TOP_RIGHT"
+                           visible="false"
+                           managed="false">
+                        <StackPane.margin>
+                            <Insets top="2" right="2"/>
+                        </StackPane.margin>
+                    </Label>
+                </StackPane>
+
+                <Button fx:id="themeToggle"
+                        onAction="#onToggleTheme"
+                        styleClass="topbar-icon-btn"
+                        text="◐">
+                    <tooltip><Tooltip text="Toggle light / dark"/></tooltip>
+                </Button>
+            </HBox>
+
+            <!-- Tab strip: open tabs rendered programmatically -->
+            <HBox fx:id="tabBar"
+                  styleClass="tab-bar"
+                  alignment="CENTER_LEFT"
+                  spacing="0"/>
+
+            <!-- Content area: the active tab's Parent is swapped in here -->
+            <StackPane fx:id="contentArea"
+                       styleClass="workspace-content"
+                       VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </center>
+</BorderPane>

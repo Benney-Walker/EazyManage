@@ -1,0 +1,194 @@
+/* ============================================================================
+   EazyManage — Shell-specific styles (Phase 2)
+   ----------------------------------------------------------------------------
+   Extends components.css with classes used exclusively by the new application
+   shell (AppShell.fxml). References only design tokens from
+   light-theme.css / dark-theme.css — never raw hex.
+
+   Loaded automatically by AppShell.fxml's own <stylesheets> block so that
+   adopting Phase 2 does not require modifying Phase 1's ThemeManager.
+============================================================================ */
+
+
+/* ---------------------------------------------------------------------------
+   Sidebar — additions to components.css
+--------------------------------------------------------------------------- */
+
+/* Emerald brand square in sidebar header */
+.brand-mark {
+    -fx-background-color: -color-accent;
+    -fx-background-radius: 8;
+    -fx-min-width: 32;  -fx-min-height: 32;
+    -fx-max-width: 32;  -fx-max-height: 32;
+    -fx-alignment: center;
+}
+.brand-mark-label {
+    -fx-text-fill: -color-accent-on;
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+}
+
+/* ScrollPane wrapping the nav so long sidebars scroll without showing a
+   light-coloured scroll-pane background against the dark sidebar */
+.sidebar-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+.sidebar-scroll > .viewport { -fx-background-color: transparent; }
+.sidebar-scroll .scroll-bar .thumb { -fx-background-color: #334155; }
+.sidebar-scroll .scroll-bar .thumb:hover { -fx-background-color: #475569; }
+
+/* The VBox container inside the scroll pane that holds the sections */
+.sidebar-nav { -fx-padding: 8 8 8 8; -fx-spacing: 12; }
+
+/* Footer typography */
+.sidebar-user-name {
+    -fx-text-fill: -color-sidebar-text-active;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+.sidebar-user-role {
+    -fx-text-fill: -color-sidebar-text-muted;
+    -fx-font-size: 10px;
+    -fx-font-weight: 600;
+}
+
+/* Logout button inside the dark sidebar — override .btn-icon defaults */
+.sidebar-icon-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-sidebar-text;
+    -fx-padding: 6 8 6 8;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+.sidebar-icon-button:hover {
+    -fx-background-color: -color-sidebar-hover;
+    -fx-text-fill: -color-sidebar-text-active;
+}
+
+/* Icon glyph inside a sidebar-item button */
+.nav-icon {
+    -fx-text-fill: -color-sidebar-text;
+    -fx-font-size: 15px;
+    -fx-min-width: 20;
+    -fx-alignment: center;
+}
+.sidebar-item:hover .nav-icon,
+.sidebar-item-active .nav-icon {
+    -fx-text-fill: -color-sidebar-text-active;
+}
+
+/* When the sidebar is collapsed, hide labels and centre the icon */
+.sidebar-collapsed .sidebar-item-label,
+.sidebar-collapsed .sidebar-section-title,
+.sidebar-collapsed .sidebar-brand,
+.sidebar-collapsed .sidebar-org,
+.sidebar-collapsed .sidebar-user-name,
+.sidebar-collapsed .sidebar-user-role { -fx-min-width: 0; -fx-pref-width: 0; -fx-max-width: 0; visibility: hidden; }
+
+.sidebar-collapsed .sidebar-section-title { -fx-padding: 0; }
+.sidebar-collapsed .sidebar-item { -fx-alignment: center; -fx-padding: 10 0 10 0; }
+.sidebar-collapsed .sidebar-header { -fx-alignment: center; -fx-padding: 0 0 16 0; }
+.sidebar-collapsed .sidebar-footer { -fx-alignment: center; -fx-padding: 12 0 0 0; }
+
+
+/* ---------------------------------------------------------------------------
+   Workspace — top bar refinements, tab strip
+--------------------------------------------------------------------------- */
+
+.workspace-shell {
+    -fx-background-color: -color-bg;
+}
+
+/* Tab strip's "New tab" affordance (currently unused; reserved for Phase 5) */
+.new-tab-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-muted;
+    -fx-padding: 8 12 8 12;
+    -fx-cursor: hand;
+    -fx-background-radius: 6;
+    -fx-font-size: 14px;
+}
+.new-tab-btn:hover { -fx-background-color: -color-hover; -fx-text-fill: -color-text-primary; }
+
+/* The content area itself — slight padding so embedded screens have breathing room */
+.workspace-content {
+    -fx-background-color: -color-bg;
+}
+
+/* When showing the placeholder for an unimplemented nav target */
+.placeholder-screen {
+    -fx-background-color: -color-bg;
+    -fx-alignment: center;
+    -fx-padding: 48;
+    -fx-spacing: 16;
+}
+.placeholder-icon {
+    -fx-font-size: 56px;
+    -fx-text-fill: -color-text-muted;
+}
+.placeholder-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-text-primary;
+}
+.placeholder-body {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-secondary;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Top bar — additional refinements beyond components.css/.topbar
+--------------------------------------------------------------------------- */
+
+.topbar-icon-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 6 10 6 10;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+.topbar-icon-btn:hover {
+    -fx-background-color: -color-hover;
+    -fx-text-fill: -color-text-primary;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Notification center — additional refinements for the popup-mounted variant
+--------------------------------------------------------------------------- */
+
+.notif-popup-root {
+    -fx-background-color: transparent;
+    -fx-padding: 0 12 12 12;  /* allows the popup's drop-shadow to render */
+}
+
+.notif-center-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+
+.notif-center-empty {
+    -fx-padding: 32;
+    -fx-alignment: center;
+    -fx-text-fill: -color-text-muted;
+    -fx-font-size: 12px;
+}
+
+.notif-mark-all {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-accent;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-padding: 4 8 4 8;
+    -fx-cursor: hand;
+    -fx-background-radius: 6;
+}
+.notif-mark-all:hover { -fx-background-color: -color-accent-subtle; }
