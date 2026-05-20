@@ -44,6 +44,7 @@ public class ApiUtilityClass {
     private final StaffService staffService = new StaffService(core, this);
     private final AcademicsService academicsService   = new AcademicsService(core, this);
     private final DashboardService dashboardService   = new DashboardService(core, this);
+    private final ConductService conductService = new ConductService(core, this);
 
     // PRINCIPAL CONSTRUCTOR
     public ApiUtilityClass(PrincipalController principalController) {
@@ -76,6 +77,8 @@ public class ApiUtilityClass {
         this.staffController = null;
         this.financeController = null;
     }
+
+
 
     public void loadPrincipalData(String principalId, StackPane notification, Runnable onSuccess) {
         dashboardService.loadPrincipalData(principalId, notification, onSuccess);
@@ -111,6 +114,31 @@ public class ApiUtilityClass {
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         academicsService.saveStudentScores(scores, subjectId, semesterId, staffId, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void saveSubjectTeacherRemark(String studentId, String teacherRemark,
+                                         String subjectId, String semesterId, String staffId,
+                                         Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        academicsService.saveSubjectTeacherRemark(studentId, teacherRemark,
+                subjectId, semesterId, staffId, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void saveSemesterTeacherRemark(String studentId, String semesterRemark,
+                                          String semesterId, String staffId,
+                                          Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        academicsService.saveSemesterTeacherRemark(studentId, semesterRemark,
+                semesterId, staffId, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void loadClassConduct(String levelId, String semesterId, String staffId,
+                                 java.util.function.Consumer<java.util.List<com.bbquantum.eazymanage.DTO.Academics.StudentConductRecord>> onResult,
+                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        conductService.loadClassConduct(levelId, semesterId, staffId, onResult, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void saveStudentConduct(com.bbquantum.eazymanage.DTO.Academics.StudentConductRecord record, String staffId,
+                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        conductService.saveStudentConduct(record, staffId, onSuccess, onFailure, onNetworkIssue);
     }
 
     public void addNewGrade(String staffId, String gradeName, String instructorId,
