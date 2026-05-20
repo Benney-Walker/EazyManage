@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Conduct entry screen (Phase 4).
+
+    Top toolbar: class + semester selectors, refresh button.
+    Left:  scrolling student list (selectable row).
+    Right: detail editor for the selected student — eight boolean
+           checkboxes laid out in two columns, plus a free-text
+           remark area and a save button.
+-->
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Shell.ConductController"
+      styleClass="conduct-screen"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../Theme/conduct.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Student Conduct" styleClass="page-title"/>
+        <Label text="Record each student's conduct for the selected class and semester."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <!-- Toolbar -->
+    <HBox styleClass="table-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="8" right="24" bottom="8" left="24"/></padding>
+
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="200"/>
+
+        <Label text="Semester" styleClass="field-label"/>
+        <ChoiceBox fx:id="semesterChoice" prefWidth="200"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="refreshButton" text="Reload" onAction="#onReload" styleClass="btn,btn-secondary"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Main content: split between student list and editor -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- Left: student list -->
+        <VBox prefWidth="320" minWidth="280" maxWidth="380" styleClass="conduct-list-panel">
+            <Label text="Students in class" styleClass="panel-heading">
+                <padding><Insets top="12" right="16" bottom="6" left="16"/></padding>
+            </Label>
+
+            <TableView fx:id="studentsTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="studentIdCol"   text="Student ID"   prefWidth="110"/>
+                    <TableColumn fx:id="studentNameCol" text="Name"         prefWidth="200"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <Separator orientation="VERTICAL"/>
+
+        <!-- Right: detail editor -->
+        <VBox HBox.hgrow="ALWAYS" styleClass="conduct-editor-panel" spacing="14">
+            <padding><Insets top="16" right="24" bottom="16" left="24"/></padding>
+
+            <Label fx:id="selectedStudentLabel" text="Select a student from the list to begin"
+                   styleClass="editor-heading"/>
+
+            <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" styleClass="transparent-scroll">
+                <VBox spacing="16">
+
+                    <Label text="Conduct categories" styleClass="section-heading"/>
+
+                    <!-- Two-column grid of checkboxes -->
+                    <HBox spacing="32">
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <CheckBox fx:id="punctualityCheck"             text="Punctuality"               styleClass="conduct-check" allowIndeterminate="true"/>
+                            <CheckBox fx:id="attendanceCheck"              text="Attendance"                styleClass="conduct-check" allowIndeterminate="true"/>
+                            <CheckBox fx:id="neatnessCheck"                text="Neatness"                  styleClass="conduct-check" allowIndeterminate="true"/>
+                            <CheckBox fx:id="respectForAuthorityCheck"     text="Respect for authority"     styleClass="conduct-check" allowIndeterminate="true"/>
+                        </VBox>
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <CheckBox fx:id="cooperationWithPeersCheck"    text="Cooperation with peers"    styleClass="conduct-check" allowIndeterminate="true"/>
+                            <CheckBox fx:id="classParticipationCheck"      text="Class participation"       styleClass="conduct-check" allowIndeterminate="true"/>
+                            <CheckBox fx:id="completionOfAssignmentsCheck" text="Completion of assignments" styleClass="conduct-check" allowIndeterminate="true"/>
+                            <CheckBox fx:id="honestyCheck"                 text="Honesty"                   styleClass="conduct-check" allowIndeterminate="true"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label text="Each item is tri-state: blank = not yet assessed."
+                           styleClass="hint-text" wrapText="true"/>
+
+                    <Separator/>
+
+                    <Label text="Additional remark (optional)" styleClass="section-heading"/>
+                    <TextArea fx:id="conductRemarkField"
+                              promptText="Observations that don't fit the eight categories…"
+                              prefRowCount="4"
+                              wrapText="true"
+                              styleClass="conduct-remark-area"/>
+                </VBox>
+            </ScrollPane>
+
+            <!-- Footer actions -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Label fx:id="saveStatusLabel" styleClass="save-status"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="resetButton" text="Reset" onAction="#onReset" styleClass="btn,btn-ghost"/>
+                <Button fx:id="saveButton"  text="Save"  onAction="#onSave"  styleClass="btn,btn-primary"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

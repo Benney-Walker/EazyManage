@@ -1,0 +1,56 @@
+/* ============================================================================
+   EazyManage — Conduct screen styles (Phase 4)
+   Extends Theme/components.css with Conduct-specific layout / typography.
+   References design tokens only.
+============================================================================ */
+
+.conduct-screen { -fx-background-color: -color-bg; }
+
+.page-header { -fx-background-color: -color-bg; }
+.page-title    { -fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: -color-text-primary; }
+.page-subtitle { -fx-font-size: 12px; -fx-text-fill: -color-text-secondary; }
+
+.conduct-list-panel   { -fx-background-color: -color-surface; }
+.conduct-editor-panel { -fx-background-color: -color-bg; }
+
+.panel-heading {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-muted;
+    -fx-text-transform: uppercase;
+}
+
+.editor-heading {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-text-primary;
+}
+
+.section-heading {
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-muted;
+}
+
+.hint-text { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
+
+/* Conduct checkboxes — slightly larger hit area, indeterminate-friendly tone */
+.conduct-check {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 4 0 4 0;
+}
+.conduct-check:indeterminate > .box > .mark { -fx-background-color: -color-text-muted; }
+
+.conduct-remark-area {
+    -fx-background-color: -color-surface;
+    -fx-text-fill: -color-text-primary;
+    -fx-prompt-text-fill: -color-text-muted;
+    -fx-background-radius: 6;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 6;
+}
+
+.save-status { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
+
+.transparent-scroll, .transparent-scroll > .viewport { -fx-background-color: transparent; }
