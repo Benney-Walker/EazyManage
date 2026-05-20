@@ -5,8 +5,8 @@
 
 <?import java.net.URL?>
 <StackPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.bbquantum.eazymanage.Controller.PrincipalController"
-            fx:id="notification">
+           fx:controller="com.bbquantum.eazymanage.Controller.PrincipalController"
+           fx:id="notification">
 
     <stylesheets>
         <URL value="@../Styles/Styles.css"/>
@@ -303,11 +303,11 @@
 
                                 <Separator styleClass="content-separator"/>
                                 <!-- Search Button -->
-                                    <Button fx:id="searchFeesHistoryBtn"
-                                            text="FETCH FEES RECORDS"
-                                            onAction="#handleSearchStudentFees"
-                                            maxWidth="Infinity"
-                                            styleClass="action-button-primary"/>
+                                <Button fx:id="searchFeesHistoryBtn"
+                                        text="FETCH FEES RECORDS"
+                                        onAction="#handleSearchStudentFees"
+                                        maxWidth="Infinity"
+                                        styleClass="action-button-primary"/>
                             </VBox>
 
                             <Separator styleClass="content-separator"/>
@@ -471,7 +471,7 @@
 
                         <!-- Quick Stats & Actions Row -->
                         <FlowPane hgap="20" vgap="20" prefWrapLength="1100">
-                        <!-- Total Students Card -->
+                            <!-- Total Students Card -->
                             <VBox styleClass="stat-card"
                                   minWidth="260"
                                   prefWidth="300"
@@ -532,8 +532,8 @@
                                         <Label text="Student ID" styleClass="input-label"/>
                                         <ComboBox fx:id="results_StudentSelectionBox"
                                                   maxWidth="Infinity"
-                                                   promptText="Select student"
-                                                   styleClass="modern-input"/>
+                                                  promptText="Select student"
+                                                  styleClass="modern-input"/>
                                     </VBox>
 
                                     <!-- Semester Selection -->
@@ -607,9 +607,9 @@
                                     <TableView fx:id="subjectResultsTable" styleClass="modern-table" maxHeight="300">
                                         <columns>
                                             <TableColumn fx:id="subjectNameColumn" text="SUBJECT" prefWidth="150"/>
-                                            <TableColumn fx:id="ex1Column" text="EX 1" prefWidth="100"/>
-                                            <TableColumn fx:id="classTestColumn" text="CLASS TEST" prefWidth="100"/>
-                                            <TableColumn fx:id="ex2Column" text="EX 2" prefWidth="100"/>
+                                            <TableColumn fx:id="ex1Column" text="CT 1" prefWidth="100"/>
+                                            <TableColumn fx:id="groupWorkColumn" text="GROUP WORK" prefWidth="100"/>
+                                            <TableColumn fx:id="ex2Column" text="CT 2" prefWidth="100"/>
                                             <TableColumn fx:id="projectScoreColumn" text="PROJECT" prefWidth="100"/>
                                             <TableColumn fx:id="examScoreColumn" text="EXAM SCORE" prefWidth="120"/>
                                             <TableColumn fx:id="classScoreColumn" text="CLASS (50%)" prefWidth="120"/>
@@ -1155,9 +1155,9 @@
                                     <TableView fx:id="subjectBreakdownTable" styleClass="modern-table" maxHeight="250">
                                         <columns>
                                             <TableColumn fx:id="subjectNameCol" text="SUBJECT" prefWidth="250"/>
-                                            <TableColumn fx:id="exercise1Col" text="EX 1" prefWidth="100"/>
-                                            <TableColumn fx:id="classTestCol" text="CLASS TEST" prefWidth="100"/>
-                                            <TableColumn fx:id="exercise2Col" text="EX 2" prefWidth="100"/>
+                                            <TableColumn fx:id="classTest1Col" text="CT 1" prefWidth="100"/>
+                                            <TableColumn fx:id="groupWorkCol" text="GROUP WORK" prefWidth="100"/>
+                                            <TableColumn fx:id="classTest2Col" text="CT 2" prefWidth="100"/>
                                             <TableColumn fx:id="projectScoreCol" text="PROJECT" prefWidth="100"/>
                                             <TableColumn fx:id="classScoreCol" text="CLASS (50%)" prefWidth="120"/>
                                             <TableColumn fx:id="examScoreCol" text="EXAM SCORE" prefWidth="120"/>

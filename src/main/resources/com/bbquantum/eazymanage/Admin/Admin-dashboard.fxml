@@ -807,9 +807,9 @@
                                     <columns>
                                         <TableColumn text="STUDENT ID" fx:id="studentIdColumn" prefWidth="100" />
                                         <TableColumn text="STUDENT NAME" fx:id="studentNameColumn" prefWidth="180" />
-                                        <TableColumn text="EXERCISE 1" fx:id="exercise1Column" prefWidth="100"/>
-                                        <TableColumn text="CLASS TEST" fx:id="classTestColumn" prefWidth="100"/>
-                                        <TableColumn text="EXERCISE 2" fx:id="exercise2Column" prefWidth="100"/>
+                                        <TableColumn text="CLASS TEST 1" fx:id="classTest1Column" prefWidth="100"/>
+                                        <TableColumn text="GROUP WORK" fx:id="groupWorkColumn" prefWidth="100"/>
+                                        <TableColumn text="CLASS TEST 2" fx:id="classTest2Column" prefWidth="100"/>
                                         <TableColumn text="PROJECT" fx:id="projectColumn" prefWidth="100"/>
                                         <TableColumn text="EXAM SCORE" fx:id="examScoreColumn" prefWidth="100"/>
                                         <TableColumn text="CLASS(50%)" fx:id="classScoreColumn" prefWidth="100" />
@@ -1123,9 +1123,9 @@
                                         <TableView fx:id="subjectBreakdownTable" styleClass="modern-table" maxHeight="250">
                                             <columns>
                                                 <TableColumn fx:id="subjectNameCol" text="SUBJECT" prefWidth="150"/>
-                                                <TableColumn fx:id="exercise1Col" text="EX 1" prefWidth="100"/>
-                                                <TableColumn fx:id="classTestCol" text="CLASS TEST" prefWidth="100"/>
-                                                <TableColumn fx:id="exercise2Col" text="EX 2" prefWidth="100"/>
+                                                <TableColumn fx:id="classTest1Col" text="CT 1" prefWidth="100"/>
+                                                <TableColumn fx:id="groupWorkCol" text="GROUP WORK" prefWidth="100"/>
+                                                <TableColumn fx:id="classTest2Col" text="CT 2" prefWidth="100"/>
                                                 <TableColumn fx:id="projectScoreCol" text="PROJECT" prefWidth="100"/>
                                                 <TableColumn fx:id="classScoreCol" text="ClASS (50%)" prefWidth="100"/>
                                                 <TableColumn fx:id="examScoreCol" text="EXAM SCORE" prefWidth="100"/>
