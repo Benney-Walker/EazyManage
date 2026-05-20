@@ -3,11 +3,11 @@ package com.bbquantum.eazymanage.DTO.Academics;
 public class StudentSubjectResults {
     private String subjectName;
 
-    private String exercise1Score;
+    private String classTest1Score;
 
-    private String classTestScore;
+    private String groupWorkScore;
 
-    private String exercise2Score;
+    private String classTest2Score;
 
     private String projectScore;
 
@@ -23,12 +23,19 @@ public class StudentSubjectResults {
 
     private String remark;
 
-    public StudentSubjectResults(String subjectName, String exercise1Score, String classTestScore, String exercise2Score,
+    /**
+     * Free-text comment a teacher attaches to one subject's score row.
+     * Distinct from {@link #remark}, which is the auto-derived grade
+     * descriptor (e.g. "Excellent") mapped from the grading criteria.
+     */
+    private String teacherRemark;
+
+    public StudentSubjectResults(String subjectName, String classTest1Score, String groupWorkScore, String classTest2Score,
                                  String projectScore, String classScore, String examScore, String calculatedExamScore, String total, String grade, String remark) {
         this.subjectName = subjectName;
-        this.exercise1Score = exercise1Score;
-        this.classTestScore = classTestScore;
-        this.exercise2Score = exercise2Score;
+        this.classTest1Score = classTest1Score;
+        this.groupWorkScore = groupWorkScore;
+        this.classTest2Score = classTest2Score;
         this.projectScore = projectScore;
         this.classScore = classScore;
         this.examScore = examScore;
@@ -36,6 +43,15 @@ public class StudentSubjectResults {
         this.total = total;
         this.grade = grade;
         this.remark = remark;
+    }
+
+    /** Convenience constructor including the teacher-typed remark. */
+    public StudentSubjectResults(String subjectName, String classTest1Score, String groupWorkScore, String classTest2Score,
+                                 String projectScore, String classScore, String examScore, String calculatedExamScore,
+                                 String total, String grade, String remark, String teacherRemark) {
+        this(subjectName, classTest1Score, groupWorkScore, classTest2Score, projectScore,
+                classScore, examScore, calculatedExamScore, total, grade, remark);
+        this.teacherRemark = teacherRemark;
     }
 
     public String getSubjectName() {
@@ -46,28 +62,28 @@ public class StudentSubjectResults {
         this.subjectName = subjectName;
     }
 
-    public String getExercise1Score() {
-        return exercise1Score;
+    public String getClassTest1Score() {
+        return classTest1Score;
     }
 
-    public void setExercise1Score(String exercise1Score) {
-        this.exercise1Score = exercise1Score;
+    public void setClassTest1Score(String classTest1Score) {
+        this.classTest1Score = classTest1Score;
     }
 
-    public String getClassTestScore() {
-        return classTestScore;
+    public String getGroupWorkScore() {
+        return groupWorkScore;
     }
 
-    public void setClassTestScore(String classTestScore) {
-        this.classTestScore = classTestScore;
+    public void setGroupWorkScore(String groupWorkScore) {
+        this.groupWorkScore = groupWorkScore;
     }
 
-    public String getExercise2Score() {
-        return exercise2Score;
+    public String getClassTest2Score() {
+        return classTest2Score;
     }
 
-    public void setExercise2Score(String exercise2Score) {
-        this.exercise2Score = exercise2Score;
+    public void setClassTest2Score(String classTest2Score) {
+        this.classTest2Score = classTest2Score;
     }
 
     public String getProjectScore() {
@@ -124,5 +140,13 @@ public class StudentSubjectResults {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public String getTeacherRemark() {
+        return teacherRemark;
+    }
+
+    public void setTeacherRemark(String teacherRemark) {
+        this.teacherRemark = teacherRemark;
     }
 }

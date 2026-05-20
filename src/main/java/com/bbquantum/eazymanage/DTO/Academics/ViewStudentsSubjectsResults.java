@@ -3,11 +3,11 @@ package com.bbquantum.eazymanage.DTO.Academics;
 public class ViewStudentsSubjectsResults {
     private String subjectName;
 
-    private String exercise1Score;
+    private String classTest1Score;
 
-    private String classTestScore;
+    private String groupWorkScore;
 
-    private String exercise2Score;
+    private String classTest2Score;
 
     private String projectScore;
 
@@ -23,15 +23,18 @@ public class ViewStudentsSubjectsResults {
 
     private String description;
 
+    /** Free-text teacher comment for this subject row (per-student, per-semester). */
+    private String teacherRemark;
+
     public ViewStudentsSubjectsResults() {}
 
-    public ViewStudentsSubjectsResults(String subjectName, String exercise1Score, String classTestScore,
-                                       String exercise2Score, String projectScore, String classScore,
+    public ViewStudentsSubjectsResults(String subjectName, String classTest1Score, String groupWorkScore,
+                                       String classTest2Score, String projectScore, String classScore,
                                        String examScore, String calculatedExamScore, String total, String grade, String description) {
         this.subjectName = subjectName;
-        this.exercise1Score = exercise1Score;
-        this.classTestScore = classTestScore;
-        this.exercise2Score = exercise2Score;
+        this.classTest1Score = classTest1Score;
+        this.groupWorkScore = groupWorkScore;
+        this.classTest2Score = classTest2Score;
         this.projectScore = projectScore;
         this.classScore = classScore;
         this.examScore = examScore;
@@ -49,28 +52,28 @@ public class ViewStudentsSubjectsResults {
         this.subjectName = subjectName;
     }
 
-    public String getExercise1Score() {
-        return exercise1Score;
+    public String getClassTest1Score() {
+        return classTest1Score;
     }
 
-    public void setExercise1Score(String exercise1Score) {
-        this.exercise1Score = exercise1Score;
+    public void setClassTest1Score(String classTest1Score) {
+        this.classTest1Score = classTest1Score;
     }
 
-    public String getClassTestScore() {
-        return classTestScore;
+    public String getGroupWorkScore() {
+        return groupWorkScore;
     }
 
-    public void setClassTestScore(String classTestScore) {
-        this.classTestScore = classTestScore;
+    public void setGroupWorkScore(String groupWorkScore) {
+        this.groupWorkScore = groupWorkScore;
     }
 
-    public String getExercise2Score() {
-        return exercise2Score;
+    public String getClassTest2Score() {
+        return classTest2Score;
     }
 
-    public void setExercise2Score(String exercise2Score) {
-        this.exercise2Score = exercise2Score;
+    public void setClassTest2Score(String classTest2Score) {
+        this.classTest2Score = classTest2Score;
     }
 
     public String getProjectScore() {
@@ -127,5 +130,13 @@ public class ViewStudentsSubjectsResults {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTeacherRemark() {
+        return teacherRemark;
+    }
+
+    public void setTeacherRemark(String teacherRemark) {
+        this.teacherRemark = teacherRemark;
     }
 }
