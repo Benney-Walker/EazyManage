@@ -17,6 +17,8 @@ public class StudentResult {
 
     private String position;
 
+    private String semesterRemark;
+
     private List<StudentSubjectResults> studentSubjectResults;
 
     public StudentResult(String studentId, String studentName, String grade, String semesterName, Double totalScore,
@@ -85,6 +87,14 @@ public class StudentResult {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    public String getSemesterRemark() {
+        return semesterRemark;
+    }
+
+    public void setSemesterRemark(String semesterRemark) {
+        this.semesterRemark = semesterRemark;
     }
 
     public List<StudentSubjectResults> getStudentSubjectResults() {
