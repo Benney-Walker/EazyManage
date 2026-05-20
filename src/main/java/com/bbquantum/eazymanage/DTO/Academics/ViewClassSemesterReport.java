@@ -19,6 +19,9 @@ public class ViewClassSemesterReport {
 
     private String totalStudents;
 
+    /** Free-text overall-semester teacher remark for this student. */
+    private String semesterRemark;
+
     private List<ViewStudentsSubjectsResults> subjects;
 
     public ViewClassSemesterReport(String studentId, String studentName, String className, String semesterName,
@@ -39,6 +42,7 @@ public class ViewClassSemesterReport {
     public String getStudentId() {
         return studentId;
     }
+
     public void setStudentId(String studentId) {
         this.studentId = studentId;
     }
@@ -65,14 +69,6 @@ public class ViewClassSemesterReport {
 
     public void setSemesterName(String semesterName) {
         this.semesterName = semesterName;
-    }
-
-    public List<ViewStudentsSubjectsResults> getSubjects() {
-        return subjects;
-    }
-
-    public void setSubjects(List<ViewStudentsSubjectsResults> subjects) {
-        this.subjects = subjects;
     }
 
     public String getTotal() {
@@ -105,5 +101,21 @@ public class ViewClassSemesterReport {
 
     public void setTotalStudents(String totalStudents) {
         this.totalStudents = totalStudents;
+    }
+
+    public String getSemesterRemark() {
+        return semesterRemark;
+    }
+
+    public void setSemesterRemark(String semesterRemark) {
+        this.semesterRemark = semesterRemark;
+    }
+
+    public List<ViewStudentsSubjectsResults> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<ViewStudentsSubjectsResults> subjects) {
+        this.subjects = subjects;
     }
 }
