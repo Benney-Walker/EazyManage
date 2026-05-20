@@ -345,6 +345,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "dashboard".equals(item.id())) {
             return loadLegacyDashboard();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "conduct".equals(item.id())) {
+            return loadConductScreen();
+        }
         return placeholderFor(item);
     }
 
@@ -369,6 +372,20 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load dashboard",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    private Parent loadConductScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Shell/Conduct.fxml"));
+            Parent root = loader.load();
+            ConductController controller = loader.getController();
+            controller.setIdentity(staffId, role);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Conduct screen",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }
