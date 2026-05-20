@@ -116,9 +116,9 @@ public class StaffController implements Initializable {
     @FXML public TableView<StudentsScoresTable> studentsScoresTable;
     @FXML private TableColumn<StudentsScoresTable, String> studentIdColumn;
     @FXML private TableColumn<StudentsScoresTable, String> studentNameColumn;
-    @FXML private TableColumn<StudentsScoresTable, String> exercise1Column;
-    @FXML private TableColumn<StudentsScoresTable, String> classTestColumn;
-    @FXML private TableColumn<StudentsScoresTable, String> exercise2Column;
+    @FXML private TableColumn<StudentsScoresTable, String> classTest1Column;
+    @FXML private TableColumn<StudentsScoresTable, String> groupWorkColumn;
+    @FXML private TableColumn<StudentsScoresTable, String> classTest2Column;
     @FXML private TableColumn<StudentsScoresTable, String> projectColumn;
     @FXML private TableColumn<StudentsScoresTable, String> classScoreColumn;
     @FXML private TableColumn<StudentsScoresTable, String> examScoreColumn;
@@ -169,9 +169,9 @@ public class StaffController implements Initializable {
     @FXML private TableView<ViewStudentsSubjectsResults> subjectBreakdownTable;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> subjectNameCol;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> classScoreCol;
-    @FXML private TableColumn<ViewStudentsSubjectsResults, String> exercise1Col;
-    @FXML private TableColumn<ViewStudentsSubjectsResults, String> classTestCol;
-    @FXML private TableColumn<ViewStudentsSubjectsResults, String> exercise2Col;
+    @FXML private TableColumn<ViewStudentsSubjectsResults, String> classTest1Col;
+    @FXML private TableColumn<ViewStudentsSubjectsResults, String> groupWorkCol;
+    @FXML private TableColumn<ViewStudentsSubjectsResults, String> classTest2Col;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> projectScoreCol;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> examScoreCol;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> calculatedExamScoreCol;
@@ -276,14 +276,14 @@ public class StaffController implements Initializable {
                 new SimpleStringProperty(cellData.getValue().getClassScore()));
 
         //Editable columns
-        exercise1Column.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getExercise1Score()));
+        classTest1Column.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassTest1Score()));
 
-        classTestColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getClassTestScore()));
+        groupWorkColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getGroupWorkScore()));
 
-        exercise2Column.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getExercise2Score()));
+        classTest2Column.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassTest2Score()));
 
         projectColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getProjectScore()));
@@ -295,9 +295,9 @@ public class StaffController implements Initializable {
                 new SimpleStringProperty(cellData.getValue().getCalculatedExamScore()));
 
 
-        exercise1Column.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
-        classTestColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
-        exercise2Column.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
+        classTest1Column.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
+        groupWorkColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
+        classTest2Column.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
         projectColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
         examScoreColumn.setCellFactory(TextFieldTableCell.forTableColumn(new DefaultStringConverter()));
 
@@ -305,15 +305,15 @@ public class StaffController implements Initializable {
         classScoreColumn.setEditable(false);
         calExamScoreColumn.setEditable(false);
 
-        exercise1Column.setEditable(true);
-        classTestColumn.setEditable(true);
-        exercise2Column.setEditable(true);
+        classTest1Column.setEditable(true);
+        groupWorkColumn.setEditable(true);
+        classTest2Column.setEditable(true);
         projectColumn.setEditable(true);
         examScoreColumn.setEditable(true);
         studentsScoresTable.setEditable(true);
         studentsScoresTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-        exercise1Column.setOnEditCommit(event -> {
+        classTest1Column.setOnEditCommit(event -> {
             if (!event.getNewValue().matches("\\d+(\\.\\d+)?")) {
                 UtilityClass.showError(notification, "Only numbers allowed");
                 studentsScoresTable.refresh();
@@ -321,18 +321,18 @@ public class StaffController implements Initializable {
             }
 
             if (Double.parseDouble(event.getNewValue()) > 20) {
-                UtilityClass.showError(notification, "Exercise 1 shouldn't be more than 20");
+                UtilityClass.showError(notification, "Class Test 1 shouldn't be more than 20");
                 studentsScoresTable.refresh();
                 return;
             }
 
             StudentsScoresTable row = event.getRowValue();
-            row.setExercise1Score(event.getNewValue());
+            row.setClassTest1Score(event.getNewValue());
             recalculateClassScore(row);
             studentsScoresTable.refresh();
         });
 
-        classTestColumn.setOnEditCommit(event -> {
+        groupWorkColumn.setOnEditCommit(event -> {
             if (!event.getNewValue().matches("\\d+(\\.\\d+)?")) {
                 UtilityClass.showError(notification, "Only numbers allowed");
                 studentsScoresTable.refresh();
@@ -340,18 +340,18 @@ public class StaffController implements Initializable {
             }
 
             if (Double.parseDouble(event.getNewValue()) > 30) {
-                UtilityClass.showError(notification, "Class Test shouldn't be more than 30");
+                UtilityClass.showError(notification, "Group Work shouldn't be more than 30");
                 studentsScoresTable.refresh();
                 return;
             }
 
             StudentsScoresTable row = event.getRowValue();
-            row.setClassTestScore(event.getNewValue());
+            row.setGroupWorkScore(event.getNewValue());
             recalculateClassScore(row);
             studentsScoresTable.refresh();
         });
 
-        exercise2Column.setOnEditCommit(event -> {
+        classTest2Column.setOnEditCommit(event -> {
             if (!event.getNewValue().matches("\\d+(\\.\\d+)?")) {
                 UtilityClass.showError(notification, "Only numbers allowed");
                 studentsScoresTable.refresh();
@@ -359,13 +359,13 @@ public class StaffController implements Initializable {
             }
 
             if (Double.parseDouble(event.getNewValue()) > 20) {
-                UtilityClass.showError(notification, "Exercise 2 shouldn't be more than 20");
+                UtilityClass.showError(notification, "Class Test 2 shouldn't be more than 20");
                 studentsScoresTable.refresh();
                 return;
             }
 
             StudentsScoresTable row = event.getRowValue();
-            row.setExercise2Score(event.getNewValue());
+            row.setClassTest2Score(event.getNewValue());
             recalculateClassScore(row);
             studentsScoresTable.refresh();
         });
@@ -431,14 +431,14 @@ public class StaffController implements Initializable {
         subjectNameCol.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getSubjectName()));
 
-        exercise1Col.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getExercise1Score()));
+        classTest1Col.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassTest1Score()));
 
-        classTestCol.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getClassTestScore()));
+        groupWorkCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getGroupWorkScore()));
 
-        exercise2Col.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getExercise2Score()));
+        classTest2Col.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassTest2Score()));
 
         projectScoreCol.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getProjectScore()));
@@ -731,9 +731,9 @@ public class StaffController implements Initializable {
     @FXML
     public void handleClearScores() {
         for (StudentsScoresTable student : studentsScoresTable.getItems()) {
-            student.setExercise1Score("0");
-            student.setClassTestScore("0");
-            student.setExercise2Score("0");
+            student.setClassTest1Score("0");
+            student.setGroupWorkScore("0");
+            student.setClassTest2Score("0");
             student.setProjectScore("0");
             student.setClassScore("0");
             student.setExamScore("0");
@@ -1616,9 +1616,9 @@ public class StaffController implements Initializable {
 
     private void recalculateClassScore(StudentsScoresTable row) {
         try {
-            double ex1 = parseDouble(row.getExercise1Score());
-            double ex2 = parseDouble(row.getExercise2Score());
-            double test = parseDouble(row.getClassTestScore());
+            double ex1 = parseDouble(row.getClassTest1Score());
+            double ex2 = parseDouble(row.getClassTest2Score());
+            double test = parseDouble(row.getGroupWorkScore());
             double project = parseDouble(row.getProjectScore());
 
             double totalScore = ex1 + ex2 + test + project;

@@ -50,8 +50,6 @@ public class PrincipalController implements Initializable {
     //Stores staff role
     private static String staffRole;
 
-    //Get refreshed staff list
-    public List<ViewStaffList> refreshedStaffViewList;
     //Store fees filter
     public List<FeesSummaryTable> feesSummaryTable;
 
@@ -190,7 +188,7 @@ public class PrincipalController implements Initializable {
     @FXML private TableView<StudentSubjectResults> subjectResultsTable;
     @FXML private TableColumn<StudentSubjectResults, String> subjectNameColumn;
     @FXML private TableColumn<StudentSubjectResults, String> ex1Column;
-    @FXML private TableColumn<StudentSubjectResults, String> classTestColumn;
+    @FXML private TableColumn<StudentSubjectResults, String> groupWorkColumn;
     @FXML private TableColumn<StudentSubjectResults, String> ex2Column;
     @FXML private TableColumn<StudentSubjectResults, String> projectScoreColumn;
     @FXML private TableColumn<StudentSubjectResults, String> classScoreColumn;
@@ -256,9 +254,9 @@ public class PrincipalController implements Initializable {
     @FXML private VBox studentDetailsBox;
     @FXML private TableView<ViewStudentsSubjectsResults> subjectBreakdownTable;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> subjectNameCol;
-    @FXML private TableColumn<ViewStudentsSubjectsResults, String> exercise1Col;
-    @FXML private TableColumn<ViewStudentsSubjectsResults, String> classTestCol;
-    @FXML private TableColumn<ViewStudentsSubjectsResults, String> exercise2Col;
+    @FXML private TableColumn<ViewStudentsSubjectsResults, String> classTest1Col;
+    @FXML private TableColumn<ViewStudentsSubjectsResults, String> groupWorkCol;
+    @FXML private TableColumn<ViewStudentsSubjectsResults, String> classTest2Col;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> projectScoreCol;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> classScoreCol;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> examScoreCol;
@@ -346,13 +344,13 @@ public class PrincipalController implements Initializable {
                 new SimpleStringProperty(cellData.getValue().getSubjectName()));
 
         ex1Column.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getExercise1Score()));
+                new SimpleStringProperty(cellData.getValue().getClassTest1Score()));
 
-        classTestColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getClassTestScore()));
+        groupWorkColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getGroupWorkScore()));
 
         ex2Column.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getExercise2Score()));
+                new SimpleStringProperty(cellData.getValue().getClassTest2Score()));
 
         projectScoreColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getProjectScore()));
@@ -434,14 +432,14 @@ public class PrincipalController implements Initializable {
         subjectNameCol.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getSubjectName()));
 
-        exercise1Col.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getExercise1Score()));
+        classTest1Col.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassTest1Score()));
 
-        classTestCol.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getClassTestScore()));
+        groupWorkCol.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getGroupWorkScore()));
 
-        exercise2Col.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getExercise2Score()));
+        classTest2Col.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getClassTest2Score()));
 
         projectScoreCol.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getProjectScore()));
