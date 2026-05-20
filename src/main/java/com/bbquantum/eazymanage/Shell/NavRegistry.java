@@ -25,7 +25,8 @@ public class NavRegistry {
                     new NavItem("results",     "Results",     "\u2605", NOT_ACCOUNTANT,       NavItemStatus.PLACEHOLDER, "Phase 4–5"),
                     new NavItem("finance",     "Finance",     "\u25C6", ACCOUNTANT_PRINCIPAL, NavItemStatus.PLACEHOLDER, "Phase 7–8"),
                     new NavItem("students",    "Students",    "\u25CF", ADMIN_ONLY,           NavItemStatus.PLACEHOLDER, "Phase 8"),
-                    new NavItem("staff",       "Staff",       "\u25B2", ADMIN_ONLY,           NavItemStatus.PLACEHOLDER, "Phase 8")
+                    new NavItem("staff",       "Staff",       "\u25B2", ADMIN_ONLY,           NavItemStatus.PLACEHOLDER, "Phase 8"),
+                    new NavItem("conduct",     "Conduct",     "\u2691", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL,  "")
             )),
 
             new Section("RECORDS", List.of(
