@@ -798,9 +798,9 @@ public class AcademicsService {
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", scores.getStudentId());
-                requestBody.addProperty("exercise1Score", scores.getExercise1Score());
-                requestBody.addProperty("classTestScore", scores.getClassTestScore());
-                requestBody.addProperty("exercise2Score", scores.getExercise2Score());
+                requestBody.addProperty("classTest1Score", scores.getClassTest1Score());
+                requestBody.addProperty("groupWorkScore", scores.getGroupWorkScore());
+                requestBody.addProperty("classTest2Score", scores.getClassTest2Score());
                 requestBody.addProperty("projectScore", scores.getProjectScore());
                 requestBody.addProperty("classScore", scores.getClassScore());
                 requestBody.addProperty("examScore", scores.getExamScore());
@@ -1098,5 +1098,122 @@ public class AcademicsService {
         Thread thread = new Thread(task);
         thread.setDaemon(true);    // legacy: this one was daemon
         thread.start();
+    }
+
+    // ====================================================================
+    // Teacher remarks (Phase 4)
+    // ====================================================================
+
+    public void saveSubjectTeacherRemark(String studentId, String teacherRemark,
+                                         String subjectId, String semesterId, String staffId,
+                                         Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/subject-remark";
+
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("studentId", studentId);
+                requestBody.addProperty("teacherRemark", teacherRemark);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers("Authorization", "Bearer " + core.token,
+                                "Content-Type", "application/json",
+                                "staffId", staffId,
+                                "subjectId", subjectId,
+                                "semesterId", semesterId)
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+                facade.errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String status = task.getValue();
+            if (status == null) {
+                onFailure.run();
+                return;
+            }
+            facade.successMessageContainer = "Teacher remark saved";
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+            String msg = ex.getMessage();
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+            facade.errorMessageContainer = "Could not save teacher remark";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void saveSemesterTeacherRemark(String studentId, String semesterRemark,
+                                          String semesterId, String staffId,
+                                          Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/semester-remark";
+
+                JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("studentId", studentId);
+                requestBody.addProperty("semesterRemark", semesterRemark);
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers("Authorization", "Bearer " + core.token,
+                                "Content-Type", "application/json",
+                                "staffId", staffId,
+                                "semesterId", semesterId)
+                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .build();
+
+                HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+                facade.errorMessageContainer = response.body();
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String status = task.getValue();
+            if (status == null) {
+                onFailure.run();
+                return;
+            }
+            facade.successMessageContainer = "Semester remark saved";
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+            String msg = ex.getMessage();
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+            facade.errorMessageContainer = "Could not save semester remark";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
     }
 }
