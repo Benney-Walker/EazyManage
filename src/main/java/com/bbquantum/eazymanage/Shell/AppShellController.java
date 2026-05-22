@@ -1,6 +1,7 @@
 package com.bbquantum.eazymanage.Shell;
 
 import com.bbquantum.eazymanage.Constants.NavItemStatus;
+import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
 import com.bbquantum.eazymanage.EazyManage;
 import com.bbquantum.eazymanage.Records.NavItem;
 import com.bbquantum.eazymanage.Records.Section;
@@ -348,6 +349,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "conduct".equals(item.id())) {
             return loadConductScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "reports".equals(item.id())) {
+            return loadReportsScreen();
+        }
         return placeholderFor(item);
     }
 
@@ -386,6 +390,33 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load Conduct screen",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    /**
+     * Load the Phase 5a Reporting Center.
+     *
+     * <p>The index FXML is wrapped in a fresh {@link StackPane} so the index
+     * controller can swap a viewer FXML over it without involving the
+     * workspace tab system. The viewer's back button swaps the index back in.
+     */
+    private Parent loadReportsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Reports/ReportingCenter.fxml"));
+            Parent indexRoot = loader.load();
+
+            StackPane host = new StackPane(indexRoot);
+            host.getStyleClass().add("workspace-content");
+
+            ReportingCenterController controller = loader.getController();
+            controller.setContext(staffId, role, host, indexRoot);
+
+            return host;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Reporting Center",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }

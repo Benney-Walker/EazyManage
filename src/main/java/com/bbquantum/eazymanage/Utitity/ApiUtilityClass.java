@@ -6,8 +6,10 @@ import com.bbquantum.eazymanage.DTO.Finance.*;
 import com.bbquantum.eazymanage.DTO.Institution.*;
 import com.bbquantum.eazymanage.Services.*;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Window;
 
 import java.time.LocalDate;
+import java.util.function.Supplier;
 
 public class ApiUtilityClass {
 
@@ -45,6 +47,7 @@ public class ApiUtilityClass {
     private final AcademicsService academicsService   = new AcademicsService(core, this);
     private final DashboardService dashboardService   = new DashboardService(core, this);
     private final ConductService conductService = new ConductService(core, this);
+    private final ReportsService reportsService       = new ReportsService(core, this);
 
     // PRINCIPAL CONSTRUCTOR
     public ApiUtilityClass(PrincipalController principalController) {
@@ -141,12 +144,56 @@ public class ApiUtilityClass {
         conductService.saveStudentConduct(record, staffId, onSuccess, onFailure, onNetworkIssue);
     }
 
+    public void loadSbaRecords(String levelId, String subjectId, String semesterId, String staffId,
+                               java.util.function.Consumer<java.util.List<com.bbquantum.eazymanage.DTO.Academics.SbaRecord>> onResult,
+                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        reportsService.loadSbaRecords(levelId, subjectId, semesterId, staffId,
+                onResult, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void downloadSbaReport(String staffId, String levelId, String subjectId, String semesterId,
+                                  String suggestedFileName,
+                                  java.util.function.Supplier<javafx.stage.Window> parentWindow,
+                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        reportsService.downloadSbaReport(staffId, levelId, subjectId, semesterId,
+                suggestedFileName, parentWindow, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void loadMasterSheet(String levelId, String semesterId, String staffId,
+                                java.util.function.Consumer<com.bbquantum.eazymanage.DTO.Academics.MasterScoreSheet> onResult,
+                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        reportsService.loadMasterSheet(levelId, semesterId, staffId,
+                onResult, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void downloadMasterSheet(String staffId, String levelId, String semesterId,
+                                    String suggestedFileName,
+                                    java.util.function.Supplier<javafx.stage.Window> parentWindow,
+                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        reportsService.downloadMasterSheet(staffId, levelId, semesterId,
+                suggestedFileName, parentWindow, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void loadReportCard(String studentId, String semesterId, String staffId,
+                               java.util.function.Consumer<com.bbquantum.eazymanage.DTO.Academics.StudentReportCard> onResult,
+                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        reportsService.loadReportCard(studentId, semesterId, staffId,
+                onResult, onSuccess, onFailure, onNetworkIssue);
+    }
+
+    public void downloadReportCard(String staffId, String studentId, String semesterId,
+                                   String suggestedFileName,
+                                   java.util.function.Supplier<javafx.stage.Window> parentWindow,
+                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        reportsService.downloadReportCard(staffId, studentId, semesterId,
+                suggestedFileName, parentWindow, onSuccess, onFailure, onNetworkIssue);
+    }
+
     public void addNewGrade(String staffId, String gradeName, String instructorId,
                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         academicsService.addNewGrade(staffId, gradeName, instructorId, onSuccess, onFailure, onNetworkIssue);
     }
-
 
 
     public void recoverPassword(String staffId, String newPasswordStaffId, String newPassword,
@@ -227,9 +274,9 @@ public class ApiUtilityClass {
     }
 
     public void downloadStudentsReport(String staffId, String levelId, String semesterId, String promotionGradeId, String passScore,
-                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+                                       Supplier<Window> parentWindow, Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
-        academicsService.downloadStudentsReport(staffId, levelId, semesterId, promotionGradeId, passScore, () -> adminController.generateReportBtn.getScene().getWindow(), onSuccess, onFailure, onNetworkIssue);
+        academicsService.downloadStudentsReport(staffId, levelId, semesterId, promotionGradeId, passScore, parentWindow, onSuccess, onFailure, onNetworkIssue);
     }
 
     public void loadClassResults(String levelId, String semesterId,

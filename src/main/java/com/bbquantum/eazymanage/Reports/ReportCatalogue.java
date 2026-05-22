@@ -52,9 +52,9 @@ public class ReportCatalogue {
                     "Individual report card for one student for one semester, with conduct, teacher remarks, and headmaster sign-off.",
                     "\u25A1",
                     NOT_ACCOUNTANT,
-                    ReportStatus.FUTURE,
-                    "Phase 5d",
-                    null
+                    ReportStatus.AVAILABLE,
+                    "",
+                    "/com/bbquantum/eazymanage/Shell/ReportCardReport.fxml"
             )
     );
 
