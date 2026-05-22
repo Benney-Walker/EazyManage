@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    SBA viewer (Phase 5b).
+
+    Filters: class, subject, semester. The subject dropdown is populated
+    after the user picks a class (loadClassSubjects).
+
+    Body: one row per student, with the seven Phase 5b score columns.
+    Action: Download PDF — calls /admin/v2/generate-sba-report.
+-->
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Report.SbaReportController"
+      styleClass="report-viewer"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../Theme/reports.css"/>
+    </stylesheets>
+
+    <!-- Header / breadcrumb -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <HBox spacing="6" alignment="CENTER_LEFT">
+            <Button fx:id="backButton" text="◂  Reporting Center"
+                    onAction="#onBack" styleClass="btn,btn-ghost,breadcrumb-back"/>
+        </HBox>
+        <Label text="School-Based Assessment" styleClass="page-title"/>
+        <Label text="Continuous-assessment record per student for one subject and semester."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <!-- Filters -->
+    <HBox styleClass="table-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="8" right="24" bottom="8" left="24"/></padding>
+
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="200"/>
+
+        <Label text="Subject" styleClass="field-label"/>
+        <ChoiceBox fx:id="subjectChoice" prefWidth="200" disable="true"/>
+
+        <Label text="Semester" styleClass="field-label"/>
+        <ChoiceBox fx:id="semesterChoice" prefWidth="200"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="loadButton" text="Load SBA" onAction="#onLoad" styleClass="btn,btn-primary"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- SBA table -->
+    <VBox VBox.vgrow="ALWAYS" spacing="0">
+        <Label text="Students" styleClass="panel-heading">
+            <padding><Insets top="12" right="24" bottom="6" left="24"/></padding>
+        </Label>
+
+        <TableView fx:id="sbaTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="studentIdCol"    text="Student ID"  prefWidth="110"/>
+                <TableColumn fx:id="studentNameCol"  text="Name"        prefWidth="200"/>
+                <TableColumn fx:id="classTest1Col"   text="CT 1"        prefWidth="70"/>
+                <TableColumn fx:id="groupWorkCol"    text="Group Work"  prefWidth="100"/>
+                <TableColumn fx:id="classTest2Col"   text="CT 2"        prefWidth="70"/>
+                <TableColumn fx:id="projectCol"      text="Project"     prefWidth="80"/>
+                <TableColumn fx:id="classScoreCol"   text="Class (50%)" prefWidth="100"/>
+                <TableColumn fx:id="examScoreCol"    text="Exam"        prefWidth="70"/>
+                <TableColumn fx:id="calcExamCol"     text="Exam (50%)"  prefWidth="90"/>
+            </columns>
+            <placeholder>
+                <Label text="Pick class, subject, and semester — then click 'Load SBA'."
+                       styleClass="empty-state"/>
+            </placeholder>
+        </TableView>
+    </VBox>
+
+    <!-- Action bar -->
+    <VBox styleClass="action-bar">
+        <Separator/>
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Label fx:id="statusLabel" styleClass="save-status"/>
+            <Button fx:id="downloadButton" text="Download PDF"
+                    onAction="#onDownload" styleClass="btn,btn-primary"
+                    disable="true"/>
+        </HBox>
+    </VBox>
+</VBox>
