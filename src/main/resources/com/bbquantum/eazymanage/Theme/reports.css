@@ -1,0 +1,107 @@
+/* ============================================================================
+   EazyManage — Reporting Center styles (Phase 5a)
+   Uses design tokens only. Extends components.css.
+============================================================================ */
+
+.reporting-center,
+.report-viewer { -fx-background-color: -color-bg; }
+
+.page-header   { -fx-background-color: -color-bg; }
+.page-title    { -fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: -color-text-primary; }
+.page-subtitle { -fx-font-size: 12px; -fx-text-fill: -color-text-secondary; }
+
+.transparent-scroll,
+.transparent-scroll > .viewport { -fx-background-color: transparent; }
+
+.panel-heading {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-muted;
+    -fx-text-transform: uppercase;
+}
+
+.empty-state {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-text-muted;
+    -fx-padding: 24;
+}
+
+/* ------------------------------------------------------------------------
+   Report cards on the index screen
+------------------------------------------------------------------------ */
+.report-card {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
+    -fx-padding: 20;
+    -fx-min-width: 260; -fx-pref-width: 280; -fx-max-width: 320;
+    -fx-min-height: 140;
+}
+.report-card:hover {
+    -fx-border-color: -color-accent;
+}
+.report-card-disabled {
+    -fx-opacity: 0.55;
+    -fx-cursor: default;
+}
+.report-card-disabled:hover { -fx-border-color: -color-border; }
+
+.report-card-icon {
+    -fx-font-size: 22px;
+    -fx-text-fill: -color-accent;
+    -fx-padding: 0 0 8 0;
+}
+.report-card-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+.report-card-body {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-text-secondary;
+    -fx-wrap-text: true;
+}
+.report-card-coming {
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-muted;
+    -fx-padding: 6 0 0 0;
+}
+
+/* ------------------------------------------------------------------------
+   Report viewer chrome
+------------------------------------------------------------------------ */
+.breadcrumb-back {
+    -fx-padding: 2 4 2 4;
+    -fx-font-size: 11px;
+}
+
+.subject-breakdown {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1 0 0 0;
+}
+
+.action-bar {
+    -fx-background-color: -color-bg;
+}
+
+.save-status { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
+
+/* ------------------------------------------------------------------------
+   Master Score Sheet — wide table accommodations
+------------------------------------------------------------------------ */
+.master-sheet-scroll { -fx-background-color: -color-bg; }
+.master-sheet-table {
+    /* Allow the table to grow beyond the viewport width so horizontal
+       scrolling activates on classes with many subjects. */
+    -fx-min-width: -fx-pref-width;
+}
+.master-sheet-table .column-header {
+    -fx-padding: 6 8 6 8;
+}
+.master-sheet-table .table-cell {
+    -fx-padding: 6 8 6 8;
+}

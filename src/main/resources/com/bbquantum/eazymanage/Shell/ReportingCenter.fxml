@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Reporting Center — index screen (Phase 5a).
+
+    Lists every report the current role can open as a clickable card.
+    Cards are constructed programmatically in ReportingCenterController so the
+    catalogue stays declarative and easy to extend in Phase 5b/c/d.
+
+    Clicking a card swaps its viewer FXML into the same workspace tab
+    (the shell does not open a new tab for sub-reports).
+-->
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Report.ReportingCenterController"
+      styleClass="reporting-center"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../Theme/reports.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Reporting Center" styleClass="page-title"/>
+        <Label fx:id="subtitleLabel"
+               text="Choose a report to view."
+               styleClass="page-subtitle"
+               wrapText="true"/>
+    </VBox>
+
+    <!-- Card grid -->
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" styleClass="transparent-scroll">
+        <VBox spacing="16">
+            <padding><Insets top="8" right="24" bottom="24" left="24"/></padding>
+
+            <FlowPane fx:id="reportCardGrid"
+                      hgap="16" vgap="16"
+                      prefWrapLength="900"/>
+
+            <Label fx:id="emptyStateLabel"
+                   text="No reports are available for your role yet."
+                   styleClass="empty-state"
+                   visible="false" managed="false"/>
+        </VBox>
+    </ScrollPane>
+</VBox>
