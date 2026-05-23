@@ -8,13 +8,18 @@ module com.bbquantum.eazymanage {
     requires java.desktop;
     requires java.prefs;
     requires java.sql;
+    requires spring.messaging;
+
+    requires spring.websocket;
+    requires spring.core;
+    requires spring.context;
+    requires com.fasterxml.jackson.databind;
 
     exports com.bbquantum.eazymanage;
     exports com.bbquantum.eazymanage.CacheClasses;
     exports com.bbquantum.eazymanage.Controller;
     exports com.bbquantum.eazymanage.Shell;
     exports com.bbquantum.eazymanage.Services;
-
 
     opens com.bbquantum.eazymanage to javafx.fxml;
     opens com.bbquantum.eazymanage.Controller to javafx.fxml;
@@ -31,4 +36,6 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.DTO.Auth to com.google.gson;
     exports com.bbquantum.eazymanage.Controller.Report;
     opens com.bbquantum.eazymanage.Controller.Report to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.WebSocket;
+    opens com.bbquantum.eazymanage.Controller.WebSocket to javafx.fxml;
 }

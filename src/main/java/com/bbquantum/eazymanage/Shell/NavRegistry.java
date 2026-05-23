@@ -35,7 +35,8 @@ public class NavRegistry {
             )),
 
             new Section("COMMUNICATION", List.of(
-                    new NavItem("broadcasts",  "Broadcasts",  "\u25CA", PRINCIPAL_ADMIN,      NavItemStatus.PLACEHOLDER, "Phase 6")
+                    new NavItem("broadcasts",      "Broadcasts",      "\u25CA", PRINCIPAL_ADMIN, NavItemStatus.FUNCTIONAL, ""),
+                    new NavItem("active-sessions", "Active Sessions", "\u25CB", ALL,             NavItemStatus.FUNCTIONAL, "")
             )),
 
             new Section("SYSTEM", List.of(

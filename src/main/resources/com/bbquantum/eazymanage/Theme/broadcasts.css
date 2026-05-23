@@ -1,0 +1,14 @@
+/* ============================================================================
+   EazyManage — Broadcasts composer styles (Phase 6)
+============================================================================ */
+
+.broadcasts-screen { -fx-background-color: -color-bg; }
+
+.broadcast-input {
+    -fx-background-color: -color-surface;
+    -fx-text-fill: -color-text-primary;
+    -fx-prompt-text-fill: -color-text-muted;
+    -fx-background-radius: 6;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 6;
+}

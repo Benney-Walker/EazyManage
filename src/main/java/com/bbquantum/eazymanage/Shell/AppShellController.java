@@ -2,6 +2,7 @@ package com.bbquantum.eazymanage.Shell;
 
 import com.bbquantum.eazymanage.Constants.NavItemStatus;
 import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
+import com.bbquantum.eazymanage.Controller.WebSocket.BroadcastsController;
 import com.bbquantum.eazymanage.EazyManage;
 import com.bbquantum.eazymanage.Records.NavItem;
 import com.bbquantum.eazymanage.Records.Section;
@@ -352,6 +353,12 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "reports".equals(item.id())) {
             return loadReportsScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "broadcasts".equals(item.id())) {
+            return loadBroadcastsScreen();
+        }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "active-sessions".equals(item.id())) {
+            return loadActiveSessionsScreen();
+        }
         return placeholderFor(item);
     }
 
@@ -417,6 +424,35 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load Reporting Center",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    /** Load the Phase 6 Broadcasts composer. Identity drives the role gate. */
+    private Parent loadBroadcastsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Broadcasts.fxml"));
+            Parent root = loader.load();
+            BroadcastsController controller = loader.getController();
+            controller.setIdentity(role);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Broadcasts",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    /** Load the Phase 6 Active Sessions view. No identity injection needed. */
+    private Parent loadActiveSessionsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/ActiveSessions.fxml"));
+            return loader.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Active Sessions",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }
