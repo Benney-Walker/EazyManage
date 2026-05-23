@@ -359,6 +359,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "active-sessions".equals(item.id())) {
             return loadActiveSessionsScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "offline".equals(item.id())) {
+            return loadOfflineSettingsScreen();
+        }
         return placeholderFor(item);
     }
 
@@ -453,6 +456,20 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load Active Sessions",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    /** Load the Phase 7 Offline Mode panel. No identity injection needed —
+     *  the panel binds to the global OfflineMode/OfflineQueue singletons. */
+    private Parent loadOfflineSettingsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/OfflineSettings.fxml"));
+            return loader.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Offline Mode",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }

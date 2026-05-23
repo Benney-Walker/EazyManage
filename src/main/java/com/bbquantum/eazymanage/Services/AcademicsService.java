@@ -5,6 +5,7 @@ import com.bbquantum.eazymanage.DTO.Institution.FindAndUpdateClassInfo;
 import com.bbquantum.eazymanage.DTO.Institution.FindSemester;
 import com.bbquantum.eazymanage.DTO.Institution.GradingCriteria;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
+import com.bbquantum.eazymanage.DTO.Offline.ScoresPayload;
 import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
@@ -791,6 +792,23 @@ public class AcademicsService {
     /** Persist one student's exercise/test/exam scores for a subject. */
     public void saveStudentScores(StudentsScoresTable scores, String subjectId, String semesterId, String staffId,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        // Phase 7: short-circuit to the offline queue when in offline mode.
+        if (OfflineMode.getInstance().isEnabled()) {
+            try {
+                String payload = new com.google.gson.Gson().toJson(
+                        new ScoresPayload(
+                                subjectId, semesterId, staffId, scores));
+                OfflineQueue.getInstance().enqueue(OfflineQueue.OP_SAVE_SCORES, payload);
+                facade.successMessageContainer = "Saved offline — will sync when online";
+                javafx.application.Platform.runLater(onSuccess);
+            } catch (Exception e) {
+                e.printStackTrace();
+                facade.errorMessageContainer = "Could not queue scores: " + e.getMessage();
+                javafx.application.Platform.runLater(onFailure);
+            }
+            return;
+        }
+
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {

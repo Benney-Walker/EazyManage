@@ -1,0 +1,56 @@
+/* ============================================================================
+   EazyManage — Offline Mode panel styles (Phase 7)
+   References design tokens only.
+============================================================================ */
+
+.offline-screen { -fx-background-color: -color-bg; }
+
+.toggle-row {
+    -fx-padding: 4 0 4 0;
+}
+
+.setting-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+.setting-hint {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-muted;
+}
+
+/* Pill-shaped toggle. On/Off label flips via the controller. */
+.toggle-pill {
+    -fx-background-radius: 16;
+    -fx-padding: 6 16 6 16;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 16;
+    -fx-cursor: hand;
+}
+.toggle-pill:selected {
+    -fx-background-color: -color-accent;
+    -fx-text-fill: white;
+    -fx-border-color: -color-accent;
+}
+
+.queue-summary { -fx-padding: 4 0 4 0; }
+
+.metric-value {
+    -fx-font-size: 22px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+.metric-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-muted;
+}
+
+.empty-state {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-text-muted;
+    -fx-padding: 24;
+}

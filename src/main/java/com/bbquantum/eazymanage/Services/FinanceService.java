@@ -1,6 +1,7 @@
 package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Finance.*;
+import com.bbquantum.eazymanage.DTO.Offline.FeesPaymentPayload;
 import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
@@ -384,6 +385,23 @@ public class FinanceService {
     public void addNewFeesPayment(String staffId, String studentId, String semesterId,
                                   String amountPaid, String payerName, String payerPhone,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        // Phase 7: short-circuit to the offline queue when in offline mode.
+        if (OfflineMode.getInstance().isEnabled()) {
+            try {
+                String payload = new com.google.gson.Gson().toJson(
+                        new FeesPaymentPayload(
+                                staffId, studentId, semesterId, amountPaid, payerName, payerPhone));
+                OfflineQueue.getInstance().enqueue(OfflineQueue.OP_FEES_PAYMENT, payload);
+                facade.successMessageContainer = "Saved offline — will sync when online";
+                javafx.application.Platform.runLater(onSuccess);
+            } catch (Exception e) {
+                e.printStackTrace();
+                facade.errorMessageContainer = "Could not queue payment: " + e.getMessage();
+                javafx.application.Platform.runLater(onFailure);
+            }
+            return;
+        }
+
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {

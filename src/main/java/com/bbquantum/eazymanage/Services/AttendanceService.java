@@ -1,6 +1,7 @@
 package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
+import com.bbquantum.eazymanage.DTO.Offline.AttendancePayload;
 import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -144,6 +145,25 @@ public class AttendanceService {
     /** Update a previously marked attendance entry. */
     public void updateAttendance(String studentId, String staffId, String levelId, String status, String dateMarked,
                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        // Phase 7: if offline-mode is on, persist to the local queue and
+        // synthesise an immediate success. The UI sees the same callback
+        // semantics it would have seen from a live backend.
+        if (OfflineMode.getInstance().isEnabled()) {
+            try {
+                String payload = new com.google.gson.Gson().toJson(
+                        new AttendancePayload(
+                                studentId, staffId, levelId, status, dateMarked));
+                OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
+                facade.successMessageContainer = "Saved offline — will sync when online";
+                javafx.application.Platform.runLater(onSuccess);
+            } catch (Exception e) {
+                e.printStackTrace();
+                facade.errorMessageContainer = "Could not queue attendance: " + e.getMessage();
+                javafx.application.Platform.runLater(onFailure);
+            }
+            return;
+        }
+
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {

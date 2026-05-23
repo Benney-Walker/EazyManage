@@ -159,6 +159,36 @@
     -fx-text-fill: -color-text-primary;
 }
 
+/* ---------------------------------------------------------------------------
+   Offline-mode toggle button (Phase 7). Default = online (subdued grey).
+   When offline mode is on, an amber pill makes the state unmistakable
+   without being alarming.
+--------------------------------------------------------------------------- */
+.topbar-offline-toggle {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 4 12 4 12;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+}
+.topbar-offline-toggle:hover {
+    -fx-background-color: -color-hover;
+}
+.topbar-offline-toggle-on {
+    -fx-background-color: -color-warning;
+    -fx-text-fill: -color-bg;
+    -fx-border-color: -color-warning;
+}
+.topbar-offline-toggle-on:hover {
+    -fx-background-color: -color-warning;
+    -fx-opacity: 0.85;
+}
+
 
 /* ---------------------------------------------------------------------------
    Notification center — additional refinements for the popup-mounted variant

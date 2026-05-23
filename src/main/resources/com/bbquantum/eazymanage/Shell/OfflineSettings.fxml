@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Offline Mode panel (Phase 7).
+
+    Three sections:
+      1. Offline mode toggle.
+      2. Queue depth + last replay summary.
+      3. Pending operations table, with a Drain button that replays them
+         in insertion order. Failures stay queued and bump the retry count.
+
+    The toggle is persisted across app restarts, so a teacher who knows
+    they will be offline for the morning can flip it on once and forget.
+-->
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Shell.OfflineSettingsController"
+      styleClass="offline-screen"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../Theme/offline.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Offline Mode" styleClass="page-title"/>
+        <Label text="Save attendance, scores, and fees payments locally when the network is unreliable. Replay them once you're back online."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Toggle row -->
+    <VBox spacing="14">
+        <padding><Insets top="16" right="24" bottom="16" left="24"/></padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="16" styleClass="toggle-row">
+            <VBox HBox.hgrow="ALWAYS" spacing="2">
+                <Label text="Offline mode" styleClass="setting-title"/>
+                <Label fx:id="toggleHintLabel"
+                       text="When on, the three supported writes are saved locally instead of sent over the network."
+                       styleClass="setting-hint" wrapText="true"/>
+            </VBox>
+            <ToggleButton fx:id="offlineToggle" text="Off" styleClass="toggle-pill"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- Queue summary -->
+        <VBox spacing="8" styleClass="queue-summary">
+            <Label text="Pending operations" styleClass="setting-title"/>
+            <HBox spacing="32" alignment="CENTER_LEFT">
+                <VBox spacing="2">
+                    <Label fx:id="pendingCountLabel" text="0" styleClass="metric-value"/>
+                    <Label text="queued" styleClass="metric-label"/>
+                </VBox>
+                <VBox spacing="2">
+                    <Label fx:id="lastSyncLabel" text="—" styleClass="metric-value"/>
+                    <Label text="last sync" styleClass="metric-label"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="drainButton" text="Drain queue now"
+                        onAction="#onDrain" styleClass="btn,btn-primary"/>
+                <Button fx:id="refreshButton" text="Refresh"
+                        onAction="#onRefresh" styleClass="btn,btn-secondary"/>
+            </HBox>
+            <Label fx:id="drainHintLabel"
+                   text="Replay attempts each pending row once, in order. Successful rows are removed; failed rows stay queued."
+                   styleClass="setting-hint" wrapText="true"/>
+        </VBox>
+
+        <Separator/>
+
+        <!-- Pending table -->
+        <VBox VBox.vgrow="ALWAYS" spacing="6">
+            <Label text="Queue contents" styleClass="setting-title"/>
+            <TableView fx:id="pendingTable" VBox.vgrow="ALWAYS" prefHeight="320">
+                <columns>
+                    <TableColumn fx:id="opTypeCol"      text="Type"        prefWidth="120"/>
+                    <TableColumn fx:id="createdAtCol"   text="Created"     prefWidth="180"/>
+                    <TableColumn fx:id="retryCountCol"  text="Retries"     prefWidth="80"/>
+                    <TableColumn fx:id="lastAttemptCol" text="Last attempt" prefWidth="180"/>
+                    <TableColumn fx:id="lastErrorCol"   text="Last error"  prefWidth="280"/>
+                </columns>
+                <placeholder>
+                    <Label text="Queue is empty. Operations appear here when offline mode is on."
+                           styleClass="empty-state"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+    </VBox>
+</VBox>

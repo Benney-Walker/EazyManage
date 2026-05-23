@@ -14,6 +14,7 @@ module com.bbquantum.eazymanage {
     requires spring.core;
     requires spring.context;
     requires com.fasterxml.jackson.databind;
+    requires org.xerial.sqlitejdbc;
 
     exports com.bbquantum.eazymanage;
     exports com.bbquantum.eazymanage.CacheClasses;
