@@ -4,6 +4,7 @@ import com.bbquantum.eazymanage.DTO.Finance.*;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
+import com.bbquantum.eazymanage.Services.*;
 import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.animation.FadeTransition;
@@ -33,11 +34,19 @@ import java.util.ResourceBundle;
 
 public class FinanceController implements Initializable {
     //CONTROLLER OWN VARIABLES
-    private ApiUtilityClass apiUtilityClass;
+    //
+    // Phase 8b — services referenced directly. ApiContext is the shared
+    // error/success store; the ApiUtilityClass facade is no longer
+    // constructed by this controller.
+    private final ApiCore apiCore          = new ApiCore();
+    private final FinanceService financeService   = new FinanceService(apiCore, null);
+    private final AcademicsService  academicsService = new AcademicsService(apiCore, null);
+    private final DashboardService  dashboardService = new DashboardService(apiCore, null);
     public String staffId;
     private String institutionName;
     private String accountantName;
     private static String staffRole;
+
 
     //Hold fees Details for update
     public FetchFeesDetails feesDetails;
@@ -352,7 +361,7 @@ public class FinanceController implements Initializable {
     @FXML
     public void refreshDashboard() {
         showLoading();
-        apiUtilityClass.loadFinanceDashboardData(staffId, notification,
+        dashboardService.loadFinanceDashboardData(staffId, notification,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -394,19 +403,19 @@ public class FinanceController implements Initializable {
         String gradeId = selectedItemGrade.getLevelId();
         UtilityClass.processingButton(saveFeesBtn);
 
-        apiUtilityClass.addNewFees(staffId, gradeId, semesterId, feesAmount,
+        financeService.addNewFees(staffId, gradeId, semesterId, feesAmount,
                 () -> {
             // On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveFeesBtn, "SAVE FEES");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
             // On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveFeesBtn, "SAVE FEES");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
             //On Network Failure
@@ -441,12 +450,12 @@ public class FinanceController implements Initializable {
         feesDetails.setSemesterId(selectedSemester.getSemesterId());
         feesDetails.setLevelId(selectedGrade.getLevelId());
 
-        apiUtilityClass.updateSemesterFees(staffId, feesDetails,
+        financeService.updateSemesterFees(staffId, feesDetails,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateFeesBtn, "SAVE CHANGES");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         feesDetailsArea.setVisible(false);
                         feesDetailsArea.setManaged(false);
 
@@ -458,7 +467,7 @@ public class FinanceController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateFeesBtn, "SAVE CHANGES");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -476,7 +485,7 @@ public class FinanceController implements Initializable {
 
         showLoading();
         String gradeId = selectedGrade.getLevelId();
-        apiUtilityClass.loadClassStudents(gradeId, staffId,
+        academicsService.loadClassStudents(gradeId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -491,7 +500,7 @@ public class FinanceController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -554,20 +563,20 @@ public class FinanceController implements Initializable {
             return;
         }
 
-        apiUtilityClass.addNewFeesPayment(staffId, student.getStudentId(), semesterId, String.valueOf(amountPaid), payerName, payerPhone,
+        financeService.addNewFeesPayment(staffId, student.getStudentId(), semesterId, String.valueOf(amountPaid), payerName, payerPhone,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveFeesPaymentBtn, "SAVE PAYMENT");
                         clearPaymentForm();
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
 
                     });
                 }, () -> {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveFeesBtn, "SAVE PAYMENT");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
             //On Network Issue
@@ -590,7 +599,7 @@ public class FinanceController implements Initializable {
 
         showLoading();
         String gradeId = selectedGrade.getLevelId();
-        apiUtilityClass.loadClassStudents(gradeId, staffId,
+        academicsService.loadClassStudents(gradeId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -606,7 +615,7 @@ public class FinanceController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -644,20 +653,20 @@ public class FinanceController implements Initializable {
         }
 
         UtilityClass.processingButton(searchFeesReportBtn);
-        apiUtilityClass.fetchStudentPaymentRecords(staffId, student.getStudentId(), selectedSemester.getSemesterId(), selectedGrade.getLevelId(),
+        financeService.fetchStudentPaymentRecords(staffId, student.getStudentId(), selectedSemester.getSemesterId(), selectedGrade.getLevelId(),
                 () -> {
                     // On success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(searchFeesReportBtn, "FETCH RECORDS");
                         displayFeesReport(UtilityClass.paymentRecords);
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
                     // On failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(searchFeesReportBtn, "FETCH RECORDS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
             //On Network Failure
@@ -776,13 +785,12 @@ public class FinanceController implements Initializable {
 
     @FXML
     public void initializeAfterLogin() {
-        apiUtilityClass = new ApiUtilityClass(this);
         setActiveButton(dashboardBtn);
         loadAccountantInfo();
         showLoading();
-        apiUtilityClass.loadFinanceDashboardData(staffId, notification,
+        dashboardService.loadFinanceDashboardData(staffId, notification,
                 () -> {
-            //On Success
+                    //On Success
                     Platform.runLater(() -> {
                         loadDashboardData();
 
@@ -956,20 +964,21 @@ public class FinanceController implements Initializable {
         UtilityClass.processingButton(fetchFeesDetailsBtn);
         String semesterId = selectedSemester.getSemesterId();
         String levelId = selectedGrade.getLevelId();
-        apiUtilityClass.fetchFeesDetails(staffId, semesterId, levelId,
+        financeService.fetchFeesDetails(staffId, semesterId, levelId,
+                semesterFees -> feesDetails = semesterFees,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(fetchFeesDetailsBtn, "FETCH FEES DETAILS");
                         fillFeesDetailsArea(feesDetails);
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(fetchFeesDetailsBtn, "FETCH FEES DETAILS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -989,7 +998,7 @@ public class FinanceController implements Initializable {
         showLoading();
         String gradeId = selectedGrade.getLevelId();
 
-        apiUtilityClass.loadClassStudents(gradeId, staffId,
+        academicsService.loadClassStudents(gradeId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -1005,7 +1014,7 @@ public class FinanceController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1043,12 +1052,13 @@ public class FinanceController implements Initializable {
         }
 
         UtilityClass.processingButton(fetchPaymentDetailsBtn);
-        apiUtilityClass.fetchPaymentRecord(staffId, selectedStudent.getStudentId(), selectedGrade.getLevelId(), selectedSemester.getSemesterId(),
+        financeService.fetchPaymentRecord(staffId, selectedStudent.getStudentId(), selectedGrade.getLevelId(), selectedSemester.getSemesterId(),
+                records -> studentPaymentRecords = records,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(fetchPaymentDetailsBtn, "FETCH PAYMENT RECORDS");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
 
                         paymentRecordsTableView.getItems().clear();
                         paymentRecordsTableView.getItems().addAll(studentPaymentRecords);
@@ -1067,7 +1077,7 @@ public class FinanceController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(fetchPaymentDetailsBtn, "FETCH PAYMENT RECORDS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1121,12 +1131,12 @@ public class FinanceController implements Initializable {
         }
 
         UtilityClass.processingButton(updateFeesPaymentBtn);
-        apiUtilityClass.updatePaymentDetails(staffId, update,
+        financeService.updatePaymentDetails(staffId, update,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateFeesPaymentBtn, "SAVE CHANGES");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         paymentDetailsArea.setVisible(false);
                         paymentDetailsArea.setManaged(false);
 
@@ -1137,7 +1147,7 @@ public class FinanceController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateFeesPaymentBtn, "SAVE CHANGES");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1154,12 +1164,12 @@ public class FinanceController implements Initializable {
         String transactionId = transactionIdLabel.getText().trim();
         UtilityClass.processingButton(deleteFeesPaymentBtn);
 
-        apiUtilityClass.deletePaymentRecord(staffId, transactionId,
+        financeService.deletePaymentRecord(staffId, transactionId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(deleteFeesPaymentBtn, "DELETE RECORD");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         paymentDetailsArea.setVisible(false);
                         paymentDetailsArea.setManaged(false);
 
@@ -1170,7 +1180,7 @@ public class FinanceController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(deleteFeesPaymentBtn, "DELETE RECORD");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1212,21 +1222,22 @@ public class FinanceController implements Initializable {
         }
 
         UtilityClass.processingButton(gradePaymentsReportBtn);
-        apiUtilityClass.fetchGradeFeesRecords(staffId, selectedGrade.getLevelId(), selectedSemester.getSemesterId(),
+        financeService.fetchGradeFeesRecords(staffId, selectedGrade.getLevelId(), selectedSemester.getSemesterId(),
+                records -> gradeFeesReport = records,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
                         populateGradePaymentsReportResponsePanel(gradeFeesReport,
                                 selectedGrade, selectedSemester.getSemesterName());
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(gradePaymentsReportBtn, "FETCH PAYMENTS REPORT");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
