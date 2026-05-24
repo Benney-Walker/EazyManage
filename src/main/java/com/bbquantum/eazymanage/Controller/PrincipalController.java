@@ -9,6 +9,7 @@ import com.bbquantum.eazymanage.DTO.Finance.FeesSummaryTable;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Institution.*;
+import com.bbquantum.eazymanage.Services.*;
 import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.animation.FadeTransition;
@@ -38,7 +39,15 @@ import java.util.ResourceBundle;
 
 public class PrincipalController implements Initializable {
 
-    private ApiUtilityClass apiUtilityClass;
+    // Phase 8c — services referenced directly. ApiContext is the shared
+    // error/success store; the ApiUtilityClass facade is no longer
+    // constructed by this controller.
+    private final ApiCore apiCore          = new ApiCore();
+    private final AcademicsService academicsService = new AcademicsService(apiCore, null);
+    private final DashboardService dashboardService = new DashboardService(apiCore, null);
+    private final FinanceService   financeService   = new FinanceService(apiCore, null);
+    private final StaffService     staffService     = new StaffService(apiCore, null);
+    private final StudentService   studentService   = new StudentService(apiCore, null);
 
     //Store staff Data from backend
     String institutionName;
@@ -549,7 +558,7 @@ public class PrincipalController implements Initializable {
     @FXML
     public void refreshDashboard() {
         showLoading();
-        apiUtilityClass.loadPrincipalData(staffId, notification,
+        dashboardService.loadPrincipalData(staffId, notification,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -568,7 +577,7 @@ public class PrincipalController implements Initializable {
         System.out.println("Happened");
 
         showLoading();
-        apiUtilityClass.loadClassStudents(selectedGrade.getLevelId(), staffId,
+        academicsService.loadClassStudents(selectedGrade.getLevelId(), staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -583,7 +592,7 @@ public class PrincipalController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -621,12 +630,12 @@ public class PrincipalController implements Initializable {
         String semesterId = selectedSemester.getSemesterId();
         UtilityClass.processingButton(searchFeesHistoryBtn);
 
-        apiUtilityClass.fetchStudentPaymentRecords(staffId, student.getStudentId(), semesterId, gradeId,
+        financeService.fetchStudentPaymentRecords(staffId, student.getStudentId(), semesterId, gradeId,
                 () -> {
                     // On success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         displayFeeReport(UtilityClass.paymentRecords);
                     });
                 },
@@ -634,7 +643,7 @@ public class PrincipalController implements Initializable {
                     // On failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(searchFeesHistoryBtn, "FETCH FEES RECORDS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
                     //On Network Issue
@@ -651,12 +660,13 @@ public class PrincipalController implements Initializable {
         String filter = "FULLY PAID STUDENTS";
 
         UtilityClass.processingButton(fullyPaidBtn);
-        apiUtilityClass.getFeesFilterData(ownUrl,
+        financeService.getFeesFilterData(ownUrl,
+                records -> feesSummaryTable = records,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(fullyPaidBtn, "FULLY PAID");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         String size = String.valueOf(feesSummaryTable.size());
                         displayFilteredFeesTable(feesSummaryTable, filter, size);
                     });
@@ -667,7 +677,7 @@ public class PrincipalController implements Initializable {
                         UtilityClass.notProcessingButton(fullyPaidBtn, "FULLY PAID");
                         filteredStudentsPanel.setVisible(false);
                         filteredStudentsPanel.setManaged(false);
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -685,12 +695,13 @@ public class PrincipalController implements Initializable {
         String filter = "PARTIALLY PAID STUDENTS";
 
         UtilityClass.processingButton(partiallyPaidBtn);
-        apiUtilityClass.getFeesFilterData(ownUrl,
+        financeService.getFeesFilterData(ownUrl,
+                records -> feesSummaryTable = records,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(partiallyPaidBtn, "PARTIAL PAYMENT");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         String size = String.valueOf(feesSummaryTable.size());
                         displayFilteredFeesTable(feesSummaryTable, filter, size);
                     });
@@ -701,7 +712,7 @@ public class PrincipalController implements Initializable {
                         UtilityClass.notProcessingButton(partiallyPaidBtn, "PARTIAL PAYMENT");
                         filteredStudentsPanel.setVisible(false);
                         filteredStudentsPanel.setManaged(false);
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -719,12 +730,13 @@ public class PrincipalController implements Initializable {
         String filter = "NOT PAID STUDENTS";
 
         UtilityClass.processingButton(notPaidBtn);
-        apiUtilityClass.getFeesFilterData(ownUrl,
+        financeService.getFeesFilterData(ownUrl,
+                records -> feesSummaryTable = records,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(notPaidBtn, "NOT PAID");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         String size = String.valueOf(feesSummaryTable.size());
                         displayFilteredFeesTable(feesSummaryTable, filter, size);
                     });
@@ -735,7 +747,7 @@ public class PrincipalController implements Initializable {
                         UtilityClass.notProcessingButton(notPaidBtn, "NOT PAID");
                         filteredStudentsPanel.setVisible(false);
                         filteredStudentsPanel.setManaged(false);
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -784,7 +796,7 @@ public class PrincipalController implements Initializable {
         if (selectedGrade == null) return;
 
         showLoading();
-        apiUtilityClass.loadClassStudents(selectedGrade.getLevelId(), staffId,
+        academicsService.loadClassStudents(selectedGrade.getLevelId(), staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -799,7 +811,7 @@ public class PrincipalController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -834,20 +846,20 @@ public class PrincipalController implements Initializable {
         String semesterId = selectedSemester.getSemesterId();
         UtilityClass.processingButton(getResultsBtn);
 
-        apiUtilityClass.SearchStudentResults(student.getStudentId(), semesterId, classId,
+        academicsService.SearchStudentResults(student.getStudentId(), semesterId, classId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(getResultsBtn, "FETCH RESULT");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
-                        displayStudentResultsPanel(apiUtilityClass.studentResult);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
+                        displayStudentResultsPanel(ApiContext.getInstance().studentResult);
                     });
                 },
                 () -> {
                     //On failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(getResultsBtn, "FETCH RESULT");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -871,7 +883,7 @@ public class PrincipalController implements Initializable {
         UtilityClass.processingButton(updateStaffBtn);
         FindStaffResponse info = updateStaffDTO();
 
-        apiUtilityClass.updateStaffInfo(info, staffId,
+        staffService.updateStaffInfo(info, staffId,
                 () -> {
                     //On Success
                     Platform.runLater( () -> {
@@ -882,14 +894,14 @@ public class PrincipalController implements Initializable {
                         staffManagementContainer.setVisible(true);
                         staffManagementContainer.setManaged(true);
 
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater( () -> {
                         UtilityClass.notProcessingButton(updateStaffBtn, "SAVE CHANGES");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -949,13 +961,13 @@ public class PrincipalController implements Initializable {
             Platform.runLater(() -> {
                 clearForm();
                 UtilityClass.notProcessingButton(saveAndClearBtn, "Save Student");
-                UtilityClass.showSuccess(notification, "Student saved successfully! ID: " + apiUtilityClass.successMessageContainer);
+                UtilityClass.showSuccess(notification, "Student saved successfully! ID: " + ApiContext.getInstance().successMessageContainer);
             });
         }, () -> {
             // On Failure
             Platform.runLater(() -> {
                 UtilityClass.notProcessingButton(saveAndClearBtn, "Save Student");
-                UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
             });
         }, () -> {
             // On Network Failure
@@ -972,7 +984,7 @@ public class PrincipalController implements Initializable {
         if (selectedGrade == null) return;
 
         showLoading();
-        apiUtilityClass.loadClassStudents(selectedGrade.getLevelId(), staffId,
+        academicsService.loadClassStudents(selectedGrade.getLevelId(), staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -987,7 +999,7 @@ public class PrincipalController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1008,7 +1020,7 @@ public class PrincipalController implements Initializable {
         }
 
         UtilityClass.processingButton(findStudentBtn);
-        apiUtilityClass.searchStudentData(student.getStudentId(), staffId,
+        studentService.searchStudentData(student.getStudentId(), staffId,
                 () -> {
                     // On Success
                     Platform.runLater(() -> {
@@ -1021,7 +1033,7 @@ public class PrincipalController implements Initializable {
                     //On failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(findStudentBtn, "Find Student");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1056,7 +1068,7 @@ public class PrincipalController implements Initializable {
         String semesterId = semesterCaching.getSemesterId();
 
         UtilityClass.processingButton(loadClassResultsBtn);
-        apiUtilityClass.loadClassResults(gradeId, semesterId,
+        academicsService.loadClassResults(gradeId, semesterId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -1069,7 +1081,7 @@ public class PrincipalController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(loadClassResultsBtn, "FETCH RESULTS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
 
                     });
                 }, () -> {
@@ -1107,11 +1119,10 @@ public class PrincipalController implements Initializable {
 
 
     public void initializeAfterLogin() {
-        apiUtilityClass = new ApiUtilityClass(this);
         setActiveButton(mainDashboardBtn);
         loadPrincipalInfo();
         showLoading();
-        apiUtilityClass.loadPrincipalData(staffId, notification,
+        dashboardService.loadPrincipalData(staffId, notification,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -1196,19 +1207,19 @@ public class PrincipalController implements Initializable {
     private void handleSearchStaff(String searchId) {
         showLoading();
 
-        apiUtilityClass.searchStaffData(searchId, staffId,
+        staffService.searchStaffData(searchId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         hideLoading();
-                        displayStaffDetails(apiUtilityClass.findStaffResponse);
+                        displayStaffDetails(ApiContext.getInstance().findStaffResponse);
                     });
                 },
                 () -> {
             //On failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1670,7 +1681,7 @@ public class PrincipalController implements Initializable {
         }
         selectedGradeId = selectedClass.getLevelId();
 
-        apiUtilityClass.enrollNewStudent(staffId, firstName, lastName, selectedGradeId, gender,
+        studentService.enrollNewStudent(staffId, firstName, lastName, selectedGradeId, gender,
                 dob, homeTown, parentName, parentPhone, onSuccess, onFailure, onNetworkIssue);
     }
 
