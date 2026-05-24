@@ -1380,7 +1380,7 @@ public class PrincipalController implements Initializable {
     }
 
     private void loadPrincipalInfo() {
-        versionLabel.setText(apiUtilityClass.applicationVersion);
+        versionLabel.setText(UtilityClass.APPLICATION_VERSION);
         principalNameLabel.setText(principalName.toUpperCase());
         institutionNameLabel.setText(institutionName.toUpperCase());
     }

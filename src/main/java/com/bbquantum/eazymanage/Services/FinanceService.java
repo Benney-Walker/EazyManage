@@ -50,7 +50,7 @@ public class FinanceService {
                     return core.gson.fromJson(response.body(), StudentFeesPaymentDisplay.class);
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -75,7 +75,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not fetch report";
+            ApiContext.getInstance().errorMessageContainer = "Could not fetch report";
             onFailure.run();
         });
 
@@ -109,7 +109,7 @@ public class FinanceService {
                     return core.gson.fromJson(response.body(), listType);
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -135,7 +135,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not load report";
+            ApiContext.getInstance().errorMessageContainer = "Could not load report";
             onFailure.run();
         });
 
@@ -167,7 +167,7 @@ public class FinanceService {
                     return core.gson.fromJson(response.body(), FetchFeesDetails.class);
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -193,7 +193,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not fetch fees details";
+            ApiContext.getInstance().errorMessageContainer = "Could not fetch fees details";
             onFailure.run();
         });
 
@@ -230,7 +230,7 @@ public class FinanceService {
                     return core.gson.fromJson(response.body(), listType);
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -256,7 +256,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not fetch payment records";
+            ApiContext.getInstance().errorMessageContainer = "Could not fetch payment records";
             onFailure.run();
         });
 
@@ -289,7 +289,7 @@ public class FinanceService {
                     return core.gson.fromJson(response.body(), listType);
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -315,7 +315,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not get Records";
+            ApiContext.getInstance().errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
 
@@ -349,7 +349,7 @@ public class FinanceService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -374,7 +374,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not save Fees";
+            ApiContext.getInstance().errorMessageContainer = "Could not save Fees";
             onFailure.run();
         });
 
@@ -392,11 +392,11 @@ public class FinanceService {
                         new FeesPaymentPayload(
                                 staffId, studentId, semesterId, amountPaid, payerName, payerPhone));
                 OfflineQueue.getInstance().enqueue(OfflineQueue.OP_FEES_PAYMENT, payload);
-                facade.successMessageContainer = "Saved offline — will sync when online";
+                ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
                 javafx.application.Platform.runLater(onSuccess);
             } catch (Exception e) {
                 e.printStackTrace();
-                facade.errorMessageContainer = "Could not queue payment: " + e.getMessage();
+                ApiContext.getInstance().errorMessageContainer = "Could not queue payment: " + e.getMessage();
                 javafx.application.Platform.runLater(onFailure);
             }
             return;
@@ -427,7 +427,7 @@ public class FinanceService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -438,7 +438,7 @@ public class FinanceService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = status;
+            ApiContext.getInstance().successMessageContainer = status;
             onSuccess.run();
         });
 
@@ -452,7 +452,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not add Payment";
+            ApiContext.getInstance().errorMessageContainer = "Could not add Payment";
             onFailure.run();
         });
 
@@ -485,7 +485,7 @@ public class FinanceService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -496,7 +496,7 @@ public class FinanceService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = response;
+            ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
 
@@ -510,7 +510,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not update Fees details";
+            ApiContext.getInstance().errorMessageContainer = "Could not update Fees details";
             onFailure.run();
         });
 
@@ -538,7 +538,7 @@ public class FinanceService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -549,7 +549,7 @@ public class FinanceService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = response;
+            ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
 
@@ -563,7 +563,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not delete record";
+            ApiContext.getInstance().errorMessageContainer = "Could not delete record";
             onFailure.run();
         });
 
@@ -601,7 +601,7 @@ public class FinanceService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -612,7 +612,7 @@ public class FinanceService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = response;
+            ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
 
@@ -626,7 +626,7 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not update payment records";
+            ApiContext.getInstance().errorMessageContainer = "Could not update payment records";
             onFailure.run();
         });
 

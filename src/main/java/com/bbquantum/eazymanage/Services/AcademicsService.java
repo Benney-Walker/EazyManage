@@ -61,7 +61,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), SubjectScores.class);
                 }
-                facade.errorMessageContainer = response.body();
+
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -116,7 +118,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+
+                if (facade != null) facade.errorMessageContainer = response.body();
+                com.bbquantum.eazymanage.Services.ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -127,7 +131,8 @@ public class AcademicsService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = response;
+            if (facade != null) facade.successMessageContainer = response;
+            ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
 
@@ -164,7 +169,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), SubjectDTO.class);
                 }
-                facade.errorMessageContainer = response.body();
+
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -187,7 +194,8 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not get Records";
+            if (facade != null) facade.errorMessageContainer = "Could not get Records";
+            com.bbquantum.eazymanage.Services.ApiContext.getInstance().errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
 
@@ -218,14 +226,16 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            facade.successMessageContainer = task.getValue();
-            if (facade.successMessageContainer != null) {
+            if (facade != null) facade.successMessageContainer = task.getValue();
+            ApiContext.getInstance().successMessageContainer = task.getValue();
+            if (ApiContext.getInstance().successMessageContainer != null) {
                 onSuccess.run();
                 return;
             }
@@ -241,7 +251,8 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not update Records";
+            if (facade != null) facade.errorMessageContainer = "Could not update Records";
+            ApiContext.getInstance().errorMessageContainer = "Could not update Records";
             onFailure.run();
         });
 
@@ -266,7 +277,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -317,7 +330,8 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                facade.errorMessageContainer = response.body();
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -343,7 +357,8 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not get Records";
+            if (facade != null) facade.errorMessageContainer = "Could not get Records";
+            ApiContext.getInstance().errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
 
@@ -375,7 +390,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return "Class added successfully";
                 }
-                facade.errorMessageContainer = response.body();
+
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -383,7 +400,8 @@ public class AcademicsService {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if (status != null) {
-                facade.successMessageContainer = status;
+                if (facade != null) facade.successMessageContainer = status;
+                ApiContext.getInstance().successMessageContainer = status;
                 onSuccess.run();
                 return;
             }
@@ -399,7 +417,8 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not add new grade";
+            if (facade != null) facade.errorMessageContainer = "Could not add new grade";
+            ApiContext.getInstance().errorMessageContainer = "Could not add new grade";
             onFailure.run();
         });
 
@@ -425,7 +444,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), FindAndUpdateClassInfo.class);
                 }
-                facade.errorMessageContainer = response.body();
+
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -448,7 +469,9 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not fetch class Info";
+
+            if (facade != null) facade.errorMessageContainer = "Could not fetch class Info";
+            ApiContext.getInstance().errorMessageContainer = "Could not fetch class Info";
             onFailure.run();
         });
 
@@ -480,7 +503,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -491,7 +516,8 @@ public class AcademicsService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = result;
+            if (facade != null) facade.successMessageContainer = result;
+            ApiContext.getInstance().successMessageContainer = result;
             onSuccess.run();
         });
 
@@ -531,7 +557,8 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                facade.errorMessageContainer = response.body();
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -557,7 +584,8 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not get Records";
+            if (facade != null) facade.errorMessageContainer = "Could not get Records";
+            ApiContext.getInstance().errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
 
@@ -582,14 +610,17 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            facade.successMessageContainer = task.getValue();
-            if (facade.successMessageContainer == null) {
+            if (facade != null) facade.successMessageContainer = task.getValue();
+            ApiContext.getInstance().successMessageContainer = task.getValue();
+            if (ApiContext.getInstance().successMessageContainer == null) {
                 onFailure.run();
                 return;
             }
@@ -605,7 +636,8 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not move passed students";
+            if (facade != null) facade.errorMessageContainer = "Could not move passed students";
+            com.bbquantum.eazymanage.Services.ApiContext.getInstance().errorMessageContainer = "Could not move passed students";
             onFailure.run();
         });
 
@@ -643,7 +675,8 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return "Successfull";       // legacy spelling preserved
                 }
-                facade.errorMessageContainer = response.body();
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -666,7 +699,8 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not save Semester";
+            if (facade != null) facade.errorMessageContainer = "Could not save Semester";
+            ApiContext.getInstance().errorMessageContainer = "Could not save Semester";
             onFailure.run();
         });
 
@@ -697,7 +731,8 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), FindSemester.class);
                 }
-                facade.errorMessageContainer = response.body();
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -721,7 +756,8 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not get Semester Data";
+            if (facade != null) facade.errorMessageContainer = "Could not get Semester Data";
+            ApiContext.getInstance().errorMessageContainer = "Could not get Semester Data";
             onFailure.run();
         });
 
@@ -754,7 +790,8 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -765,7 +802,8 @@ public class AcademicsService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = response;
+            if (facade != null) facade.successMessageContainer = response;
+            ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
 
@@ -778,7 +816,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not update semester info";
+            ApiContext.getInstance().errorMessageContainer= "Could not update semester info";
             onFailure.run();
         });
 
@@ -799,11 +837,11 @@ public class AcademicsService {
                         new ScoresPayload(
                                 subjectId, semesterId, staffId, scores));
                 OfflineQueue.getInstance().enqueue(OfflineQueue.OP_SAVE_SCORES, payload);
-                facade.successMessageContainer = "Saved offline — will sync when online";
+                ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
                 javafx.application.Platform.runLater(onSuccess);
             } catch (Exception e) {
                 e.printStackTrace();
-                facade.errorMessageContainer = "Could not queue scores: " + e.getMessage();
+                ApiContext.getInstance().errorMessageContainer= "Could not queue scores: " + e.getMessage();
                 javafx.application.Platform.runLater(onFailure);
             }
             return;
@@ -838,7 +876,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return "Successful";
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer= response.body();
                 return null;
             }
         };
@@ -893,7 +931,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return "Successful";
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer= response.body();
                 return null;
             }
         };
@@ -901,7 +939,7 @@ public class AcademicsService {
         task.setOnSucceeded(event -> {
             String response = task.getValue();
             if (response != null) {
-                facade.successMessageContainer = response;
+                ApiContext.getInstance().successMessageContainer = response;
                 onSuccess.run();
                 return;
             }
@@ -917,7 +955,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not add Grade criteria";
+            ApiContext.getInstance().errorMessageContainer= "Could not add Grade criteria";
             onFailure.run();
         });
 
@@ -948,7 +986,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), StudentResult.class);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer= response.body();
                 return null;
             }
         };
@@ -956,7 +994,7 @@ public class AcademicsService {
         task.setOnSucceeded(event -> {
             facade.studentResult = task.getValue();
             if (facade.studentResult != null) {
-                facade.successMessageContainer = "Results loaded successfully";
+                ApiContext.getInstance().successMessageContainer = "Results loaded successfully";
                 onSuccess.run();
                 return;
             }
@@ -972,7 +1010,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not load results";
+            ApiContext.getInstance().errorMessageContainer= "Could not load results";
             onFailure.run();
         });
 
@@ -1001,7 +1039,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer= response.body();
                 return null;
             }
         };
@@ -1063,7 +1101,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
+                ApiContext.getInstance().errorMessageContainer= new String(response.body(), StandardCharsets.UTF_8);
                 return null;
             }
         };
@@ -1095,7 +1133,7 @@ public class AcademicsService {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    facade.errorMessageContainer = e.getMessage();
+                    ApiContext.getInstance().errorMessageContainer= e.getMessage();
                     onFailure.run();
                 }
             });
@@ -1148,7 +1186,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer= response.body();
                 return null;
             }
         };
@@ -1159,7 +1197,7 @@ public class AcademicsService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = "Teacher remark saved";
+            ApiContext.getInstance().successMessageContainer = "Teacher remark saved";
             onSuccess.run();
         });
 
@@ -1172,7 +1210,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not save teacher remark";
+            ApiContext.getInstance().errorMessageContainer= "Could not save teacher remark";
             onFailure.run();
         });
 
@@ -1204,7 +1242,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer= response.body();
                 return null;
             }
         };
@@ -1215,7 +1253,7 @@ public class AcademicsService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = "Semester remark saved";
+            ApiContext.getInstance().successMessageContainer = "Semester remark saved";
             onSuccess.run();
         });
 
@@ -1228,7 +1266,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not save semester remark";
+            ApiContext.getInstance().errorMessageContainer= "Could not save semester remark";
             onFailure.run();
         });
 

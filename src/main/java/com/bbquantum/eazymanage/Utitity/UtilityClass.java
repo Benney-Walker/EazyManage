@@ -35,6 +35,9 @@ public class UtilityClass {
 
     public static final String BASE_URL = "https://schoolmanagementsystem-eazymanage.up.railway.app/api";
 
+    /** Application version banner. Displayed on the dashboard footer. */
+    public static final String APPLICATION_VERSION = "V 3.0.0";
+
     // Cache Managers
     public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
     public static final StaffCacheManager staffCacheManager = StaffCacheManager.getInstance();

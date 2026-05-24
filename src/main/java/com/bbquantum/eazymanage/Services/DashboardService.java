@@ -47,7 +47,7 @@ public class DashboardService {
     public void loadPrincipalData(String principalId, StackPane notification, Runnable onSuccess) {
         LoadCounter counter = new LoadCounter(PRINCIPAL_TOTAL);
         Runnable showErrorToast = () -> Platform.runLater(
-                () -> UtilityClass.showError(notification, facade.errorMessageContainer));
+                () -> UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer));
 
         loadTotalFeesPaid       (counter, principalId, notification, onSuccess, showErrorToast);
         loadTotalSemesterFees   (counter, principalId, notification, onSuccess, showErrorToast);
@@ -66,7 +66,7 @@ public class DashboardService {
     public void loadFinanceDashboardData(String financeId, StackPane notification, Runnable onSuccess) {
         LoadCounter counter = new LoadCounter(FINANCE_TOTAL);
         Runnable showErrorToast = () -> Platform.runLater(
-                () -> UtilityClass.showError(notification, facade.errorMessageContainer));
+                () -> UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer));
 
         loadTotalFeesPaid           (counter, financeId, notification, onSuccess, showErrorToast);
         loadTotalSemesterFees       (counter, financeId, notification, onSuccess, showErrorToast);
@@ -79,7 +79,7 @@ public class DashboardService {
     public void loadStaffDashboardData(String staffId, StackPane notification, Runnable onSuccess) {
         LoadCounter counter = new LoadCounter(STAFF_TOTAL);
         Runnable showErrorToast = () -> Platform.runLater(
-                () -> UtilityClass.showError(notification, facade.errorMessageContainer));
+                () -> UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer));
 
         loadGradesFromBackend    (counter, staffId, notification, onSuccess, showErrorToast);
         loadSemestersFromBackend (counter, staffId, notification, onSuccess, showErrorToast);
@@ -90,7 +90,7 @@ public class DashboardService {
     public void loadAdminDashboard(String staffId, StackPane notification, Runnable onSuccess) {
         LoadCounter counter = new LoadCounter(ADMIN_TOTAL);
         Runnable showErrorToast = () -> Platform.runLater(
-                () -> UtilityClass.showError(notification, facade.errorMessageContainer));
+                () -> UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer));
 
         fetchRecentSystemLogs    (counter, staffId, notification, onSuccess, showErrorToast);
         loadCachedStaffList      (counter, staffId, notification, onSuccess, showErrorToast);
@@ -120,7 +120,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -169,7 +169,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -217,7 +217,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -266,7 +266,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -315,7 +315,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -379,7 +379,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), studentListType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -391,7 +391,7 @@ public class DashboardService {
                 return;
             }
             if (students.isEmpty()) {
-                facade.successMessageContainer = "Today's attendance not recorded";
+                ApiContext.getInstance().successMessageContainer = "Today's attendance not recorded";
                 counter.tick(onSuccess, null);
                 return;
             }
@@ -436,7 +436,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), staffListType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -495,7 +495,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), classListType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -556,7 +556,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), semesterListType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -606,7 +606,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), classFeesList);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -656,7 +656,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), studentList);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -707,7 +707,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), staffListListType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -758,7 +758,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -808,7 +808,7 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };

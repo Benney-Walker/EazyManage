@@ -46,7 +46,7 @@ public class StaffService {
                     return core.gson.fromJson(response.body(), FindStaffResponse.class);
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -123,7 +123,7 @@ public class StaffService {
                     return "Successfull";   // legacy spelling preserved
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -134,7 +134,7 @@ public class StaffService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = result;
+            ApiContext.getInstance().successMessageContainer = result;
             onSuccess.run();
         });
 
@@ -148,7 +148,7 @@ public class StaffService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could update info";
+            ApiContext.getInstance().errorMessageContainer = "Could update info";
             onFailure.run();
         });
 

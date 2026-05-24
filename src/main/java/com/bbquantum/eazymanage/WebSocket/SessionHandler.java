@@ -13,6 +13,10 @@ public class SessionHandler extends StompSessionHandlerAdapter{
 
     private final WebSocketService webSocketService;
 
+    public SessionHandler() {
+        this.webSocketService = null;
+    }
+
     public SessionHandler(WebSocketService webSocketService) {
         this.webSocketService = webSocketService;
     }

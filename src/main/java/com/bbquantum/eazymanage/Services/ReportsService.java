@@ -53,7 +53,7 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -77,7 +77,7 @@ public class ReportsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not load SBA records";
+            ApiContext.getInstance().errorMessageContainer = "Could not load SBA records";
             onFailure.run();
         });
 
@@ -109,7 +109,7 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
+                ApiContext.getInstance().errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
                 return null;
             }
         };
@@ -144,7 +144,7 @@ public class ReportsService {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    facade.errorMessageContainer = e.getMessage();
+                    ApiContext.getInstance().errorMessageContainer = e.getMessage();
                     onFailure.run();
                 }
             });
@@ -188,7 +188,7 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), MasterScoreSheet.class);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -212,7 +212,7 @@ public class ReportsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not load master score sheet";
+            ApiContext.getInstance().errorMessageContainer = "Could not load master score sheet";
             onFailure.run();
         });
 
@@ -243,7 +243,7 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
+                ApiContext.getInstance().errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
                 return null;
             }
         };
@@ -278,7 +278,7 @@ public class ReportsService {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    facade.errorMessageContainer = e.getMessage();
+                    ApiContext.getInstance().errorMessageContainer = e.getMessage();
                     onFailure.run();
                 }
             });
@@ -323,7 +323,7 @@ public class ReportsService {
                     return core.gson.fromJson(response.body(),
                             com.bbquantum.eazymanage.DTO.Academics.StudentReportCard.class);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -347,7 +347,7 @@ public class ReportsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not load report card";
+            ApiContext.getInstance().errorMessageContainer = "Could not load report card";
             onFailure.run();
         });
 
@@ -378,7 +378,7 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
+                ApiContext.getInstance().errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
                 return null;
             }
         };
@@ -413,7 +413,7 @@ public class ReportsService {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    facade.errorMessageContainer = e.getMessage();
+                    ApiContext.getInstance().errorMessageContainer = e.getMessage();
                     onFailure.run();
                 }
             });

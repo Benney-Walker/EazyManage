@@ -22,6 +22,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.util.converter.DefaultStringConverter;
 
 import java.io.IOException;
@@ -2189,6 +2190,7 @@ public class AdminController implements Initializable {
 
     private void downloadSemesterReport(String staffId, String levelId, String semesterId, String promotionGradeId, String passScore) {
         apiUtilityClass.downloadStudentsReport(staffId, levelId, semesterId, promotionGradeId, passScore,
+                this::parentWindow,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -2561,7 +2563,7 @@ public class AdminController implements Initializable {
             adminNameLabel.setText(staffFullName);
         }
 
-        versionLabel.setText(apiUtilityClass.applicationVersion);
+        versionLabel.setText(UtilityClass.APPLICATION_VERSION);
     }
 
     public void setStaffId(String staffId) {
@@ -2782,5 +2784,9 @@ public class AdminController implements Initializable {
         } catch (Exception e) {
             row.setCalculatedExamScore("0");
         }
+    }
+
+    private Window parentWindow() {
+        return generateReportBtn.getScene() == null ? null : generateReportBtn.getScene().getWindow();
     }
 }

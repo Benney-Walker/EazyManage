@@ -13,8 +13,6 @@ import java.util.function.Supplier;
 
 public class ApiUtilityClass {
 
-    public final String applicationVersion = "V 2.6.1";
-
     // Controllers - only one will be set at a time
     private final PrincipalController principalController;
     private final FinanceController financeController;

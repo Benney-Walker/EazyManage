@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.util.StringConverter;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConductController {
 

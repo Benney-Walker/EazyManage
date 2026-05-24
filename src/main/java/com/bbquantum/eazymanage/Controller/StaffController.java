@@ -6,6 +6,7 @@ import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
 import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
+import com.bbquantum.eazymanage.Services.*;
 import com.bbquantum.eazymanage.Utitity.RadioStatusCell;
 import com.bbquantum.eazymanage.Utitity.StudentAttendanceUI;
 import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
@@ -41,6 +42,12 @@ import java.util.ResourceBundle;
 public class StaffController implements Initializable {
 
     // CONTROLLER OWN VARIABLES
+    private final ApiCore               apiCore           = new ApiCore();
+    private final AcademicsService      academicsService  = new AcademicsService(apiCore, null);
+    private final AttendanceService     attendanceService = new AttendanceService(apiCore, null);
+    private final DashboardService      dashboardService  = new DashboardService(apiCore, null);
+    private final StudentService        studentService    = new StudentService(apiCore, null);
+
     private ApiUtilityClass apiUtilityClass;
     private String institutionName;
     public String staffId;
@@ -610,7 +617,7 @@ public class StaffController implements Initializable {
     @FXML
     public void refreshDashboard() {
         showLoading();
-        apiUtilityClass.loadStaffDashboardData(staffId, notification,
+        dashboardService.loadStaffDashboardData(staffId, notification,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -666,7 +673,7 @@ public class StaffController implements Initializable {
 
         showLoading();
 
-        apiUtilityClass.loadClassSubjects(selectedGrade.getLevelId(), staffId,
+        academicsService.loadClassSubjects(selectedGrade.getLevelId(), staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -700,7 +707,7 @@ public class StaffController implements Initializable {
             return;
         }
         UtilityClass.processingButton(loadSubjectStudentsBtn);
-        apiUtilityClass.loadSubjectStudents(selectedSubject.getSubjectId(), staffId,
+        academicsService.loadSubjectStudents(selectedSubject.getSubjectId(), staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -797,7 +804,7 @@ public class StaffController implements Initializable {
         String currentGradeId = resultGrade.getGradeId();
 
         UtilityClass.processingButton(movePassedStudentsBtn);
-        apiUtilityClass.movePassedStudents(currentGradeId,
+        academicsService.movePassedStudents(currentGradeId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -857,7 +864,8 @@ public class StaffController implements Initializable {
         UtilityClass.processingButton(markAttendanceBtn);
         String levelId = gradeCaching.getLevelId();
 
-        apiUtilityClass.loadStudentsForAttendance(levelId, "no_date",
+        attendanceService.loadStudentsForAttendance(levelId, "no_date",
+                studentList -> studentAttendances = studentList,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -917,7 +925,8 @@ public class StaffController implements Initializable {
 
         UtilityClass.processingButton(updateAttendanceBtn);
 
-        apiUtilityClass.loadStudentsForAttendance(levelId, date,
+        attendanceService.loadStudentsForAttendance(levelId, date,
+                studentList -> studentAttendances = studentList,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -1069,11 +1078,10 @@ public class StaffController implements Initializable {
     /** ---------------UTILITY METHODS FOR THIS CLASS--------------- **/
 
     public void initializeAfterLogin() {
-        apiUtilityClass = new ApiUtilityClass(this);
         setActiveButton(dashboardBtn);
         loadStaffInfo();
         showLoading();
-        apiUtilityClass.loadStaffDashboardData(staffId, notification,
+        dashboardService.loadStaffDashboardData(staffId, notification,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -1089,7 +1097,7 @@ public class StaffController implements Initializable {
     }
 
     private void loadClassResults(String gradeId, String semesterId) {
-        apiUtilityClass.loadClassResults(gradeId, semesterId,
+        academicsService.loadClassResults(gradeId, semesterId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -1168,7 +1176,7 @@ public class StaffController implements Initializable {
         StudentsScoresTable studentScores =
                 UtilityClass.subjectScores.getScoresTable().get(currentUploadIndex);
 
-        apiUtilityClass.saveStudentScores(
+        academicsService.saveStudentScores(
                 studentScores, subjectId, semesterId, staffId,
                 () -> {
                     // On Success
@@ -1222,7 +1230,7 @@ public class StaffController implements Initializable {
 
         StudentAttendance record = studentAttendanceList.get(currentUploadIndex);
 
-        apiUtilityClass.markStudentAttendance(
+        attendanceService.markStudentAttendance(
                 record.getStudentId(),
                 staffId,
                 record.getLevelId(),
@@ -1287,7 +1295,7 @@ public class StaffController implements Initializable {
 
         StudentAttendance record = studentAttendanceList.get(currentUploadIndex);
 
-        apiUtilityClass.updateAttendance(
+        attendanceService.updateAttendance(
                 record.getStudentId(),
                 staffId,
                 record.getLevelId(),
@@ -1349,7 +1357,7 @@ public class StaffController implements Initializable {
 
     private void handleFindStudent(String studentId) {
         showLoading();
-        apiUtilityClass.searchStudentData(staffId, studentId,
+        studentService.searchStudentData(staffId, studentId,
                 () -> {
                     // On Success
                     Platform.runLater(() -> {
@@ -1562,7 +1570,7 @@ public class StaffController implements Initializable {
             staffNameLabel.setText(staffFullName);
         }
 
-        versionLabel.setText(apiUtilityClass.applicationVersion);
+        versionLabel.setText(UtilityClass.APPLICATION_VERSION);
     }
 
     private void updateDateTime() {

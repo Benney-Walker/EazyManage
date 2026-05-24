@@ -49,7 +49,8 @@ public class AuthService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                if (facade != null) facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -60,7 +61,8 @@ public class AuthService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = status;
+            if (facade != null) facade.successMessageContainer = status;
+            ApiContext.getInstance().successMessageContainer = status;
             onSuccess.run();
         });
 

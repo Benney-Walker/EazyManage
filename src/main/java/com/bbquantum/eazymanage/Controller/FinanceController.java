@@ -1485,7 +1485,7 @@ public class FinanceController implements Initializable {
     }
 
     private void loadAccountantInfo() {
-        versionLabel.setText(apiUtilityClass.applicationVersion);
+        versionLabel.setText(UtilityClass.APPLICATION_VERSION);
         institutionNameLabel.setText(institutionName);
         accountantNameLabel.setText(accountantName);
     }

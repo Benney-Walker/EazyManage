@@ -55,7 +55,7 @@ public class AttendanceService {
                     return apiCore.gson.fromJson(response.body(), listType);
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -112,7 +112,7 @@ public class AttendanceService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -154,11 +154,11 @@ public class AttendanceService {
                         new AttendancePayload(
                                 studentId, staffId, levelId, status, dateMarked));
                 OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
-                facade.successMessageContainer = "Saved offline — will sync when online";
+                ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
                 javafx.application.Platform.runLater(onSuccess);
             } catch (Exception e) {
                 e.printStackTrace();
-                facade.errorMessageContainer = "Could not queue attendance: " + e.getMessage();
+                ApiContext.getInstance().errorMessageContainer = "Could not queue attendance: " + e.getMessage();
                 javafx.application.Platform.runLater(onFailure);
             }
             return;
@@ -184,8 +184,8 @@ public class AttendanceService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
-                System.out.println(facade.errorMessageContainer);
+                ApiContext.getInstance().errorMessageContainer = response.body();
+                System.out.println(ApiContext.getInstance().errorMessageContainer);
                 return null;
             }
         };

@@ -54,7 +54,7 @@ public class StudentService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -62,7 +62,7 @@ public class StudentService {
         task.setOnSucceeded(event -> {
             String response = task.getValue();
             if (response != null) {
-                facade.successMessageContainer = response;
+                ApiContext.getInstance().successMessageContainer = response;
                 onSuccess.run();
                 return;
             }
@@ -110,7 +110,7 @@ public class StudentService {
                     return core.gson.fromJson(response.body(), UpdateStudentPersonalData.class);
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -134,7 +134,7 @@ public class StudentService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could load student data";
+            ApiContext.getInstance().errorMessageContainer = "Could load student data";
             onFailure.run();
         });
 
@@ -174,7 +174,7 @@ public class StudentService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -182,7 +182,7 @@ public class StudentService {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if (status != null) {
-                facade.successMessageContainer = status;
+                ApiContext.getInstance().successMessageContainer = status;
                 onSuccess.run();
                 return;
             }
@@ -207,7 +207,7 @@ public class StudentService {
 
     /**
      * Resolve a student's name from their id (for headers, dialogs, etc.).
-     * On success the name is placed in {@code facade.successMessageContainer},
+     * On success the name is placed in {@code ApiContext.getInstance().successMessageContainer},
      * matching legacy callers that read it straight after their {@code onSuccess}.
      */
     public void getStudentName(String studentId,
@@ -228,7 +228,7 @@ public class StudentService {
                     return response.body();
                 }
 
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -239,7 +239,7 @@ public class StudentService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = response;
+            ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
 
@@ -253,7 +253,7 @@ public class StudentService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not get Student name";
+            ApiContext.getInstance().errorMessageContainer = "Could not get Student name";
             onFailure.run();
         });
 

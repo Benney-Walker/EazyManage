@@ -46,7 +46,7 @@ public class ConductService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -70,7 +70,7 @@ public class ConductService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not load conduct records";
+            ApiContext.getInstance().errorMessageContainer = "Could not load conduct records";
             onFailure.run();
         });
 
@@ -121,7 +121,7 @@ public class ConductService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                facade.errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -132,7 +132,7 @@ public class ConductService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = "Conduct record saved";
+            ApiContext.getInstance().successMessageContainer = "Conduct record saved";
             onSuccess.run();
         });
 
@@ -145,7 +145,7 @@ public class ConductService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not save conduct record";
+            ApiContext.getInstance().errorMessageContainer = "Could not save conduct record";
             onFailure.run();
         });
 
