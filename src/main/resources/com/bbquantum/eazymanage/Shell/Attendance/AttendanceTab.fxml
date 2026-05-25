@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Attendance shell tab — host controller (Phase 9a).
+
+    Two-state layout:
+
+    State A — Picker (initial):
+      A VBox with two side-by-side action cards: "Mark Attendance" and
+      "View Attendance". This is the user's entry point the first time they
+      open the tab. Designed to match the dashboard's card-grid pattern.
+
+    State B — Working (after first pick):
+      A TabPane with two persistent inner tabs ("Mark" / "View"). The card
+      the user chose is the initially-selected tab. The picker view is
+      removed entirely once the user enters the working state, so the inner
+      tabs become the canonical navigation for the rest of the session in
+      this shell tab.
+
+    Both states render inside the same StackPane #contentSlot. The host
+    controller swaps between them.
+-->
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Shell.AttendanceTabController"
+      styleClass="attendance-tab"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../../Theme/attendance.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Attendance" styleClass="page-title"/>
+        <Label fx:id="subtitleLabel"
+               text="Mark students present or absent, or review past attendance entries."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Content slot — either the picker (initial) or the inner TabPane -->
+    <StackPane fx:id="contentSlot" VBox.vgrow="ALWAYS">
+
+        <!-- ============ STATE A: picker ============ -->
+        <VBox fx:id="pickerView" alignment="CENTER" spacing="24">
+            <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+            <Label text="What would you like to do?" styleClass="picker-prompt"/>
+
+            <HBox spacing="24" alignment="CENTER" styleClass="picker-card-row">
+
+                <!-- Mark Attendance card -->
+                <VBox fx:id="markCard" styleClass="picker-card,picker-card-mark"
+                      alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
+                      onMouseClicked="#onPickMark">
+                    <Label text="📝" styleClass="picker-card-icon"/>
+                    <Label text="Mark Attendance" styleClass="picker-card-title"/>
+                    <Label text="Record today's presence or absence for a class."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+                <!-- View Attendance card -->
+                <VBox fx:id="viewCard" styleClass="picker-card,picker-card-view"
+                      alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
+                      onMouseClicked="#onPickView">
+                    <Label text="📅" styleClass="picker-card-icon"/>
+                    <Label text="View Attendance" styleClass="picker-card-title"/>
+                    <Label text="Browse and amend attendance records for any past date."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- ============ STATE B: inner tabs ============ -->
+        <TabPane fx:id="innerTabs" visible="false" managed="false"
+                 tabClosingPolicy="UNAVAILABLE" styleClass="inner-tabs">
+            <tabs>
+                <Tab fx:id="markTab" text="Mark Attendance"/>
+                <Tab fx:id="viewTab" text="View Attendance"/>
+            </tabs>
+        </TabPane>
+
+    </StackPane>
+</VBox>

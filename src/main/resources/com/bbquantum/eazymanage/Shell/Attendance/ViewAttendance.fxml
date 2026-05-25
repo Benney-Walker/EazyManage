@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    View Attendance flow (Phase 9a).
+
+    Differences from Mark:
+      - DatePicker controls which day's attendance to view (defaults to today).
+      - Save action calls updateAttendance instead of markStudentAttendance,
+        and only sends rows the user actually changed (dirty tracking on
+        the controller).
+      - Date is read-only during save to keep semantics clean.
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Attendance.ViewAttendanceController"
+      styleClass="view-attendance"
+      spacing="0">
+
+    <!-- Toolbar -->
+    <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
+
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="200"/>
+
+        <Label text="Date" styleClass="field-label"/>
+        <DatePicker fx:id="datePicker" prefWidth="160"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="fetchButton" text="Fetch records"
+                onAction="#onFetch" styleClass="btn,btn-primary"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Info banner -->
+    <HBox fx:id="recordInfoBanner" visible="false" managed="false"
+          styleClass="info-banner" spacing="12" alignment="CENTER_LEFT">
+        <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+        <Label text="📅" styleClass="info-icon"/>
+        <VBox spacing="2">
+            <Label fx:id="recordTitleLabel" styleClass="info-title"/>
+            <Label fx:id="recordSubtitleLabel" styleClass="info-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="dirtyCountLabel" styleClass="info-subtitle"/>
+    </HBox>
+
+    <!-- Table -->
+    <TableView fx:id="attendanceTable" editable="true"
+               VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="studentIdCol" text="Student ID"   prefWidth="140"/>
+            <TableColumn fx:id="nameCol"      text="Student Name" prefWidth="320"/>
+            <TableColumn fx:id="absentCol"    text="Absent"       prefWidth="100"/>
+            <TableColumn fx:id="presentCol"   text="Present"      prefWidth="100"/>
+        </columns>
+        <placeholder>
+            <Label text="Pick a class and date, then click 'Fetch records' to see attendance."
+                   styleClass="empty-state"/>
+        </placeholder>
+    </TableView>
+
+    <!-- Action bar -->
+    <VBox styleClass="action-bar">
+        <Separator/>
+
+        <VBox fx:id="progressBox" visible="false" managed="false" spacing="4">
+            <padding><Insets top="8" right="24" bottom="0" left="24"/></padding>
+            <Label fx:id="progressLabel" text="Updating…" styleClass="save-status"/>
+            <ProgressBar fx:id="progressBar" prefHeight="6" maxWidth="Infinity" progress="0"/>
+        </VBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <Label fx:id="statusLabel" styleClass="save-status"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="cancelButton" text="Reset" onAction="#onReset"
+                    styleClass="btn,btn-ghost"/>
+            <Button fx:id="saveButton" text="Save changes" onAction="#onSave"
+                    styleClass="btn,btn-primary" disable="true"/>
+        </HBox>
+    </VBox>
+</VBox>
