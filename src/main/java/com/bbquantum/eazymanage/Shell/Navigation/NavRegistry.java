@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Shell;
+package com.bbquantum.eazymanage.Shell.Navigation;
 
 import com.bbquantum.eazymanage.Constants.NavItemStatus;
 import com.bbquantum.eazymanage.Records.NavItem;
@@ -21,7 +21,7 @@ public class NavRegistry {
     private static final List<Section> SECTIONS = List.of(
             new Section("OPERATIONS", List.of(
                     new NavItem("dashboard", "Dashboard", "\u25A4", ALL, NavItemStatus.FUNCTIONAL, ""),
-                    new NavItem("attendance",  "Attendance",  "\u2713", NOT_ACCOUNTANT,       NavItemStatus.PLACEHOLDER, "Phase 8"),
+                    new NavItem("attendance",  "Attendance",  "\u2713", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("results",     "Results",     "\u2605", NOT_ACCOUNTANT,       NavItemStatus.PLACEHOLDER, "Phase 4–5"),
                     new NavItem("finance",     "Finance",     "\u25C6", ACCOUNTANT_PRINCIPAL, NavItemStatus.PLACEHOLDER, "Phase 7–8"),
                     new NavItem("students",    "Students",    "\u25CF", ADMIN_ONLY,           NavItemStatus.PLACEHOLDER, "Phase 8"),
@@ -30,7 +30,7 @@ public class NavRegistry {
             )),
 
             new Section("RECORDS", List.of(
-                    new NavItem("reports",     "Reporting Center", "\u25A6", ALL,             NavItemStatus.PLACEHOLDER, "Phase 5"),
+                    new NavItem("reports",     "Reporting Center", "\u25A6", ALL,             NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("audit-logs",  "Audit Logs",  "\u25C8", ADMIN_ONLY,           NavItemStatus.PLACEHOLDER, "Phase 6")
             )),
 

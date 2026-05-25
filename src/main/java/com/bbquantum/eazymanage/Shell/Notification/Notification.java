@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Shell;
+package com.bbquantum.eazymanage.Shell.Notification;
 
 import com.bbquantum.eazymanage.Constants.NotificationPriority;
 import javafx.beans.property.BooleanProperty;

@@ -4,7 +4,7 @@ import com.bbquantum.eazymanage.Constants.NotificationPriority;
 import com.bbquantum.eazymanage.DTO.WebSocket.ActiveSession;
 import com.bbquantum.eazymanage.DTO.WebSocket.Broadcast;
 import com.bbquantum.eazymanage.DTO.WebSocket.BroadcastRequest;
-import com.bbquantum.eazymanage.Shell.NotificationCenter;
+import com.bbquantum.eazymanage.Shell.Notification.NotificationCenter;
 import com.bbquantum.eazymanage.Utitity.SessionManager;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.bbquantum.eazymanage.WebSocket.SessionHandler;

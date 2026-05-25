@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Shell;
+package com.bbquantum.eazymanage.Shell.Navigation;
 
 import javafx.scene.Parent;
 

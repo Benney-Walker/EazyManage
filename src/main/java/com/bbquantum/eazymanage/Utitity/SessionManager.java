@@ -15,6 +15,8 @@ public class SessionManager {
 
     private static final String ROLE_KEY = "user_role";
 
+    private static final String ACTIVE_ROLE_KEY = "active_role";
+
     private static final String TOKEN_EXPIRATION_TIME = "token_expiration_time";
 
     public static void saveSession(String token, String userId, String userName,
@@ -49,6 +51,20 @@ public class SessionManager {
         return preferences.get(ROLE_KEY, "");
     }
 
+    public static String getActiveRole() {
+        return preferences.get(ACTIVE_ROLE_KEY, "");
+    }
+
+    /** Persist the active role. Called on launch (to record the picked
+     *  default) and from Settings when the user switches. */
+    public static void setActiveRole(String role) {
+        if (role == null || role.isBlank()) {
+            preferences.remove(ACTIVE_ROLE_KEY);
+        } else {
+            preferences.put(ACTIVE_ROLE_KEY, role);
+        }
+    }
+
     public static boolean isTokenExpired() {
         String token = getToken();
         long expiryTime = preferences.getLong(TOKEN_EXPIRATION_TIME, 0);
@@ -64,6 +80,7 @@ public class SessionManager {
         preferences.remove(USER_NAME);
         preferences.remove(ORGANIZATION);
         preferences.remove(ROLE_KEY);
+        preferences.remove(ACTIVE_ROLE_KEY);
         preferences.remove(TOKEN_EXPIRATION_TIME);
     }
 }
