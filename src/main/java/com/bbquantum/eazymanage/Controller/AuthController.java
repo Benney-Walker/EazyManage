@@ -240,19 +240,23 @@ public class AuthController {
                     response.getInstitutionName(),
                     rolesHeader);
 
-            if (response.getRoles().size() > 1) {
-                try {
-                    openRoleSelectionBox();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            } else {
-                String role = response.getRoles().getFirst();
-                openDashboardByRole(
-                        role,
-                        staffId,
+            String stored = SessionManager.getActiveRole();
+            String active = (stored != null && !stored.isBlank()
+                    && response.getRoles().contains(stored))
+                    ? stored
+                    : response.getRoles().get(0);
+
+            try {
+                javafx.stage.Stage stage =
+                        (javafx.stage.Stage) loginButton.getScene().getWindow();
+                com.bbquantum.eazymanage.Shell.ShellLauncher.launch(
+                        stage,
+                        active,
+                        response.getStaffId(),
                         response.getInstitutionName(),
                         response.getStaffName());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
 

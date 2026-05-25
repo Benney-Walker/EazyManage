@@ -77,24 +77,13 @@ public class SwitchRoleController {
         int width = 1200;
         int height = 800;
 
-        switch (selectedRole) {
-            case "PRINCIPAL":
-                fxmlFile = "/com/bbquantum/eazymanage/Principal/principal-main-dashboard.fxml";
-                break;
-
-            case "ACCOUNTANT":
-                fxmlFile = "/com/bbquantum/eazymanage/Accountant/accountant-dashboard.fxml";
-                break;
-
-            case "TEACHING_STAFF":
-                fxmlFile = "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
-                break;
-
-            case "ADMINISTRATOR":
-                fxmlFile = "/com/bbquantum/eazymanage/Admin/Admin-dashboard.fxml";
-                break;
-
-        }
+        fxmlFile = switch (selectedRole) {
+            case "PRINCIPAL" -> "/com/bbquantum/eazymanage/Principal/principal-main-dashboard.fxml";
+            case "ACCOUNTANT" -> "/com/bbquantum/eazymanage/Accountant/accountant-dashboard.fxml";
+            case "TEACHING_STAFF" -> "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
+            case "ADMINISTRATOR" -> "/com/bbquantum/eazymanage/Admin/Admin-dashboard.fxml";
+            default -> fxmlFile;
+        };
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
         Scene scene = new Scene(loader.load(), width, height);

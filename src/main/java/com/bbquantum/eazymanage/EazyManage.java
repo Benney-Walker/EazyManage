@@ -2,6 +2,7 @@ package com.bbquantum.eazymanage;
 
 import com.bbquantum.eazymanage.Controller.AuthController;
 import com.bbquantum.eazymanage.Shell.AppShellController;
+import com.bbquantum.eazymanage.Shell.ShellLauncher;
 import com.bbquantum.eazymanage.Utitity.SessionManager;
 import com.bbquantum.eazymanage.Utitity.ThemeManager;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
@@ -25,13 +26,12 @@ public class EazyManage extends Application {
             String organizationName = SessionManager.getOrganization();
 
             String[] roleArray = roles.split(",");
+            String stored = SessionManager.getActiveRole();
+            String active = (stored != null && !stored.isBlank() && contains(roleArray, stored))
+                    ? stored
+                    : roleArray[0];
 
-            if (roleArray.length > 1) {
-                openRoleSelectionBox(stage);
-            } else {
-                String role = roleArray[0];
-                openRolePage(stage, role, staffId, organizationName, username);
-            }
+            ShellLauncher.launch(stage, active, staffId, organizationName, username);
 
         } else {
 
@@ -98,6 +98,10 @@ public class EazyManage extends Application {
         stage.centerOnScreen();
     }
 
+    private static boolean contains(String[] arr, String value) {
+        for (String s : arr) if (s.equals(value)) return true;
+        return false;
+    }
 
     public static void main(String[] args) {
         launch();

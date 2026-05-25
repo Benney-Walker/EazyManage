@@ -41,7 +41,7 @@ public class NavRegistry {
 
             new Section("SYSTEM", List.of(
                     new NavItem("offline",     "Offline Mode", "\u26C8", ALL,                  NavItemStatus.FUNCTIONAL,  ""),
-                    new NavItem("settings",    "Settings",    "\u2699", ALL,                  NavItemStatus.PLACEHOLDER, "Phase 8")
+                    new NavItem("settings",    "Settings",    "\u2699", ALL,                  NavItemStatus.FUNCTIONAL, "")
             ))
     );
 

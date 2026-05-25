@@ -393,6 +393,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "attendance".equals(item.id())) {
             return loadAttendanceScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "settings".equals(item.id())) {
+            return loadSettingsScreen();
+        }
         if (item.status() == NavItemStatus.FUNCTIONAL && "reports".equals(item.id())) {
             return loadReportsScreen();
         }
@@ -443,6 +446,21 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load Conduct screen",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    private Parent loadSettingsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Settings/Settings.fxml"));
+            Parent root = loader.load();
+            com.bbquantum.eazymanage.Shell.Settings.SettingsController controller = loader.getController();
+            controller.attach(role, staffId, organizationName, username);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Settings",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }

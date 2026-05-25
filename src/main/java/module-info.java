@@ -39,4 +39,8 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Controller.Report to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.WebSocket;
     opens com.bbquantum.eazymanage.Controller.WebSocket to javafx.fxml;
+    exports com.bbquantum.eazymanage.Shell.Notification;
+    opens com.bbquantum.eazymanage.Shell.Notification to javafx.fxml;
+    exports com.bbquantum.eazymanage.Shell.Navigation;
+    opens com.bbquantum.eazymanage.Shell.Navigation to javafx.fxml;
 }

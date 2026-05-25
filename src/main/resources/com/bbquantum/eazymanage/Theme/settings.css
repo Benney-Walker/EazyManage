@@ -1,0 +1,51 @@
+/* ============================================================================
+   EazyManage — Settings tab styles (Phase 9-roles)
+============================================================================ */
+
+.settings-screen { -fx-background-color: -color-bg; }
+.transparent-scroll {
+    -fx-background-color: transparent;
+}
+.transparent-scroll > .viewport { -fx-background-color: transparent; }
+
+.settings-card {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 16 20 16 20;
+}
+
+.settings-section-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+
+.settings-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-text-muted;
+}
+
+.settings-value {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-text-primary;
+}
+
+.settings-hint {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-muted;
+}
+
+.settings-status {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-style: italic;
+}
+
+.settings-current-role {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-accent;
+}
