@@ -55,4 +55,8 @@ public class StudentAttendanceUI {
     public void setStatus(AttendanceStatus status) {
         this.status.set(status);
     }
+
+    public String getStudentName() {
+        return studentName.get();
+    }
 }
