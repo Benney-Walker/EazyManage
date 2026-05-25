@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Utitity;
+/*package com.bbquantum.eazymanage.Utitity;
 
 import com.bbquantum.eazymanage.Controller.*;
 import com.bbquantum.eazymanage.DTO.Academics.*;
@@ -421,4 +421,4 @@ public class ApiUtilityClass {
         academicsService.deleteSubject(staffId, subjectId, onSuccess, onFailure, onNetworkIssue);
     }
 
-}
+}*/

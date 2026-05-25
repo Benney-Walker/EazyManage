@@ -10,7 +10,6 @@ import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Institution.*;
 import com.bbquantum.eazymanage.Services.*;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -43,11 +42,11 @@ public class PrincipalController implements Initializable {
     // error/success store; the ApiUtilityClass facade is no longer
     // constructed by this controller.
     private final ApiCore apiCore          = new ApiCore();
-    private final AcademicsService academicsService = new AcademicsService(apiCore, null);
-    private final DashboardService dashboardService = new DashboardService(apiCore, null);
-    private final FinanceService   financeService   = new FinanceService(apiCore, null);
-    private final StaffService     staffService     = new StaffService(apiCore, null);
-    private final StudentService   studentService   = new StudentService(apiCore, null);
+    private final AcademicsService academicsService = new AcademicsService(apiCore);
+    private final DashboardService dashboardService = new DashboardService(apiCore);
+    private final FinanceService   financeService   = new FinanceService(apiCore);
+    private final StaffService     staffService     = new StaffService(apiCore);
+    private final StudentService   studentService   = new StudentService(apiCore);
 
     //Store staff Data from backend
     String institutionName;

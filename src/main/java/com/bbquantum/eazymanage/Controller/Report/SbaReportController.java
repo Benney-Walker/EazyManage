@@ -5,7 +5,9 @@ import com.bbquantum.eazymanage.DTO.Academics.SubjectsHolder;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
+import com.bbquantum.eazymanage.Services.AcademicsService;
+import com.bbquantum.eazymanage.Services.ApiCore;
+import com.bbquantum.eazymanage.Services.ReportsService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -52,8 +54,10 @@ public class SbaReportController implements ReportViewerController {
     private String role;
     private Runnable onBack;
 
-    private final ApiUtilityClass api =
-            new ApiUtilityClass((com.bbquantum.eazymanage.Controller.StaffController) null);
+    // Phase 8d — direct service references.
+    private final ApiCore           apiCore          = new ApiCore();
+    private final AcademicsService  academicsService = new AcademicsService(apiCore);
+    private final ReportsService    reportsService   = new ReportsService(apiCore);
 
     private final ObservableList<SbaRecord> rows = FXCollections.observableArrayList();
 
@@ -131,7 +135,7 @@ public class SbaReportController implements ReportViewerController {
 
     private void loadSubjectsFor(GradeCaching grade) {
         setStatus("Loading subjects…");
-        api.loadClassSubjects(grade.getLevelId(), staffId,
+        academicsService.loadClassSubjects(grade.getLevelId(), staffId,
                 () -> Platform.runLater(() -> {
                     // loadClassSubjects writes to UtilityClass.subjectsHolder; snapshot now.
                     List<SubjectsHolder> subjects = UtilityClass.subjectsHolder;
@@ -163,7 +167,7 @@ public class SbaReportController implements ReportViewerController {
         downloadButton.setDisable(true);
         loadButton.setDisable(true);
 
-        api.loadSbaRecords(grade.getLevelId(), subject.getSubjectId(), semester.getSemesterId(), staffId,
+        reportsService.loadSbaRecords(grade.getLevelId(), subject.getSubjectId(), semester.getSemesterId(), staffId,
                 list -> Platform.runLater(() -> populate(list)),
                 () -> Platform.runLater(() -> {
                     setStatus(rows.isEmpty()
@@ -196,7 +200,7 @@ public class SbaReportController implements ReportViewerController {
                 + " - " + safe(subject.getSubjectName())
                 + " - " + safe(semester.getSemesterName()) + ".pdf";
 
-        api.downloadSbaReport(
+        reportsService.downloadSbaReport(
                 staffId, grade.getLevelId(), subject.getSubjectId(), semester.getSemesterId(),
                 suggestedName,
                 this::parentWindow,

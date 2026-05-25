@@ -6,7 +6,7 @@ import com.bbquantum.eazymanage.Constants.StaffStatus;
 import com.bbquantum.eazymanage.Constants.StudentStatus;
 import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Institution.*;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
+import com.bbquantum.eazymanage.Services.*;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,7 +37,16 @@ import java.util.stream.Collectors;
 public class AdminController implements Initializable {
 
     //CONTROLLER OWN VARIABLES
-    private ApiUtilityClass apiUtilityClass;
+    //
+    // Phase 8d — services referenced directly. ApiContext is the shared
+    // error/success store; the ApiUtilityClass facade is no longer
+    // constructed by any controller.
+    private final ApiCore apiCore          = new ApiCore();
+    private final AcademicsService academicsService = new AcademicsService(apiCore);
+    private final AuthService authService      = new AuthService(apiCore);
+    private final DashboardService dashboardService = new DashboardService(apiCore);
+    private final StaffService staffService     = new StaffService(apiCore);
+    private final StudentService   studentService   = new StudentService(apiCore);
     private String institutionName;
     public String staffId;
     private String staffFullName;
@@ -844,7 +853,7 @@ public class AdminController implements Initializable {
     @FXML
     public void refreshDashboard() {
         showLoading();
-        apiUtilityClass.loadAdminDashboard(staffId, notification,
+        dashboardService.loadAdminDashboard(staffId, notification,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -912,18 +921,18 @@ public class AdminController implements Initializable {
         String instructorId = staffCaching.getStaffId();
         UtilityClass.processingButton(saveClassBtn);
 
-        apiUtilityClass.addNewGrade(staffId, className, instructorId,
+        academicsService.addNewGrade(staffId, className, instructorId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveClassBtn, "ADD CLASS");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 }, () -> {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveClassBtn, "ADD CLASS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
                     //On Network Issue
@@ -945,7 +954,7 @@ public class AdminController implements Initializable {
         String levelId = selectedGrade.getLevelId();
         UtilityClass.processingButton(searchClassBtn);
 
-        apiUtilityClass.findClassInfo(levelId, staffId,
+        academicsService.findClassInfo(levelId, staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -961,7 +970,7 @@ public class AdminController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(searchClassBtn, "FETCH GRADE INFO");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -996,7 +1005,7 @@ public class AdminController implements Initializable {
         UtilityClass.findAndUpdateClassInfo.setLevelName(newClassName);
         UtilityClass.findAndUpdateClassInfo.setStaffId(staffCaching.getStaffId());
 
-        apiUtilityClass.updateClassInfo(UtilityClass.findAndUpdateClassInfo, staffId,
+        academicsService.updateClassInfo(UtilityClass.findAndUpdateClassInfo, staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -1006,14 +1015,14 @@ public class AdminController implements Initializable {
 
                         updateClassSearchArea.setVisible(true);
                         updateClassSearchArea.setManaged(true);
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateClassInfoBtn, "SAVE CHANGES");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1074,7 +1083,7 @@ public class AdminController implements Initializable {
 
         String levelId = selectedGrade.getLevelId();
         showLoading();
-        apiUtilityClass.loadClassStudents(levelId, staffId,
+        academicsService.loadClassStudents(levelId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -1088,7 +1097,7 @@ public class AdminController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1116,7 +1125,7 @@ public class AdminController implements Initializable {
         String studentId = student.getStudentId();
         UtilityClass.processingButton(findStudentBtn);
 
-        apiUtilityClass.searchStudentData(staffId, studentId,
+        studentService.searchStudentData(staffId, studentId,
                 () -> {
                     // On Success
                     Platform.runLater(() -> {
@@ -1129,7 +1138,7 @@ public class AdminController implements Initializable {
                     //On failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(findStudentBtn, "FETCH DETAILS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1148,20 +1157,20 @@ public class AdminController implements Initializable {
         UtilityClass.updateStudentPersonalData = getUpdatedInfo();
         UtilityClass.processingButton(updateStudentInfoBtn);
 
-        apiUtilityClass.updateStudentPersonalData(UtilityClass.updateStudentPersonalData, staffId,
+        studentService.updateStudentPersonalData(UtilityClass.updateStudentPersonalData, staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateStudentInfoBtn, "UPDATE INFO");
                         showUpdateStudentInfoCard();
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateStudentInfoBtn, "UPDATE INFO");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
                     //On Network Issue
@@ -1187,7 +1196,7 @@ public class AdminController implements Initializable {
 
         showLoading();
         String levelId = selectedGrade.getLevelId();
-        apiUtilityClass.loadClassSubjects(levelId, staffId,
+        academicsService.loadClassSubjects(levelId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -1204,7 +1213,7 @@ public class AdminController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1232,12 +1241,12 @@ public class AdminController implements Initializable {
                 lowerRange, upperRange, gradeCriteria, remarks
         );
 
-        apiUtilityClass.saveGradingCriteria(gradingCriteria, staffId,
+        academicsService.saveGradingCriteria(gradingCriteria, staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveGradeBtn, "ADD GRADE CRITERIA");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         gradeCriteriaField.clear();
                         upperRangeField.clear();
                         lowerRangeField.clear();
@@ -1248,7 +1257,7 @@ public class AdminController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveGradeBtn, "ADD GRADE CRITERIA");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
                     //On Network Issue
@@ -1275,7 +1284,7 @@ public class AdminController implements Initializable {
         UtilityClass.processingButton(score_LoadStudentsBtn);
         subjectId = selectedSubject.getSubjectId();
 
-        apiUtilityClass.loadSubjectStudents(subjectId, staffId,
+        academicsService.loadSubjectStudents(subjectId, staffId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -1294,7 +1303,7 @@ public class AdminController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(score_LoadStudentsBtn, "LOAD STUDENTS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 ()-> {
@@ -1394,12 +1403,12 @@ public class AdminController implements Initializable {
                 staffId, subjectName, gradeId
         );
 
-        apiUtilityClass.addNewSubject(assignSubject,
+        academicsService.addNewSubject(assignSubject,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveSubjectBtn, "Save Subject");
-                        UtilityClass.showSuccess(notification, "Successfully saved subject with ID: " + apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, "Successfully saved subject with ID: " + ApiContext.getInstance().successMessageContainer);
                         subjectNameField.clear();
                         gradeComboBox.getSelectionModel().clearSelection();
                     });
@@ -1407,7 +1416,7 @@ public class AdminController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveSubjectBtn, "Save Subject");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
                     //On Network Issue
@@ -1426,7 +1435,7 @@ public class AdminController implements Initializable {
         }
         showLoading();
 
-         apiUtilityClass.loadClassSubjects(selectedGrade.getLevelId(), staffId,
+        academicsService.loadClassSubjects(selectedGrade.getLevelId(), staffId,
                  () -> {
              //On Success
                      Platform.runLater(() -> {
@@ -1443,7 +1452,7 @@ public class AdminController implements Initializable {
              //On Failure
                      Platform.runLater(() -> {
                          hideLoading();
-                         UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                         UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                      });
                  },
                  () -> {
@@ -1471,7 +1480,7 @@ public class AdminController implements Initializable {
         String subjectId = selectedSubject.getSubjectId();
         UtilityClass.processingButton(fetchSubjectBtn);
 
-        apiUtilityClass.fetchSubjectData(staffId, subjectId,
+        academicsService.fetchSubjectData(staffId, subjectId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -1490,7 +1499,7 @@ public class AdminController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(fetchSubjectBtn, "FETCH SUBJECT DATA");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1533,7 +1542,7 @@ public class AdminController implements Initializable {
         String subjectId = subjectIdLabel.getText();
 
         UtilityClass.processingButton(deleteSubjectBtn);
-        apiUtilityClass.deleteSubject(staffId, subjectId,
+        academicsService.deleteSubject(staffId, subjectId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -1552,7 +1561,7 @@ public class AdminController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(deleteSubjectBtn, "DELETE SUBJECT");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1725,7 +1734,7 @@ public class AdminController implements Initializable {
         UtilityClass.processingButton(updateStaffInfoBtn);
         FindStaffResponse info = updateStaffDTO();
 
-        apiUtilityClass.updateStaffInfo(info, staffId,
+        staffService.updateStaffInfo(info, staffId,
                 () -> {
                     //On Success
                     Platform.runLater( () -> {
@@ -1736,14 +1745,14 @@ public class AdminController implements Initializable {
                         staffListTableContainer.setVisible(true);
                         staffListTableContainer.setManaged(true);
 
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater( () -> {
                         UtilityClass.notProcessingButton(updateStaffInfoBtn, "SAVE CHANGES");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1774,13 +1783,13 @@ public class AdminController implements Initializable {
             Platform.runLater(() -> {
                 clearForm();
                 UtilityClass.notProcessingButton(saveAndClearBtn, "ADD STUDENT");
-                UtilityClass.showSuccess(notification, "Student saved successfully! ID: " + apiUtilityClass.successMessageContainer);
+                UtilityClass.showSuccess(notification, "Student saved successfully! ID: " + ApiContext.getInstance().successMessageContainer);
             });
         }, () -> {
             // On Failure
             Platform.runLater(() -> {
                 UtilityClass.notProcessingButton(saveAndClearBtn, "ADD STUDENT");
-                UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
             });
         }, () -> {
             // On Network Failure
@@ -1852,19 +1861,19 @@ public class AdminController implements Initializable {
         }
 
         UtilityClass.processingButton(addSemesterBtn);
-        apiUtilityClass.addNewSemester(staffId, semesterName, startDate, endDate, academicYear,
+        academicsService.addNewSemester(staffId, semesterName, startDate, endDate, academicYear,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(addSemesterBtn, "ADD SEMESTER");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(addSemesterBtn, "ADD SEMESTER");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1885,7 +1894,8 @@ public class AdminController implements Initializable {
         }
 
         UtilityClass.processingButton(update_searchSemesterBtn);
-        apiUtilityClass.searchSemester(selectedSemester.getSemesterId(),
+        academicsService.searchSemester(selectedSemester.getSemesterId(),
+                semesterData -> semester = semesterData,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -1899,7 +1909,7 @@ public class AdminController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(update_searchSemesterBtn, "FETCH DATA");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1924,19 +1934,19 @@ public class AdminController implements Initializable {
         info.setSemesterStartDate(updateSemesterStartDate.getValue().toString());
         info.setSemesterEndDate(updateSemesterEndDate.getValue().toString());
         info.setAcademicYear(updateSemesterAcademicYearField.getText().trim());
-        apiUtilityClass.updateSemesterInfo(info,
+        academicsService.updateSemesterInfo(info,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateSemesterBtn, "SAVE CHANGES");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateSemesterBtn, "SAVE CHANGES");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1952,7 +1962,6 @@ public class AdminController implements Initializable {
     /** ---------------UTILITY METHODS FOR THIS CLASS--------------- **/
 
     public void initializeAfterLogin() {
-        apiUtilityClass = new ApiUtilityClass(this);
 
         // Wire refresh button on all headers
         dashboardHeaderController.setOnRefresh(this::refreshDashboard);
@@ -1969,7 +1978,7 @@ public class AdminController implements Initializable {
         setActiveButton(dashboardBtn);
         loadStaffInfo();
         showLoading();
-        apiUtilityClass.loadAdminDashboard(staffId, notification,
+        dashboardService.loadAdminDashboard(staffId, notification,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
@@ -2031,7 +2040,7 @@ public class AdminController implements Initializable {
         }
         selectedGradeId = selectedClass.getLevelId();
 
-        apiUtilityClass.enrollNewStudent(staffId, firstName, lastName, selectedGradeId, gender,
+        studentService.enrollNewStudent(staffId, firstName, lastName, selectedGradeId, gender,
                 dob, homeTown, parentName, parentPhone, onSuccess, onFailure, onNetworkIssue);
     }
 
@@ -2113,19 +2122,19 @@ public class AdminController implements Initializable {
     }
 
     private void resetStaffPassword(String staffId, String newPasswordStaffId, String newPassword) {
-        apiUtilityClass.recoverPassword(staffId, newPasswordStaffId, newPassword,
+        authService.recoverPassword(staffId, newPasswordStaffId, newPassword,
                 () -> {
                     //On Success
                     Platform.runLater( () -> {
                         UtilityClass.notProcessingButton(resetPasswordBtn, "RESET PASSWORD");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                     });
                 },
                 () -> {
                     //On Failure
                     Platform.runLater( () -> {
                         UtilityClass.notProcessingButton(resetPasswordBtn, "RESET PASSWORD");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 }, () -> {
                     //On Network Issue
@@ -2189,7 +2198,7 @@ public class AdminController implements Initializable {
     }
 
     private void downloadSemesterReport(String staffId, String levelId, String semesterId, String promotionGradeId, String passScore) {
-        apiUtilityClass.downloadStudentsReport(staffId, levelId, semesterId, promotionGradeId, passScore,
+        academicsService.downloadStudentsReport(staffId, levelId, semesterId, promotionGradeId, passScore,
                 this::parentWindow,
                 () -> {
                     //On Success
@@ -2202,7 +2211,7 @@ public class AdminController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(generateReportBtn, "DOWNLOAD TERM REPORTS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -2215,7 +2224,7 @@ public class AdminController implements Initializable {
     }
 
     private void loadClassResults(String levelId, String semesterId) {
-        apiUtilityClass.loadClassResults(levelId, semesterId,
+        academicsService.loadClassResults(levelId, semesterId,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -2228,7 +2237,7 @@ public class AdminController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(loadClassResultsBtn, "FETCH RESULTS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -2254,7 +2263,7 @@ public class AdminController implements Initializable {
     }
 
     private void updateSubjectDetails(SubjectDTO subject) {
-        apiUtilityClass.updateSubjectDetails(subject,
+        academicsService.updateSubjectDetails(subject,
                 () -> {
                     //On Success
                     Platform.runLater(() -> {
@@ -2273,7 +2282,7 @@ public class AdminController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateSubjectBtn, "SAVE CHANGES");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -2331,7 +2340,7 @@ public class AdminController implements Initializable {
         StudentsScoresTable student =
                 UtilityClass.subjectScores.getScoresTable().get(currentUploadIndex);
 
-        apiUtilityClass.saveStudentScores(
+        academicsService.saveStudentScores(
                 student, subjectId, selectedSemester, staffId,
                 () -> {
                     // On Success
@@ -2350,7 +2359,7 @@ public class AdminController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveScoresBtn, "CONTINUE");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -2668,11 +2677,11 @@ public class AdminController implements Initializable {
     }
 
     private void getStaffDetails(String searchId) {
-        apiUtilityClass.searchStaffData(searchId, staffId,
+        staffService.searchStaffData(searchId, staffId,
                 () -> {
             //On Success
                     Platform.runLater(() -> {
-                        fillStaffData(apiUtilityClass.findStaffResponse);
+                        fillStaffData(ApiContext.getInstance().findStaffResponse);
 
                         staffListTableContainer.setVisible(false);
                         staffListTableContainer.setManaged(false);
@@ -2684,7 +2693,7 @@ public class AdminController implements Initializable {
                 () -> {
             //On Failure
                     Platform.runLater(() -> {
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {

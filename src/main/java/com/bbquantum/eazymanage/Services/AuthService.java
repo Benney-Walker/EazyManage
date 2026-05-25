@@ -1,6 +1,5 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import javafx.concurrent.Task;
 
 import java.net.URI;
@@ -11,11 +10,8 @@ public class AuthService {
 
     private final ApiCore apiCore;
 
-    private final ApiUtilityClass facade;
-
-    public AuthService(ApiCore apiCore, ApiUtilityClass facade) {
+    public AuthService(ApiCore apiCore) {
         this.apiCore = apiCore;
-        this.facade = facade;
     }
 
     /**
@@ -49,7 +45,7 @@ public class AuthService {
                     return response.body();
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -61,7 +57,7 @@ public class AuthService {
                 onFailure.run();
                 return;
             }
-            if (facade != null) facade.successMessageContainer = status;
+
             ApiContext.getInstance().successMessageContainer = status;
             onSuccess.run();
         });

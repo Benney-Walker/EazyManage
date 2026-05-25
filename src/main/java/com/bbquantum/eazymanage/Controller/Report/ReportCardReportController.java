@@ -8,7 +8,9 @@ import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
+import com.bbquantum.eazymanage.Services.AcademicsService;
+import com.bbquantum.eazymanage.Services.ApiCore;
+import com.bbquantum.eazymanage.Services.ReportsService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -79,7 +81,10 @@ public class ReportCardReportController implements ReportViewerController {
     private String role;
     private Runnable onBack;
 
-    private final ApiUtilityClass api = new ApiUtilityClass((StaffController) null);
+    // Phase 8d — direct service references.
+    private final ApiCore           apiCore           = new ApiCore();
+    private final AcademicsService  academicsService  = new AcademicsService(apiCore);
+    private final ReportsService    reportsService    = new ReportsService(apiCore);
 
     // ---- model
     private final ObservableList<StudentsHolder> students = FXCollections.observableArrayList();
@@ -182,7 +187,7 @@ public class ReportCardReportController implements ReportViewerController {
 
     private void loadStudentsFor(GradeCaching grade) {
         setStatus("Loading students…");
-        api.loadClassStudents(grade.getLevelId(), staffId,
+        academicsService.loadClassStudents(grade.getLevelId(), staffId,
                 () -> Platform.runLater(() -> {
                     List<StudentsHolder> list = UtilityClass.studentsHolder;
                     students.setAll(list == null ? List.of() : list);
@@ -211,7 +216,7 @@ public class ReportCardReportController implements ReportViewerController {
         downloadButton.setDisable(true);
         currentCard = null;
 
-        api.loadReportCard(student.getStudentId(), semester.getSemesterId(), staffId,
+        reportsService.loadReportCard(student.getStudentId(), semester.getSemesterId(), staffId,
                 card -> Platform.runLater(() -> applyCard(card)),
                 () -> Platform.runLater(() -> {
                     if (currentCard != null) {
@@ -368,7 +373,7 @@ public class ReportCardReportController implements ReportViewerController {
         String suggestedName = "Report Card - " + safe(studentName, studentId)
                 + " - " + safe(semester.getSemesterName(), "Semester") + ".pdf";
 
-        api.downloadReportCard(
+        reportsService.downloadReportCard(
                 staffId, studentId, semester.getSemesterId(),
                 suggestedName,
                 this::parentWindow,

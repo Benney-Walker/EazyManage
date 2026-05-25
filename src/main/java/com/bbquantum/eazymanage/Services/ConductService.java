@@ -1,7 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Academics.StudentConductRecord;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import javafx.concurrent.Task;
@@ -17,11 +16,8 @@ public class ConductService {
 
     private final ApiCore core;
 
-    private final ApiUtilityClass facade;
-
-    public ConductService(ApiCore core, ApiUtilityClass facade) {
+    public ConductService(ApiCore core) {
         this.core   = core;
-        this.facade = facade;
     }
 
     public void loadClassConduct(String levelId, String semesterId, String staffId,

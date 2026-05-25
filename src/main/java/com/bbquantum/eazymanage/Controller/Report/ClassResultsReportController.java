@@ -1,12 +1,12 @@
 package com.bbquantum.eazymanage.Controller.Report;
 
-import com.bbquantum.eazymanage.Controller.StaffController;
 import com.bbquantum.eazymanage.DTO.Academics.ViewClassSemesterReport;
 import com.bbquantum.eazymanage.DTO.Academics.ViewStudentsSubjectsResults;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
+import com.bbquantum.eazymanage.Services.AcademicsService;
+import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -71,8 +71,8 @@ public class ClassResultsReportController implements ReportViewerController {
     private String role;
     private Runnable onBack;
 
-    private final ApiUtilityClass api =
-            new ApiUtilityClass((StaffController) null);
+    private final ApiCore           apiCore           = new ApiCore();
+    private final AcademicsService  academicsService  = new AcademicsService(apiCore);
 
     // ---- model state
     private final ObservableList<ViewClassSemesterReport> rows = FXCollections.observableArrayList();
@@ -195,7 +195,7 @@ public class ClassResultsReportController implements ReportViewerController {
         downloadButton.setDisable(true);
         loadButton.setDisable(true);
 
-        api.loadClassResults(grade.getLevelId(), semester.getSemesterId(),
+        academicsService.loadClassResults(grade.getLevelId(), semester.getSemesterId(),
                 () -> Platform.runLater(() -> {
                     populate(UtilityClass.classResults);
                     setStatus(rows.isEmpty()
@@ -236,7 +236,7 @@ public class ClassResultsReportController implements ReportViewerController {
         downloadButton.setDisable(true);
         setStatus("Requesting PDF…");
 
-        api.downloadStudentsReport(
+        academicsService.downloadStudentsReport(
                 staffId, grade.getLevelId(), semester.getSemesterId(),
                 promotionGradeId, passScore,
                 this::parentWindow,

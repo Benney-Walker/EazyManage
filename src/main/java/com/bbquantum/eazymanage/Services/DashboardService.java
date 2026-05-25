@@ -4,7 +4,6 @@ import com.bbquantum.eazymanage.DTO.Academics.GradeInformation;
 import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
 import com.bbquantum.eazymanage.DTO.Finance.RecentPaymentTable;
 import com.bbquantum.eazymanage.DTO.Institution.*;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
@@ -32,11 +31,8 @@ public class DashboardService {
 
     private final ApiCore core;
 
-    private final ApiUtilityClass facade;
-
-    public DashboardService(ApiCore core, ApiUtilityClass facade) {
+    public DashboardService(ApiCore core) {
         this.core   = core;
-        this.facade = facade;
     }
 
     // ====================================================================

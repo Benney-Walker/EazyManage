@@ -2,7 +2,6 @@ package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
 import com.bbquantum.eazymanage.DTO.Offline.AttendancePayload;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import javafx.concurrent.Task;
@@ -18,11 +17,8 @@ public class AttendanceService {
 
     private final ApiCore apiCore;
 
-    private final ApiUtilityClass facade;
-
-    public AttendanceService(ApiCore apiCore, ApiUtilityClass facade) {
+    public AttendanceService(ApiCore apiCore) {
         this.apiCore = apiCore;
-        this.facade = facade;
     }
 
     /**

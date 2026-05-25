@@ -7,7 +7,8 @@ import com.bbquantum.eazymanage.DTO.Academics.MasterSheetSubjectColumn;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
+import com.bbquantum.eazymanage.Services.ApiCore;
+import com.bbquantum.eazymanage.Services.ReportsService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -46,8 +47,9 @@ public class MasterSheetReportController implements ReportViewerController {
     private String role;
     private Runnable onBack;
 
-    private final ApiUtilityClass api =
-            new ApiUtilityClass((StaffController) null);
+    // Phase 8d — direct service references.
+    private final ApiCore        apiCore        = new ApiCore();
+    private final ReportsService reportsService = new ReportsService(apiCore);
 
     private final ObservableList<MasterScoreRow> rows = FXCollections.observableArrayList();
     private MasterScoreSheet currentSheet;     // last successfully loaded sheet
@@ -105,7 +107,7 @@ public class MasterSheetReportController implements ReportViewerController {
         loadButton.setDisable(true);
         sheetMetaLabel.setText("");
 
-        api.loadMasterSheet(grade.getLevelId(), semester.getSemesterId(), staffId,
+        reportsService.loadMasterSheet(grade.getLevelId(), semester.getSemesterId(), staffId,
                 sheet -> Platform.runLater(() -> applySheet(sheet)),
                 () -> Platform.runLater(() -> {
                     setStatus(rows.isEmpty()
@@ -136,7 +138,7 @@ public class MasterSheetReportController implements ReportViewerController {
         String suggestedName = "Master Sheet - " + safe(grade.getLevelName())
                 + " - " + safe(semester.getSemesterName()) + ".pdf";
 
-        api.downloadMasterSheet(
+        reportsService.downloadMasterSheet(
                 staffId, grade.getLevelId(), semester.getSemesterId(),
                 suggestedName,
                 this::parentWindow,

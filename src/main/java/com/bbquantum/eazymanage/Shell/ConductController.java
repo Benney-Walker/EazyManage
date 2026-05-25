@@ -3,7 +3,8 @@ package com.bbquantum.eazymanage.Shell;
 import com.bbquantum.eazymanage.DTO.Academics.StudentConductRecord;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
+import com.bbquantum.eazymanage.Services.ApiCore;
+import com.bbquantum.eazymanage.Services.ConductService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -50,7 +51,9 @@ public class ConductController {
     private String role;
 
     // ---- model state
-    private final ApiUtilityClass api = new ApiUtilityClass((com.bbquantum.eazymanage.Controller.StaffController) null);
+    // ---- model state
+    private final ApiCore apiCore = new ApiCore();
+    private final ConductService conductService = new ConductService(apiCore);
     private final ObservableList<StudentConductRecord> records = FXCollections.observableArrayList();
     private final Map<String, StudentConductRecord> recordsById = new HashMap<>();
     private StudentConductRecord currentlyEdited;
@@ -116,7 +119,7 @@ public class ConductController {
         if (grade == null || semester == null || staffId == null) return;
 
         setStatus("Loading…");
-        api.loadClassConduct(grade.getLevelId(), semester.getSemesterId(), staffId,
+        conductService.loadClassConduct(grade.getLevelId(), semester.getSemesterId(), staffId,
                 list -> Platform.runLater(() -> populateRecords(list)),
                 () -> Platform.runLater(() -> setStatus("Loaded " + records.size() + " student(s)")),
                 () -> Platform.runLater(() -> setStatus("Could not load records")),
@@ -190,7 +193,7 @@ public class ConductController {
         // Snapshot the id so callbacks aren't fooled by a row-switch mid-save.
         String savingId = currentlyEdited.getStudentId();
 
-        api.saveStudentConduct(currentlyEdited, staffId,
+        conductService.saveStudentConduct(currentlyEdited, staffId,
                 () -> Platform.runLater(() -> {
                     setStatus("Saved at " + nowText());
                     saveButton.setDisable(false);

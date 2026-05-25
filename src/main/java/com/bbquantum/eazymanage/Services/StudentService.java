@@ -1,7 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
 import javafx.concurrent.Task;
@@ -15,11 +14,8 @@ public class StudentService {
 
     private final ApiCore core;
 
-    private final ApiUtilityClass facade;
-
-    public StudentService(ApiCore core, ApiUtilityClass facade) {
+    public StudentService(ApiCore core) {
         this.core   = core;
-        this.facade = facade;
     }
 
     /** Enroll a new student. */

@@ -6,7 +6,6 @@ import com.bbquantum.eazymanage.DTO.Institution.FindSemester;
 import com.bbquantum.eazymanage.DTO.Institution.GradingCriteria;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.DTO.Offline.ScoresPayload;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -31,11 +30,8 @@ public class AcademicsService {
 
     private final ApiCore core;
 
-    private final ApiUtilityClass facade;
-
-    public AcademicsService(ApiCore core, ApiUtilityClass facade) {
+    public AcademicsService(ApiCore core) {
         this.core   = core;
-        this.facade = facade;
     }
 
     // ====================================================================
@@ -62,7 +58,6 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), SubjectScores.class);
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -119,8 +114,7 @@ public class AcademicsService {
                     return response.body();
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
-                com.bbquantum.eazymanage.Services.ApiContext.getInstance().errorMessageContainer = response.body();
+                ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
@@ -131,7 +125,7 @@ public class AcademicsService {
                 onFailure.run();
                 return;
             }
-            if (facade != null) facade.successMessageContainer = response;
+
             ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
@@ -170,7 +164,7 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), SubjectDTO.class);
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -194,7 +188,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            if (facade != null) facade.errorMessageContainer = "Could not get Records";
+
             com.bbquantum.eazymanage.Services.ApiContext.getInstance().errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
@@ -226,14 +220,14 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            if (facade != null) facade.successMessageContainer = task.getValue();
+
             ApiContext.getInstance().successMessageContainer = task.getValue();
             if (ApiContext.getInstance().successMessageContainer != null) {
                 onSuccess.run();
@@ -251,7 +245,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            if (facade != null) facade.errorMessageContainer = "Could not update Records";
+
             ApiContext.getInstance().errorMessageContainer = "Could not update Records";
             onFailure.run();
         });
@@ -278,7 +272,7 @@ public class AcademicsService {
                     return response.body();
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -302,7 +296,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            facade.errorMessageContainer = "Could not delete Record";
+
             onFailure.run();
         });
 
@@ -330,7 +324,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -357,7 +351,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            if (facade != null) facade.errorMessageContainer = "Could not get Records";
+
             ApiContext.getInstance().errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
@@ -391,7 +385,7 @@ public class AcademicsService {
                     return "Class added successfully";
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -400,7 +394,7 @@ public class AcademicsService {
         task.setOnSucceeded(event -> {
             String status = task.getValue();
             if (status != null) {
-                if (facade != null) facade.successMessageContainer = status;
+
                 ApiContext.getInstance().successMessageContainer = status;
                 onSuccess.run();
                 return;
@@ -417,7 +411,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            if (facade != null) facade.errorMessageContainer = "Could not add new grade";
+
             ApiContext.getInstance().errorMessageContainer = "Could not add new grade";
             onFailure.run();
         });
@@ -445,7 +439,7 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), FindAndUpdateClassInfo.class);
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -470,7 +464,7 @@ public class AcademicsService {
                 return;
             }
 
-            if (facade != null) facade.errorMessageContainer = "Could not fetch class Info";
+
             ApiContext.getInstance().errorMessageContainer = "Could not fetch class Info";
             onFailure.run();
         });
@@ -504,7 +498,7 @@ public class AcademicsService {
                     return response.body();
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -516,7 +510,7 @@ public class AcademicsService {
                 onFailure.run();
                 return;
             }
-            if (facade != null) facade.successMessageContainer = result;
+
             ApiContext.getInstance().successMessageContainer = result;
             onSuccess.run();
         });
@@ -557,7 +551,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -584,7 +578,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            if (facade != null) facade.errorMessageContainer = "Could not get Records";
+
             ApiContext.getInstance().errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
@@ -611,14 +605,14 @@ public class AcademicsService {
                     return response.body();
                 }
 
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            if (facade != null) facade.successMessageContainer = task.getValue();
+
             ApiContext.getInstance().successMessageContainer = task.getValue();
             if (ApiContext.getInstance().successMessageContainer == null) {
                 onFailure.run();
@@ -636,7 +630,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            if (facade != null) facade.errorMessageContainer = "Could not move passed students";
+
             com.bbquantum.eazymanage.Services.ApiContext.getInstance().errorMessageContainer = "Could not move passed students";
             onFailure.run();
         });
@@ -675,7 +669,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return "Successfull";       // legacy spelling preserved
                 }
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -699,7 +693,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            if (facade != null) facade.errorMessageContainer = "Could not save Semester";
+
             ApiContext.getInstance().errorMessageContainer = "Could not save Semester";
             onFailure.run();
         });
@@ -731,7 +725,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), FindSemester.class);
                 }
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -756,7 +750,7 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-            if (facade != null) facade.errorMessageContainer = "Could not get Semester Data";
+
             ApiContext.getInstance().errorMessageContainer = "Could not get Semester Data";
             onFailure.run();
         });
@@ -790,7 +784,7 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                if (facade != null) facade.errorMessageContainer = response.body();
+
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
             }
@@ -802,7 +796,7 @@ public class AcademicsService {
                 onFailure.run();
                 return;
             }
-            if (facade != null) facade.successMessageContainer = response;
+
             ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
@@ -992,8 +986,8 @@ public class AcademicsService {
         };
 
         task.setOnSucceeded(event -> {
-            facade.studentResult = task.getValue();
-            if (facade.studentResult != null) {
+            ApiContext.getInstance().studentResult = task.getValue();
+            if (ApiContext.getInstance().studentResult != null) {
                 ApiContext.getInstance().successMessageContainer = "Results loaded successfully";
                 onSuccess.run();
                 return;

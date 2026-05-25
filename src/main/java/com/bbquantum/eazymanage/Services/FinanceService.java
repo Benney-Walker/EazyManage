@@ -2,7 +2,6 @@ package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Finance.*;
 import com.bbquantum.eazymanage.DTO.Offline.FeesPaymentPayload;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -19,11 +18,8 @@ public class FinanceService {
 
     private final ApiCore core;
 
-    private final ApiUtilityClass facade;
-
-    public FinanceService(ApiCore core, ApiUtilityClass facade) {
+    public FinanceService(ApiCore core) {
         this.core   = core;
-        this.facade = facade;
     }
 
     /** Search a student's payment history for one fees/semester combination. */
@@ -58,7 +54,7 @@ public class FinanceService {
         task.setOnSucceeded(event -> {
             UtilityClass.paymentRecords = task.getValue();
             if (UtilityClass.paymentRecords != null) {
-                facade.successMessageContainer = "Successfully loaded report";
+                ApiContext.getInstance().successMessageContainer = "Successfully loaded report";
                 onSuccess.run();
                 return;
             }
@@ -118,7 +114,7 @@ public class FinanceService {
             List<FeesSummaryTable> result = task.getValue();
             onResult.accept(result);
             if (result != null) {
-                facade.successMessageContainer = "Successfully loaded report";
+                ApiContext.getInstance().successMessageContainer = "Successfully loaded report";
                 onSuccess.run();
                 return;
             }
@@ -179,7 +175,7 @@ public class FinanceService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = "Fees Details fetched successfully";
+            ApiContext.getInstance().successMessageContainer = "Fees Details fetched successfully";
             onSuccess.run();
         });
 
@@ -242,7 +238,7 @@ public class FinanceService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = "Payment records fetched successfully";
+            ApiContext.getInstance().successMessageContainer = "Payment records fetched successfully";
             onSuccess.run();
         });
 
@@ -301,7 +297,7 @@ public class FinanceService {
                 onFailure.run();
                 return;
             }
-            facade.successMessageContainer = "Payment records Loaded Successfully";
+            ApiContext.getInstance().successMessageContainer = "Payment records Loaded Successfully";
             onSuccess.run();
         });
 
@@ -357,7 +353,7 @@ public class FinanceService {
         task.setOnSucceeded(event -> {
             String result = task.getValue();
             if (result != null) {
-                facade.successMessageContainer = result;
+                ApiContext.getInstance().successMessageContainer = result;
                 onSuccess.run();
                 return;
             }

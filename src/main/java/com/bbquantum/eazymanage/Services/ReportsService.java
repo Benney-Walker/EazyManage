@@ -2,7 +2,6 @@ package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Academics.MasterScoreSheet;
 import com.bbquantum.eazymanage.DTO.Academics.SbaRecord;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -23,11 +22,9 @@ import java.util.function.Supplier;
 public class ReportsService {
 
     private final ApiCore core;
-    private final ApiUtilityClass facade;
 
-    public ReportsService(ApiCore core, ApiUtilityClass facade) {
+    public ReportsService(ApiCore core) {
         this.core   = core;
-        this.facade = facade;
     }
 
     public void loadSbaRecords(String levelId, String subjectId, String semesterId, String staffId,

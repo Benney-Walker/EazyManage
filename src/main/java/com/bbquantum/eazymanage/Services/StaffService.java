@@ -1,7 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Institution.FindStaffResponse;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import javafx.concurrent.Task;
@@ -14,11 +13,8 @@ public class StaffService {
 
     private final ApiCore core;
 
-    private final ApiUtilityClass facade;
-
-    public StaffService(ApiCore core, ApiUtilityClass facade) {
+    public StaffService(ApiCore core) {
         this.core = core;
-        this.facade = facade;
     }
 
     /**
@@ -52,8 +48,8 @@ public class StaffService {
         };
 
         task.setOnSucceeded(event -> {
-            facade.findStaffResponse = task.getValue();
-            if (facade.findStaffResponse != null) {
+            ApiContext.getInstance().findStaffResponse = task.getValue();
+            if (ApiContext.getInstance().findStaffResponse != null) {
                 onSuccess.run();
                 return;
             }

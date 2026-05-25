@@ -9,7 +9,6 @@ import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
 import com.bbquantum.eazymanage.Services.*;
 import com.bbquantum.eazymanage.Utitity.RadioStatusCell;
 import com.bbquantum.eazymanage.Utitity.StudentAttendanceUI;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.animation.*;
 import javafx.application.Platform;
@@ -43,12 +42,11 @@ public class StaffController implements Initializable {
 
     // CONTROLLER OWN VARIABLES
     private final ApiCore               apiCore           = new ApiCore();
-    private final AcademicsService      academicsService  = new AcademicsService(apiCore, null);
-    private final AttendanceService     attendanceService = new AttendanceService(apiCore, null);
-    private final DashboardService      dashboardService  = new DashboardService(apiCore, null);
-    private final StudentService        studentService    = new StudentService(apiCore, null);
+    private final AcademicsService      academicsService  = new AcademicsService(apiCore);
+    private final AttendanceService     attendanceService = new AttendanceService(apiCore);
+    private final DashboardService      dashboardService  = new DashboardService(apiCore);
+    private final StudentService        studentService    = new StudentService(apiCore);
 
-    private ApiUtilityClass apiUtilityClass;
     private String institutionName;
     public String staffId;
     private String staffFullName;
@@ -687,7 +685,7 @@ public class StaffController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -723,7 +721,7 @@ public class StaffController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(loadSubjectStudentsBtn, "LOAD STUDENTS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 ()-> {
@@ -809,7 +807,7 @@ public class StaffController implements Initializable {
                     //On Success
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(movePassedStudentsBtn, "TRANSFER STUDENTS");
-                        UtilityClass.showSuccess(notification, apiUtilityClass.successMessageContainer);
+                        UtilityClass.showSuccess(notification, ApiContext.getInstance().successMessageContainer);
                         resultsPassmarkHBox.setVisible(false);
                         resultsPassmarkHBox.setManaged(false);
                         movePassedStudentsBtn.setDisable(true);
@@ -818,7 +816,7 @@ public class StaffController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(movePassedStudentsBtn, "TRANSFER STUDENTS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                         movePassedStudentsBtn.setDisable(true);
                     });
                 }, () -> {
@@ -884,7 +882,7 @@ public class StaffController implements Initializable {
             //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(markAttendanceBtn, "FETCH STUDENTS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -957,7 +955,7 @@ public class StaffController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateAttendanceBtn, "FETCH STUDENTS");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1110,7 +1108,7 @@ public class StaffController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(loadClassResultsBtn, "Fetch Results");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
 
                         resultsInfoBox.setVisible(false);
                         resultsInfoBox.setManaged(false);
@@ -1195,7 +1193,7 @@ public class StaffController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveScores, "CONTINUE");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1250,7 +1248,7 @@ public class StaffController implements Initializable {
                 () -> {
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(saveAttendanceBtn, "CONTINUE");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
 
@@ -1317,7 +1315,7 @@ public class StaffController implements Initializable {
                     //On Failure
                     Platform.runLater(() -> {
                         UtilityClass.notProcessingButton(updateAndSaveAttendanceBtn, "CONTINUE");
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {
@@ -1375,7 +1373,7 @@ public class StaffController implements Initializable {
                     //On failure
                     Platform.runLater(() -> {
                         hideLoading();
-                        UtilityClass.showError(notification, apiUtilityClass.errorMessageContainer);
+                        UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer);
                     });
                 },
                 () -> {

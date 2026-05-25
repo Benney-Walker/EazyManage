@@ -5,7 +5,6 @@ import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.Services.*;
-import com.bbquantum.eazymanage.Utitity.ApiUtilityClass;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -39,9 +38,9 @@ public class FinanceController implements Initializable {
     // error/success store; the ApiUtilityClass facade is no longer
     // constructed by this controller.
     private final ApiCore apiCore          = new ApiCore();
-    private final FinanceService financeService   = new FinanceService(apiCore, null);
-    private final AcademicsService  academicsService = new AcademicsService(apiCore, null);
-    private final DashboardService  dashboardService = new DashboardService(apiCore, null);
+    private final FinanceService financeService   = new FinanceService(apiCore);
+    private final AcademicsService  academicsService = new AcademicsService(apiCore);
+    private final DashboardService  dashboardService = new DashboardService(apiCore);
     public String staffId;
     private String institutionName;
     private String accountantName;
