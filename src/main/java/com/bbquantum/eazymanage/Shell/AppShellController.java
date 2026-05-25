@@ -6,6 +6,12 @@ import com.bbquantum.eazymanage.Controller.WebSocket.BroadcastsController;
 import com.bbquantum.eazymanage.EazyManage;
 import com.bbquantum.eazymanage.Records.NavItem;
 import com.bbquantum.eazymanage.Records.Section;
+import com.bbquantum.eazymanage.Services.OfflineMode;
+import com.bbquantum.eazymanage.Services.OfflineQueue;
+import com.bbquantum.eazymanage.Shell.Navigation.NavRegistry;
+import com.bbquantum.eazymanage.Shell.Navigation.WorkSpaceTab;
+import com.bbquantum.eazymanage.Shell.Notification.Notification;
+import com.bbquantum.eazymanage.Shell.Notification.NotificationCenter;
 import com.bbquantum.eazymanage.Utitity.ThemeManager;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.beans.binding.Bindings;
@@ -58,6 +64,7 @@ public class AppShellController {
     @FXML private Button    notifBell;
     @FXML private Label     notifBellCount;
     @FXML private Button    themeToggle;
+    @FXML private Button    offlineToggle;
 
     @FXML private HBox tabBar;
     @FXML private StackPane contentArea;
@@ -116,8 +123,41 @@ public class AppShellController {
         updateThemeToggleGlyph();
         ThemeManager.getInstance().addListener(t -> updateThemeToggleGlyph());
 
+        // Phase 7: bind the offline toggle. Label reflects mode + pending count;
+        // styleClass switches so the badge can be styled differently in each state.
+        OfflineMode offline = OfflineMode.getInstance();
+        OfflineQueue queue = OfflineQueue.getInstance();
+
+        offlineToggle.textProperty().bind(Bindings.createStringBinding(
+                () -> {
+                    int n = queue.pendingCount();
+                    String base = offline.isEnabled() ? "Offline" : "Online";
+                    return n > 0 ? base + " · " + n + " pending" : base;
+                },
+                offline.enabledProperty(), queue.pendingCountProperty()));
+
+        // Drive style via a single style-class swap. The CSS in shell.css
+        // hooks .topbar-offline-toggle-on for the offline state.
+        Runnable refreshStyle = () -> {
+            offlineToggle.getStyleClass().removeAll("topbar-offline-toggle-on");
+            if (offline.isEnabled()) offlineToggle.getStyleClass().add("topbar-offline-toggle-on");
+        };
+        refreshStyle.run();
+        offline.enabledProperty().addListener((o, was, is) -> {
+            refreshStyle.run();
+            // Coming back online: drain whatever's queued.
+            if (was && !is) {
+                com.bbquantum.eazymanage.Services.OfflineReplayer.getInstance().drainNow();
+            }
+        });
+
         searchField.setDisable(true);
         searchField.setPromptText("Global search (coming soon)");
+    }
+
+    @FXML
+    private void onToggleOffline() {
+        OfflineMode.getInstance().toggle();
     }
 
     // ====================================================================
@@ -350,6 +390,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "conduct".equals(item.id())) {
             return loadConductScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "attendance".equals(item.id())) {
+            return loadAttendanceScreen();
+        }
         if (item.status() == NavItemStatus.FUNCTIONAL && "reports".equals(item.id())) {
             return loadReportsScreen();
         }
@@ -400,6 +443,25 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load Conduct screen",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    /**
+     * Load the Phase 9a Attendance shell tab. Host controller manages the
+     * entry-picker → inner-tabs transition; inner controllers lazy-load.
+     */
+    private Parent loadAttendanceScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Attendance/AttendanceTab.fxml"));
+            Parent root = loader.load();
+            AttendanceTabController controller = loader.getController();
+            controller.attach(role, staffId);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Attendance screen",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }
