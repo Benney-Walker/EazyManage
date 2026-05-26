@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Add Student form (Phase 9c).
+
+    Form fields match the enrollNewStudent service signature:
+      firstName, lastName, levelId (class), gender, dateOfBirth,
+      hometown, parentName, guardianContact.
+
+    Layout: a single 2-column GridPane inside a ScrollPane so the form
+    survives small screens. Action bar at the bottom with Reset / Save.
+-->
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Controller.Students.AddStudentController"
+            fitToWidth="true" hbarPolicy="NEVER"
+            styleClass="add-student,transparent-scroll">
+
+    <VBox spacing="0">
+
+        <!-- Form -->
+        <VBox spacing="14" styleClass="form-card">
+            <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+
+            <Label text="New Student" styleClass="form-section-title"/>
+
+            <GridPane hgap="16" vgap="12">
+                <columnConstraints>
+                    <javafx.scene.layout.ColumnConstraints minWidth="200" prefWidth="280" hgrow="SOMETIMES"/>
+                    <javafx.scene.layout.ColumnConstraints minWidth="200" prefWidth="280" hgrow="SOMETIMES"/>
+                </columnConstraints>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                    <Label text="First name" styleClass="field-label"/>
+                    <TextField fx:id="firstNameField" promptText="e.g. Ama"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Last name" styleClass="field-label"/>
+                    <TextField fx:id="lastNameField" promptText="e.g. Boateng"/>
+                </VBox>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Class" styleClass="field-label"/>
+                    <ChoiceBox fx:id="classChoice" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <Label text="Gender" styleClass="field-label"/>
+                    <ChoiceBox fx:id="genderChoice" maxWidth="Infinity"/>
+                </VBox>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                    <Label text="Date of birth" styleClass="field-label"/>
+                    <DatePicker fx:id="dobPicker" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <Label text="Hometown" styleClass="field-label"/>
+                    <TextField fx:id="hometownField" promptText="e.g. Kumasi"/>
+                </VBox>
+
+                <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                    <Label text="Parent / guardian name" styleClass="field-label"/>
+                    <TextField fx:id="parentNameField" promptText="Full name"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                    <Label text="Guardian contact" styleClass="field-label"/>
+                    <TextField fx:id="guardianContactField" promptText="e.g. 024 123 4567"/>
+                </VBox>
+            </GridPane>
+        </VBox>
+
+        <!-- Action bar -->
+        <VBox styleClass="action-bar">
+            <Separator/>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+                <Label fx:id="statusLabel" styleClass="save-status"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="resetButton" text="Reset" onAction="#onReset" styleClass="btn,btn-ghost"/>
+                <Button fx:id="saveButton" text="Enroll student" onAction="#onSave" styleClass="btn,btn-primary"/>
+            </HBox>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

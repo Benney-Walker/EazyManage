@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Browse Students by Class (Phase 9c).
+
+    Simplest of the three Students flows: pick a class, see the roster.
+    No actions on the rows in 9c — that's a deliberate scope cut. Future
+    enhancements (click a row → open Find with that student pre-loaded)
+    can be added without changing this layout.
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Students.BrowseStudentsController"
+      styleClass="browse-students"
+      spacing="0">
+
+    <!-- Toolbar -->
+    <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
+
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="220"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Label fx:id="statusLabel" styleClass="save-status"/>
+
+        <Button fx:id="fetchButton" text="Fetch students"
+                onAction="#onFetch" styleClass="btn,btn-primary"
+                disable="true"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Info banner -->
+    <HBox fx:id="classInfoBanner" visible="false" managed="false"
+          styleClass="info-banner" spacing="12" alignment="CENTER_LEFT">
+        <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+        <Label text="📋" styleClass="info-icon"/>
+        <VBox spacing="2">
+            <Label fx:id="classNameLabel" styleClass="info-title"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="rowCountLabel" styleClass="info-subtitle"/>
+    </HBox>
+
+    <TableView fx:id="studentsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="studentIdCol"   text="Student ID"   prefWidth="160"/>
+            <TableColumn fx:id="studentNameCol" text="Student Name" prefWidth="320"/>
+        </columns>
+        <placeholder>
+            <Label text="Pick a class and click 'Fetch students'."
+                   styleClass="empty-state"/>
+        </placeholder>
+    </TableView>
+</VBox>

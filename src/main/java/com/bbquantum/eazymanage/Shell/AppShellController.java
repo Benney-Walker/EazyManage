@@ -4,6 +4,7 @@ import com.bbquantum.eazymanage.Constants.NavItemStatus;
 import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
 import com.bbquantum.eazymanage.Controller.Results.ResultsTabController;
 import com.bbquantum.eazymanage.Controller.Settings.SettingsController;
+import com.bbquantum.eazymanage.Controller.Students.StudentsTabController;
 import com.bbquantum.eazymanage.Controller.WebSocket.BroadcastsController;
 import com.bbquantum.eazymanage.EazyManage;
 import com.bbquantum.eazymanage.Records.NavItem;
@@ -398,6 +399,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "results".equals(item.id())) {
             return loadResultsScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "students".equals(item.id())) {
+            return loadStudentsScreen();
+        }
         if (item.status() == NavItemStatus.FUNCTIONAL && "settings".equals(item.id())) {
             return loadSettingsScreen();
         }
@@ -504,6 +508,21 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load Results screen",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    private Parent loadStudentsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Students/StudentsTab.fxml"));
+            Parent root = loader.load();
+            StudentsTabController controller = loader.getController();
+            controller.attach(role, staffId);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Students screen",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }

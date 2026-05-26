@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Students shell tab — host (Phase 9c).
+
+    Same two-state pattern as Attendance / Results.
+
+    State A — picker: up to three cards depending on role.
+      Add Student          — visible to PRINCIPAL / ADMINISTRATOR
+      Find & Update        — visible to all (TEACHING_STAFF cannot save edits)
+      Browse by Class      — visible to all
+
+    State B — inner tabs: matching set, with the Add Student tab removed
+      entirely for TEACHING_STAFF.
+
+    The "view-only" flavour for teaching staff comes from the Find inner
+    controller: when role is TEACHING_STAFF, the form fields are still
+    populated by a search, but the Save button is hidden.
+-->
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Students.StudentsTabController"
+      styleClass="students-tab"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../../Theme/students.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Students" styleClass="page-title"/>
+        <Label fx:id="subtitleLabel"
+               text="Enroll, find, and browse students across the school."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Content slot -->
+    <StackPane fx:id="contentSlot" VBox.vgrow="ALWAYS">
+
+        <!-- STATE A: picker -->
+        <VBox fx:id="pickerView" alignment="CENTER" spacing="24">
+            <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+            <Label text="What would you like to do?" styleClass="picker-prompt"/>
+
+            <HBox fx:id="pickerRow" spacing="20" alignment="CENTER" styleClass="picker-card-row">
+
+                <VBox fx:id="addCard" styleClass="picker-card,picker-card-add"
+                      alignment="CENTER" spacing="14" prefWidth="260" minHeight="220"
+                      onMouseClicked="#onPickAdd">
+                    <Label text="➕" styleClass="picker-card-icon"/>
+                    <Label text="Add Student" styleClass="picker-card-title"/>
+                    <Label text="Enroll a new student into a class."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+                <VBox fx:id="findCard" styleClass="picker-card,picker-card-find"
+                      alignment="CENTER" spacing="14" prefWidth="260" minHeight="220"
+                      onMouseClicked="#onPickFind">
+                    <Label text="🔎" styleClass="picker-card-icon"/>
+                    <Label fx:id="findCardTitle" text="Find &amp; Update" styleClass="picker-card-title"/>
+                    <Label fx:id="findCardSubtitle"
+                           text="Search a student by ID and edit their personal details."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+                <VBox fx:id="browseCard" styleClass="picker-card,picker-card-browse"
+                      alignment="CENTER" spacing="14" prefWidth="260" minHeight="220"
+                      onMouseClicked="#onPickBrowse">
+                    <Label text="📋" styleClass="picker-card-icon"/>
+                    <Label text="Browse by Class" styleClass="picker-card-title"/>
+                    <Label text="See every student in a class at a glance."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- STATE B: inner tabs -->
+        <TabPane fx:id="innerTabs" visible="false" managed="false"
+                 tabClosingPolicy="UNAVAILABLE" styleClass="inner-tabs">
+            <tabs>
+                <Tab fx:id="addTab"    text="Add Student"/>
+                <Tab fx:id="findTab"   text="Find &amp; Update"/>
+                <Tab fx:id="browseTab" text="Browse by Class"/>
+            </tabs>
+        </TabPane>
+
+    </StackPane>
+</VBox>
