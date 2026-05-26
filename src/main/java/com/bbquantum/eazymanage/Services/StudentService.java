@@ -81,11 +81,7 @@ public class StudentService {
         new Thread(task).start();
     }
 
-    /**
-     * Look up a student's full record for editing.
-     * Writes the parsed result to {@code UtilityClass.updateStudentPersonalData}
-     * (legacy side-effect; the editing screen reads from there).
-     */
+
     public void searchStudentData(String staffId, String studentId,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
