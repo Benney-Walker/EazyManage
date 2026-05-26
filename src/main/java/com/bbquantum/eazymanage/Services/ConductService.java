@@ -23,6 +23,7 @@ public class ConductService {
     public void loadClassConduct(String levelId, String semesterId, String staffId,
                                  Consumer<List<StudentConductRecord>> onResult,
                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
         Type listType = new TypeToken<List<StudentConductRecord>>() {}.getType();
 
         Task<List<StudentConductRecord>> task = new Task<>() {

@@ -5,6 +5,7 @@ import com.bbquantum.eazymanage.DTO.Offline.FeesPaymentPayload;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.lang.reflect.Type;
@@ -78,11 +79,7 @@ public class FinanceService {
         new Thread(task).start();
     }
 
-    /**
-     * Filtered fees-summary load for the principal report screen.
-     * Result is delivered via {@code onResult}; the facade passes the
-     * {@code principalController.feesSummaryTable} setter.
-     */
+
     public void getFeesFilterData(String ownUrl,
                                   Consumer<List<FeesSummaryTable>> onResult,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
@@ -325,6 +322,8 @@ public class FinanceService {
     /** Create a new fees record for a (grade, semester) pair. */
     public void addNewFees(String staffId, String gradeId, String semesterId, String feesAmount,
                            Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -388,12 +387,14 @@ public class FinanceService {
                         new FeesPaymentPayload(
                                 staffId, studentId, semesterId, amountPaid, payerName, payerPhone));
                 OfflineQueue.getInstance().enqueue(OfflineQueue.OP_FEES_PAYMENT, payload);
+
                 ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
-                javafx.application.Platform.runLater(onSuccess);
+
+                Platform.runLater(onSuccess);
             } catch (Exception e) {
                 e.printStackTrace();
                 ApiContext.getInstance().errorMessageContainer = "Could not queue payment: " + e.getMessage();
-                javafx.application.Platform.runLater(onFailure);
+                Platform.runLater(onFailure);
             }
             return;
         }
