@@ -17,9 +17,13 @@ module com.bbquantum.eazymanage {
     requires org.xerial.sqlitejdbc;
 
     exports com.bbquantum.eazymanage;
+    exports com.bbquantum.eazymanage.Attendance;
     exports com.bbquantum.eazymanage.CacheClasses;
     exports com.bbquantum.eazymanage.Controller;
     exports com.bbquantum.eazymanage.Shell;
+    exports com.bbquantum.eazymanage.Shell.Navigation;
+    exports com.bbquantum.eazymanage.Shell.Notification;
+
     exports com.bbquantum.eazymanage.Services;
 
     opens com.bbquantum.eazymanage to javafx.fxml;
@@ -39,8 +43,12 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Controller.Report to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.WebSocket;
     opens com.bbquantum.eazymanage.Controller.WebSocket to javafx.fxml;
-    exports com.bbquantum.eazymanage.Shell.Notification;
     opens com.bbquantum.eazymanage.Shell.Notification to javafx.fxml;
-    exports com.bbquantum.eazymanage.Shell.Navigation;
     opens com.bbquantum.eazymanage.Shell.Navigation to javafx.fxml;
+    opens com.bbquantum.eazymanage.Attendance to javafx.fxml;
+    opens com.bbquantum.eazymanage.Shell.Settings to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Settings;
+    opens com.bbquantum.eazymanage.Controller.Settings to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Results;
+    opens com.bbquantum.eazymanage.Controller.Results to javafx.fxml;
 }
