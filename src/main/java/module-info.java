@@ -53,4 +53,6 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Controller.Results to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.Students;
     opens com.bbquantum.eazymanage.Controller.Students to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Staff;
+    opens com.bbquantum.eazymanage.Controller.Staff to javafx.fxml;
 }
