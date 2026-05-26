@@ -2,6 +2,8 @@ package com.bbquantum.eazymanage.Shell;
 
 import com.bbquantum.eazymanage.Constants.NavItemStatus;
 import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
+import com.bbquantum.eazymanage.Controller.Results.ResultsTabController;
+import com.bbquantum.eazymanage.Controller.Settings.SettingsController;
 import com.bbquantum.eazymanage.Controller.WebSocket.BroadcastsController;
 import com.bbquantum.eazymanage.EazyManage;
 import com.bbquantum.eazymanage.Records.NavItem;
@@ -393,6 +395,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "attendance".equals(item.id())) {
             return loadAttendanceScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "results".equals(item.id())) {
+            return loadResultsScreen();
+        }
         if (item.status() == NavItemStatus.FUNCTIONAL && "settings".equals(item.id())) {
             return loadSettingsScreen();
         }
@@ -438,7 +443,7 @@ public class AppShellController {
 
     private Parent loadConductScreen() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Shell/Conduct.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Shell/Conduct/Conduct.fxml"));
             Parent root = loader.load();
             ConductController controller = loader.getController();
             controller.setIdentity(staffId, role);
@@ -455,7 +460,7 @@ public class AppShellController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/bbquantum/eazymanage/Shell/Settings/Settings.fxml"));
             Parent root = loader.load();
-            com.bbquantum.eazymanage.Shell.Settings.SettingsController controller = loader.getController();
+            SettingsController controller = loader.getController();
             controller.attach(role, staffId, organizationName, username);
             return root;
         } catch (Exception e) {
@@ -485,12 +490,25 @@ public class AppShellController {
     }
 
     /**
-     * Load the Phase 5a Reporting Center.
-     *
-     * <p>The index FXML is wrapped in a fresh {@link StackPane} so the index
-     * controller can swap a viewer FXML over it without involving the
-     * workspace tab system. The viewer's back button swaps the index back in.
+     * Load the Phase 9b Results shell tab. Host manages picker → inner
+     * tabs; role filtering hides the Enter Scores card/tab for Principal.
      */
+    private Parent loadResultsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Results/ResultsTab.fxml"));
+            Parent root = loader.load();
+            ResultsTabController controller = loader.getController();
+            controller.attach(role, staffId);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Results screen",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+
     private Parent loadReportsScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
@@ -515,7 +533,7 @@ public class AppShellController {
     private Parent loadBroadcastsScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Broadcasts.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Messaging/Broadcasts.fxml"));
             Parent root = loader.load();
             BroadcastsController controller = loader.getController();
             controller.setIdentity(role);
@@ -531,7 +549,7 @@ public class AppShellController {
     private Parent loadActiveSessionsScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/ActiveSessions.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Messaging/ActiveSessions.fxml"));
             return loader.load();
         } catch (Exception e) {
             e.printStackTrace();
@@ -545,7 +563,7 @@ public class AppShellController {
     private Parent loadOfflineSettingsScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/OfflineSettings.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Settings/OfflineSettings.fxml"));
             return loader.load();
         } catch (Exception e) {
             e.printStackTrace();
