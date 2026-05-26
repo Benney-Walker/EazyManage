@@ -28,7 +28,7 @@ public class ReportCatalogue {
             ),
             new ReportDefinition(
                     "sba",
-                    "School-Based Assessment (SBA)",
+                    "Subject-Based Assessment (SBA)",
                     "Continuous-assessment record per student per semester: Class Test 1, Group Work, Class Test 2, Project, Class Score, Exam, and Calculated Exam Score.",
                     "\u25A4",
                     NOT_ACCOUNTANT,
