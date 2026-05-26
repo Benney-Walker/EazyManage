@@ -24,7 +24,7 @@ public class ReportCatalogue {
                     NOT_ACCOUNTANT,
                     ReportStatus.AVAILABLE,
                     "",
-                    "/com/bbquantum/eazymanage/Shell/ClassResultsReport.fxml"
+                    "/com/bbquantum/eazymanage/Shell/Reporting/ClassResultsReport.fxml"
             ),
             new ReportDefinition(
                     "sba",
@@ -34,7 +34,7 @@ public class ReportCatalogue {
                     NOT_ACCOUNTANT,
                     ReportStatus.AVAILABLE,
                     "Phase 5b",
-                    "/com/bbquantum/eazymanage/Shell/SbaReport.fxml"
+                    "/com/bbquantum/eazymanage/Shell/Reporting/SbaReport.fxml"
             ),
             new ReportDefinition(
                     "master-score-sheet",
@@ -44,7 +44,7 @@ public class ReportCatalogue {
                     NOT_ACCOUNTANT,
                     ReportStatus.AVAILABLE,
                     "",
-                    "/com/bbquantum/eazymanage/Shell/MasterSheetReport.fxml"
+                    "/com/bbquantum/eazymanage/Shell/Reporting/MasterSheetReport.fxml"
             ),
             new ReportDefinition(
                     "report-card",
@@ -54,7 +54,7 @@ public class ReportCatalogue {
                     NOT_ACCOUNTANT,
                     ReportStatus.AVAILABLE,
                     "",
-                    "/com/bbquantum/eazymanage/Shell/ReportCardReport.fxml"
+                    "/com/bbquantum/eazymanage/Shell/Reporting/ReportCardReport.fxml"
             )
     );
 

@@ -23,7 +23,7 @@
       spacing="0">
 
     <stylesheets>
-        <URL value="@../Theme/broadcasts.css"/>
+        <URL value="@../../Theme/broadcasts.css"/>
     </stylesheets>
 
     <!-- Header -->

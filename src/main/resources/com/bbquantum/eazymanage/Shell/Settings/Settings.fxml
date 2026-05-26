@@ -29,7 +29,7 @@
 -->
 <?import java.net.URL?>
 <ScrollPane fx:id="rootScroll" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.bbquantum.eazymanage.Shell.Settings.SettingsController"
+            fx:controller="com.bbquantum.eazymanage.Controller.Settings.SettingsController"
             styleClass="settings-screen,transparent-scroll"
             fitToWidth="true" hbarPolicy="NEVER">
 

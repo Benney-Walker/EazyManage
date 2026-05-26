@@ -23,7 +23,7 @@
       spacing="0">
 
     <stylesheets>
-        <URL value="@../Theme/reports.css"/>
+        <URL value="@../../Theme/reports.css"/>
     </stylesheets>
 
     <!-- Header -->

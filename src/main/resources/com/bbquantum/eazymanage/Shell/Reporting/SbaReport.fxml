@@ -4,34 +4,30 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <!--
-    Master Score Sheet viewer (Phase 5c).
+    SBA viewer (Phase 5b).
 
-    Filters: class + semester. The subject columns are dynamic — added at
-    runtime in the controller from the loaded sheet, since the column set
-    varies by class. Fixed columns at left (id, name) and right (total,
-    average, position) are added programmatically too so the table is
-    consistent regardless of how many subjects are present.
+    Filters: class, subject, semester. The subject dropdown is populated
+    after the user picks a class (loadClassSubjects).
 
-    Horizontal scrolling is expected: a JHS class with 13 subjects gives
-    ~18 columns. The ScrollPane around the TableView keeps the action bar
-    in view when scrolling horizontally.
+    Body: one row per student, with the seven Phase 5b score columns.
+    Action: Download PDF — calls /admin/v2/generate-sba-report.
 -->
 <?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.bbquantum.eazymanage.Controller.Report.MasterSheetReportController"
+      fx:controller="com.bbquantum.eazymanage.Controller.Report.SbaReportController"
       styleClass="report-viewer"
       spacing="0">
 
     <stylesheets>
-        <URL value="@../Theme/reports.css"/>
+        <URL value="@../../Theme/reports.css"/>
     </stylesheets>
 
     <!-- Header / breadcrumb -->
@@ -41,9 +37,8 @@
             <Button fx:id="backButton" text="◂  Reporting Center"
                     onAction="#onBack" styleClass="btn,btn-ghost,breadcrumb-back"/>
         </HBox>
-        <Label text="Master Score Sheet" styleClass="page-title"/>
-        <Label fx:id="subtitleLabel"
-               text="One row per student, one column per subject. Scroll horizontally for wide classes."
+        <Label text="School-Based Assessment" styleClass="page-title"/>
+        <Label text="Continuous-assessment record per student for one subject and semester."
                styleClass="page-subtitle" wrapText="true"/>
     </VBox>
 
@@ -54,36 +49,49 @@
         <Label text="Class" styleClass="field-label"/>
         <ChoiceBox fx:id="classChoice" prefWidth="200"/>
 
+        <Label text="Subject" styleClass="field-label"/>
+        <ChoiceBox fx:id="subjectChoice" prefWidth="200" disable="true"/>
+
         <Label text="Semester" styleClass="field-label"/>
         <ChoiceBox fx:id="semesterChoice" prefWidth="200"/>
 
         <Region HBox.hgrow="ALWAYS"/>
 
-        <Button fx:id="loadButton" text="Load sheet" onAction="#onLoad" styleClass="btn,btn-primary"/>
+        <Button fx:id="loadButton" text="Load SBA" onAction="#onLoad" styleClass="btn,btn-primary"/>
     </HBox>
 
     <Separator/>
 
-    <!-- Sheet -->
-    <ScrollPane VBox.vgrow="ALWAYS"
-                fitToWidth="false" fitToHeight="true"
-                hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"
-                styleClass="transparent-scroll master-sheet-scroll">
-        <TableView fx:id="sheetTable" styleClass="master-sheet-table">
+    <!-- SBA table -->
+    <VBox VBox.vgrow="ALWAYS" spacing="0">
+        <Label text="Students" styleClass="panel-heading">
+            <padding><Insets top="12" right="24" bottom="6" left="24"/></padding>
+        </Label>
+
+        <TableView fx:id="sbaTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="studentIdCol"    text="Student ID"  prefWidth="110"/>
+                <TableColumn fx:id="studentNameCol"  text="Name"        prefWidth="200"/>
+                <TableColumn fx:id="classTest1Col"   text="CT 1"        prefWidth="70"/>
+                <TableColumn fx:id="groupWorkCol"    text="Group Work"  prefWidth="100"/>
+                <TableColumn fx:id="classTest2Col"   text="CT 2"        prefWidth="70"/>
+                <TableColumn fx:id="projectCol"      text="Project"     prefWidth="80"/>
+                <TableColumn fx:id="classScoreCol"   text="Class (50%)" prefWidth="100"/>
+                <TableColumn fx:id="examScoreCol"    text="Exam"        prefWidth="70"/>
+                <TableColumn fx:id="calcExamCol"     text="Exam (50%)"  prefWidth="90"/>
+            </columns>
             <placeholder>
-                <Label text="Pick a class and semester, then click 'Load sheet'."
+                <Label text="Pick class, subject, and semester — then click 'Load SBA'."
                        styleClass="empty-state"/>
             </placeholder>
         </TableView>
-    </ScrollPane>
+    </VBox>
 
     <!-- Action bar -->
     <VBox styleClass="action-bar">
         <Separator/>
         <HBox alignment="CENTER_LEFT" spacing="12">
             <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
-
-            <Label fx:id="sheetMetaLabel" styleClass="save-status"/>
 
             <Region HBox.hgrow="ALWAYS"/>
 

@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Shell.Settings;
+package com.bbquantum.eazymanage.Controller.Settings;
 
 import com.bbquantum.eazymanage.Services.WebSocketService;
 import com.bbquantum.eazymanage.Shell.ShellLauncher;
