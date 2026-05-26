@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Enter Scores flow (Phase 9b).
+
+    Layout:
+      1. Toolbar — Class / Subject / Semester ChoiceBoxes + Fetch button.
+         Subject choice is disabled until a class is picked (cascade).
+      2. Class info banner — visible after a successful fetch.
+      3. Wide editable table — one row per student, 6 score fields per row
+         (Class Test 1, Group Work, Class Test 2, Project, Class Score,
+         Exam). All fields are TextField columns; user types numbers.
+      4. Action bar — Reset / Save buttons. Save triggers a serial upload
+         with progress bar; failures pause and the button flips to
+         "Continue" for retry from the failed row.
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Results.EnterScoresController"
+      styleClass="enter-scores"
+      spacing="0">
+
+    <!-- Toolbar -->
+    <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
+
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="160"/>
+
+        <Label text="Subject" styleClass="field-label"/>
+        <ChoiceBox fx:id="subjectChoice" prefWidth="180" disable="true"/>
+
+        <Label text="Semester" styleClass="field-label"/>
+        <ChoiceBox fx:id="semesterChoice" prefWidth="170"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="fetchButton" text="Fetch students"
+                onAction="#onFetch" styleClass="btn,btn-primary"
+                disable="true"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Info banner -->
+    <HBox fx:id="classInfoBanner" visible="false" managed="false"
+          styleClass="info-banner" spacing="12" alignment="CENTER_LEFT">
+        <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+        <Label text="📝" styleClass="info-icon"/>
+        <VBox spacing="2">
+            <Label fx:id="contextTitleLabel" styleClass="info-title"/>
+            <Label fx:id="contextSubtitleLabel" styleClass="info-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="rowCountLabel" styleClass="info-subtitle"/>
+    </HBox>
+
+    <!-- Editable score table -->
+    <TableView fx:id="scoresTable" editable="true"
+               VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="studentIdCol"  text="Student ID"   prefWidth="100"/>
+            <TableColumn fx:id="nameCol"       text="Student Name" prefWidth="200"/>
+            <TableColumn fx:id="ct1Col"        text="CT 1"         prefWidth="80"/>
+            <TableColumn fx:id="groupWorkCol"  text="Group Work"   prefWidth="100"/>
+            <TableColumn fx:id="ct2Col"        text="CT 2"         prefWidth="80"/>
+            <TableColumn fx:id="projectCol"    text="Project"      prefWidth="90"/>
+            <TableColumn fx:id="classScoreCol" text="Class (50%)"  prefWidth="100"/>
+            <TableColumn fx:id="examCol"       text="Exam"         prefWidth="80"/>
+        </columns>
+        <placeholder>
+            <Label text="Pick class, subject and semester then click 'Fetch students'."
+                   styleClass="empty-state"/>
+        </placeholder>
+    </TableView>
+
+    <!-- Action bar -->
+    <VBox styleClass="action-bar">
+        <Separator/>
+
+        <VBox fx:id="progressBox" visible="false" managed="false" spacing="4">
+            <padding><Insets top="8" right="24" bottom="0" left="24"/></padding>
+            <Label fx:id="progressLabel" text="Saving…" styleClass="save-status"/>
+            <ProgressBar fx:id="progressBar" prefHeight="6" maxWidth="Infinity" progress="0"/>
+        </VBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <Label fx:id="statusLabel" styleClass="save-status"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="cancelButton" text="Reset" onAction="#onReset"
+                    styleClass="btn,btn-ghost"/>
+            <Button fx:id="saveButton" text="Save scores" onAction="#onSave"
+                    styleClass="btn,btn-primary" disable="true"/>
+        </HBox>
+    </VBox>
+</VBox>

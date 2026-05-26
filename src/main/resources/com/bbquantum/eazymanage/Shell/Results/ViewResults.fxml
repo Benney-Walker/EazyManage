@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    View Results flow (Phase 9b) — stacked master-detail.
+
+    Layout:
+      1. Toolbar — Class + Semester pickers + Fetch button.
+      2. SplitPane (vertical) with two regions:
+         a. Top: class results table — one row per student, summary columns.
+         b. Bottom: per-student detail panel. Initially shows a placeholder.
+            When a row is clicked above, it populates with the per-subject
+            breakdown for that student.
+      3. The split is resizable so the user can give either pane more room.
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Results.ViewResultsController"
+      styleClass="view-results"
+      spacing="0">
+
+    <!-- Toolbar -->
+    <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
+
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="180"/>
+
+        <Label text="Semester" styleClass="field-label"/>
+        <ChoiceBox fx:id="semesterChoice" prefWidth="180"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Label fx:id="statusLabel" styleClass="save-status"/>
+
+        <Button fx:id="fetchButton" text="Fetch results"
+                onAction="#onFetch" styleClass="btn,btn-primary"
+                disable="true"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Stacked split: master on top, detail below -->
+    <SplitPane orientation="VERTICAL" dividerPositions="0.55"
+               VBox.vgrow="ALWAYS" styleClass="results-split">
+
+        <!-- ===== TOP: class results table ===== -->
+        <VBox spacing="0">
+            <HBox fx:id="classInfoBanner" visible="false" managed="false"
+                  styleClass="info-banner" spacing="12" alignment="CENTER_LEFT">
+                <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+                <Label text="📊" styleClass="info-icon"/>
+                <VBox spacing="2">
+                    <Label fx:id="contextTitleLabel" styleClass="info-title"/>
+                    <Label fx:id="contextSubtitleLabel" styleClass="info-subtitle"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="rowCountLabel" styleClass="info-subtitle"/>
+            </HBox>
+
+            <TableView fx:id="classResultsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                <columns>
+                    <TableColumn fx:id="studentIdCol"   text="Student ID"   prefWidth="120"/>
+                    <TableColumn fx:id="studentNameCol" text="Student Name" prefWidth="240"/>
+                    <TableColumn fx:id="totalCol"       text="Total"        prefWidth="80"/>
+                    <TableColumn fx:id="averageCol"     text="Average"      prefWidth="80"/>
+                    <TableColumn fx:id="positionCol"    text="Position"     prefWidth="80"/>
+                    <TableColumn fx:id="remarkCol"      text="Class Teacher's Remark" prefWidth="280"/>
+                </columns>
+                <placeholder>
+                    <Label text="Pick a class and semester then click 'Fetch results'."
+                           styleClass="empty-state"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+
+        <!-- ===== BOTTOM: per-student detail ===== -->
+        <VBox spacing="0">
+            <HBox fx:id="detailBanner" visible="false" managed="false"
+                  styleClass="info-banner" spacing="12" alignment="CENTER_LEFT">
+                <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+                <Label text="👤" styleClass="info-icon"/>
+                <VBox spacing="2">
+                    <Label fx:id="detailNameLabel" styleClass="info-title"/>
+                    <Label fx:id="detailMetaLabel" styleClass="info-subtitle"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="subjectCountLabel" styleClass="info-subtitle"/>
+            </HBox>
+
+            <TableView fx:id="subjectsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                <columns>
+                    <TableColumn fx:id="subjectNameCol"  text="Subject"       prefWidth="160"/>
+                    <TableColumn fx:id="ct1Col"          text="CT 1"          prefWidth="60"/>
+                    <TableColumn fx:id="groupWorkCol"    text="Group Work"    prefWidth="90"/>
+                    <TableColumn fx:id="ct2Col"          text="CT 2"          prefWidth="60"/>
+                    <TableColumn fx:id="projectCol"      text="Project"       prefWidth="70"/>
+                    <TableColumn fx:id="classScoreCol"   text="Class (50%)"   prefWidth="90"/>
+                    <TableColumn fx:id="examCol"         text="Exam"          prefWidth="60"/>
+                    <TableColumn fx:id="calcExamCol"     text="Exam (50%)"    prefWidth="85"/>
+                    <TableColumn fx:id="subjectTotalCol" text="Total"         prefWidth="60"/>
+                    <TableColumn fx:id="gradeCol"        text="Grade"         prefWidth="60"/>
+                    <TableColumn fx:id="teacherRemarkCol" text="Teacher Remark" prefWidth="180"/>
+                </columns>
+                <placeholder>
+                    <Label text="Click a row above to see that student's per-subject results."
+                           styleClass="empty-state"/>
+                </placeholder>
+            </TableView>
+        </VBox>
+    </SplitPane>
+</VBox>

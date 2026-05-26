@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+    Results shell tab — host (Phase 9b).
+
+    Same two-state pattern as Attendance:
+      State A — picker: cards for "Enter Scores" (TEACHING_STAFF /
+                ADMINISTRATOR only) and "View Results" (everyone except
+                ACCOUNTANT). The Enter Scores card is hidden for
+                PRINCIPAL, who only has read access.
+      State B — inner tabs: persistent "Enter Scores" / "View Results"
+                tabs. Picker disappears after first entry.
+
+    For PRINCIPAL, only the "View Results" card and tab are visible.
+    The host controller hides the Enter Scores card/tab based on role.
+-->
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Results.ResultsTabController"
+      styleClass="results-tab"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../../Theme/results.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Results" styleClass="page-title"/>
+        <Label fx:id="subtitleLabel"
+               text="Enter scores for a subject or browse class results across semesters."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Content slot -->
+    <StackPane fx:id="contentSlot" VBox.vgrow="ALWAYS">
+
+        <!-- STATE A: picker -->
+        <VBox fx:id="pickerView" alignment="CENTER" spacing="24">
+            <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+            <Label text="What would you like to do?" styleClass="picker-prompt"/>
+
+            <HBox fx:id="pickerRow" spacing="24" alignment="CENTER" styleClass="picker-card-row">
+
+                <VBox fx:id="enterCard" styleClass="picker-card,picker-card-enter"
+                      alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
+                      onMouseClicked="#onPickEnter">
+                    <Label text="✎" styleClass="picker-card-icon"/>
+                    <Label text="Enter Scores" styleClass="picker-card-title"/>
+                    <Label text="Record assessment scores for a subject and class."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+                <VBox fx:id="viewCard" styleClass="picker-card,picker-card-view"
+                      alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
+                      onMouseClicked="#onPickView">
+                    <Label text="📊" styleClass="picker-card-icon"/>
+                    <Label text="View Results" styleClass="picker-card-title"/>
+                    <Label text="Browse class results and per-student breakdowns."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- STATE B: inner tabs -->
+        <TabPane fx:id="innerTabs" visible="false" managed="false"
+                 tabClosingPolicy="UNAVAILABLE" styleClass="inner-tabs">
+            <tabs>
+                <Tab fx:id="enterTab" text="Enter Scores"/>
+                <Tab fx:id="viewTab" text="View Results"/>
+            </tabs>
+        </TabPane>
+
+    </StackPane>
+</VBox>
