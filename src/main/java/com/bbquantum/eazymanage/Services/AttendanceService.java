@@ -4,6 +4,7 @@ import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
 import com.bbquantum.eazymanage.DTO.Offline.AttendancePayload;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 import java.lang.reflect.Type;
@@ -85,6 +86,27 @@ public class AttendanceService {
     /** Mark a student's attendance for the current day's session. */
     public void markStudentAttendance(String studentId, String staffId, String levelId, String status,
                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        if (OfflineMode.getInstance().isEnabled()) {
+            try {
+                String payload = new com.google.gson.Gson().toJson(
+                        new AttendancePayload(
+                                studentId, staffId, levelId, status, /*dateMarked*/ null, "mark"));
+
+                OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
+
+                ApiContext.getInstance().successMessageContainer =
+                        "Saved offline — will sync when online";
+                javafx.application.Platform.runLater(onSuccess);
+            } catch (Exception e) {
+                e.printStackTrace();
+                ApiContext.getInstance().errorMessageContainer =
+                        "Could not queue attendance: " + e.getMessage();
+                Platform.runLater(onFailure);
+            }
+            return;
+        }
+
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
@@ -149,13 +171,16 @@ public class AttendanceService {
                 String payload = new com.google.gson.Gson().toJson(
                         new AttendancePayload(
                                 studentId, staffId, levelId, status, dateMarked));
+
                 OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
+
                 ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
-                javafx.application.Platform.runLater(onSuccess);
+                Platform.runLater(onSuccess);
+
             } catch (Exception e) {
                 e.printStackTrace();
                 ApiContext.getInstance().errorMessageContainer = "Could not queue attendance: " + e.getMessage();
-                javafx.application.Platform.runLater(onFailure);
+                Platform.runLater(onFailure);
             }
             return;
         }

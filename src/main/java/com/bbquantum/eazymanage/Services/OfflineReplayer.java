@@ -15,10 +15,13 @@ import javafx.beans.property.SimpleBooleanProperty;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+import static java.net.URLEncoder.encode;
 
 public class OfflineReplayer {
 
@@ -177,6 +180,6 @@ public class OfflineReplayer {
     }
 
     private static String enc(String s) {
-        return java.net.URLEncoder.encode(s == null ? "" : s, java.nio.charset.StandardCharsets.UTF_8);
+        return encode(s == null ? "" : s, StandardCharsets.UTF_8);
     }
 }
