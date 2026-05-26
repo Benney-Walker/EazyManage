@@ -30,7 +30,7 @@
       spacing="0">
 
     <stylesheets>
-        <URL value="@../Theme/offline.css"/>
+        <URL value="@../../Theme/offline.css"/>
     </stylesheets>
 
     <!-- Header -->
