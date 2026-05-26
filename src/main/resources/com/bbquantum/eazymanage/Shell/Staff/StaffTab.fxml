@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Staff.StaffTabController"
+      styleClass="staff-tab"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../../Theme/staff.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Staff" styleClass="page-title"/>
+        <Label text="Enroll new staff members or update existing colleagues' details."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Content slot -->
+    <StackPane fx:id="contentSlot" VBox.vgrow="ALWAYS">
+
+        <!-- STATE A: picker -->
+        <VBox fx:id="pickerView" alignment="CENTER" spacing="24">
+            <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+            <Label text="What would you like to do?" styleClass="picker-prompt"/>
+
+            <HBox spacing="24" alignment="CENTER" styleClass="picker-card-row">
+
+                <VBox fx:id="enrollCard" styleClass="picker-card,picker-card-enroll"
+                      alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
+                      onMouseClicked="#onPickEnroll">
+                    <Label text="🧑‍🏫" styleClass="picker-card-icon"/>
+                    <Label text="Enroll Staff" styleClass="picker-card-title"/>
+                    <Label text="Add a new staff member to the school."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+                <VBox fx:id="findCard" styleClass="picker-card,picker-card-find"
+                      alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
+                      onMouseClicked="#onPickFind">
+                    <Label text="🔎" styleClass="picker-card-icon"/>
+                    <Label text="Find &amp; Update" styleClass="picker-card-title"/>
+                    <Label text="Look up a staff member by id and edit their profile."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- STATE B: inner tabs -->
+        <TabPane fx:id="innerTabs" visible="false" managed="false"
+                 tabClosingPolicy="UNAVAILABLE" styleClass="inner-tabs">
+            <tabs>
+                <Tab fx:id="enrollTab" text="Enroll Staff"/>
+                <Tab fx:id="findTab"   text="Find &amp; Update"/>
+            </tabs>
+        </TabPane>
+
+    </StackPane>
+</VBox>
