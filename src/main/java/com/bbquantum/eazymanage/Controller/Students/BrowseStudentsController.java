@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BrowseStudentsController {
 
@@ -35,6 +36,8 @@ public class BrowseStudentsController {
     private String role;
     private String staffId;
 
+    private Consumer<String> onStudentSelected;
+
     private final ApiCore apiCore = new ApiCore();
     private final AcademicsService academicsService = new AcademicsService(apiCore);
 
@@ -44,9 +47,13 @@ public class BrowseStudentsController {
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override
+            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
         });
+
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
 
@@ -60,11 +67,23 @@ public class BrowseStudentsController {
                 new SimpleStringProperty(safe(c.getValue().getStudentName())));
 
         studentsTable.setItems(rows);
+
+        studentsTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() != 2) return;
+            StudentsHolder selected = studentsTable.getSelectionModel().getSelectedItem();
+            if (selected == null || onStudentSelected == null) return;
+            String id = selected.getStudentId();
+            if (id != null && !id.isBlank()) onStudentSelected.accept(id);
+        });
     }
 
     public void attach(String role, String staffId) {
         this.role    = role;
         this.staffId = staffId;
+    }
+
+    public void setOnStudentSelected(Consumer<String> handler) {
+        this.onStudentSelected = handler;
     }
 
     @FXML
