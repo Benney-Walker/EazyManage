@@ -54,22 +54,30 @@ public class FindStudentController {
         classChoice.setConverter(new StringConverter<>() {
             @Override
             public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+
             @Override
             public GradeCaching fromString(String s) { return null; }
         });
+
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
 
         genderChoice.setItems(FXCollections.observableArrayList("MALE", "FEMALE"));
         // Status values match the backend's enum; mirror the legacy set.
         statusChoice.setItems(FXCollections.observableArrayList(
-                "ACTIVE", "INACTIVE", "GRADUATED", "WITHDRAWN"));
+                "ACTIVE", "INACTIVE", "GRADUATED"));
     }
 
     public void attach(String role, String staffId) {
         this.role    = role;
         this.staffId = staffId;
         applyRoleFilter();
+    }
+
+    public void prefillAndSearch(String id) {
+        if (id == null || id.isBlank()) return;
+        searchField.setText(id);
+        onSearch();
     }
 
     /** Show / hide the Save button based on role. */

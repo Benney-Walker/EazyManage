@@ -149,6 +149,13 @@ public class StudentsTabController {
             Parent content = loader.load();
             browseController = loader.getController();
             browseController.attach(role, staffId);
+
+            browseController.setOnStudentSelected(studentId -> {
+                if (findTab.getContent() == null) loadFindContent();
+                innerTabs.getSelectionModel().select(findTab);
+                if (findController != null) findController.prefillAndSearch(studentId);
+            });
+
             browseTab.setContent(content);
         } catch (Exception ex) {
             ex.printStackTrace();
