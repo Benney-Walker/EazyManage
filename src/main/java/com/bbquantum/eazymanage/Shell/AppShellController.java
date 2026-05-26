@@ -4,6 +4,7 @@ import com.bbquantum.eazymanage.Constants.NavItemStatus;
 import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
 import com.bbquantum.eazymanage.Controller.Results.ResultsTabController;
 import com.bbquantum.eazymanage.Controller.Settings.SettingsController;
+import com.bbquantum.eazymanage.Controller.Staff.StaffTabController;
 import com.bbquantum.eazymanage.Controller.Students.StudentsTabController;
 import com.bbquantum.eazymanage.Controller.WebSocket.BroadcastsController;
 import com.bbquantum.eazymanage.EazyManage;
@@ -402,6 +403,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "students".equals(item.id())) {
             return loadStudentsScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "staff".equals(item.id())) {
+            return loadStaffScreen();
+        }
         if (item.status() == NavItemStatus.FUNCTIONAL && "settings".equals(item.id())) {
             return loadSettingsScreen();
         }
@@ -527,11 +531,26 @@ public class AppShellController {
         }
     }
 
+    private Parent loadStaffScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Staff/StaffTab.fxml"));
+            Parent root = loader.load();
+            StaffTabController controller = loader.getController();
+            controller.attach(role, staffId, organizationName);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Staff screen",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
 
     private Parent loadReportsScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Reports/ReportingCenter.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Reporting/ReportingCenter.fxml"));
             Parent indexRoot = loader.load();
 
             StackPane host = new StackPane(indexRoot);
