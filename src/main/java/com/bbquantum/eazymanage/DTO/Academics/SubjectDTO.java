@@ -8,6 +8,8 @@ public class SubjectDTO {
 
     private String levelId;
 
+    public SubjectDTO() {}
+
     public SubjectDTO(String subjectId, String subjectName, String levelId) {
         this.subjectId = subjectId;
         this.subjectName = subjectName;

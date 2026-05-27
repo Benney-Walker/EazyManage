@@ -7,6 +7,8 @@ public class FindAndUpdateClassInfo {
 
     private String staffId;
 
+    public FindAndUpdateClassInfo() {}
+
     public FindAndUpdateClassInfo(String levelId, String levelName, String staffId) {
         this.levelId = levelId;
         this.levelName = levelName;
