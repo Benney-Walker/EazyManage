@@ -407,7 +407,7 @@ public class AdminController implements Initializable {
                 new SimpleStringProperty(cellData.getValue().getActionData()));
 
         activityStatusCol.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getActionStatus()));
+                new SimpleStringProperty(cellData.getValue().getStatus()));
 
 
         //STUDENT SCORES TABLE
@@ -689,7 +689,7 @@ public class AdminController implements Initializable {
                 new SimpleStringProperty(cellData.getValue().getActionData()));
 
         filter_activityStatusCol.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getActionStatus()));
+                new SimpleStringProperty(cellData.getValue().getStatus()));
 
 
         activitiesTable.setRowFactory(tableView -> {
@@ -2666,8 +2666,8 @@ public class AdminController implements Initializable {
 
         activityTypeField.setText(log.getActionType());
         activityOwnerField.setText(log.getCreatedBy());
-        activityStatusField.setText(log.getActionStatus());
-        if (log.getActionStatus().equals("SUCCESS") ) {
+        activityStatusField.setText(log.getStatus());
+        if (log.getStatus().equals("SUCCESS") ) {
             activityStatusField.setTextFill(Color.web("#16A34A"));
         } else {
             activityStatusField.setTextFill(Color.web("#DC2626"));
