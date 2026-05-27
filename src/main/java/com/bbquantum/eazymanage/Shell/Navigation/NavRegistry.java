@@ -23,7 +23,7 @@ public class NavRegistry {
                     new NavItem("dashboard", "Dashboard", "\u25A4", ALL, NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("attendance",  "Attendance",  "\u2713", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("results",     "Results",     "\u2605", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL, ""),
-                    new NavItem("finance",     "Finance",     "\u25C6", ACCOUNTANT_PRINCIPAL, NavItemStatus.PLACEHOLDER, "Phase 7–8"),
+                    new NavItem("finance",     "Finance",     "\u25C6", ACCOUNTANT_PRINCIPAL, NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("students",    "Students",    "\u25CF", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL,  ""),
                     new NavItem("staff",       "Staff",       "\u25B2", PRINCIPAL_ADMIN,      NavItemStatus.FUNCTIONAL,  ""),
                     new NavItem("conduct",     "Conduct",     "\u2691", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL,  "")
