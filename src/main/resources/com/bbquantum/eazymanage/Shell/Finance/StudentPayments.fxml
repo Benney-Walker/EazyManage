@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Finance.StudentPaymentsController"
+      styleClass="student-payments" spacing="0">
+
+    <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
+
+        <Label text="Student ID" styleClass="field-label"/>
+        <TextField fx:id="studentIdField" prefWidth="160"/>
+
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="160"/>
+
+        <Label text="Semester" styleClass="field-label"/>
+        <ChoiceBox fx:id="semesterChoice" prefWidth="160"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Label fx:id="statusLabel" styleClass="save-status"/>
+
+        <Button fx:id="exportButton" text="Export CSV"
+                onAction="#onExportCsv" styleClass="btn,btn-ghost" disable="true"/>
+        <Button fx:id="fetchButton" text="Fetch history"
+                onAction="#onFetch" styleClass="btn,btn-primary"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Summary panel with totals (filled after fetch) -->
+    <HBox fx:id="summaryBanner" visible="false" managed="false"
+          styleClass="info-banner" spacing="20" alignment="CENTER_LEFT">
+        <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+        <Label text="🧑‍🎓" styleClass="info-icon"/>
+        <VBox spacing="2">
+            <Label fx:id="studentNameLabel" styleClass="info-title"/>
+            <Label fx:id="contextLabel" styleClass="info-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="totalLabel"        styleClass="info-subtitle"/>
+        <Label fx:id="paidLabel"         styleClass="info-subtitle"/>
+        <Label fx:id="balanceLabel"      styleClass="info-subtitle"/>
+    </HBox>
+
+    <TableView fx:id="historyTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="dateCol"    text="Date"     prefWidth="140"/>
+            <TableColumn fx:id="amountCol"  text="Amount"   prefWidth="120"/>
+            <TableColumn fx:id="balanceCol" text="Balance after" prefWidth="140"/>
+            <TableColumn fx:id="payerCol"   text="Payer"    prefWidth="220"/>
+            <TableColumn fx:id="contactCol" text="Contact"  prefWidth="160"/>
+        </columns>
+        <placeholder>
+            <Label text="Enter a student id, class, and semester then click Fetch."
+                   styleClass="empty-state"/>
+        </placeholder>
+    </TableView>
+</VBox>

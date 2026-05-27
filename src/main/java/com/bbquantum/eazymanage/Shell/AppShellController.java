@@ -3,6 +3,7 @@ package com.bbquantum.eazymanage.Shell;
 import com.bbquantum.eazymanage.Constants.NavItemStatus;
 import com.bbquantum.eazymanage.Controller.Academics.AcademicSetupTabController;
 import com.bbquantum.eazymanage.Controller.AuditLogs.AuditLogsController;
+import com.bbquantum.eazymanage.Controller.Finance.FinanceTabController;
 import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
 import com.bbquantum.eazymanage.Controller.Results.ResultsTabController;
 import com.bbquantum.eazymanage.Controller.Settings.SettingsController;
@@ -411,6 +412,9 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "audit-logs".equals(item.id())) {
             return loadAuditLogsScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "finance".equals(item.id())) {
+            return loadFinanceScreen();
+        }
         if (item.status() == NavItemStatus.FUNCTIONAL && "academic-setup".equals(item.id())) {
             return loadAcademicSetupScreen();
         }
@@ -550,6 +554,21 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load Staff screen",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+    private Parent loadFinanceScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Finance/FinanceTab.fxml"));
+            Parent root = loader.load();
+            FinanceTabController controller = loader.getController();
+            controller.attach(role, staffId);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Finance screen",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }

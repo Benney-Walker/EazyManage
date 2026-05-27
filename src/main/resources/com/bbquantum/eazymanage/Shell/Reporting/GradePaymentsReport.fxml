@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Report.GradePaymentsReportController"
+      styleClass="grade-payments-report" spacing="0">
+
+    <!-- Header with back button -->
+    <HBox styleClass="page-header" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
+        <Button fx:id="backButton" text="← Back" onAction="#onBack" styleClass="btn,btn-ghost"/>
+        <VBox spacing="2">
+            <Label text="Grade Payment Records" styleClass="page-title"/>
+            <Label text="Outstanding fees by student for a class and semester."
+                   styleClass="page-subtitle"/>
+        </VBox>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Toolbar -->
+    <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="12" right="24" bottom="10" left="24"/></padding>
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="180"/>
+        <Label text="Semester" styleClass="field-label"/>
+        <ChoiceBox fx:id="semesterChoice" prefWidth="180"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="statusLabel" styleClass="save-status"/>
+        <Button fx:id="exportButton" text="Export CSV"
+                onAction="#onExportCsv" styleClass="btn,btn-ghost" disable="true"/>
+        <Button fx:id="fetchButton" text="Fetch report"
+                onAction="#onFetch" styleClass="btn,btn-primary" disable="true"/>
+    </HBox>
+
+    <Separator/>
+
+    <HBox fx:id="infoBanner" visible="false" managed="false"
+          styleClass="info-banner" spacing="12" alignment="CENTER_LEFT">
+        <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+        <Label text="📊" styleClass="info-icon"/>
+        <VBox spacing="2">
+            <Label fx:id="contextTitleLabel" styleClass="info-title"/>
+            <Label fx:id="contextSubtitleLabel" styleClass="info-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="rowCountLabel" styleClass="info-subtitle"/>
+    </HBox>
+
+    <TableView fx:id="reportTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="studentIdCol"   text="Student ID"   prefWidth="140"/>
+            <TableColumn fx:id="studentNameCol" text="Student Name" prefWidth="260"/>
+            <TableColumn fx:id="totalCol"       text="Total Due"    prefWidth="120"/>
+            <TableColumn fx:id="paidCol"        text="Paid"         prefWidth="120"/>
+            <TableColumn fx:id="outstandingCol" text="Outstanding"  prefWidth="120"/>
+        </columns>
+        <placeholder>
+            <Label text="Pick a class and semester, then click Fetch."
+                   styleClass="empty-state"/>
+        </placeholder>
+    </TableView>
+</VBox>

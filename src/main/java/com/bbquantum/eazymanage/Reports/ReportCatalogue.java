@@ -12,6 +12,7 @@ public class ReportCatalogue {
 
     private static final Set<String> ALL            = Set.of("PRINCIPAL", "ADMINISTRATOR", "ACCOUNTANT", "TEACHING_STAFF");
     private static final Set<String> NOT_ACCOUNTANT = Set.of("PRINCIPAL", "ADMINISTRATOR", "TEACHING_STAFF");
+    private static final Set<String> ACCOUNTANT_PRINCIPAL = Set.of("PRINCIPAL", "ACCOUNTANT");
 
     private ReportCatalogue() {}
 
@@ -55,6 +56,26 @@ public class ReportCatalogue {
                     ReportStatus.AVAILABLE,
                     "",
                     "/com/bbquantum/eazymanage/Shell/Reporting/ReportCardReport.fxml"
+            ),
+            new ReportDefinition(
+                    "grade-payments",
+                    "Grade Payment Records",
+                    "Outstanding fees by student for a class and semester. CSV export for offline review.",
+                    "\u25C6",
+                    ACCOUNTANT_PRINCIPAL,
+                    ReportStatus.AVAILABLE,
+                    "",
+                    "/com/bbquantum/eazymanage/Shell/Reporting/GradePaymentsReport.fxml"
+            ),
+            new ReportDefinition(
+                    "student-payments",
+                    "Student Payment Records",
+                    "One student's payment history for a class and semester, with summary totals and CSV export.",
+                    "\u25C7",
+                    ACCOUNTANT_PRINCIPAL,
+                    ReportStatus.AVAILABLE,
+                    "",
+                    "/com/bbquantum/eazymanage/Shell/Reporting/StudentPaymentsReport.fxml"
             )
     );
 

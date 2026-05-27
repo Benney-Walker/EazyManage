@@ -7,6 +7,8 @@ public class FetchFeesDetails {
 
     private String levelId;
 
+    public FetchFeesDetails() {}
+
     public FetchFeesDetails(String amount, String semesterId, String levelId) {
         this.amount = amount;
         this.semesterId = semesterId;
