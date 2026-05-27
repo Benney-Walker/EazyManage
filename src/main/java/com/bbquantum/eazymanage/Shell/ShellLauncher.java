@@ -19,13 +19,16 @@ public class ShellLauncher {
         SessionManager.setActiveRole(activeRole);
 
         Scene previous = stage.getScene();
+        double  previousWidth     = previous == null ? 1280 : Math.max(previous.getWidth(),  800);
+        double  previousHeight    = previous == null ? 820  : Math.max(previous.getHeight(), 600);
+        boolean wasMaximized      = stage.isMaximized();
         if (previous != null) {
             ThemeManager.getInstance().unregister(previous);
         }
 
         FXMLLoader loader = new FXMLLoader(
                 ShellLauncher.class.getResource("/com/bbquantum/eazymanage/Shell/AppShell.fxml"));
-        Scene scene = new Scene(loader.load(), 1280, 820);
+        Scene scene = new Scene(loader.load(), previousWidth, previousHeight);
         ThemeManager.getInstance().register(scene);
 
         AppShellController shell = loader.getController();
@@ -40,6 +43,9 @@ public class ShellLauncher {
             //Exception ignored
         }
         stage.setScene(scene);
+        if (wasMaximized) {
+            stage.setMaximized(false);
+        }
         stage.setMaximized(true);
 
         shell.boot();
