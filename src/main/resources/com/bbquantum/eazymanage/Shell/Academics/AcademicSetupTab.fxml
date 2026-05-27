@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Academics.AcademicSetupTabController"
+      styleClass="academic-setup-tab"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../../Theme/academic-setup.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Academic Setup" styleClass="page-title"/>
+        <Label text="Configure the classes, semesters, and subjects that anchor every other workflow."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <TabPane fx:id="sectionTabs" tabClosingPolicy="UNAVAILABLE"
+             styleClass="section-tabs" VBox.vgrow="ALWAYS">
+        <tabs>
+            <Tab fx:id="classesTab"    text="Classes"/>
+            <Tab fx:id="semestersTab"  text="Semesters"/>
+            <Tab fx:id="subjectsTab"   text="Subjects"/>
+        </tabs>
+    </TabPane>
+</VBox>
