@@ -34,15 +34,19 @@
                 </columnConstraints>
 
                 <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                    <Label text="Student ID" styleClass="field-label"/>
-                    <TextField fx:id="studentIdField" promptText="e.g. STU0123"/>
+                    <Label text="Class" styleClass="field-label"/>
+                    <ChoiceBox fx:id="newClassChoice" maxWidth="Infinity"/>
                 </VBox>
                 <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
-                    <Label text="Semester" styleClass="field-label"/>
-                    <ChoiceBox fx:id="semesterChoice" maxWidth="Infinity"/>
+                    <Label text="Student" styleClass="field-label"/>
+                    <ChoiceBox fx:id="newStudentChoice" maxWidth="Infinity"/>
                 </VBox>
 
                 <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <Label text="Semester" styleClass="field-label"/>
+                    <ChoiceBox fx:id="semesterChoice" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <Label text="Amount paid (GHS)" styleClass="field-label"/>
                     <TextField fx:id="amountField" promptText="e.g. 250"/>
                 </VBox>
@@ -80,12 +84,12 @@
                 </columnConstraints>
 
                 <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                    <Label text="Student ID" styleClass="field-label"/>
-                    <TextField fx:id="loadStudentIdField"/>
-                </VBox>
-                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
                     <Label text="Class" styleClass="field-label"/>
                     <ChoiceBox fx:id="loadClassChoice" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                    <Label text="Student" styleClass="field-label"/>
+                    <ChoiceBox fx:id="loadStudentChoice" maxWidth="Infinity"/>
                 </VBox>
                 <VBox spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="0">
                     <Label text="Semester" styleClass="field-label"/>
