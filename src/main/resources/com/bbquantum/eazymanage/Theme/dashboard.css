@@ -1,0 +1,71 @@
+/* ============================================================================
+   EazyManage — Dashboard styles
+============================================================================ */
+
+.dashboard { -fx-background-color: -color-bg; }
+
+/* ---------- Header ---------- */
+.dash-greeting {
+    -fx-font-size: 24px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+.dash-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-muted;
+}
+.dash-status {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-muted;
+}
+
+/* ---------- KPI cards ---------- */
+.kpi-row { -fx-padding: 0; }
+
+.kpi-card {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 18 20 18 20;
+    -fx-spacing: 6;
+    -fx-min-width: 200;
+}
+.kpi-card-wide { -fx-min-width: 360; }
+
+.kpi-icon  { -fx-font-size: 22px; }
+.kpi-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-muted;
+}
+.kpi-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+.kpi-hint {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-muted;
+}
+
+/* ---------- Generic content card ---------- */
+.card {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 16 20 16 20;
+}
+.card-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+.card-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-muted;
+}
+
+.transparent-scroll              { -fx-background-color: transparent; }
+.transparent-scroll > .viewport  { -fx-background-color: transparent; }

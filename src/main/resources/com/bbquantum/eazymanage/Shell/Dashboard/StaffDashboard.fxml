@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import java.net.URL?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Controller.Dashboard.StaffDashboardController"
+            fitToWidth="true" hbarPolicy="NEVER"
+            styleClass="dashboard,transparent-scroll">
+
+    <stylesheets>
+        <URL value="@../../Theme/dashboard.css"/>
+    </stylesheets>
+
+    <VBox spacing="20">
+        <padding><Insets top="20" right="24" bottom="24" left="24"/></padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="2">
+                <Label fx:id="greetingLabel" styleClass="dash-greeting"/>
+                <Label fx:id="subtitleLabel" styleClass="dash-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="statusLabel" styleClass="dash-status"/>
+            <Button fx:id="refreshButton" text="Refresh" onAction="#onRefresh" styleClass="btn,btn-ghost"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- ===== Class summary card ===== -->
+        <HBox spacing="16" styleClass="kpi-row">
+            <VBox styleClass="kpi-card,kpi-card-wide" HBox.hgrow="ALWAYS">
+                <Label text="🏫" styleClass="kpi-icon"/>
+                <Label text="YOUR ASSIGNED CLASS" styleClass="kpi-label"/>
+                <Label fx:id="classNameLabel" text="—" styleClass="kpi-value"/>
+                <Label fx:id="classHintLabel" text="" styleClass="kpi-hint"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="🎓" styleClass="kpi-icon"/>
+                <Label text="STUDENT COUNT" styleClass="kpi-label"/>
+                <Label fx:id="studentCountLabel" text="0" styleClass="kpi-value"/>
+                <Label text="In your class" styleClass="kpi-hint"/>
+            </VBox>
+        </HBox>
+
+        <!-- ===== Mini roster preview ===== -->
+        <VBox styleClass="card" spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <VBox spacing="2">
+                    <Label text="Class Roster (Preview)" styleClass="card-title"/>
+                    <Label fx:id="rosterHintLabel"
+                           text="First few students. For the full roster use the Students tab."
+                           styleClass="card-subtitle" wrapText="true"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Hyperlink fx:id="fullRosterLink" text="View full roster →" onAction="#onOpenFullRoster"/>
+            </HBox>
+
+            <StackPane>
+                <TableView fx:id="rosterTable" styleClass="modern-table" prefHeight="280">
+                    <columns>
+                        <TableColumn fx:id="studentIdCol"     text="Student ID"   prefWidth="160"/>
+                        <TableColumn fx:id="studentNameCol"   text="Student Name" prefWidth="280"/>
+                        <TableColumn fx:id="genderCol"        text="Gender"       prefWidth="120"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="No class assigned yet, or no students enrolled."
+                               styleClass="empty-state"/>
+                    </placeholder>
+                </TableView>
+            </StackPane>
+        </VBox>
+    </VBox>
+</ScrollPane>

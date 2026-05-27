@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import java.net.URL?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Controller.Dashboard.AdminDashboardController"
+            fitToWidth="true" hbarPolicy="NEVER"
+            styleClass="dashboard,transparent-scroll">
+
+    <stylesheets>
+        <URL value="@../../Theme/dashboard.css"/>
+    </stylesheets>
+
+    <VBox spacing="20">
+        <padding><Insets top="20" right="24" bottom="24" left="24"/></padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="2">
+                <Label fx:id="greetingLabel" styleClass="dash-greeting"/>
+                <Label fx:id="subtitleLabel" styleClass="dash-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="statusLabel" styleClass="dash-status"/>
+            <Button fx:id="refreshButton" text="Refresh" onAction="#onRefresh" styleClass="btn,btn-ghost"/>
+        </HBox>
+
+        <Separator/>
+
+        <HBox spacing="16" styleClass="kpi-row">
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="📚" styleClass="kpi-icon"/>
+                <Label text="CLASSES" styleClass="kpi-label"/>
+                <Label fx:id="classesLabel" text="0" styleClass="kpi-value"/>
+                <Label text="Configured in Academic Setup" styleClass="kpi-hint"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="📅" styleClass="kpi-icon"/>
+                <Label text="SEMESTERS" styleClass="kpi-label"/>
+                <Label fx:id="semestersLabel" text="0" styleClass="kpi-value"/>
+                <Label text="On record" styleClass="kpi-hint"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="👥" styleClass="kpi-icon"/>
+                <Label text="STAFF" styleClass="kpi-label"/>
+                <Label fx:id="staffLabel" text="0" styleClass="kpi-value"/>
+                <Label text="Active staff list" styleClass="kpi-hint"/>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="card" spacing="10">
+            <VBox spacing="2">
+                <Label text="Recent Activities" styleClass="card-title"/>
+                <Label text="Latest system actions. For the full audit trail use the Audit Logs tab."
+                       styleClass="card-subtitle" wrapText="true"/>
+            </VBox>
+
+            <StackPane>
+                <TableView fx:id="activitiesTable" styleClass="modern-table" prefHeight="340">
+                    <columns>
+                        <TableColumn fx:id="dateCol"      text="Date"        prefWidth="110"/>
+                        <TableColumn fx:id="timeCol"      text="Time"        prefWidth="90"/>
+                        <TableColumn fx:id="actorCol"     text="Actor"       prefWidth="160"/>
+                        <TableColumn fx:id="typeCol"      text="Type"        prefWidth="140"/>
+                        <TableColumn fx:id="actionCol"    text="Action"      prefWidth="280"/>
+                        <TableColumn fx:id="statusCol"    text="Status"      prefWidth="100"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="No recent system activity recorded." styleClass="empty-state"/>
+                    </placeholder>
+                </TableView>
+            </StackPane>
+        </VBox>
+    </VBox>
+</ScrollPane>

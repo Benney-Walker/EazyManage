@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import java.net.URL?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Controller.Dashboard.PrincipalDashboardController"
+            fitToWidth="true" hbarPolicy="NEVER"
+            styleClass="dashboard,transparent-scroll">
+
+    <stylesheets>
+        <URL value="@../../Theme/dashboard.css"/>
+    </stylesheets>
+
+    <VBox spacing="20">
+        <padding><Insets top="20" right="24" bottom="24" left="24"/></padding>
+
+        <!-- ===== Header ===== -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="2">
+                <Label fx:id="greetingLabel" styleClass="dash-greeting"/>
+                <Label fx:id="subtitleLabel" styleClass="dash-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="statusLabel" styleClass="dash-status"/>
+            <Button fx:id="refreshButton" text="Refresh" onAction="#onRefresh" styleClass="btn,btn-ghost"/>
+        </HBox>
+
+        <Separator/>
+
+        <!-- ===== KPI cards row ===== -->
+        <HBox spacing="16" styleClass="kpi-row">
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="🎓" styleClass="kpi-icon"/>
+                <Label text="TOTAL STUDENTS" styleClass="kpi-label"/>
+                <Label fx:id="totalStudentsLabel" text="0" styleClass="kpi-value"/>
+                <Label text="Currently enrolled" styleClass="kpi-hint"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="👥" styleClass="kpi-icon"/>
+                <Label text="TOTAL STAFF" styleClass="kpi-label"/>
+                <Label fx:id="totalStaffLabel" text="0" styleClass="kpi-value"/>
+                <Label text="Active staff members" styleClass="kpi-hint"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="💵" styleClass="kpi-icon"/>
+                <Label text="SEMESTER FEES" styleClass="kpi-label"/>
+                <Label fx:id="semesterFeesLabel" text="GH₵ 0.00" styleClass="kpi-value"/>
+                <Label text="Expected revenue this term" styleClass="kpi-hint"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="✅" styleClass="kpi-icon"/>
+                <Label text="FEES PAID" styleClass="kpi-label"/>
+                <Label fx:id="feesPaidLabel" text="GH₵ 0.00" styleClass="kpi-value"/>
+                <Label fx:id="feesPaidHintLabel" text="Of expected revenue" styleClass="kpi-hint"/>
+            </VBox>
+        </HBox>
+
+        <!-- ===== Collection progress ===== -->
+        <VBox styleClass="card" spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Fees collection" styleClass="card-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="feesPercentLabel" text="0%" styleClass="card-title"/>
+            </HBox>
+            <ProgressBar fx:id="feesProgressBar" progress="0" maxWidth="Infinity"/>
+        </VBox>
+
+        <!-- ===== Absentees table ===== -->
+        <VBox styleClass="card" spacing="10">
+            <VBox spacing="2">
+                <Label text="Absentees Today" styleClass="card-title"/>
+                <Label text="Students marked ABSENT for the current day."
+                       styleClass="card-subtitle" wrapText="true"/>
+            </VBox>
+
+            <StackPane>
+                <TableView fx:id="absenteesTable" styleClass="modern-table" prefHeight="280">
+                    <columns>
+                        <TableColumn fx:id="studentIdCol"      text="Student ID"     prefWidth="160"/>
+                        <TableColumn fx:id="studentNameCol"    text="Student"        prefWidth="240"/>
+                        <TableColumn fx:id="studentLevelCol"   text="Class"          prefWidth="160"/>
+                        <TableColumn fx:id="instructorNameCol" text="Class Teacher"  prefWidth="200"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="No absentees recorded for today." styleClass="empty-state"/>
+                    </placeholder>
+                </TableView>
+            </StackPane>
+        </VBox>
+    </VBox>
+</ScrollPane>

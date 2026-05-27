@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import java.net.URL?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Controller.Dashboard.AccountantDashboardController"
+            fitToWidth="true" hbarPolicy="NEVER"
+            styleClass="dashboard,transparent-scroll">
+
+    <stylesheets>
+        <URL value="@../../Theme/dashboard.css"/>
+    </stylesheets>
+
+    <VBox spacing="20">
+        <padding><Insets top="20" right="24" bottom="24" left="24"/></padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="2">
+                <Label fx:id="greetingLabel" styleClass="dash-greeting"/>
+                <Label fx:id="subtitleLabel" styleClass="dash-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="statusLabel" styleClass="dash-status"/>
+            <Button fx:id="refreshButton" text="Refresh" onAction="#onRefresh" styleClass="btn,btn-ghost"/>
+        </HBox>
+
+        <Separator/>
+
+        <HBox spacing="16" styleClass="kpi-row">
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="💵" styleClass="kpi-icon"/>
+                <Label text="TOTAL SEMESTER FEES" styleClass="kpi-label"/>
+                <Label fx:id="totalFeesLabel" text="GH₵ 0.00" styleClass="kpi-value"/>
+                <Label text="Expected revenue this term" styleClass="kpi-hint"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="✅" styleClass="kpi-icon"/>
+                <Label text="AMOUNT PAID" styleClass="kpi-label"/>
+                <Label fx:id="amountPaidLabel" text="GH₵ 0.00" styleClass="kpi-value"/>
+                <Label fx:id="amountPaidHintLabel" text="Of total collected" styleClass="kpi-hint"/>
+            </VBox>
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
+                <Label text="⏳" styleClass="kpi-icon"/>
+                <Label text="OUTSTANDING" styleClass="kpi-label"/>
+                <Label fx:id="outstandingLabel" text="GH₵ 0.00" styleClass="kpi-value"/>
+                <Label text="Total pending student payments" styleClass="kpi-hint"/>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="card" spacing="10">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Collection progress" styleClass="card-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="percentageLabel" text="0%" styleClass="card-title"/>
+            </HBox>
+            <ProgressBar fx:id="progressBar" progress="0" maxWidth="Infinity"/>
+        </VBox>
+
+        <VBox styleClass="card" spacing="10">
+            <VBox spacing="2">
+                <Label text="Recent Payments" styleClass="card-title"/>
+                <Label text="Latest fee payments recorded across the school."
+                       styleClass="card-subtitle" wrapText="true"/>
+            </VBox>
+
+            <StackPane>
+                <TableView fx:id="recentPaymentsTable" styleClass="modern-table" prefHeight="320">
+                    <columns>
+                        <TableColumn fx:id="paymentDateCol" text="Date"        prefWidth="140"/>
+                        <TableColumn fx:id="studentIdCol"   text="Student ID"  prefWidth="140"/>
+                        <TableColumn fx:id="studentNameCol" text="Student"     prefWidth="240"/>
+                        <TableColumn fx:id="amountCol"      text="Amount"      prefWidth="120"/>
+                        <TableColumn fx:id="payerCol"       text="Payer"       prefWidth="200"/>
+                        <TableColumn fx:id="gradeCol"       text="Class"       prefWidth="120"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="No recent payments recorded." styleClass="empty-state"/>
+                    </placeholder>
+                </TableView>
+            </StackPane>
+        </VBox>
+    </VBox>
+</ScrollPane>

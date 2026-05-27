@@ -48,6 +48,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class AppShellController {
 
@@ -392,7 +393,7 @@ public class AppShellController {
 
     private Parent contentLoaderFor(NavItem item) {
         if (item.status() == NavItemStatus.FUNCTIONAL && "dashboard".equals(item.id())) {
-            return loadLegacyDashboard();
+            return loadShellDashboard();
         }
         if (item.status() == NavItemStatus.FUNCTIONAL && "conduct".equals(item.id())) {
             return loadConductScreen();
@@ -459,6 +460,13 @@ public class AppShellController {
             return errorPlaceholder("Could not load dashboard",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
+    }
+
+    private Parent loadShellDashboard() {
+        Consumer<String> navigateToTab = tabId ->
+                NavRegistry.findById(tabId).ifPresent(this::openTab);
+        return DashboardRouter.load(
+                role, staffId, username, organizationName, navigateToTab);
     }
 
     private Parent loadConductScreen() {

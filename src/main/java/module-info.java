@@ -61,4 +61,6 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Controller.Attendance to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.Finance;
     opens com.bbquantum.eazymanage.Controller.Finance to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Dashboard;
+    opens com.bbquantum.eazymanage.Controller.Dashboard to javafx.fxml;
 }
