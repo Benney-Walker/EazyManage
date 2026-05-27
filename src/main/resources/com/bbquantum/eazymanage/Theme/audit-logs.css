@@ -1,0 +1,14 @@
+/* ============================================================================
+   EazyManage — Audit Logs styles (Phase 9e)
+============================================================================ */
+
+.audit-logs-tab { -fx-background-color: -color-bg; }
+
+/* Reuse the info-banner pattern from the other 9-series screens */
+.info-banner {
+    -fx-background-color: -color-surface-alt;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 0 1 0;
+}
+.info-icon     { -fx-font-size: 16px; }
+.info-subtitle { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }

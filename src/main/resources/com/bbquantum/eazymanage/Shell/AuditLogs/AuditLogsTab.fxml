@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+
+<?import java.net.URL?>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.AuditLogs.AuditLogsController"
+      styleClass="audit-logs-tab"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../../Theme/audit-logs.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Audit Logs" styleClass="page-title"/>
+        <Label text="Every recorded action across the system. Read-only."
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <!-- Filter toolbar -->
+    <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
+
+        <Label text="From" styleClass="field-label"/>
+        <DatePicker fx:id="fromDatePicker" prefWidth="140"/>
+
+        <Label text="To" styleClass="field-label"/>
+        <DatePicker fx:id="toDatePicker" prefWidth="140"/>
+
+        <Label text="Actor" styleClass="field-label"/>
+        <TextField fx:id="actorFilterField" prefWidth="180"
+                   promptText="Staff id or name"/>
+
+        <Button fx:id="clearFiltersButton" text="Clear" onAction="#onClearFilters"
+                styleClass="btn,btn-ghost"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Label fx:id="statusLabel" styleClass="save-status"/>
+
+        <Button fx:id="refreshButton" text="Refresh"
+                onAction="#onRefresh" styleClass="btn,btn-primary"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Info banner -->
+    <HBox fx:id="infoBanner" visible="false" managed="false"
+          styleClass="info-banner" spacing="12" alignment="CENTER_LEFT">
+        <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+        <Label text="📜" styleClass="info-icon"/>
+        <Label fx:id="visibleCountLabel" styleClass="info-subtitle"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="totalCountLabel" styleClass="info-subtitle"/>
+    </HBox>
+
+    <!-- Table -->
+    <TableView fx:id="logsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="dateCol"      text="Date"    prefWidth="110"/>
+            <TableColumn fx:id="timeCol"      text="Time"    prefWidth="90"/>
+            <TableColumn fx:id="actorCol"     text="Actor"   prefWidth="180"/>
+            <TableColumn fx:id="typeCol"      text="Type"    prefWidth="140"/>
+            <TableColumn fx:id="statusCol"    text="Status"  prefWidth="100"/>
+            <TableColumn fx:id="messageCol"   text="Message" prefWidth="420"/>
+        </columns>
+        <placeholder>
+            <Label text="Click 'Refresh' to load audit logs."
+                   styleClass="empty-state"/>
+        </placeholder>
+    </TableView>
+</VBox>
