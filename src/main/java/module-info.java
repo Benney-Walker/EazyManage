@@ -17,7 +17,6 @@ module com.bbquantum.eazymanage {
     requires org.xerial.sqlitejdbc;
 
     exports com.bbquantum.eazymanage;
-    exports com.bbquantum.eazymanage.Attendance;
     exports com.bbquantum.eazymanage.CacheClasses;
     exports com.bbquantum.eazymanage.Controller;
     exports com.bbquantum.eazymanage.Shell;
@@ -45,7 +44,6 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Controller.WebSocket to javafx.fxml;
     opens com.bbquantum.eazymanage.Shell.Notification to javafx.fxml;
     opens com.bbquantum.eazymanage.Shell.Navigation to javafx.fxml;
-    opens com.bbquantum.eazymanage.Attendance to javafx.fxml;
     opens com.bbquantum.eazymanage.Shell.Settings to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.Settings;
     opens com.bbquantum.eazymanage.Controller.Settings to javafx.fxml;
@@ -59,4 +57,8 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Controller.Academics to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.AuditLogs;
     opens com.bbquantum.eazymanage.Controller.AuditLogs to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Attendance;
+    opens com.bbquantum.eazymanage.Controller.Attendance to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Finance;
+    opens com.bbquantum.eazymanage.Controller.Finance to javafx.fxml;
 }
