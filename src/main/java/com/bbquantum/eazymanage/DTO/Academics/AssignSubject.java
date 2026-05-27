@@ -7,6 +7,8 @@ public class AssignSubject {
 
     private String gradeId;
 
+    public AssignSubject() {}
+
     public AssignSubject(String staffId, String subjectName, String gradeId) {
         this.staffId = staffId;
         this.subjectName = subjectName;
