@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Attendance;
+package com.bbquantum.eazymanage.Controller.Attendance;
 
 import com.bbquantum.eazymanage.Constants.AttendanceStatus;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;

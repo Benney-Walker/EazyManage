@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Shell;
+package com.bbquantum.eazymanage.Controller.Settings;
 
 import com.bbquantum.eazymanage.Services.OfflineMode;
 import com.bbquantum.eazymanage.Services.OfflineQueue;

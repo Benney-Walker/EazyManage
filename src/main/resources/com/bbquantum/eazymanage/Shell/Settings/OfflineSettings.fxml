@@ -25,7 +25,7 @@
 -->
 <?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.bbquantum.eazymanage.Shell.OfflineSettingsController"
+      fx:controller="com.bbquantum.eazymanage.Controller.Settings.OfflineSettingsController"
       styleClass="offline-screen"
       spacing="0">
 

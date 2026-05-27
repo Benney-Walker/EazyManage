@@ -24,7 +24,7 @@
       - Date is read-only during save to keep semantics clean.
 -->
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.bbquantum.eazymanage.Attendance.ViewAttendanceController"
+      fx:controller="com.bbquantum.eazymanage.Controller.Attendance.ViewAttendanceController"
       styleClass="view-attendance"
       spacing="0">
 

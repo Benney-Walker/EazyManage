@@ -27,7 +27,7 @@
     teacher toggles whoever's absent.
 -->
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.bbquantum.eazymanage.Attendance.MarkAttendanceController"
+      fx:controller="com.bbquantum.eazymanage.Controller.Attendance.MarkAttendanceController"
       styleClass="mark-attendance"
       spacing="0">
 
