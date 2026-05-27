@@ -36,7 +36,7 @@ public class NavRegistry {
 
             new Section("COMMUNICATION", List.of(
                     new NavItem("broadcasts",      "Broadcasts",      "\u25CA", PRINCIPAL_ADMIN, NavItemStatus.FUNCTIONAL, ""),
-                    new NavItem("active-sessions", "Active Sessions", "\u25CB", ALL,             NavItemStatus.FUNCTIONAL, "")
+                    new NavItem("active-sessions", "Active Sessions", "\u25CB", ADMIN_ONLY,             NavItemStatus.FUNCTIONAL, "")
             )),
 
             new Section("SYSTEM", List.of(
@@ -48,11 +48,6 @@ public class NavRegistry {
 
     private NavRegistry() {}
 
-    /**
-     * Sections containing only items visible to the given role.
-     * A section that becomes empty after filtering is dropped entirely so the
-     * sidebar never renders a heading over zero items.
-     */
     public static List<Section> sectionsFor(String role) {
         if (role == null) return List.of();
 
