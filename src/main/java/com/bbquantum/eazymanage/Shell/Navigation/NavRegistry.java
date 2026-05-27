@@ -31,7 +31,7 @@ public class NavRegistry {
 
             new Section("RECORDS", List.of(
                     new NavItem("reports",     "Reporting Center", "\u25A6", ALL,             NavItemStatus.FUNCTIONAL, ""),
-                    new NavItem("audit-logs",  "Audit Logs",  "\u25C8", ADMIN_ONLY,           NavItemStatus.PLACEHOLDER, "Phase 6")
+                    new NavItem("audit-logs",  "Audit Logs",  "\u25C8", ADMIN_ONLY,           NavItemStatus.FUNCTIONAL,  "")
             )),
 
             new Section("COMMUNICATION", List.of(
@@ -41,6 +41,7 @@ public class NavRegistry {
 
             new Section("SYSTEM", List.of(
                     new NavItem("offline",     "Offline Mode", "\u26C8", ALL,                  NavItemStatus.FUNCTIONAL,  ""),
+                    new NavItem("academic-setup",  "Academic Setup",  "\u270E", ADMIN_ONLY,           NavItemStatus.FUNCTIONAL,  ""),
                     new NavItem("settings",    "Settings",    "\u2699", ALL,                  NavItemStatus.FUNCTIONAL, "")
             ))
     );
