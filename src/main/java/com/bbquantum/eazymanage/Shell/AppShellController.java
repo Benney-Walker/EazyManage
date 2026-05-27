@@ -1,6 +1,7 @@
 package com.bbquantum.eazymanage.Shell;
 
 import com.bbquantum.eazymanage.Constants.NavItemStatus;
+import com.bbquantum.eazymanage.Controller.Academics.AcademicSetupTabController;
 import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
 import com.bbquantum.eazymanage.Controller.Results.ResultsTabController;
 import com.bbquantum.eazymanage.Controller.Settings.SettingsController;
@@ -406,6 +407,12 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "staff".equals(item.id())) {
             return loadStaffScreen();
         }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "audit-logs".equals(item.id())) {
+            return loadAuditLogsScreen();
+        }
+        if (item.status() == NavItemStatus.FUNCTIONAL && "academic-setup".equals(item.id())) {
+            return loadAcademicSetupScreen();
+        }
         if (item.status() == NavItemStatus.FUNCTIONAL && "settings".equals(item.id())) {
             return loadSettingsScreen();
         }
@@ -546,6 +553,36 @@ public class AppShellController {
         }
     }
 
+    private Parent loadAuditLogsScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/AuditLogs/AuditLogsTab.fxml"));
+            Parent root = loader.load();
+            AuditLogsController controller = loader.getController();
+            controller.attach(role, staffId);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Audit Logs",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
+
+
+    private Parent loadAcademicSetupScreen() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Academics/AcademicSetupTab.fxml"));
+            Parent root = loader.load();
+            AcademicSetupTabController controller = loader.getController();
+            controller.attach(role, staffId);
+            return root;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return errorPlaceholder("Could not load Academic Setup",
+                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
+        }
+    }
 
     private Parent loadReportsScreen() {
         try {
