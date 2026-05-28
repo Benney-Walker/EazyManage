@@ -33,7 +33,11 @@ import java.util.List;
 
 public class UtilityClass {
 
-    public static final String BASE_URL = "http://localhost:8080/api";
+    private static final String LOCAL_URL = "http://localhost:8080";
+
+    private static final String PRODUCTION_URL = "https://schoolmanagementsystem-eazymanage.up.railway.app";
+
+    public static final String BASE_URL =  PRODUCTION_URL + "/api";
 
     /** Application version banner. Displayed on the dashboard footer. */
     public static final String APPLICATION_VERSION = "V 3.0.0";
