@@ -21,6 +21,8 @@ import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class EnterScoresController {
 
@@ -44,8 +46,9 @@ public class EnterScoresController {
     @FXML private TableColumn<StudentsScoresTable, String> groupWorkCol;
     @FXML private TableColumn<StudentsScoresTable, String> ct2Col;
     @FXML private TableColumn<StudentsScoresTable, String> projectCol;
-    @FXML private TableColumn<StudentsScoresTable, String> classScoreCol;
     @FXML private TableColumn<StudentsScoresTable, String> examCol;
+    @FXML private TableColumn<StudentsScoresTable, String> classScoreCol;
+    @FXML private TableColumn<StudentsScoresTable, String> calExamScoreCol;
 
     // ---- action bar
     @FXML private VBox progressBox;
@@ -114,8 +117,9 @@ public class EnterScoresController {
         configureEditableColumn(groupWorkCol,  StudentsScoresTable::getGroupWorkScore,     StudentsScoresTable::setGroupWorkScore);
         configureEditableColumn(ct2Col,        StudentsScoresTable::getClassTest2Score,    StudentsScoresTable::setClassTest2Score);
         configureEditableColumn(projectCol,    StudentsScoresTable::getProjectScore,       StudentsScoresTable::setProjectScore);
-        configureEditableColumn(classScoreCol, StudentsScoresTable::getClassScore,         StudentsScoresTable::setClassScore);
         configureEditableColumn(examCol,       StudentsScoresTable::getExamScore,          StudentsScoresTable::setExamScore);
+        configureEditableColumn(classScoreCol, StudentsScoresTable::getClassScore,         StudentsScoresTable::setClassScore);
+        configureEditableColumn(calExamScoreCol, StudentsScoresTable::getCalculatedExamScore, StudentsScoresTable::setCalculatedExamScore);
 
         rows.addListener((javafx.collections.ListChangeListener<StudentsScoresTable>) c ->
                 saveButton.setDisable(rows.isEmpty()));
@@ -124,8 +128,8 @@ public class EnterScoresController {
     /** Wire a single column for editable string display. */
     private static void configureEditableColumn(
             TableColumn<StudentsScoresTable, String> col,
-            java.util.function.Function<StudentsScoresTable, String> getter,
-            java.util.function.BiConsumer<StudentsScoresTable, String> setter) {
+            Function<StudentsScoresTable, String> getter,
+            BiConsumer<StudentsScoresTable, String> setter) {
 
         col.setCellValueFactory(c -> new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
         col.setCellFactory(c -> new TextFieldTableCell<>(new DefaultStringConverter()));

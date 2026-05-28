@@ -76,8 +76,9 @@
             <TableColumn fx:id="groupWorkCol"  text="Group Work"   prefWidth="100"/>
             <TableColumn fx:id="ct2Col"        text="CT 2"         prefWidth="80"/>
             <TableColumn fx:id="projectCol"    text="Project"      prefWidth="90"/>
-            <TableColumn fx:id="classScoreCol" text="Class (50%)"  prefWidth="100"/>
             <TableColumn fx:id="examCol"       text="Exam"         prefWidth="80"/>
+            <TableColumn fx:id="classScoreCol" text="Class (50%)"  prefWidth="100"/>
+            <TableColumn fx:id="calExamScoreCol" text="Exam (50%)"  prefWidth="100"/>
         </columns>
         <placeholder>
             <Label text="Pick class, subject and semester then click 'Fetch students'."
