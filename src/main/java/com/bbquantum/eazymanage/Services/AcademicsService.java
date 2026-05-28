@@ -317,7 +317,7 @@ public class AcademicsService {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + core.token,
-                                "staffid", staffId)
+                                "staffId", staffId)
                         .GET()
                         .build();
 

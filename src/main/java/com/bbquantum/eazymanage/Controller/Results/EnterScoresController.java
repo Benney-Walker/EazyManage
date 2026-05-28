@@ -11,6 +11,7 @@ import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -113,27 +114,76 @@ public class EnterScoresController {
         studentIdCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStudentId())));
         nameCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStudentName())));
 
-        configureEditableColumn(ct1Col,        StudentsScoresTable::getClassTest1Score,    StudentsScoresTable::setClassTest1Score);
-        configureEditableColumn(groupWorkCol,  StudentsScoresTable::getGroupWorkScore,     StudentsScoresTable::setGroupWorkScore);
-        configureEditableColumn(ct2Col,        StudentsScoresTable::getClassTest2Score,    StudentsScoresTable::setClassTest2Score);
-        configureEditableColumn(projectCol,    StudentsScoresTable::getProjectScore,       StudentsScoresTable::setProjectScore);
-        configureEditableColumn(examCol,       StudentsScoresTable::getExamScore,          StudentsScoresTable::setExamScore);
-        configureEditableColumn(classScoreCol, StudentsScoresTable::getClassScore,         StudentsScoresTable::setClassScore);
-        configureEditableColumn(calExamScoreCol, StudentsScoresTable::getCalculatedExamScore, StudentsScoresTable::setCalculatedExamScore);
+        configureEditableColumn(ct1Col,        StudentsScoresTable::getClassTest1Score,    StudentsScoresTable::setClassTest1Score, true);
+        configureEditableColumn(groupWorkCol,  StudentsScoresTable::getGroupWorkScore,     StudentsScoresTable::setGroupWorkScore, true);
+        configureEditableColumn(ct2Col,        StudentsScoresTable::getClassTest2Score,    StudentsScoresTable::setClassTest2Score, true);
+        configureEditableColumn(projectCol,    StudentsScoresTable::getProjectScore,       StudentsScoresTable::setProjectScore, true);
+        configureEditableColumn(examCol,       StudentsScoresTable::getExamScore,          StudentsScoresTable::setExamScore, true);
 
-        rows.addListener((javafx.collections.ListChangeListener<StudentsScoresTable>) c ->
+        // calculated, not editable.
+        configureReadOnlyColumn(classScoreCol, StudentsScoresTable::getClassScore);
+        configureReadOnlyColumn(calExamScoreCol,   StudentsScoresTable::getCalculatedExamScore);
+
+        rows.addListener((ListChangeListener<StudentsScoresTable>) c ->
                 saveButton.setDisable(rows.isEmpty()));
     }
 
     /** Wire a single column for editable string display. */
-    private static void configureEditableColumn(
+    private void configureEditableColumn(
             TableColumn<StudentsScoresTable, String> col,
             Function<StudentsScoresTable, String> getter,
-            BiConsumer<StudentsScoresTable, String> setter) {
+            BiConsumer<StudentsScoresTable, String> setter,
+            boolean recalcOnCommit) {
 
         col.setCellValueFactory(c -> new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
         col.setCellFactory(c -> new TextFieldTableCell<>(new DefaultStringConverter()));
-        col.setOnEditCommit(e -> setter.accept(e.getRowValue(), e.getNewValue()));
+        col.setEditable(true);
+        col.setOnEditCommit(e -> {
+            setter.accept(e.getRowValue(), e.getNewValue());
+            if (recalcOnCommit) {
+                recalculate(e.getRowValue());
+                scoresTable.refresh();
+            }
+        });
+    }
+
+    private void configureReadOnlyColumn(
+            TableColumn<StudentsScoresTable, String> col,
+            Function<StudentsScoresTable, String> getter) {
+
+        col.setCellValueFactory(c -> new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
+        col.setEditable(false);
+        // Visually distinguish the computed cells from editable inputs.
+        col.setCellFactory(c -> {
+            TableCell<StudentsScoresTable, String> cell = new TableCell<>() {
+                @Override protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    setText(empty ? null : item);
+                }
+            };
+            cell.getStyleClass().add("computed-cell");
+            return cell;
+        });
+    }
+
+    private void recalculate(StudentsScoresTable row) {
+        if (row == null) return;
+        double ct1     = parseScore(row.getClassTest1Score());
+        double gw      = parseScore(row.getGroupWorkScore());
+        double ct2     = parseScore(row.getClassTest2Score());
+        double project = parseScore(row.getProjectScore());
+        double classScore = ((ct1 + gw + ct2 + project) / 100.0) * 50.0;
+        row.setClassScore(String.format("%.1f", classScore));
+
+        double exam = parseScore(row.getExamScore());
+        double calcExam = (exam / 100.0) * 50.0;
+        row.setCalculatedExamScore(String.format("%.1f", calcExam));
+    }
+
+    private static double parseScore(String s) {
+        if (s == null || s.isBlank()) return 0;
+        try { return Double.parseDouble(s.trim()); }
+        catch (NumberFormatException e) { return 0; }
     }
 
     public void attach(String role, String staffId) {

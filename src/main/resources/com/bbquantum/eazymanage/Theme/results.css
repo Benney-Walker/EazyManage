@@ -77,3 +77,13 @@
     -fx-background-color: -color-border;
     -fx-padding: 2 0 2 0;
 }
+
+/* Computed (read-only) score cells — Class (50%) and Exam (50%).
+   Visually muted + italic so staff see at a glance these are
+   calculated by the app, not typed. */
+.computed-cell {
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-style: italic;
+    -fx-alignment: center;
+    -fx-background-color: -color-surface-alt;
+}
