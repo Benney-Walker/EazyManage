@@ -54,3 +54,79 @@
 .save-status { -fx-font-size: 11px; -fx-text-fill: -color-text-muted; }
 
 .transparent-scroll, .transparent-scroll > .viewport { -fx-background-color: transparent; }
+
+/* ============================================================================
+   Conduct rubric grid (6 categories x 5 ratings) — mirrors the paper card
+============================================================================ */
+.rubric-grid {
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-background-color: -color-surface;
+}
+
+/* Header row */
+.rubric-header-row {
+    -fx-background-color: -color-surface-alt;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 0 1 0;
+}
+.rubric-corner {
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 8 10 8 10;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 1 0 0;
+    -fx-alignment: center-left;
+}
+.rubric-col-header {
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 8 4 8 4;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 1 0 0;
+}
+
+/* Category rows */
+.rubric-row {
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 0 1 0;
+    -fx-min-height: 40;
+}
+.rubric-row-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 6 10 6 10;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 1 0 0;
+    -fx-alignment: center-left;
+}
+
+/* Rating cells */
+.rubric-cell {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 1 0 0;
+    -fx-cursor: hand;
+    -fx-min-height: 40;
+}
+.rubric-cell:hover {
+    -fx-background-color: -color-sidebar-hover;
+    -fx-opacity: 0.35;
+}
+/* Selected cell shows a clear emerald tick fill */
+.rubric-cell:selected {
+    -fx-background-color: -color-sidebar-active;
+    -fx-opacity: 1.0;
+}
+.rubric-cell:selected:hover {
+    -fx-background-color: -color-sidebar-active;
+}
+.rubric-cell:selected {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 700;
+}

@@ -6,37 +6,37 @@ public class StudentConductRecord {
     private String studentName;
     private String semesterId;
 
-    // the form stays consistent across screens.
-    private Boolean punctuality;
-    private Boolean attendance;
-    private Boolean neatness;
-    private Boolean respectForAuthority;
-    private Boolean cooperationWithPeers;
-    private Boolean classParticipation;
-    private Boolean completionOfAssignments;
-    private Boolean honesty;
+    // Human-readable column headers
+    public static final String[] RATING_LABELS = {
+            "EXCELLENT", "VERY GOOD", "GOOD", "FAIR", "NOT TO EXPECT."
+    };
 
-    //Free text
+    // Six conduct categories, each holding a rating enum string (nullable).
+    private String regular;
+    private String punctual;
+    private String physicalAppearance;
+    private String social;
+    private String emotional;
+    private String cognitiveSkills;
+
+    // Free text
     private String conductRemark;
 
     public StudentConductRecord() {}
 
     public StudentConductRecord(String studentId, String studentName, String semesterId,
-                                Boolean punctuality, Boolean attendance, Boolean neatness,
-                                Boolean respectForAuthority, Boolean cooperationWithPeers,
-                                Boolean classParticipation, Boolean completionOfAssignments,
-                                Boolean honesty, String conductRemark) {
+                                String regular, String punctual, String physicalAppearance,
+                                String social, String emotional, String cognitiveSkills,
+                                String conductRemark) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.semesterId = semesterId;
-        this.punctuality = punctuality;
-        this.attendance = attendance;
-        this.neatness = neatness;
-        this.respectForAuthority = respectForAuthority;
-        this.cooperationWithPeers = cooperationWithPeers;
-        this.classParticipation = classParticipation;
-        this.completionOfAssignments = completionOfAssignments;
-        this.honesty = honesty;
+        this.regular = regular;
+        this.punctual = punctual;
+        this.physicalAppearance = physicalAppearance;
+        this.social = social;
+        this.emotional = emotional;
+        this.cognitiveSkills = cognitiveSkills;
         this.conductRemark = conductRemark;
     }
 
@@ -64,68 +64,52 @@ public class StudentConductRecord {
         this.semesterId = semesterId;
     }
 
-    public Boolean getPunctuality() {
-        return punctuality;
+    public String getRegular() {
+        return regular;
     }
 
-    public void setPunctuality(Boolean punctuality) {
-        this.punctuality = punctuality;
+    public void setRegular(String regular) {
+        this.regular = regular;
     }
 
-    public Boolean getAttendance() {
-        return attendance;
+    public String getPunctual() {
+        return punctual;
     }
 
-    public void setAttendance(Boolean attendance) {
-        this.attendance = attendance;
+    public void setPunctual(String punctual) {
+        this.punctual = punctual;
     }
 
-    public Boolean getNeatness() {
-        return neatness;
+    public String getPhysicalAppearance() {
+        return physicalAppearance;
     }
 
-    public void setNeatness(Boolean neatness) {
-        this.neatness = neatness;
+    public void setPhysicalAppearance(String physicalAppearance) {
+        this.physicalAppearance = physicalAppearance;
     }
 
-    public Boolean getRespectForAuthority() {
-        return respectForAuthority;
+    public String getSocial() {
+        return social;
     }
 
-    public void setRespectForAuthority(Boolean respectForAuthority) {
-        this.respectForAuthority = respectForAuthority;
+    public void setSocial(String social) {
+        this.social = social;
     }
 
-    public Boolean getCooperationWithPeers() {
-        return cooperationWithPeers;
+    public String getEmotional() {
+        return emotional;
     }
 
-    public void setCooperationWithPeers(Boolean cooperationWithPeers) {
-        this.cooperationWithPeers = cooperationWithPeers;
+    public void setEmotional(String emotional) {
+        this.emotional = emotional;
     }
 
-    public Boolean getClassParticipation() {
-        return classParticipation;
+    public String getCognitiveSkills() {
+        return cognitiveSkills;
     }
 
-    public void setClassParticipation(Boolean classParticipation) {
-        this.classParticipation = classParticipation;
-    }
-
-    public Boolean getCompletionOfAssignments() {
-        return completionOfAssignments;
-    }
-
-    public void setCompletionOfAssignments(Boolean completionOfAssignments) {
-        this.completionOfAssignments = completionOfAssignments;
-    }
-
-    public Boolean getHonesty() {
-        return honesty;
-    }
-
-    public void setHonesty(Boolean honesty) {
-        this.honesty = honesty;
+    public void setCognitiveSkills(String cognitiveSkills) {
+        this.cognitiveSkills = cognitiveSkills;
     }
 
     public String getConductRemark() {

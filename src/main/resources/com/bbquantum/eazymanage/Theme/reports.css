@@ -180,6 +180,7 @@
     -fx-text-fill: -color-text-primary;
 }
 .report-card-conduct-mark-yes  { -fx-text-fill: -color-success; -fx-font-weight: 700; }
+.report-card-conduct-mark-neutral { -fx-text-fill: -color-text-secondary; -fx-font-weight: 600; }
 .report-card-conduct-mark-no   { -fx-text-fill: -color-danger;  -fx-font-weight: 700; }
 .report-card-conduct-mark-unset{ -fx-text-fill: -color-text-muted; }
 

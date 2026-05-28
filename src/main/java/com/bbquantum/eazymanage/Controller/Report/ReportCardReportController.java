@@ -91,38 +91,60 @@ public class ReportCardReportController implements ReportViewerController {
     private final ObservableList<StudentSubjectResults> resultRows = FXCollections.observableArrayList();
     private StudentReportCard currentCard;
 
-    // Friendly labels for the conduct booleans, in printed order. Backed by
-    // a LinkedHashMap so iteration order is stable across builds.
+    // Friendly labels for the six conduct categories, in printed order.
     private static final Map<String, String> CONDUCT_LABELS = new LinkedHashMap<>();
 
+    // Rating enum string -> human label for display in the preview.
+    private static final Map<String, String> RATING_DISPLAY = new LinkedHashMap<>();
+
     static {
-        CONDUCT_LABELS.put("punctuality",             "Punctuality");
-        CONDUCT_LABELS.put("attendance",              "Attendance");
-        CONDUCT_LABELS.put("neatness",                "Neatness");
-        CONDUCT_LABELS.put("respectForAuthority",     "Respect for authority");
-        CONDUCT_LABELS.put("cooperationWithPeers",    "Cooperation with peers");
-        CONDUCT_LABELS.put("classParticipation",      "Class participation");
-        CONDUCT_LABELS.put("completionOfAssignments", "Completion of assignments");
-        CONDUCT_LABELS.put("honesty",                 "Honesty");
+        CONDUCT_LABELS.put("regular",            "Regular");
+        CONDUCT_LABELS.put("punctual",           "Punctual");
+        CONDUCT_LABELS.put("physicalAppearance", "Physical Appearance");
+        CONDUCT_LABELS.put("social",             "Social");
+        CONDUCT_LABELS.put("emotional",          "Emotional");
+        CONDUCT_LABELS.put("cognitiveSkills",    "Cognitive Skills");
+
+        RATING_DISPLAY.put("EXCELLENT",          "Excellent");
+        RATING_DISPLAY.put("VERY_GOOD",          "Very Good");
+        RATING_DISPLAY.put("GOOD",               "Good");
+        RATING_DISPLAY.put("FAIR",               "Fair");
+        RATING_DISPLAY.put("NOT_TO_EXPECTATION", "Not to Expectation");
     }
 
     @FXML
     private void initialize() {
         // Choice converters
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override
+            public String toString(GradeCaching g) {
+                return g == null ? "" : g.getLevelName();
+            }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
         });
+
         semesterChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SemesterCaching s) { return s == null ? "" : s.getSemesterName(); }
-            @Override public SemesterCaching fromString(String s) { return null; }
+            @Override
+            public String toString(SemesterCaching s) {
+                return s == null ? "" : s.getSemesterName();
+            }
+
+            @Override
+            public SemesterCaching fromString(String s) {
+                return null;
+            }
         });
 
         // Populate filters from caches
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
-        if (grades != null) classChoice.getItems().setAll(grades);
+        if (grades != null)
+            classChoice.getItems().setAll(grades);
+
         List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
-        if (semesters != null) semesterChoice.getItems().setAll(semesters);
+        if (semesters != null)
+            semesterChoice.getItems().setAll(semesters);
 
         // Students table
         studentIdCol.setCellValueFactory(c ->
@@ -296,19 +318,23 @@ public class ReportCardReportController implements ReportViewerController {
 
     private void rebuildConductGrid(StudentConductRecord conduct) {
         conductGrid.getChildren().clear();
-        // Layout: 4 columns × 2 rows of category labels (8 categories).
+        // Layout: 2 columns x 3 rows of category labels (six categories),
+        // each showing "Category:  Rating".
         int i = 0;
         for (Map.Entry<String, String> entry : CONDUCT_LABELS.entrySet()) {
-            int row = i / 4;
-            int col = i % 4;
+            int row = i / 2;
+            int col = i % 2;
 
             Label item = new Label(entry.getValue() + ":  " + markFor(conduct, entry.getKey()));
             item.getStyleClass().add("report-card-conduct-item");
-            String mark = rawMarkFor(conduct, entry.getKey());
-            item.getStyleClass().add(switch (mark) {
-                case "yes"   -> "report-card-conduct-mark-yes";
-                case "no"    -> "report-card-conduct-mark-no";
-                default      -> "report-card-conduct-mark-unset";
+            String rating = rawRatingFor(conduct, entry.getKey());
+            // Style by rating band: top two = positive, fair = neutral,
+            // not-to-expectation = negative, missing = unset.
+            item.getStyleClass().add(switch (rating) {
+                case "EXCELLENT", "VERY_GOOD"   -> "report-card-conduct-mark-yes";
+                case "GOOD", "FAIR"             -> "report-card-conduct-mark-neutral";
+                case "NOT_TO_EXPECTATION"       -> "report-card-conduct-mark-no";
+                default                         -> "report-card-conduct-mark-unset";
             });
             conductGrid.add(item, col, row);
             i++;
@@ -326,32 +352,23 @@ public class ReportCardReportController implements ReportViewerController {
         }
     }
 
-    /** Resolve a category key to "✓" / "✗" / "—" for display. */
+    /** Resolve a category key to its human rating label, or "—" if unset. */
     private static String markFor(StudentConductRecord c, String key) {
-        Boolean v = lookup(c, key);
-        if (v == null) return "—";
-        return v ? "✓" : "✗";
+        String raw = rawRatingFor(c, key);
+        if (raw == null) return "—";
+        return RATING_DISPLAY.getOrDefault(raw, raw);
     }
 
-    /** Resolve a category key to a CSS-friendly tag for styling. */
-    private static String rawMarkFor(StudentConductRecord c, String key) {
-        Boolean v = lookup(c, key);
-        if (v == null) return "unset";
-        return v ? "yes" : "no";
-    }
-
-    /** Read one of the eight booleans by key. */
-    private static Boolean lookup(StudentConductRecord c, String key) {
+    /** Read one of the six rating strings by key, or null if unset. */
+    private static String rawRatingFor(StudentConductRecord c, String key) {
         if (c == null) return null;
         return switch (key) {
-            case "punctuality"             -> c.getPunctuality();
-            case "attendance"              -> c.getAttendance();
-            case "neatness"                -> c.getNeatness();
-            case "respectForAuthority"     -> c.getRespectForAuthority();
-            case "cooperationWithPeers"    -> c.getCooperationWithPeers();
-            case "classParticipation"      -> c.getClassParticipation();
-            case "completionOfAssignments" -> c.getCompletionOfAssignments();
-            case "honesty"                 -> c.getHonesty();
+            case "regular"            -> c.getRegular();
+            case "punctual"           -> c.getPunctual();
+            case "physicalAppearance" -> c.getPhysicalAppearance();
+            case "social"             -> c.getSocial();
+            case "emotional"          -> c.getEmotional();
+            case "cognitiveSkills"    -> c.getCognitiveSkills();
             default -> null;
         };
     }

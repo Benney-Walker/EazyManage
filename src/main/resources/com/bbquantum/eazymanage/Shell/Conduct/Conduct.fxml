@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -14,18 +13,10 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Conduct entry screen (Phase 4).
-
-    Top toolbar: class + semester selectors, refresh button.
-    Left:  scrolling student list (selectable row).
-    Right: detail editor for the selected student — eight boolean
-           checkboxes laid out in two columns, plus a free-text
-           remark area and a save button.
--->
 <?import java.net.URL?>
+
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.bbquantum.eazymanage.Shell.ConductController"
+      fx:controller="com.bbquantum.eazymanage.Controller.Conduct.ConductController"
       styleClass="conduct-screen"
       spacing="0">
 
@@ -87,32 +78,21 @@
             <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" styleClass="transparent-scroll">
                 <VBox spacing="16">
 
-                    <Label text="Conduct categories" styleClass="section-heading"/>
-
-                    <!-- Two-column grid of checkboxes -->
-                    <HBox spacing="32">
-                        <VBox spacing="10" HBox.hgrow="ALWAYS">
-                            <CheckBox fx:id="punctualityCheck"             text="Punctuality"               styleClass="conduct-check" allowIndeterminate="true"/>
-                            <CheckBox fx:id="attendanceCheck"              text="Attendance"                styleClass="conduct-check" allowIndeterminate="true"/>
-                            <CheckBox fx:id="neatnessCheck"                text="Neatness"                  styleClass="conduct-check" allowIndeterminate="true"/>
-                            <CheckBox fx:id="respectForAuthorityCheck"     text="Respect for authority"     styleClass="conduct-check" allowIndeterminate="true"/>
-                        </VBox>
-                        <VBox spacing="10" HBox.hgrow="ALWAYS">
-                            <CheckBox fx:id="cooperationWithPeersCheck"    text="Cooperation with peers"    styleClass="conduct-check" allowIndeterminate="true"/>
-                            <CheckBox fx:id="classParticipationCheck"      text="Class participation"       styleClass="conduct-check" allowIndeterminate="true"/>
-                            <CheckBox fx:id="completionOfAssignmentsCheck" text="Completion of assignments" styleClass="conduct-check" allowIndeterminate="true"/>
-                            <CheckBox fx:id="honestyCheck"                 text="Honesty"                   styleClass="conduct-check" allowIndeterminate="true"/>
-                        </VBox>
-                    </HBox>
-
-                    <Label text="Each item is tri-state: blank = not yet assessed."
+                    <Label text="Conduct ratings" styleClass="section-heading"/>
+                    <Label text="Click a cell to rate each category. One rating per row; click the selected cell again to clear it."
                            styleClass="hint-text" wrapText="true"/>
+
+                    <!-- The 6x5 rubric grid is built in the controller and
+                         dropped into this container, so the column headers
+                         and the rating cells stay in sync with the
+                         StudentConductRecord.RATINGS source of truth. -->
+                    <VBox fx:id="rubricContainer" spacing="0" styleClass="rubric-grid"/>
 
                     <Separator/>
 
                     <Label text="Additional remark (optional)" styleClass="section-heading"/>
                     <TextArea fx:id="conductRemarkField"
-                              promptText="Observations that don't fit the eight categories…"
+                              promptText="Observations that don't fit the six categories…"
                               prefRowCount="4"
                               wrapText="true"
                               styleClass="conduct-remark-area"/>

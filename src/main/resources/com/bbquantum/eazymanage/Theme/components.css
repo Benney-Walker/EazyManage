@@ -1,28 +1,4 @@
 /* ============================================================================
-   EazyManage — Component Library
-   ----------------------------------------------------------------------------
-   Reusable component classes. References ONLY token names (-color-*) defined
-   in light-theme.css / dark-theme.css. Never hardcodes a hex color.
-
-   To use a component in an FXML:
-       <Button styleClass="btn btn-primary" text="Save"/>
-
-   Sections:
-     1. Buttons
-     2. Cards & widgets
-     3. Inputs & forms
-     4. Tables
-     5. Sidebar (collapsible, role-aware)
-     6. Tabs (workspace)
-     7. Badges & status pills
-     8. Notifications (toast + center)
-     9. Dialogs & overlays (with subtle glass)
-    10. Floating Action Button
-    11. Utility classes (spacing, status dots, dividers)
-============================================================================ */
-
-
-/* ============================================================================
    1. BUTTONS
 ============================================================================ */
 
@@ -359,7 +335,11 @@
 
 .sidebar-org {
     -fx-font-size: 11px;
-    -fx-text-fill: -color-sidebar-text-muted;
+    /* Was -color-sidebar-text-muted — too dark on the dark sidebar.
+       Match the user-role styling: white at reduced opacity for a
+       subordinate-but-legible look. */
+    -fx-text-fill: -color-sidebar-text-active;
+    -fx-opacity: 0.7;
 }
 
 .sidebar-divider {
@@ -375,12 +355,19 @@
     -fx-padding: 6 12 6 12;
     -fx-font-size: 10px;
     -fx-font-weight: bold;
-    -fx-text-fill: -color-sidebar-text-muted;
+    /* Section titles (OPERATIONS / RECORDS / etc.) sit above the nav items.
+       They were previously rendered with -color-sidebar-text-muted which on
+       both themes is a dark slate that disappears against the dark sidebar.
+       Use the same color as inactive nav items so they're clearly visible,
+       and let the smaller font size + uppercase styling carry the visual
+       hierarchy on its own. */
+    -fx-text-fill: -color-sidebar-text-active;
+    -fx-opacity: 0.65;
 }
 
 .sidebar-item {
     -fx-background-color: transparent;
-    -fx-text-fill: -color-sidebar-text;
+    -fx-text-fill: -color-sidebar-text-active;
     -fx-font-size: 13px;
     -fx-font-weight: 500;
     -fx-padding: 10 12 10 12;
@@ -391,18 +378,45 @@
     -fx-min-width: 0;
 }
 
+/* The visible nav text lives in a child Label (.sidebar-item-label) added
+   programmatically by AppShellController. JavaFX's -fx-text-fill on a
+   Button does NOT cascade to child Labels, so the label needs its own
+   colour rule to actually paint white on the dark sidebar. */
+.sidebar-item-label {
+    -fx-text-fill: -color-sidebar-text-active;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
 .sidebar-item:hover {
     -fx-background-color: -color-sidebar-hover;
     -fx-text-fill: -color-sidebar-text-active;
 }
-
-/* Active item — emerald left bar + emerald text */
-.sidebar-item-active {
-    -fx-background-color: -color-sidebar-hover;
+.sidebar-item:hover .sidebar-item-label {
     -fx-text-fill: -color-sidebar-text-active;
+}
+
+/* Active item — full white background, bold dark text. A real inversion
+   so the active state reads as "selected and highlighted" rather than
+   "slightly emphasised". The accent left bar is preserved as a secondary
+   marker. */
+.sidebar-item-active {
+    -fx-background-color: white;
+    -fx-text-fill: #0F172A;
     -fx-border-color: -color-sidebar-active transparent transparent transparent;
     -fx-border-width: 0 0 0 3;
     -fx-border-insets: 0 0 0 -8;
+}
+.sidebar-item-active:hover {
+    /* Hover on the already-active item: keep the white background, don't
+       fall back to the dark hover colour (which would lose the inversion). */
+    -fx-background-color: white;
+    -fx-text-fill: #0F172A;
+}
+.sidebar-item-active .sidebar-item-label,
+.sidebar-item-active:hover .sidebar-item-label {
+    -fx-text-fill: #0F172A;
+    -fx-font-weight: 700;
 }
 
 .sidebar-footer {
