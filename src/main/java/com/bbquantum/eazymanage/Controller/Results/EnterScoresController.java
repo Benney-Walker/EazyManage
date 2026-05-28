@@ -119,7 +119,7 @@ public class EnterScoresController {
         configureEditableColumn(projectCol,    StudentsScoresTable::getProjectScore,       StudentsScoresTable::setProjectScore, true);
         configureEditableColumn(examCol,       StudentsScoresTable::getExamScore,          StudentsScoresTable::setExamScore, true);
 
-        editableColumns = List.of(ct1Col, groupWorkCol, ct2Col, projectCol, examCol);
+        editableColumns = List.of(ct1Col, ct2Col, groupWorkCol, projectCol, examCol);
 
         // calculated, not editable.
         configureReadOnlyColumn(classScoreCol, StudentsScoresTable::getClassScore);
@@ -139,8 +139,7 @@ public class EnterScoresController {
         col.setCellValueFactory(c ->
                 new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
 
-        col.setCellFactory(c ->
-                new TextFieldTableCell<>(new DefaultStringConverter()));
+        col.setCellFactory(c -> new ScoreCell(editableColumns));
 
         col.setEditable(true);
         col.setOnEditCommit(e -> {

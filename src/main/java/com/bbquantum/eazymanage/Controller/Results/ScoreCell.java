@@ -45,7 +45,7 @@ public class ScoreCell extends TextFieldTableCell<StudentsScoresTable, String> {
         if (code == KeyCode.ENTER || (code == KeyCode.TAB && !ev.isShiftDown())) {
             colStep = +1;
             handled = true;
-        } else if (code == KeyCode.TAB && ev.isShiftDown()) {
+        } else if (code == KeyCode.TAB) {
             colStep = -1;
             handled = true;
         } else if (code == KeyCode.DOWN) {
@@ -62,7 +62,7 @@ public class ScoreCell extends TextFieldTableCell<StudentsScoresTable, String> {
         // Commit the in-progress edit so onEditCommit fires (which the
         // controller hooks for recalc). commitEdit needs the editor's
         // current text; the underlying TextField provides it.
-        String typed = ((javafx.scene.control.TextField) getGraphic()).getText();
+        String typed = ((TextField) getGraphic()).getText();
         commitEdit(typed);
 
         // After commit, schedule the focus jump. runLater lets the table
