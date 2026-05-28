@@ -207,7 +207,7 @@ public class AppShellController {
         Stage stage = (Stage) logoutButton.getScene().getWindow();
         try {
             FXMLLoader loader = new FXMLLoader(
-                    EazyManage.class.getResource("Authentication/auth-container.fxml"));
+                    EazyManage.class.getResource("Shell/Auth/auth-container.fxml"));
             Scene authScene = new Scene(loader.load());
             ThemeManager.getInstance().register(authScene);
             stage.setTitle("EAZY MANAGE - Authentication");
@@ -439,6 +439,7 @@ public class AppShellController {
         return placeholderFor(item);
     }
 
+    //Dead code
     private Parent loadLegacyDashboard() {
         String fxml = switch (role) {
             case "PRINCIPAL"      -> "/com/bbquantum/eazymanage/Principal/principal-main-dashboard.fxml";

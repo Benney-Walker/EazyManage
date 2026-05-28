@@ -1,0 +1,128 @@
+/* ============================================================================
+   EazyManage — Auth screen styles
+   Redesigned to match the shell. Uses the same -color-* tokens that
+   ThemeManager injects (tokens + theme + components), so the auth screen
+   follows light/dark mode exactly like every shell surface.
+============================================================================ */
+
+/* Full-window background — same as the app background */
+.auth-root {
+    -fx-background-color: -color-bg;
+    -fx-padding: 24;
+}
+
+/* The centered card holding brand + form */
+.auth-card {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 32, 0, 0, 8);
+}
+
+/* ---------- Left brand panel ---------- */
+.auth-brand-panel {
+    -fx-background-color: -color-bg-alt;
+    -fx-background-radius: 16 0 0 16;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 1 0 0;
+}
+
+.auth-logo-badge {
+    -fx-background-color: -color-accent;
+    -fx-background-radius: 14;
+}
+.auth-logo-letter {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -color-accent-on;
+}
+
+.auth-brand-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -color-text-primary;
+}
+.auth-brand-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-secondary;
+}
+
+.auth-feature-tick {
+    -fx-text-fill: -color-accent;
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+}
+.auth-feature-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-secondary;
+}
+
+/* Inline message box on the brand panel */
+.auth-message-box {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 12;
+}
+.auth-message-error {
+    -fx-text-fill: -color-danger;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+.auth-message-success {
+    -fx-text-fill: -color-success;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+/* ---------- Right form panel ---------- */
+.auth-form-panel {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 0 16 16 0;
+    -fx-padding: 40;
+}
+.auth-form {
+    -fx-fill-width: true;
+}
+.auth-form-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -color-text-primary;
+}
+.auth-form-caption {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 0 0 4 0;
+}
+.auth-muted-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-text-muted;
+}
+
+/* ---------- Links ---------- */
+.auth-link {
+    -fx-text-fill: -color-text-secondary;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-border-color: transparent;
+    -fx-underline: false;
+}
+.auth-link:hover {
+    -fx-text-fill: -color-text-primary;
+    -fx-underline: true;
+}
+.auth-link-accent {
+    -fx-text-fill: -color-accent;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+    -fx-border-color: transparent;
+    -fx-underline: false;
+}
+.auth-link-accent:hover {
+    -fx-text-fill: -color-accent-hover;
+    -fx-underline: true;
+}

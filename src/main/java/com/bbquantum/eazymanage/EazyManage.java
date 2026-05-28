@@ -1,11 +1,9 @@
 package com.bbquantum.eazymanage;
 
-import com.bbquantum.eazymanage.Controller.AuthController;
 import com.bbquantum.eazymanage.Shell.AppShellController;
 import com.bbquantum.eazymanage.Shell.ShellLauncher;
 import com.bbquantum.eazymanage.Utitity.SessionManager;
 import com.bbquantum.eazymanage.Utitity.ThemeManager;
-import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -36,7 +34,7 @@ public class EazyManage extends Application {
         } else {
 
             FXMLLoader fxmlLoader =
-                    new FXMLLoader(EazyManage.class.getResource("Authentication/auth-container.fxml"));
+                    new FXMLLoader(EazyManage.class.getResource("Shell/Auth/auth-container.fxml"));
 
             Scene scene = new Scene(fxmlLoader.load());
             ThemeManager.getInstance().register(scene);

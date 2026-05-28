@@ -1,5 +1,6 @@
-package com.bbquantum.eazymanage.Controller;
+package com.bbquantum.eazymanage.Controller.Auth;
 
+import com.bbquantum.eazymanage.Controller.EnrollStaffController;
 import com.bbquantum.eazymanage.DTO.Auth.LoginResponse;
 import com.bbquantum.eazymanage.DTO.Auth.SubscriptionResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
@@ -339,109 +340,12 @@ public class AuthController {
         new Thread(task).start();
     }
 
-    /* ================= ROLES SELECTION BOX ================= */
-    public void openRoleSelectionBox() throws IOException {
-
-        Stage authPage = (Stage) loginButton.getScene().getWindow();
-
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/SwitchRole/SwitchRole.fxml"));
-        Scene scene = new Scene(loader.load());
-
-        Stage switchRoleStage = new Stage();
-        switchRoleStage.setTitle("EazyManage - User Roles");
-        switchRoleStage.setScene(scene);
-        ThemeManager.getInstance().register(scene);
-        switchRoleStage.sizeToScene();
-        switchRoleStage.setResizable(false);
-
-        authPage.close();
-        switchRoleStage.show();
-    }
-
-    /* ================= DASHBOARD ROUTING ================= */
-
-    public void openDashboardByRole(String role, String staffId, String institutionName, String staffFullName) {
-
-        try {
-            String fxmlFile;
-            int width = 1200;
-            int height = 800;
-
-            // Determine which dashboard to open based on role
-            switch (role) {
-                case "PRINCIPAL":
-                    fxmlFile = "/com/bbquantum/eazymanage/Principal/principal-main-dashboard.fxml";
-                    break;
-
-                case "ACCOUNTANT":
-                    fxmlFile = "/com/bbquantum/eazymanage/Accountant/accountant-dashboard.fxml";
-                    break;
-
-                case "TEACHING_STAFF":
-                    fxmlFile = "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
-                    break;
-
-                case "ADMINISTRATOR":
-                    fxmlFile = "/com/bbquantum/eazymanage/Admin/Admin-dashboard.fxml";
-                    break;
-
-                default:
-                    return;
-            }
-
-
-            // Load the appropriate dashboard
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-            Scene scene = new Scene(loader.load(), width, height);
-
-            UtilityClass.findController(role, staffId, institutionName, staffFullName, loader);
-
-            // Close the login window
-            Stage loginStage = (Stage) loginButton.getScene().getWindow();
-
-            // Create new stage for dashboard
-            Stage dashboardStage = new Stage();
-            dashboardStage.getIcons().add(
-                    new Image(getClass().getResourceAsStream(
-                            "/com/bbquantum/eazymanage/Assets/EazyManage.png"
-                    ))
-            );
-            dashboardStage.setTitle("Eazy Manage");
-            dashboardStage.setScene(scene);
-            ThemeManager.getInstance().register(scene);
-            dashboardStage.setMaximized(true);
-
-            // Close login and show dashboard
-            loginStage.close();
-            dashboardStage.show();
-
-        } catch (Exception e) {
-            showError("Error loading dashboard: ");
-            e.printStackTrace();
-        }
-    }
-
     /* ================= ENROLL STAFF ================= */
 
     @FXML
     private void handleEnrollNewStaff() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/com/bbquantum/eazymanage/Authentication/enroll-staff.fxml"));
-            Scene scene = new Scene(loader.load(), 600, 600);
 
-            Stage stage = (Stage) loginForm.getScene().getWindow();
-            stage.setScene(scene);
-            ThemeManager.getInstance().register(scene);
-            stage.getIcons().add(
-                    new Image(getClass().getResourceAsStream(
-                            "/com/bbquantum/eazymanage/Assets/EazyManage.png"
-                    ))
-            );
-            stage.setTitle("Enroll New Staff");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        showError("Contact administrator! Staffs can only be added by school's admin");
     }
 
     private void showError(String msg) {

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import java.net.URL?>
+
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.bbquantum.eazymanage.Controller.Auth.AuthController"
+           styleClass="auth-root">
+
+    <stylesheets>
+        <URL value="@../../Theme/auth.css"/>
+    </stylesheets>
+
+    <HBox maxWidth="940" maxHeight="560" styleClass="auth-card">
+
+        <!-- ============ LEFT: brand panel ============ -->
+        <VBox spacing="20" alignment="CENTER_LEFT"
+              prefWidth="380" minWidth="320"
+              styleClass="auth-brand-panel">
+            <padding><Insets top="48" right="40" bottom="48" left="40"/></padding>
+
+            <!-- Logo mark -->
+            <StackPane styleClass="auth-logo-badge" minWidth="56" maxWidth="56" minHeight="56" maxHeight="56">
+                <Label text="E" styleClass="auth-logo-letter"/>
+            </StackPane>
+
+            <Label text="EazyManage" styleClass="auth-brand-title"/>
+            <Label text="Smart school management — records, attendance, results and finance in one place."
+                   wrapText="true" styleClass="auth-brand-subtitle"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Feature checklist -->
+            <VBox fx:id="info" spacing="12" alignment="CENTER_LEFT">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="✓" styleClass="auth-feature-tick"/>
+                    <Label text="Secure student records" styleClass="auth-feature-text"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="✓" styleClass="auth-feature-tick"/>
+                    <Label text="Attendance &amp; results" styleClass="auth-feature-text"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="✓" styleClass="auth-feature-tick"/>
+                    <Label text="Finance &amp; analytics" styleClass="auth-feature-text"/>
+                </HBox>
+            </VBox>
+
+            <!-- Inline message box (errors / success / enrollment id) -->
+            <VBox fx:id="messageBox" spacing="8" alignment="CENTER_LEFT"
+                  visible="false" managed="false" styleClass="auth-message-box">
+                <Label fx:id="errorLabel" text=" " wrapText="true" styleClass="auth-message-error"/>
+                <Label fx:id="messageLabel" text=" " wrapText="true" styleClass="auth-message-success"/>
+                <Label fx:id="institutionIdLabel" text=" " wrapText="true" styleClass="auth-message-success"/>
+                <Hyperlink fx:id="enrollPrincipal"
+                           visible="false" managed="false"
+                           text="Enroll Principal"
+                           onAction="#handleEnrollPrincipal"
+                           styleClass="auth-link"/>
+            </VBox>
+        </VBox>
+
+        <!-- ============ RIGHT: form panel ============ -->
+        <StackPane HBox.hgrow="ALWAYS" styleClass="auth-form-panel">
+
+            <!-- LOGIN FORM -->
+            <VBox fx:id="loginForm" spacing="16" alignment="CENTER_LEFT"
+                  maxWidth="340" styleClass="auth-form">
+
+                <Label text="Welcome back" styleClass="auth-form-title"/>
+                <Label text="Sign in to your account to continue." styleClass="auth-form-caption"/>
+
+                <VBox spacing="6">
+                    <Label text="Staff ID" styleClass="field-label"/>
+                    <TextField fx:id="usernameField" promptText="e.g. STF0012"
+                               styleClass="input"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Password" styleClass="field-label"/>
+                    <StackPane>
+                        <PasswordField fx:id="passwordField" promptText="Your password"
+                                       styleClass="input"/>
+                        <TextField fx:id="passwordTextField" promptText="Your password"
+                                   styleClass="input"
+                                   visible="false" managed="false"/>
+                    </StackPane>
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <padding><Insets top="2" right="0" bottom="0" left="0"/></padding>
+                        <CheckBox fx:id="showPasswordTick" onAction="#togglePassword"/>
+                        <Label text="Show password" styleClass="auth-muted-label"/>
+                    </HBox>
+                </VBox>
+
+                <Button fx:id="loginButton" text="Sign in"
+                        onAction="#handleLogin" maxWidth="Infinity"
+                        styleClass="btn,btn-primary,btn-lg"/>
+
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <padding><Insets top="4" right="0" bottom="0" left="0"/></padding>
+                    <Hyperlink text="Enroll staff"
+                               onAction="#handleEnrollNewStaff"
+                               styleClass="auth-link"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Hyperlink text="Register institution"
+                               onAction="#switchToSubscription"
+                               styleClass="auth-link-accent"/>
+                </HBox>
+            </VBox>
+
+            <!-- SUBSCRIPTION FORM -->
+            <VBox fx:id="subscriptionForm" spacing="16" alignment="CENTER_LEFT"
+                  maxWidth="340" visible="false" managed="false"
+                  styleClass="auth-form">
+
+                <Label text="Register institution" styleClass="auth-form-title"/>
+                <Label text="Activate EazyManage for your school with your subscription code."
+                       wrapText="true" styleClass="auth-form-caption"/>
+
+                <VBox spacing="6">
+                    <Label text="Institution name" styleClass="field-label"/>
+                    <TextField fx:id="schoolNameField" promptText="Your school's name"
+                               styleClass="input"/>
+                </VBox>
+
+                <VBox spacing="6">
+                    <Label text="Subscription code" styleClass="field-label"/>
+                    <TextField fx:id="subscriptionCodeField" promptText="Code from your invoice"
+                               styleClass="input"/>
+                </VBox>
+
+                <Button fx:id="subscribeButton" text="Activate institution"
+                        onAction="#handleSubscribe" maxWidth="Infinity"
+                        styleClass="btn,btn-primary,btn-lg"/>
+
+                <Hyperlink text="← Back to login"
+                           fx:id="backToLoginLink"
+                           onAction="#switchToLogin"
+                           styleClass="auth-link"/>
+            </VBox>
+
+        </StackPane>
+    </HBox>
+</StackPane>
