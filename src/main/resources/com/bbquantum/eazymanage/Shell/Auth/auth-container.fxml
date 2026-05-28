@@ -27,7 +27,11 @@
                 <Label text="E" styleClass="auth-logo-letter"/>
             </StackPane>
 
-            <Label text="EazyManage" styleClass="auth-brand-title"/>
+            <HBox spacing="5">
+                <Label text="EazyManage" styleClass="auth-brand-title"/>
+                <Label text="\@Bynex Technologies" wrapText="true"
+                       styleClass="auth-brand-subtitle"/>
+            </HBox>
             <Label text="Smart school management — records, attendance, results and finance in one place."
                    wrapText="true" styleClass="auth-brand-subtitle"/>
 
