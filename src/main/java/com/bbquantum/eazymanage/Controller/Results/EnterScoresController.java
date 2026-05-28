@@ -75,6 +75,8 @@ public class EnterScoresController {
     private SubjectsHolder  currentSubject;
     private SemesterCaching currentSemester;
 
+    private List<TableColumn<StudentsScoresTable, String>> editableColumns;
+
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
@@ -106,9 +108,6 @@ public class EnterScoresController {
         subjectChoice.valueProperty().addListener((obs, oldVal, newVal) -> refreshFetchButtonState());
         semesterChoice.valueProperty().addListener((obs, oldVal, newVal) -> refreshFetchButtonState());
 
-        // Table — student id & name are read-only; the 6 score columns
-        // are TextField editors. Cell value factories return string
-        // properties wrapping the underlying StudentsScoresTable fields.
         scoresTable.setItems(rows);
 
         studentIdCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStudentId())));
@@ -119,6 +118,8 @@ public class EnterScoresController {
         configureEditableColumn(ct2Col,        StudentsScoresTable::getClassTest2Score,    StudentsScoresTable::setClassTest2Score, true);
         configureEditableColumn(projectCol,    StudentsScoresTable::getProjectScore,       StudentsScoresTable::setProjectScore, true);
         configureEditableColumn(examCol,       StudentsScoresTable::getExamScore,          StudentsScoresTable::setExamScore, true);
+
+        editableColumns = List.of(ct1Col, groupWorkCol, ct2Col, projectCol, examCol);
 
         // calculated, not editable.
         configureReadOnlyColumn(classScoreCol, StudentsScoresTable::getClassScore);
@@ -135,8 +136,12 @@ public class EnterScoresController {
             BiConsumer<StudentsScoresTable, String> setter,
             boolean recalcOnCommit) {
 
-        col.setCellValueFactory(c -> new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
-        col.setCellFactory(c -> new TextFieldTableCell<>(new DefaultStringConverter()));
+        col.setCellValueFactory(c ->
+                new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
+
+        col.setCellFactory(c ->
+                new TextFieldTableCell<>(new DefaultStringConverter()));
+
         col.setEditable(true);
         col.setOnEditCommit(e -> {
             setter.accept(e.getRowValue(), e.getNewValue());
@@ -151,7 +156,8 @@ public class EnterScoresController {
             TableColumn<StudentsScoresTable, String> col,
             Function<StudentsScoresTable, String> getter) {
 
-        col.setCellValueFactory(c -> new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
+        col.setCellValueFactory(c ->
+                new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
         col.setEditable(false);
         // Visually distinguish the computed cells from editable inputs.
         col.setCellFactory(c -> {
