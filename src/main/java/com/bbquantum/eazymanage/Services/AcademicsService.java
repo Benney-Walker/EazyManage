@@ -151,7 +151,8 @@ public class AcademicsService {
         Task<SubjectDTO> task = new Task<>() {
             @Override
             protected SubjectDTO call() throws Exception {
-                String url = core.ADMIN_URL + core.API_VERSION_1 + "/load-subject-data/" + staffId + "/" + subjectId;
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/load-subject-data/" +
+                        staffId + "/" + subjectId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
