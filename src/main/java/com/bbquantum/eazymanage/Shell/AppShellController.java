@@ -2,7 +2,9 @@ package com.bbquantum.eazymanage.Shell;
 
 import com.bbquantum.eazymanage.Constants.NavItemStatus;
 import com.bbquantum.eazymanage.Controller.Academics.AcademicSetupTabController;
+import com.bbquantum.eazymanage.Controller.Attendance.AttendanceTabController;
 import com.bbquantum.eazymanage.Controller.AuditLogs.AuditLogsController;
+import com.bbquantum.eazymanage.Controller.Conduct.ConductController;
 import com.bbquantum.eazymanage.Controller.Finance.FinanceTabController;
 import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
 import com.bbquantum.eazymanage.Controller.Results.ResultsTabController;

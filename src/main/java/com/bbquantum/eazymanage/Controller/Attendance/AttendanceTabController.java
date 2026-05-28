@@ -1,7 +1,5 @@
-package com.bbquantum.eazymanage.Shell;
+package com.bbquantum.eazymanage.Controller.Attendance;
 
-import com.bbquantum.eazymanage.Controller.Attendance.MarkAttendanceController;
-import com.bbquantum.eazymanage.Controller.Attendance.ViewAttendanceController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
