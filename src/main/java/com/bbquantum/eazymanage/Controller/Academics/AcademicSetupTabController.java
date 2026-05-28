@@ -60,7 +60,7 @@ public class AcademicSetupTabController {
     private void loadSemesters() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Academics/SemestersSection.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Academics/SemesterSection.fxml"));
             Parent content = loader.load();
             SemestersSectionController controller = loader.getController();
             controller.attach(role, staffId);
