@@ -74,17 +74,7 @@ public class ConductService {
         new Thread(task).start();
     }
 
-    /**
-     * Save (upsert) one student's conduct record for the current semester.
-     *
-     * <p>Backend contract:
-     * <pre>
-     *   PUT  /staff/v1/conduct-record
-     *   Headers: Authorization, staffId
-     *   Body:    full StudentConductRecord JSON (booleans nullable)
-     *   200 OK   on success
-     * </pre>
-     */
+
     public void saveStudentConduct(StudentConductRecord record, String staffId,
                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
@@ -96,14 +86,12 @@ public class ConductService {
                 requestBody.addProperty("studentId", record.getStudentId());
                 requestBody.addProperty("studentName", record.getStudentName());
                 requestBody.addProperty("semesterId", record.getSemesterId());
-                addNullable(requestBody, "punctuality", record.getPunctuality());
-                addNullable(requestBody, "attendance", record.getAttendance());
-                addNullable(requestBody, "neatness", record.getNeatness());
-                addNullable(requestBody, "respectForAuthority", record.getRespectForAuthority());
-                addNullable(requestBody, "cooperationWithPeers", record.getCooperationWithPeers());
-                addNullable(requestBody, "classParticipation", record.getClassParticipation());
-                addNullable(requestBody, "completionOfAssignments", record.getCompletionOfAssignments());
-                addNullable(requestBody, "honesty", record.getHonesty());
+                requestBody.addProperty("regular", record.getRegular());
+                requestBody.addProperty("punctual", record.getPunctual());
+                requestBody.addProperty("physicalAppearance", record.getPhysicalAppearance());
+                requestBody.addProperty("social", record.getSocial());
+                requestBody.addProperty("emotional", record.getEmotional());
+                requestBody.addProperty("cognitiveSkills",    record.getCognitiveSkills());
                 requestBody.addProperty("conductRemark", record.getConductRemark());
 
                 HttpRequest request = HttpRequest.newBuilder()

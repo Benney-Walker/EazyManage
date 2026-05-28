@@ -17,13 +17,14 @@ public class NavRegistry {
     private static final Set<String> ADMIN_ONLY           = Set.of("ADMINISTRATOR");
     private static final Set<String> ACCOUNTANT_PRINCIPAL = Set.of("PRINCIPAL", "ACCOUNTANT");
     private static final Set<String> NOT_ACCOUNTANT       = Set.of("PRINCIPAL", "ADMINISTRATOR", "TEACHING_STAFF");
+    private static final Set<String> ACCOUNTANT_ONLY           = Set.of("ACCOUNTANT");
 
     private static final List<Section> SECTIONS = List.of(
             new Section("OPERATIONS", List.of(
                     new NavItem("dashboard", "Dashboard", "\u25A4", ALL, NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("attendance",  "Attendance",  "\u2713", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("results",     "Results",     "\u2605", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL, ""),
-                    new NavItem("finance",     "Finance",     "\u25C6", ACCOUNTANT_PRINCIPAL, NavItemStatus.FUNCTIONAL, ""),
+                    new NavItem("finance",     "Finance",     "\u25C6", ACCOUNTANT_ONLY, NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("students",    "Students",    "\u25CF", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL,  ""),
                     new NavItem("staff",       "Staff",       "\u25B2", PRINCIPAL_ADMIN,      NavItemStatus.FUNCTIONAL,  ""),
                     new NavItem("conduct",     "Conduct",     "\u2691", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL,  "")

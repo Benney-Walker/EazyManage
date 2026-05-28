@@ -1,5 +1,6 @@
-package com.bbquantum.eazymanage.Shell;
+package com.bbquantum.eazymanage.Controller.Conduct;
 
+import com.bbquantum.eazymanage.Constants.ConductRatings;
 import com.bbquantum.eazymanage.DTO.Academics.StudentConductRecord;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
@@ -11,7 +12,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.util.*;
@@ -27,19 +32,11 @@ public class ConductController {
     // ---- left: student list
     @FXML private TableView<StudentConductRecord> studentsTable;
     @FXML private TableColumn<StudentConductRecord, String> studentIdCol;
-    @FXML
-    private TableColumn<StudentConductRecord, String> studentNameCol;
+    @FXML private TableColumn<StudentConductRecord, String> studentNameCol;
 
     // ---- right: editor
     @FXML private Label selectedStudentLabel;
-    @FXML private CheckBox punctualityCheck;
-    @FXML private CheckBox attendanceCheck;
-    @FXML private CheckBox neatnessCheck;
-    @FXML private CheckBox respectForAuthorityCheck;
-    @FXML private CheckBox cooperationWithPeersCheck;
-    @FXML private CheckBox classParticipationCheck;
-    @FXML private CheckBox completionOfAssignmentsCheck;
-    @FXML private CheckBox honestyCheck;
+    @FXML private VBox rubricContainer;
     @FXML private TextArea conductRemarkField;
     @FXML private Label saveStatusLabel;
     @FXML private Button saveButton;
@@ -47,10 +44,9 @@ public class ConductController {
 
     // ---- identity (set by AppShellController after FXML load)
     private String staffId;
-    @SuppressWarnings("unused")  // kept for symmetry with other shell controllers; conduct doesn't yet branch on role
+    @SuppressWarnings("unused")
     private String role;
 
-    // ---- model state
     // ---- model state
     private final ApiCore apiCore = new ApiCore();
     private final ConductService conductService = new ConductService(apiCore);
@@ -58,16 +54,40 @@ public class ConductController {
     private final Map<String, StudentConductRecord> recordsById = new HashMap<>();
     private StudentConductRecord currentlyEdited;
 
+    private final List<Category> categories = List.of(
+            new Category("REGULAR", StudentConductRecord::getRegular, StudentConductRecord::setRegular),
+            new Category("PUNCTUAL", StudentConductRecord::getPunctual, StudentConductRecord::setPunctual),
+            new Category("PHYSICAL APPEARANCE", StudentConductRecord::getPhysicalAppearance, StudentConductRecord::setPhysicalAppearance),
+            new Category("SOCIAL", StudentConductRecord::getSocial, StudentConductRecord::setSocial),
+            new Category("EMOTIONAL",  StudentConductRecord::getEmotional, StudentConductRecord::setEmotional),
+            new Category("COGNITIVE SKILLS", StudentConductRecord::getCognitiveSkills, StudentConductRecord::setCognitiveSkills)
+    );
+
+    /** The toggle cell for [category][rating]. Built once in initialize(). */
+    private ToggleButton[][] cells;
+    /** One toggle group per category row so only one rating can be active. */
+    private ToggleGroup[] rowGroups;
+
     @FXML
     private void initialize() {
         // ---- choice rendering
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override
+            public String toString(GradeCaching g) {
+                return g == null ? "" : g.getLevelName();
+            }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
         });
         semesterChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SemesterCaching s) { return s == null ? "" : s.getSemesterName(); }
-            @Override public SemesterCaching fromString(String s) { return null; }
+            @Override
+            public String toString(SemesterCaching s) {
+                return s == null ? "" : s.getSemesterName();
+            }
+
+            @Override
+            public SemesterCaching fromString(String s) { return null; }
         });
 
         // Populate from caches; if empty, the user has not yet loaded their
@@ -87,9 +107,80 @@ public class ConductController {
         studentsTable.getSelectionModel().selectedItemProperty()
                 .addListener((obs, oldSel, newSel) -> bindEditorTo(newSel));
 
+        buildRubricGrid();
         // Save/reset start disabled until a student is selected.
         saveButton.setDisable(true);
         resetButton.setDisable(true);
+    }
+
+    private void buildRubricGrid() {
+        String[] ratingLabels = StudentConductRecord.RATING_LABELS;
+
+        cells = new ToggleButton[categories.size()][ConductRatings.values().length];
+        rowGroups = new ToggleGroup[categories.size()];
+
+        // Header row
+        HBox header = new HBox();
+        header.getStyleClass().add("rubric-header-row");
+        Label corner = new Label("CONDUCT");
+        corner.getStyleClass().add("rubric-corner");
+        corner.setMinWidth(170);
+        corner.setMaxWidth(170);
+        header.getChildren().add(corner);
+        for (String rl : ratingLabels) {
+            Label h = new Label(rl);
+            h.getStyleClass().add("rubric-col-header");
+            h.setAlignment(Pos.CENTER);
+            HBox.setHgrow(h, Priority.ALWAYS);
+            h.setMaxWidth(Double.MAX_VALUE);
+            header.getChildren().add(h);
+        }
+        rubricContainer.getChildren().add(header);
+
+        // Category rows
+        for (int r = 0; r < categories.size(); r++) {
+            Category cat = categories.get(r);
+            HBox row = new HBox();
+            row.getStyleClass().add("rubric-row");
+
+            Label rowLabel = new Label(cat.getLabel());
+            rowLabel.getStyleClass().add("rubric-row-label");
+            rowLabel.setMinWidth(170);
+            rowLabel.setMaxWidth(170);
+            rowLabel.setWrapText(true);
+            row.getChildren().add(rowLabel);
+
+            ToggleGroup group = new ToggleGroup();
+            rowGroups[r] = group;
+
+            for (int c = 0; c < ConductRatings.values().length; c++) {
+                ToggleButton cell = new ToggleButton();
+                cell.getStyleClass().add("rubric-cell");
+                cell.setToggleGroup(group);
+                cell.setMaxWidth(Double.MAX_VALUE);
+                cell.setMaxHeight(Double.MAX_VALUE);
+                HBox.setHgrow(cell, Priority.ALWAYS);
+                cell.setUserData(ConductRatings.values()[c]);
+
+                // Click an already-selected cell to clear it. Without this,
+                // a ToggleGroup never lets you get back to "none selected".
+                final ToggleButton thisCell = cell;
+                cell.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, ev -> {
+                    if (thisCell.isSelected()) {
+                        group.selectToggle(null);
+                        ev.consume();
+                    }
+                });
+
+                cells[r][c] = cell;
+                row.getChildren().add(cell);
+
+
+                cell.selectedProperty().addListener((obs, was, now) ->
+                        cell.setText(now ? "\u2713" : ""));
+            }
+            rubricContainer.getChildren().add(row);
+        }
     }
 
     /** Called by the shell after FXML load. Triggers initial data load if both selectors have a default. */
@@ -131,8 +222,6 @@ public class ConductController {
         recordsById.clear();
         if (incoming == null) return;
         for (StudentConductRecord r : incoming) {
-            // Stamp the semesterId locally so saves go to the right place even
-            // if the backend didn't echo it back.
             if (r.getSemesterId() == null && semesterChoice.getValue() != null) {
                 r.setSemesterId(semesterChoice.getValue().getSemesterId());
             }
@@ -146,58 +235,66 @@ public class ConductController {
         }
     }
 
-    /** Pull the selected student's record into the editor controls. */
+    /** Pull the selected student's record into the rubric grid. */
     private void bindEditorTo(StudentConductRecord r) {
         currentlyEdited = r;
         if (r == null) {
             selectedStudentLabel.setText("Select a student from the list to begin");
-            setIndeterminate(punctualityCheck, attendanceCheck, neatnessCheck, respectForAuthorityCheck,
-                    cooperationWithPeersCheck, classParticipationCheck, completionOfAssignmentsCheck, honestyCheck);
+            clearGrid();
             conductRemarkField.clear();
             saveButton.setDisable(true);
             resetButton.setDisable(true);
             return;
         }
         selectedStudentLabel.setText(safe(r.getStudentName()) + "  ·  " + safe(r.getStudentId()));
-        applyBool(punctualityCheck,             r.getPunctuality());
-        applyBool(attendanceCheck,              r.getAttendance());
-        applyBool(neatnessCheck,                r.getNeatness());
-        applyBool(respectForAuthorityCheck,     r.getRespectForAuthority());
-        applyBool(cooperationWithPeersCheck,    r.getCooperationWithPeers());
-        applyBool(classParticipationCheck,      r.getClassParticipation());
-        applyBool(completionOfAssignmentsCheck, r.getCompletionOfAssignments());
-        applyBool(honestyCheck,                 r.getHonesty());
+        for (int row = 0; row < categories.size(); row++) {
+            applyRating(row, categories.get(row).getGetter().apply(r));
+        }
         conductRemarkField.setText(r.getConductRemark() == null ? "" : r.getConductRemark());
         saveButton.setDisable(false);
         resetButton.setDisable(false);
         setStatus("");
     }
 
-    /** Push current editor state into the bound record and persist to backend. */
+    /** Select the cell in row {@code row} matching {@code rating}, or clear
+     *  the row if the rating is null / unrecognised. */
+    private void applyRating(int row, String rating) {
+        rowGroups[row].selectToggle(null);
+        if (rating == null) return;
+
+        int c = ConductRatings.valueOf(rating).ordinal();
+        cells[row][c].setSelected(true);
+    }
+
+    private void clearGrid() {
+        if (rowGroups == null) return;
+        for (ToggleGroup g : rowGroups) g.selectToggle(null);
+    }
+
+    /** Read the selected rating for a category row, or null if none picked. */
+    private String ratingOf(int row) {
+        Toggle sel = rowGroups[row].getSelectedToggle();
+        return sel == null ? null : (String) sel.getUserData();
+    }
+
+    /** Push grid state into the bound record and persist. */
     @FXML
     private void onSave() {
         if (currentlyEdited == null) return;
-        currentlyEdited.setPunctuality            (booleanOf(punctualityCheck));
-        currentlyEdited.setAttendance             (booleanOf(attendanceCheck));
-        currentlyEdited.setNeatness               (booleanOf(neatnessCheck));
-        currentlyEdited.setRespectForAuthority    (booleanOf(respectForAuthorityCheck));
-        currentlyEdited.setCooperationWithPeers   (booleanOf(cooperationWithPeersCheck));
-        currentlyEdited.setClassParticipation     (booleanOf(classParticipationCheck));
-        currentlyEdited.setCompletionOfAssignments(booleanOf(completionOfAssignmentsCheck));
-        currentlyEdited.setHonesty                (booleanOf(honestyCheck));
-        currentlyEdited.setConductRemark          (conductRemarkField.getText());
+        for (int row = 0; row < categories.size(); row++) {
+            categories.get(row).getSetter().accept(currentlyEdited, ratingOf(row));
+        }
+        currentlyEdited.setConductRemark(conductRemarkField.getText());
 
         saveButton.setDisable(true);
         setStatus("Saving…");
 
-        // Snapshot the id so callbacks aren't fooled by a row-switch mid-save.
         String savingId = currentlyEdited.getStudentId();
 
         conductService.saveStudentConduct(currentlyEdited, staffId,
                 () -> Platform.runLater(() -> {
                     setStatus("Saved at " + nowText());
                     saveButton.setDisable(false);
-                    // Refresh the row in the table so any future re-bind sees latest values
                     refreshRow(savingId);
                 }),
                 () -> Platform.runLater(() -> {
@@ -217,29 +314,6 @@ public class ConductController {
     }
 
     // ---- helpers --------------------------------------------------------
-
-    private static void applyBool(CheckBox box, Boolean v) {
-        if (v == null) {
-            box.setIndeterminate(true);
-            box.setSelected(false);
-        } else {
-            box.setIndeterminate(false);
-            box.setSelected(v);
-        }
-    }
-
-    /** Convert a tri-state CheckBox into a nullable Boolean. */
-    private static Boolean booleanOf(CheckBox box) {
-        if (box.isIndeterminate()) return null;
-        return box.isSelected();
-    }
-
-    private static void setIndeterminate(CheckBox... boxes) {
-        for (CheckBox b : boxes) {
-            b.setIndeterminate(true);
-            b.setSelected(false);
-        }
-    }
 
     private void setStatus(String text) {
         saveStatusLabel.setText(text == null ? "" : text);
@@ -261,11 +335,5 @@ public class ConductController {
 
     private static String nowText() {
         return java.time.LocalTime.now().withNano(0).toString();
-    }
-
-    // Constructor-call helper retained for parity with code-review style.
-    @SuppressWarnings("unused")
-    private static List<String> studentIdsOf(List<StudentConductRecord> rs) {
-        return rs == null ? new ArrayList<>() : rs.stream().map(StudentConductRecord::getStudentId).collect(Collectors.toList());
     }
 }

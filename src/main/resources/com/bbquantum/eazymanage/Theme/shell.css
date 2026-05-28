@@ -1,20 +1,3 @@
-/* ============================================================================
-   EazyManage — Shell-specific styles (Phase 2)
-   ----------------------------------------------------------------------------
-   Extends components.css with classes used exclusively by the new application
-   shell (AppShell.fxml). References only design tokens from
-   light-theme.css / dark-theme.css — never raw hex.
-
-   Loaded automatically by AppShell.fxml's own <stylesheets> block so that
-   adopting Phase 2 does not require modifying Phase 1's ThemeManager.
-============================================================================ */
-
-
-/* ---------------------------------------------------------------------------
-   Sidebar — additions to components.css
---------------------------------------------------------------------------- */
-
-/* Emerald brand square in sidebar header */
 .brand-mark {
     -fx-background-color: -color-accent;
     -fx-background-radius: 8;
@@ -49,7 +32,11 @@
     -fx-font-weight: 600;
 }
 .sidebar-user-role {
-    -fx-text-fill: -color-sidebar-text-muted;
+    /* Was -color-sidebar-text-muted (#64748B), which disappears against
+       the dark sidebar. Reuse the active text colour with reduced opacity
+       so it reads as subordinate to the name but still legible. */
+    -fx-text-fill: -color-sidebar-text-active;
+    -fx-opacity: 0.7;
     -fx-font-size: 10px;
     -fx-font-weight: 600;
 }
@@ -68,16 +55,23 @@
     -fx-text-fill: -color-sidebar-text-active;
 }
 
-/* Icon glyph inside a sidebar-item button */
+/* Icon glyph inside a sidebar-item button.
+   Mirrors the label colour: white when the item is inactive (so the icon
+   and text read as one unit on the dark sidebar) and dark when the item
+   is active (because the active state inverts to white background +
+   dark text). */
 .nav-icon {
-    -fx-text-fill: -color-sidebar-text;
+    -fx-text-fill: -color-sidebar-text-active;
     -fx-font-size: 15px;
     -fx-min-width: 20;
     -fx-alignment: center;
 }
-.sidebar-item:hover .nav-icon,
-.sidebar-item-active .nav-icon {
+.sidebar-item:hover .nav-icon {
     -fx-text-fill: -color-sidebar-text-active;
+}
+.sidebar-item-active .nav-icon,
+.sidebar-item-active:hover .nav-icon {
+    -fx-text-fill: #0F172A;
 }
 
 /* When the sidebar is collapsed, hide labels and centre the icon */
