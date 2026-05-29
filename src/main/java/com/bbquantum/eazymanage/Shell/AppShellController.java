@@ -11,7 +11,7 @@ import com.bbquantum.eazymanage.Controller.Results.ResultsTabController;
 import com.bbquantum.eazymanage.Controller.Settings.SettingsController;
 import com.bbquantum.eazymanage.Controller.Staff.StaffTabController;
 import com.bbquantum.eazymanage.Controller.Students.StudentsTabController;
-import com.bbquantum.eazymanage.Controller.WebSocket.BroadcastsController;
+import com.bbquantum.eazymanage.Controller.Broadcasts.BroadcastsController;
 import com.bbquantum.eazymanage.EazyManage;
 import com.bbquantum.eazymanage.Records.NavItem;
 import com.bbquantum.eazymanage.Records.Section;
@@ -642,7 +642,7 @@ public class AppShellController {
                     "/com/bbquantum/eazymanage/Shell/Messaging/Broadcasts.fxml"));
             Parent root = loader.load();
             BroadcastsController controller = loader.getController();
-            controller.setIdentity(role);
+            controller.setIdentity(staffId, role);
             return root;
         } catch (Exception e) {
             e.printStackTrace();

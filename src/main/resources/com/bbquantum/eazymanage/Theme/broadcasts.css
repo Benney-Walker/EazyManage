@@ -12,3 +12,34 @@
     -fx-border-color: -color-border;
     -fx-border-radius: 6;
 }
+
+/* ----- Card containers for the audience + message sections ----- */
+.form-card {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 16 20 16 20;
+}
+.form-section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+}
+.form-hint {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-muted;
+}
+
+/* Audience checkboxes inside the flow panes */
+.audience-check {
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 4 10 4 0;
+}
+
+/* Transparent scroll for the form body */
+.transparent-scroll              { -fx-background-color: transparent; }
+.transparent-scroll > .viewport  { -fx-background-color: transparent; }
+
+/* Action bar at the bottom */
+.action-bar { -fx-background-color: -color-bg; }

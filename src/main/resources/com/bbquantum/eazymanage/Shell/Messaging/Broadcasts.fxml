@@ -3,26 +3,20 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-
-<!--
-    Broadcasts composer (Phase 6).
-
-    A simple form: priority dropdown, audience checkboxes (or "All"),
-    title, body, send button. Inbound broadcasts arriving while this
-    screen is open are NOT mirrored here — they flow into the bell
-    notification center just like every other notification.
--->
 <?import java.net.URL?>
+
+
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.bbquantum.eazymanage.Controller.WebSocket.BroadcastsController"
+      fx:controller="com.bbquantum.eazymanage.Controller.Broadcasts.BroadcastsController"
       styleClass="broadcasts-screen"
       spacing="0">
 
@@ -34,47 +28,74 @@
     <VBox styleClass="page-header" spacing="4">
         <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
         <Label text="Broadcasts" styleClass="page-title"/>
-        <Label text="Send a message to other staff in real time."
+        <Label text="Send announcements to staff (by role) and guardians (by class) via email and SMS."
                styleClass="page-subtitle" wrapText="true"/>
     </VBox>
 
     <Separator/>
 
-    <!-- Form -->
-    <VBox spacing="14" VBox.vgrow="ALWAYS">
-        <padding><Insets top="16" right="24" bottom="16" left="24"/></padding>
+    <!-- Form body in a scroll pane so the screen still works on smaller windows -->
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER"
+                styleClass="transparent-scroll">
+        <VBox spacing="20">
+            <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
 
-        <!-- Priority + Audience -->
-        <HBox spacing="24" alignment="CENTER_LEFT">
-            <VBox spacing="4">
-                <Label text="Priority" styleClass="field-label"/>
-                <ChoiceBox fx:id="priorityChoice" prefWidth="160"/>
+            <!-- ===== Audience ===== -->
+            <VBox spacing="14" styleClass="form-card">
+                <Label text="Audience" styleClass="form-section-title"/>
+                <Label text="Pick any combination of staff roles and classes. At least one must be selected."
+                       styleClass="form-hint" wrapText="true"/>
+
+                <!-- Staff roles -->
+                <VBox spacing="6">
+                    <Label text="Staff (by role)" styleClass="field-label"/>
+                    <FlowPane fx:id="staffRolesRow" hgap="14" vgap="8"/>
+                </VBox>
+
+                <Separator/>
+
+                <!-- Guardian classes -->
+                <VBox spacing="6">
+                    <Label text="Guardians (by student's class)" styleClass="field-label"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <CheckBox fx:id="allClassesCheck" text="Select all classes"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="classesSelectedLabel" styleClass="form-hint"/>
+                    </HBox>
+                    <FlowPane fx:id="classesRow" hgap="14" vgap="8"/>
+                </VBox>
             </VBox>
 
-            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                <Label text="Audience" styleClass="field-label"/>
-                <HBox fx:id="audienceRow" spacing="12" alignment="CENTER_LEFT"/>
+            <!-- ===== Message ===== -->
+            <VBox spacing="14" styleClass="form-card">
+                <Label text="Message" styleClass="form-section-title"/>
+
+                <VBox spacing="4">
+                    <Label text="Email subject" styleClass="field-label"/>
+                    <TextField fx:id="emailSubjectField"
+                               promptText="Short headline that becomes the email subject line"
+                               styleClass="broadcast-input"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="Email body" styleClass="field-label"/>
+                    <TextArea fx:id="emailBodyField"
+                              promptText="Full email body. Recipients with email on file receive this."
+                              wrapText="true" prefRowCount="8"
+                              styleClass="broadcast-input"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="SMS text" styleClass="field-label"/>
+                    <TextArea fx:id="smsTextField"
+                              promptText="Short SMS for recipients with phone on file. Keep under 160 characters."
+                              wrapText="true" prefRowCount="3"
+                              styleClass="broadcast-input"/>
+                    <Label fx:id="smsCounterLabel" styleClass="form-hint"/>
+                </VBox>
             </VBox>
-        </HBox>
-
-        <!-- Title -->
-        <VBox spacing="4">
-            <Label text="Title" styleClass="field-label"/>
-            <TextField fx:id="titleField"
-                       promptText="Short headline (shown in the notification bell)"
-                       styleClass="broadcast-input"/>
         </VBox>
-
-        <!-- Body -->
-        <VBox spacing="4" VBox.vgrow="ALWAYS">
-            <Label text="Message" styleClass="field-label"/>
-            <TextArea fx:id="bodyField"
-                      promptText="The body of your broadcast. Newlines are preserved."
-                      wrapText="true"
-                      VBox.vgrow="ALWAYS"
-                      styleClass="broadcast-input"/>
-        </VBox>
-    </VBox>
+    </ScrollPane>
 
     <!-- Action bar -->
     <VBox styleClass="action-bar">
@@ -82,13 +103,13 @@
         <HBox alignment="CENTER_LEFT" spacing="12">
             <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
 
-            <Label fx:id="connectionStatusLabel" styleClass="save-status"/>
+            <Label fx:id="statusLabel" styleClass="save-status"/>
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <Label fx:id="statusLabel" styleClass="save-status"/>
-            <Button fx:id="clearButton" text="Clear" onAction="#onClear" styleClass="btn,btn-ghost"/>
-            <Button fx:id="sendButton"  text="Send broadcast"
+            <Button fx:id="clearButton" text="Clear" onAction="#onClear"
+                    styleClass="btn,btn-ghost"/>
+            <Button fx:id="sendButton" text="Send broadcast"
                     onAction="#onSend" styleClass="btn,btn-primary"/>
         </HBox>
     </VBox>

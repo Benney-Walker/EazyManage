@@ -67,4 +67,6 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Controller.Conduct to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.Auth;
     opens com.bbquantum.eazymanage.Controller.Auth to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Broadcasts;
+    opens com.bbquantum.eazymanage.Controller.Broadcasts to javafx.fxml;
 }
