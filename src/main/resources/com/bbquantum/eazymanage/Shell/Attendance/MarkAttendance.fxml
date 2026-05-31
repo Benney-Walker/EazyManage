@@ -12,31 +12,22 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Mark Attendance flow (Phase 9a).
 
-    Layout (top to bottom):
-      1. Class picker row — ChoiceBox + "Fetch students" button.
-      2. Optional class info banner (visible after a successful fetch).
-      3. Attendance table — student rows with toggle controls per row.
-      4. Action bar at the bottom — Save / Cancel + progress bar during save.
-
-    Status semantics: each row's status is one of PRESENT / ABSENT. The
-    table renders the status via a custom radio cell (Phase 1 control).
-    Default status when newly fetched: PRESENT for every student. The
-    teacher toggles whoever's absent.
--->
+<?import javafx.scene.control.DatePicker?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Attendance.MarkAttendanceController"
       styleClass="mark-attendance"
       spacing="0">
 
-    <!-- Class picker -->
+    <!-- Toolbar -->
     <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
         <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
 
         <Label text="Class" styleClass="field-label"/>
         <ChoiceBox fx:id="classChoice" prefWidth="220"/>
+
+        <Label text="Date" styleClass="field-label"/>
+        <DatePicker fx:id="datePicker" prefWidth="160"/>
 
         <Region HBox.hgrow="ALWAYS"/>
 
