@@ -56,7 +56,7 @@
             <Label fx:id="recordSubtitleLabel" styleClass="info-subtitle"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="dirtyCountLabel" styleClass="info-subtitle"/>
+        <Label text="View only. You can't save changes" styleClass="info-subtitle"/>
     </HBox>
 
     <!-- Table -->
@@ -90,8 +90,6 @@
             <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="cancelButton" text="Reset" onAction="#onReset"
                     styleClass="btn,btn-ghost"/>
-            <Button fx:id="saveButton" text="Save changes" onAction="#onSave"
-                    styleClass="btn,btn-primary" disable="true"/>
         </HBox>
     </VBox>
 </VBox>
