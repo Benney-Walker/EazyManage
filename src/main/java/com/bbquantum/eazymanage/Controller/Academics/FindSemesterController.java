@@ -133,12 +133,12 @@ public class FindSemesterController {
             return;
         }
 
-        FindSemester out = new FindSemester();
-        out.setSemesterID(currentSemester.getSemesterID());
-        out.setSemesterName(name);
-        out.setAcademicYear(year);
-        out.setSemesterStartDate(s.toString());
-        out.setSemesterEndDate(e.toString());
+        FindSemester semesterInfo = new FindSemester();
+        semesterInfo.setSemesterID(currentSemester.getSemesterID());
+        semesterInfo.setSemesterName(name);
+        semesterInfo.setAcademicYear(year);
+        semesterInfo.setSemesterStartDate(s.toString());
+        semesterInfo.setSemesterEndDate(e.toString());
 
         saveButton.setDisable(true);
         setSaveStatus("Saving…");
