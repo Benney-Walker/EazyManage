@@ -2,10 +2,6 @@ package com.bbquantum.eazymanage.Utitity;
 
 import com.bbquantum.eazymanage.CacheClasses.*;
 import com.bbquantum.eazymanage.Constants.StaffRoles;
-import com.bbquantum.eazymanage.Controller.AdminController;
-import com.bbquantum.eazymanage.Controller.FinanceController;
-import com.bbquantum.eazymanage.Controller.PrincipalController;
-import com.bbquantum.eazymanage.Controller.StaffController;
 import com.bbquantum.eazymanage.DTO.Academics.*;
 import com.bbquantum.eazymanage.DTO.Finance.GradeFeesReport;
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
@@ -264,46 +260,6 @@ public class UtilityClass {
             writer.println("---------------------------------------------------------------");
             writer.println("Total Students: " + records.size());
             writer.println("Generated on: " + LocalDate.now());
-        }
-    }
-
-    public static void findController(String role, String staffId, String institutionName, String staffFullName, FXMLLoader loader) {
-        if (role.equals("PRINCIPAL")) {
-            PrincipalController principalController = loader.getController();
-            principalController.setInstitutionName(institutionName);
-            principalController.setStaffId(staffId);
-            principalController.setPrincipalName(staffFullName);
-            principalController.setStaffRole(role);
-
-            principalController.initializeAfterLogin();
-        }
-
-        if (role.equals("ACCOUNTANT")) {
-            FinanceController financeController = loader.getController();
-            financeController.setInstitutionName(institutionName);
-            financeController.setStaffId(staffId);
-            financeController.setStaffName(staffFullName);
-            financeController.setStaffRole(role);
-
-            financeController.initializeAfterLogin();
-        }
-
-        if (role.equals("TEACHING_STAFF")) {
-            StaffController staffController = loader.getController();
-            staffController.setInstitutionName(institutionName);
-            staffController.setStaffId(staffId);
-            staffController.setStaffFullName(staffFullName);
-
-            staffController.initializeAfterLogin();
-        }
-
-        if (role.equals("ADMINISTRATOR")) {
-            AdminController adminController = loader.getController();
-            adminController.setInstitutionName(institutionName);
-            adminController.setStaffId(staffId);
-            adminController.setStaffFullName(staffFullName);
-
-            adminController.initializeAfterLogin();
         }
     }
 }
