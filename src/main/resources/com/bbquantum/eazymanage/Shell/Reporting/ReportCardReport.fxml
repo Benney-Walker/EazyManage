@@ -13,24 +13,9 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Student Report Card viewer (Phase 5d).
 
-    Top: breadcrumb + filters (class, semester).
-    Left: student picker (rows from loadClassStudents).
-    Right: a paper-style preview of the report card with school header,
-           student info, academic results table, conduct grid (Phase 4
-           booleans rendered as ✓ / ✗ / —), per-subject teacher remarks,
-           overall semester remark, signature line.
-
-    Bottom: Download PDF.
-
-    Conduct rows and remarks display blank "Not yet recorded" placeholders
-    when the backend returns null for those sections — the report card is
-    viewable as soon as academic results exist, even if a class teacher
-    hasn't entered conduct yet.
--->
 <?import java.net.URL?>
+<?import javafx.scene.control.TextField?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Report.ReportCardReportController"
       styleClass="report-viewer"
