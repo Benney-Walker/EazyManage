@@ -191,6 +191,10 @@
                 <Separator/>
                 <HBox alignment="CENTER_LEFT" spacing="12">
                     <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+
+                    <Label fx:id="promotionLabel" text="Promotion (optional)" styleClass="field-label" visible="false" managed="false"/>
+                    <ChoiceBox fx:id="promotionGradeChoice" prefWidth="180" visible="false" managed="false"/>
+
                     <Region HBox.hgrow="ALWAYS"/>
                     <Label fx:id="statusLabel" styleClass="save-status"/>
                     <Button fx:id="downloadButton" text="Download PDF"
