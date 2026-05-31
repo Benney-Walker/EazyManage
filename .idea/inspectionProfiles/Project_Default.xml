@@ -19,6 +19,7 @@
       <option name="customHeaders">
         <set>
           <option value="Bearer " />
+          <option value="staffId" />
         </set>
       </option>
     </inspection_tool>
