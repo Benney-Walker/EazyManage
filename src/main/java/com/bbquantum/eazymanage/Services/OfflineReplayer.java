@@ -112,18 +112,24 @@ public class OfflineReplayer {
     private int replayAttendance(String payloadJson) throws Exception {
         AttendancePayload p = gson.fromJson(payloadJson, AttendancePayload.class);
 
-        String url = core.STAFF_URL + core.API_VERSION_1 + "/update-attendance?" +
-                "studentId=" + enc(p.studentId) +
-                "&staffId="    + enc(p.staffId) +
-                "&levelId="    + enc(p.levelId) +
-                "&status="     + enc(p.status) +
-                "&dateMarked=" + enc(p.dateMarked);
+        String url = core.STUDENT_URL + core.API_VERSION_1 + "/mark-attendance";
+
+        JsonObject requestBody = new JsonObject();
+        requestBody.addProperty("studentId", enc(p.studentId));
+        requestBody.addProperty("levelId", enc(p.levelId));
+        requestBody.addProperty("status", enc(p.status));
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .header("Authorization", "Bearer " + core.token)
-                .PUT(HttpRequest.BodyPublishers.noBody())
+                .headers(
+                        "Authorization", "Bearer " + core.token,
+                        "Content-Type", "application/json",
+                        "staffId", enc(p.staffId),
+                        "selectedDate", enc(p.dateMarked)
+                )
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                 .build();
+
         return core.httpClient.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
     }
 
