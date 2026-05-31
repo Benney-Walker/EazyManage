@@ -86,14 +86,17 @@ public class AttendanceService {
     }
 
     /** Mark a student's attendance for the current day's session. */
-    public void markStudentAttendance(String studentId, String staffId, String levelId, String status,
+    public void markStudentAttendance(String studentId, String staffId, String levelId,
+                                      String status, String currentDate,
                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         if (OfflineMode.getInstance().isEnabled()) {
             try {
                 String payload = new com.google.gson.Gson().toJson(
                         new AttendancePayload(
-                                studentId, staffId, levelId, status, /*dateMarked*/ null, "mark"));
+                                studentId, staffId, levelId, status, currentDate, "mark"
+                        )
+                );
 
                 OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
 
@@ -112,11 +115,10 @@ public class AttendanceService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = apiCore.STAFF_URL + apiCore.API_VERSION_1 + "/mark-attendance";
+                String url = apiCore.STUDENT_URL + apiCore.API_VERSION_1 + "/mark-attendance";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", studentId);
-                requestBody.addProperty("staffId", staffId);
                 requestBody.addProperty("levelId", levelId);
                 requestBody.addProperty("status", status);
 
