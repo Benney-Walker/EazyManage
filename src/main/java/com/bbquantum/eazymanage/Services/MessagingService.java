@@ -13,11 +13,8 @@ public class MessagingService {
 
     private final ApiCore core;
 
-    private final String MESSAGING_URL;
-
     public MessagingService(ApiCore core) {
         this.core = core;
-        this.MESSAGING_URL = core.BASE_URL + "/messaging";
     }
 
     public void sendBroadcast(String staffId,
@@ -29,7 +26,7 @@ public class MessagingService {
         Task<BroadcastSendResponse> task = new Task<>() {
             @Override
             protected BroadcastSendResponse call() throws Exception {
-                String url = MESSAGING_URL + core.API_VERSION_1 + "/broadcasts/send";
+                String url = core.ADMIN_URL + "/broadcasts-message";
                 String body = core.gson.toJson(request);
 
                 HttpRequest http = HttpRequest.newBuilder()
