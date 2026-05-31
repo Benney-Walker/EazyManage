@@ -58,7 +58,9 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), SubjectScores.class);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -91,7 +93,7 @@ public class AcademicsService {
     }
 
     /** Add a new subject and assign it to a grade/level. */
-    public void addNewSubject(AssignSubject assignment,
+    public void addNewSubject(AssignSubject assignment, String staffId,
                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -105,7 +107,8 @@ public class AcademicsService {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + core.token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId",  staffId)
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
@@ -114,7 +117,9 @@ public class AcademicsService {
                     return response.body();
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
+
                 return null;
             }
         };
@@ -126,7 +131,7 @@ public class AcademicsService {
                 return;
             }
 
-            ApiContext.getInstance().successMessageContainer = response;
+            ApiContext.getInstance().successMessageContainer = "Subject added successfully";
             onSuccess.run();
         });
 
@@ -152,11 +157,12 @@ public class AcademicsService {
             @Override
             protected SubjectDTO call() throws Exception {
                 String url = core.ADMIN_URL + core.API_VERSION_1 + "/load-subject-data/" +
-                        staffId + "/" + subjectId;
+                        subjectId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers("Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -165,8 +171,7 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), SubjectDTO.class);
                 }
 
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -190,7 +195,7 @@ public class AcademicsService {
                 return;
             }
 
-            com.bbquantum.eazymanage.Services.ApiContext.getInstance().errorMessageContainer = "Could not get Records";
+            ApiContext.getInstance().errorMessageContainer = "Could not get Records";
             onFailure.run();
         });
 
@@ -198,7 +203,7 @@ public class AcademicsService {
     }
 
     /** Persist edits to a subject. */
-    public void updateSubjectDetails(SubjectDTO data,
+    public void updateSubjectDetails(SubjectDTO data, String staffId,
                                      Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -213,16 +218,18 @@ public class AcademicsService {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + core.token,
-                                "Content-Type", "application/json")
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Subject successfully updated";
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -264,7 +271,8 @@ public class AcademicsService {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers("Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .DELETE()
                         .build();
 
@@ -273,8 +281,8 @@ public class AcademicsService {
                     return response.body();
                 }
 
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -326,7 +334,8 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), listType);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -386,8 +395,8 @@ public class AcademicsService {
                     return "Class added successfully";
                 }
 
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -440,8 +449,8 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), FindAndUpdateClassInfo.class);
                 }
 
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -464,7 +473,6 @@ public class AcademicsService {
                 onNetworkIssue.run();
                 return;
             }
-
 
             ApiContext.getInstance().errorMessageContainer = "Could not fetch class Info";
             onFailure.run();
@@ -496,11 +504,11 @@ public class AcademicsService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Class info updated successfully";
                 }
 
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -553,7 +561,8 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), listType);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -588,26 +597,30 @@ public class AcademicsService {
     }
 
     /** Promote all passing students out of a class. */
-    public void movePassedStudents(String levelId,
+    public void promoteStudent(String studentId, String levelId, String staffId,
                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/move-students/" + levelId;
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/promote-student/"
+                        + studentId + "/" + levelId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId
+                        )
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Promoted successfully";
                 }
 
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -632,7 +645,7 @@ public class AcademicsService {
                 return;
             }
 
-            com.bbquantum.eazymanage.Services.ApiContext.getInstance().errorMessageContainer = "Could not move passed students";
+            ApiContext.getInstance().errorMessageContainer = "Could not move passed students";
             onFailure.run();
         });
 
@@ -668,10 +681,11 @@ public class AcademicsService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return "Successfull";       // legacy spelling preserved
+                    return "semester saved Successfully";
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -708,7 +722,7 @@ public class AcademicsService {
      * <p>Legacy code wrote the parsed value to {@code adminController.semester};
      * the facade supplies that field setter via {@code onResult}.
      */
-    public void searchSemester(String semesterId,
+    public void searchSemester(String semesterId, String staffId,
                                Consumer<FindSemester> onResult,
                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<FindSemester> task = new Task<>() {
@@ -718,7 +732,10 @@ public class AcademicsService {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId
+                        )
                         .GET()
                         .build();
 
@@ -727,7 +744,8 @@ public class AcademicsService {
                     return core.gson.fromJson(response.body(), FindSemester.class);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -760,7 +778,7 @@ public class AcademicsService {
     }
 
     /** Persist edits to a semester. */
-    public void updateSemesterInfo(FindSemester info,
+    public void updateSemesterInfo(FindSemester info, String staffId,
                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -776,17 +794,21 @@ public class AcademicsService {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .headers("Authorization", "Bearer " + core.token,
-                                "Content-Type", "application/json")
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "Content-Type", "application/json",
+                                "staffId", staffId
+                        )
                         .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Successfully updated Semester information";
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -832,12 +854,14 @@ public class AcademicsService {
                         new ScoresPayload(
                                 subjectId, semesterId, staffId, scores));
                 OfflineQueue.getInstance().enqueue(OfflineQueue.OP_SAVE_SCORES, payload);
+
                 ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
-                javafx.application.Platform.runLater(onSuccess);
+                Platform.runLater(onSuccess);
             } catch (Exception e) {
                 e.printStackTrace();
+
                 ApiContext.getInstance().errorMessageContainer= "Could not queue scores: " + e.getMessage();
-                javafx.application.Platform.runLater(onFailure);
+                Platform.runLater(onFailure);
             }
             return;
         }
@@ -871,7 +895,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return "Successful";
                 }
-                ApiContext.getInstance().errorMessageContainer= response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -906,7 +932,7 @@ public class AcademicsService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.ADMIN_URL + core.API_VERSION_1 + "/set-grades";
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/new-grading-criteria";
 
                 JsonObject responseBody = new JsonObject();
                 responseBody.addProperty("lowerRange", gradingCriteria.getLowerRange());
@@ -926,7 +952,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return "Successful";
                 }
-                ApiContext.getInstance().errorMessageContainer= response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -981,7 +1009,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), StudentResult.class);
                 }
-                ApiContext.getInstance().errorMessageContainer= response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -1013,7 +1043,7 @@ public class AcademicsService {
     }
 
     /** Load the class-level results table for one semester. */
-    public void loadClassResults(String levelId, String semesterId,
+    public void loadClassResults(String levelId, String semesterId, String staffId,
                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Type listType = new TypeToken<List<ViewClassSemesterReport>>() {}.getType();
 
@@ -1026,7 +1056,10 @@ public class AcademicsService {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId
+                        )
                         .GET()
                         .build();
 
@@ -1034,7 +1067,9 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                ApiContext.getInstance().errorMessageContainer= response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -1063,30 +1098,24 @@ public class AcademicsService {
         new Thread(task).start();
     }
 
-    /**
-     * Download the class results PDF and prompt the user for a save location.
-     *
-     * <p>The legacy method reached into {@code adminController.generateReportBtn}
-     * to find the dialog's parent window. The facade supplies that via
-     * {@code parentWindow} so this service has no controller dependency.
-     */
-    public void downloadStudentsReport(String staffId, String levelId, String semesterId,
-                                       String promotionGradeId, String passScore,
-                                       Supplier<Window> parentWindow,
-                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+    public void downloadClassReportCards(String staffId, String levelId, String semesterId,
+                                         Supplier<Window> parentWindow,
+                                         Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
         Task<byte[]> task = new Task<>() {
             @Override
             protected byte[] call() throws Exception {
                 String url = core.ADMIN_URL + core.API_VERSION_2 + "/generate-class-report?" +
-                        "staffId=" + staffId +
                         "&levelId=" + levelId +
-                        "&semesterId=" + semesterId +
-                        "&promotionGradeId=" + promotionGradeId +
-                        "&passScore=" + passScore;
+                        "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId
+                        )
                         .GET()
                         .build();
 
@@ -1096,6 +1125,8 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
+
+                if (core.handleSessionExpired(response)) return null;
                 ApiContext.getInstance().errorMessageContainer= new String(response.body(), StandardCharsets.UTF_8);
                 return null;
             }
@@ -1151,7 +1182,7 @@ public class AcademicsService {
         thread.start();
     }
 
-    // ====================================================================
+    /*/ ====================================================================
     // Teacher remarks (Phase 4)
     // ====================================================================
 
@@ -1181,7 +1212,8 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer= response.body();
+
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -1237,7 +1269,8 @@ public class AcademicsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer= response.body();
+
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -1266,5 +1299,5 @@ public class AcademicsService {
         });
 
         new Thread(task).start();
-    }
+    }*/
 }

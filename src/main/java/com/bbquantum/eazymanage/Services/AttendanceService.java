@@ -52,7 +52,8 @@ public class AttendanceService {
                     return apiCore.gson.fromJson(response.body(), listType);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (apiCore.handleSessionExpired(response)) return null;
+                apiCore.checkApiResponse(response);
                 return null;
             }
         };
@@ -130,7 +131,8 @@ public class AttendanceService {
                     return response.body();
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (apiCore.handleSessionExpired(response)) return null;
+                apiCore.checkApiResponse(response);
                 return null;
             }
         };
