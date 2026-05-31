@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Controller;
+/*package com.bbquantum.eazymanage.Controller;
 
 
 import javafx.fxml.FXML;
@@ -26,4 +26,4 @@ public class RefreshController {
     public void refreshDashboard() {
         onRefresh.run();
     }
-}
+}*/

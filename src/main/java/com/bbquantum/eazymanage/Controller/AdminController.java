@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Controller;
+/*package com.bbquantum.eazymanage.Controller;
 
 import com.bbquantum.eazymanage.Constants.Gender;
 import com.bbquantum.eazymanage.Constants.StaffRoles;
@@ -1959,7 +1959,7 @@ public class AdminController implements Initializable {
     }
 
 
-    /** ---------------UTILITY METHODS FOR THIS CLASS--------------- **/
+    /** ---------------UTILITY METHODS FOR THIS CLASS--------------- *
 
     public void initializeAfterLogin() {
 
@@ -2798,4 +2798,4 @@ public class AdminController implements Initializable {
     private Window parentWindow() {
         return generateReportBtn.getScene() == null ? null : generateReportBtn.getScene().getWindow();
     }
-}
+}*/

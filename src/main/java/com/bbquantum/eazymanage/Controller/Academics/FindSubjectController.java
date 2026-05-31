@@ -183,19 +183,19 @@ public class FindSubjectController {
         if (name.isEmpty()) { setActionStatus("Subject name is required."); return; }
         if (cls == null)    { setActionStatus("Pick a class."); return; }
 
-        SubjectDTO out = new SubjectDTO();
-        out.setSubjectId(currentSubject.getSubjectId());
-        out.setSubjectName(name);
-        out.setLevelId(cls.getLevelId());
+        SubjectDTO subjectData = new SubjectDTO();
+        subjectData.setSubjectId(currentSubject.getSubjectId());
+        subjectData.setSubjectName(name);
+        subjectData.setLevelId(cls.getLevelId());
 
         saveButton.setDisable(true);
         deleteButton.setDisable(true);
         setActionStatus("Saving…");
 
-        academicsService.updateSubjectDetails(out,
+        academicsService.updateSubjectDetails(subjectData, staffId,
                 () -> Platform.runLater(() -> {
                     setActionStatus("Saved.");
-                    currentSubject = out;
+                    currentSubject = subjectData;
                     saveButton.setDisable(false);
                     deleteButton.setDisable(false);
                 }),

@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Controller;
+/*package com.bbquantum.eazymanage.Controller;
 
 import com.bbquantum.eazymanage.Constants.Gender;
 import com.bbquantum.eazymanage.Constants.StaffRoles;
@@ -1114,7 +1114,7 @@ public class PrincipalController implements Initializable {
     }
 
 
-    /*=========== Utility methods for the Class ==============*/
+    /*=========== Utility methods for the Class ==============
 
 
     public void initializeAfterLogin() {
@@ -1726,4 +1726,4 @@ public class PrincipalController implements Initializable {
         studentDetailsPanel.setManaged(true);
     }
 
-}
+}*/
