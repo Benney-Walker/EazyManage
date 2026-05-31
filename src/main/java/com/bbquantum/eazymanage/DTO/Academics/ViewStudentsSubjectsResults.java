@@ -23,9 +23,6 @@ public class ViewStudentsSubjectsResults {
 
     private String description;
 
-    /** Free-text teacher comment for this subject row (per-student, per-semester). */
-    private String teacherRemark;
-
     public ViewStudentsSubjectsResults() {}
 
     public ViewStudentsSubjectsResults(String subjectName, String classTest1Score, String groupWorkScore,
@@ -130,13 +127,5 @@ public class ViewStudentsSubjectsResults {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getTeacherRemark() {
-        return teacherRemark;
-    }
-
-    public void setTeacherRemark(String teacherRemark) {
-        this.teacherRemark = teacherRemark;
     }
 }

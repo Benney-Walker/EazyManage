@@ -2,10 +2,6 @@ package com.bbquantum.eazymanage.DTO.Academics;
 
 public class StudentReportCard {
 
-    private StudentResult academics;
-
-    private StudentConductRecord conduct;
-
     private String institutionName;
 
     private String institutionAddress;
@@ -13,6 +9,10 @@ public class StudentReportCard {
     private String headmasterName;
 
     private String issueDate;
+
+    private StudentResult academics;
+
+    private StudentConductRecord conduct;
 
     public StudentReportCard() {}
 

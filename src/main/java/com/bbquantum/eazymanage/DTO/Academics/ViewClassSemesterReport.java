@@ -11,9 +11,9 @@ public class ViewClassSemesterReport {
 
     private String semesterName;
 
-    private String total;
+    private String totalScore;
 
-    private String average;
+    private String averageScore;
 
     private String classPosition;
 
@@ -22,19 +22,19 @@ public class ViewClassSemesterReport {
     /** Free-text overall-semester teacher remark for this student. */
     private String semesterRemark;
 
-    private List<ViewStudentsSubjectsResults> subjects;
+    private List<ViewStudentsSubjectsResults> scoresList;
 
     public ViewClassSemesterReport(String studentId, String studentName, String className, String semesterName,
-                                   String classPosition, String total, String average, List<ViewStudentsSubjectsResults> subjects,
+                                   String classPosition, String totalScore, String averageScore, List<ViewStudentsSubjectsResults> scoresList,
                                    String totalStudents) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.className = className;
         this.semesterName = semesterName;
-        this.subjects = subjects;
+        this.scoresList = scoresList;
         this.classPosition = classPosition;
-        this.total = total;
-        this.average = average;
+        this.totalScore = totalScore;
+        this.averageScore = averageScore;
         this.classPosition = classPosition;
         this.totalStudents = totalStudents;
     }
@@ -71,20 +71,20 @@ public class ViewClassSemesterReport {
         this.semesterName = semesterName;
     }
 
-    public String getTotal() {
-        return total;
+    public String getTotalScore() {
+        return totalScore;
     }
 
-    public void setTotal(String total) {
-        this.total = total;
+    public void setTotalScore(String totalScore) {
+        this.totalScore = totalScore;
     }
 
-    public String getAverage() {
-        return average;
+    public String getAverageScore() {
+        return averageScore;
     }
 
-    public void setAverage(String average) {
-        this.average = average;
+    public void setAverageScore(String averageScore) {
+        this.averageScore = averageScore;
     }
 
     public String getClassPosition() {
@@ -111,11 +111,11 @@ public class ViewClassSemesterReport {
         this.semesterRemark = semesterRemark;
     }
 
-    public List<ViewStudentsSubjectsResults> getSubjects() {
-        return subjects;
+    public List<ViewStudentsSubjectsResults> getScoresList() {
+        return scoresList;
     }
 
-    public void setSubjects(List<ViewStudentsSubjectsResults> subjects) {
-        this.subjects = subjects;
+    public void setScoresList(List<ViewStudentsSubjectsResults> scoresList) {
+        this.scoresList = scoresList;
     }
 }
