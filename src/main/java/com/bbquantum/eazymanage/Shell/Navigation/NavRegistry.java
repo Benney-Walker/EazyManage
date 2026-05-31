@@ -15,7 +15,6 @@ public class NavRegistry {
     private static final Set<String> ALL                  = Set.of("PRINCIPAL", "ADMINISTRATOR", "ACCOUNTANT", "TEACHING_STAFF");
     private static final Set<String> PRINCIPAL_ADMIN      = Set.of("PRINCIPAL", "ADMINISTRATOR");
     private static final Set<String> ADMIN_ONLY           = Set.of("ADMINISTRATOR");
-    private static final Set<String> ACCOUNTANT_PRINCIPAL = Set.of("PRINCIPAL", "ACCOUNTANT");
     private static final Set<String> NOT_ACCOUNTANT       = Set.of("PRINCIPAL", "ADMINISTRATOR", "TEACHING_STAFF");
     private static final Set<String> ACCOUNTANT_ONLY           = Set.of("ACCOUNTANT");
 
