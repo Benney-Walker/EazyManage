@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class MarkAttendanceController {
 
     // ---- toolbar
     @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private DatePicker datePicker;
     @FXML private Button fetchButton;
 
     // ---- class info banner
@@ -65,6 +67,7 @@ public class MarkAttendanceController {
     private final List<StudentAttendance> pending = new ArrayList<>();
     private int currentUploadIndex = 0;
     private GradeCaching currentClass;
+    private LocalDate currentDate;
 
     @FXML
     private void initialize() {
@@ -77,8 +80,8 @@ public class MarkAttendanceController {
         List<GradeCaching> cached = UtilityClass.gradeCacheManager.getGradesCache();
         if (cached != null) classChoice.getItems().setAll(cached);
 
-        // Table — first two columns are plain strings; the last two render
-        // mutually-exclusive radio buttons backed by the same status property.
+        datePicker.setValue(LocalDate.now());
+
         studentIdCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getStudentId())));
         nameCol.setCellValueFactory(c ->
@@ -110,20 +113,20 @@ public class MarkAttendanceController {
     @FXML
     private void onFetch() {
         GradeCaching grade = classChoice.getValue();
-        if (grade == null) {
-            setStatus("Pick a class first.");
-            return;
-        }
+        if (grade == null) {setStatus("Pick a class first."); return; }
+
+        LocalDate date = datePicker.getValue();
+        if (date == null) { setStatus("Pick a date."); return; }
+
         currentClass = grade;
+        currentDate = date;
+
         setStatus("Loading students…");
         fetchButton.setDisable(true);
 
-        // Service delivers the result through a Consumer; we stash it
-        // locally and apply it in onSuccess. This avoids a global field
-        // and means our state is scoped to this controller instance.
         final List<StudentAttendance>[] holder = new List[]{null};
 
-        attendanceService.loadStudentsForAttendance(grade.getLevelId(), "no_date",
+        attendanceService.loadStudentsForAttendance(staffId, grade.getLevelId(), currentDate.toString(),
                 list -> holder[0] = list,
                 () -> Platform.runLater(() -> {
                     populateTable(holder[0]);
@@ -177,11 +180,8 @@ public class MarkAttendanceController {
 
     @FXML
     private void onSave() {
-        if (rows.isEmpty()) return;
+        if (rows.isEmpty() || currentDate == null) return;
 
-        // First-time save: snapshot the rows into `pending` for serial upload.
-        // Retry path: if `pending` is non-empty and `currentUploadIndex > 0`
-        // we leave it alone — the upload picks up where it failed.
         if (pending.isEmpty() || currentUploadIndex >= pending.size()) {
             pending.clear();
             for (StudentAttendanceUI row : rows) {
@@ -216,6 +216,7 @@ public class MarkAttendanceController {
                 staffId,
                 record.getLevelId(),
                 record.getStatus(),
+                currentDate.toString(),
                 () -> Platform.runLater(() -> {
                     currentUploadIndex++;
                     updateProgress();
