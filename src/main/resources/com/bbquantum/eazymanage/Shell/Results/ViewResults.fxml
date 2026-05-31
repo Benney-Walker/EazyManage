@@ -12,18 +12,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    View Results flow (Phase 9b) — stacked master-detail.
 
-    Layout:
-      1. Toolbar — Class + Semester pickers + Fetch button.
-      2. SplitPane (vertical) with two regions:
-         a. Top: class results table — one row per student, summary columns.
-         b. Bottom: per-student detail panel. Initially shows a placeholder.
-            When a row is clicked above, it populates with the per-subject
-            breakdown for that student.
-      3. The split is resizable so the user can give either pane more room.
--->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Results.ViewResultsController"
       styleClass="view-results"
@@ -110,7 +99,7 @@
                     <TableColumn fx:id="calcExamCol"     text="Exam (50%)"    prefWidth="85"/>
                     <TableColumn fx:id="subjectTotalCol" text="Total"         prefWidth="60"/>
                     <TableColumn fx:id="gradeCol"        text="Grade"         prefWidth="60"/>
-                    <TableColumn fx:id="teacherRemarkCol" text="Teacher Remark" prefWidth="180"/>
+                    <TableColumn fx:id="gradeDescriptor" text="Description" prefWidth="180"/>
                 </columns>
                 <placeholder>
                     <Label text="Click a row above to see that student's per-subject results."
