@@ -57,16 +57,15 @@ public class AddSubjectController {
         if (name.isEmpty()) { setStatus("Subject name is required."); return; }
         if (cls == null)    { setStatus("Pick a class."); return; }
 
-        AssignSubject out = new AssignSubject();
-        out.setStaffId(staffId);
-        out.setSubjectName(name);
-        out.setGradeId(cls.getLevelId());
+        AssignSubject newSubject = new AssignSubject();
+        newSubject.setSubjectName(name);
+        newSubject.setGradeId(cls.getLevelId());
 
         saveButton.setDisable(true);
         resetButton.setDisable(true);
         setStatus("Adding…");
 
-        academicsService.addNewSubject(out,
+        academicsService.addNewSubject(newSubject, staffId,
                 () -> Platform.runLater(() -> {
                     setStatus("Subject added.");
                     clearForm();
