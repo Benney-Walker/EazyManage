@@ -27,7 +27,7 @@ public class AttendanceService {
      * Result is delivered via {@code onResult} on the FX thread before
      * {@code onSuccess} fires.
      */
-    public void loadStudentsForAttendance(String levelId, String date,
+    public void loadStudentsForAttendance(String staffId, String levelId, String date,
                                           Consumer<List<StudentAttendance>> onResult,
                                           Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
