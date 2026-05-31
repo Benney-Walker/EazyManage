@@ -42,7 +42,8 @@ public class AttendanceService {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers(
-                                "Authorization", "Bearer " + apiCore.token
+                                "Authorization", "Bearer " + apiCore.token,
+                                "staffId", staffId
                         )
                         .GET()
                         .build();
@@ -121,8 +122,11 @@ public class AttendanceService {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .headers("Authorization", "Bearer " + apiCore.token,
-                                "Content-Type", "application/json")
+                        .headers(
+                                "Authorization", "Bearer " + apiCore.token,
+                                "staffId", staffId,
+                                "selectedId", currentDate
+                        )
                         .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
