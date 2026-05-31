@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Controller;
+package com.bbquantum.eazymanage.Controller.Auth;
 
 import com.bbquantum.eazymanage.Constants.Gender;
 import com.bbquantum.eazymanage.Constants.StaffRoles;
@@ -63,9 +63,7 @@ public class EnrollStaffController {
     @FXML private Label staffIdLabel;
     @FXML private Hyperlink backToLoginLink;
 
-    /**
-     * Initialize method
-     */
+
     @FXML
     public void initialize() {
         roleComboBox.getItems().addAll(StaffRoles.values());
@@ -76,25 +74,19 @@ public class EnrollStaffController {
         enrollmentMessageLabel.setVisible(false);
     }
 
-    /**
-     * Set institution ID from subscription (called from SubscriptionController)
-     */
+
     public void setInstitutionId(String institutionId) {
         institutionIdField.setText(institutionId);
         institutionIdField.setDisable(true); // Lock it so user can't change
     }
 
-    /**
-     * Set role to Principal and lock it (called from SubscriptionController)
-     */
+
     public void setRoleToPrincipal() {
         roleComboBox.setValue(StaffRoles.PRINCIPAL);
         roleComboBox.setDisable(true); // Lock it
     }
 
-    /**
-     * Handle staff enrollment
-     */
+
     @FXML
     private void handleEnrollStaff() {
         clearMessage();
@@ -119,9 +111,7 @@ public class EnrollStaffController {
         );
     }
 
-    /**
-     * Validate all inputs
-     */
+
     private boolean validateInputs() {
         // First Name
         if (firstNameField.getText().trim().isEmpty()) {
@@ -204,9 +194,7 @@ public class EnrollStaffController {
         return true;
     }
 
-    /**
-     * Enroll staff to backend
-     */
+
     private void enrollToBackend(String firstName, String lastName, String gender, LocalDate dateOfBirth,
                                  String email, String phoneNumber, String institutionId, List<String> role, String password) {
         Task<EnrollmentResponse> task = new Task<>() {
@@ -278,9 +266,6 @@ public class EnrollStaffController {
         new Thread(task).start();
     }
 
-    /**
-     * Show success panel with staff ID and password
-     */
     private void showSuccess(String staffId) {
         formPanel.setVisible(false);
         formPanel.setManaged(false);
@@ -291,9 +276,6 @@ public class EnrollStaffController {
     }
 
 
-    /**
-     * Show error message
-     */
     private void showError(String message) {
         setMessage("message-error", "❌ " + message);
     }
@@ -328,13 +310,10 @@ public class EnrollStaffController {
     }
 
 
-    /**
-     * Handle back to login
-     */
     @FXML
     private void handleBackToLogin() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/auth-container.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Shell/Auth/auth-container.fxml"));
             Scene scene = new Scene(loader.load());
 
             Stage stage = (Stage) backToLoginLink.getScene().getWindow();
