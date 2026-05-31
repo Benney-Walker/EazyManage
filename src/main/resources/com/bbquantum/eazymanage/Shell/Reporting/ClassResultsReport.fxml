@@ -116,10 +116,12 @@
         <HBox alignment="CENTER_LEFT" spacing="12">
             <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
 
+            <!--
             <Label fx:id="promotionLabel" text="Promotion (optional)" styleClass="field-label" visible="false" managed="false"/>
             <ChoiceBox fx:id="promotionGradeChoice" prefWidth="180" visible="false" managed="false"/>
             <Label fx:id="passScoreLabel" text="Pass score" styleClass="field-label" visible="false" managed="false"/>
             <TextField fx:id="passScoreField" prefWidth="80" promptText="e.g. 50" visible="false" managed="false"/>
+            -->
 
             <Region HBox.hgrow="ALWAYS"/>
 
