@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<ScrollPane fitToWidth="true"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.bbquantum.eazymanage.Controller.Auth.EnrollStaffController"
+            styleClass="enroll-root">
+
+    <stylesheets>
+        <URL value="@../../Theme/styles.css"/>
+    </stylesheets>
+
+    <VBox alignment="TOP_CENTER" spacing="30" styleClass="enroll-container">
+        <padding>
+            <Insets top="40" right="40" bottom="50" left="40"/>
+        </padding>
+
+        <!-- HEADER -->
+        <VBox alignment="CENTER" spacing="10">
+            <StackPane styleClass="enroll-avatar">
+                <Label text="👤" style="-fx-font-size: 38px;"/>
+            </StackPane>
+            <Label text="STAFF ENROLLMENT" styleClass="enroll-title"/>
+            <Label text="Join your institution’s digital campus"
+                   styleClass="enroll-subtitle"/>
+        </VBox>
+
+        <!-- MAIN FORM CARD -->
+        <VBox spacing="30" maxWidth="720" styleClass="enroll-card">
+
+            <VBox fx:id="formPanel" spacing="30">
+                <!-- PERSONAL INFO -->
+                <VBox spacing="18">
+                    <Label text="Personal Information" styleClass="enroll-section-title"/>
+
+                    <HBox spacing="15">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="First Name *" styleClass="enroll-label"/>
+                            <TextField fx:id="firstNameField"
+                                       promptText="First name"
+                                       styleClass="enroll-input"/>
+                        </VBox>
+
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Last Name *" styleClass="enroll-label"/>
+                            <TextField fx:id="lastNameField"
+                                       promptText="Last name"
+                                       styleClass="enroll-input"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="20">
+                        <VBox spacing="6" prefWidth="300">
+                            <Label text="Gender *" styleClass="enroll-label"/>
+                            <ComboBox fx:id="genderComboBox"
+                                      promptText="Select Gender"
+                                      maxWidth="Infinity"
+                                      styleClass="modern-combo"/>
+                        </VBox>
+
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Date of Birth *" styleClass="enroll-label"/>
+                            <DatePicker fx:id="dateOfBirthPicker"
+                                        maxWidth="Infinity"
+                                        styleClass="enroll-datepicker"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <Separator/>
+
+                <!-- ACCOUNT DETAILS -->
+                <VBox spacing="18">
+                    <Label text="Account Details" styleClass="enroll-section-title"/>
+
+                    <GridPane hgap="15" vgap="15">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50"/>
+                            <ColumnConstraints percentWidth="50"/>
+                        </columnConstraints>
+
+                        <VBox spacing="6" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                            <Label text="Email Address *" styleClass="enroll-label"/>
+                            <TextField fx:id="emailField"
+                                       promptText="email@example.com"
+                                       styleClass="enroll-input"/>
+                        </VBox>
+
+                        <VBox spacing="6" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                            <Label text="Phone Number *" styleClass="enroll-label"/>
+                            <TextField fx:id="phoneNumberField"
+                                       promptText="0XX XXX XXXX"
+                                       styleClass="enroll-input"/>
+                        </VBox>
+
+                        <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                            <Label text="Institution ID *" styleClass="enroll-label"/>
+                            <TextField fx:id="institutionIdField"
+                                       promptText="School Code"
+                                       styleClass="enroll-input"/>
+                        </VBox>
+
+                        <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                            <Label text="Role *" styleClass="enroll-label"/>
+                            <ComboBox fx:id="roleComboBox"
+                                      maxWidth="Infinity"
+                                      styleClass="enroll-combo"/>
+                        </VBox>
+                    </GridPane>
+                </VBox>
+
+                <Separator/>
+
+                <!-- SECURITY -->
+                <VBox spacing="18">
+                    <Label text="Security" styleClass="enroll-section-title"/>
+
+                    <HBox spacing="15">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Create Password *" styleClass="enroll-label"/>
+
+                            <StackPane>
+                                <PasswordField fx:id="passwordField"
+                                               styleClass="enroll-input"/>
+
+                                <TextField fx:id="passwordTextField"
+                                           styleClass="enroll-input"
+                                           visible="false"
+                                           managed="false"/>
+                            </StackPane>
+                        </VBox>
+
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Confirm Password *" styleClass="enroll-label"/>
+
+                            <StackPane>
+                                <PasswordField fx:id="confirmPasswordField"
+                                               styleClass="enroll-input"/>
+
+                                <TextField fx:id="confirmPasswordTextField"
+                                           styleClass="enroll-input"
+                                           visible="false"
+                                           managed="false"/>
+                            </StackPane>
+                        </VBox>
+                    </HBox>
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <CheckBox fx:id="showPasswordTick"
+                                  onAction="#togglePassword"
+                                  styleClass="action-button-outline"/>
+
+                        <Label text="show password" styleClass="input-label"/>
+                    </HBox>
+                </VBox>
+
+                <!-- MESSAGE -->
+                <Label fx:id="enrollmentMessageLabel"
+                       visible="false"
+                       managed="false"
+                       wrapText="true"
+                       styleClass="enroll-message"/>
+
+                <!-- ACTION -->
+                <Button fx:id="enrollButton"
+                        text="Complete Enrollment"
+                        maxWidth="Infinity"
+                        onAction="#handleEnrollStaff"
+                        styleClass="enroll-primary-btn"/>
+
+            </VBox>
+
+            <!-- SUCCESS -->
+            <VBox fx:id="successPanel"
+                  visible="false"
+                  managed="false"
+                  alignment="CENTER"
+                  spacing="18"
+                  styleClass="enroll-success">
+
+                <Label text="✅ Enrollment Successful!"
+                       styleClass="enroll-success-title"/>
+
+                <VBox alignment="CENTER" styleClass="enroll-id-box">
+                    <Label text="Staff ID"/>
+                    <Label fx:id="staffIdLabel"
+                           styleClass="enroll-id-value"/>
+                </VBox>
+            </VBox>
+
+            <Hyperlink fx:id="backToLoginLink"
+                       text="← Back to Login"
+                       onAction="#handleBackToLogin"
+                       styleClass="enroll-link"/>
+        </VBox>
+
+        <Label text="© 2025 BBQuantum | Empowering Education"
+               styleClass="enroll-footer"/>
+    </VBox>
+</ScrollPane>
