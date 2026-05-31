@@ -36,7 +36,6 @@ public class ViewAttendanceController {
     @FXML private HBox recordInfoBanner;
     @FXML private Label recordTitleLabel;
     @FXML private Label recordSubtitleLabel;
-    @FXML private Label dirtyCountLabel;
 
     // ---- table
     @FXML private TableView<StudentAttendanceUI> attendanceTable;
@@ -51,7 +50,6 @@ public class ViewAttendanceController {
     @FXML private ProgressBar progressBar;
     @FXML private Label       statusLabel;
     @FXML private Button      cancelButton;
-    @FXML private Button      saveButton;
 
     // ---- identity
     @SuppressWarnings("unused")
@@ -130,11 +128,10 @@ public class ViewAttendanceController {
 
         setStatus("Loading records…");
         fetchButton.setDisable(true);
-        saveButton.setDisable(true);
 
         final List<StudentAttendance>[] holder = new List[]{null};
 
-        attendanceService.loadStudentsForAttendance(grade.getLevelId(), date.toString(),
+        attendanceService.loadStudentsForAttendance(staffId, grade.getLevelId(), date.toString(),
                 list -> holder[0] = list,
                 () -> Platform.runLater(() -> {
                     populateTable(holder[0]);
@@ -193,103 +190,6 @@ public class ViewAttendanceController {
             String now  = row.getStatus() == null ? "" : row.getStatus().name();
             if (orig != null && !orig.equals(now)) dirty++;
         }
-        dirtyCountLabel.setText(dirty == 0 ? "No changes yet" :
-                (dirty + " change" + (dirty == 1 ? "" : "s")));
-        saveButton.setDisable(dirty == 0);
-    }
-
-    // ====================================================================
-    // Save
-    // ====================================================================
-
-    @FXML
-    private void onSave() {
-        if (rows.isEmpty() || currentDate == null) return;
-
-        // Snapshot only the dirty rows.
-        pendingUpdates.clear();
-        for (StudentAttendanceUI row : rows) {
-            String orig = originalStatus.get(row.getStudentId());
-            String now  = row.getStatus() == null ? "" : row.getStatus().name();
-            if (orig != null && !orig.equals(now)) {
-                pendingUpdates.add(row.toStudentAttendance());
-            }
-        }
-
-        if (pendingUpdates.isEmpty()) {
-            setStatus("Nothing to update.");
-            return;
-        }
-
-        currentUploadIndex = 0;
-        saveButton.setDisable(true);
-        cancelButton.setDisable(true);
-        fetchButton.setDisable(true);
-        classChoice.setDisable(true);
-        datePicker.setDisable(true);
-
-        progressBox.setVisible(true);
-        progressBox.setManaged(true);
-        updateProgress();
-        uploadNext();
-    }
-
-    private void uploadNext() {
-        if (currentUploadIndex >= pendingUpdates.size()) {
-            onSaveComplete();
-            return;
-        }
-
-        StudentAttendance record = pendingUpdates.get(currentUploadIndex);
-        attendanceService.updateAttendance(
-                record.getStudentId(),
-                staffId,
-                record.getLevelId(),
-                record.getStatus(),
-                currentDate.toString(),
-                () -> Platform.runLater(() -> {
-                    // Successful row → bump its baseline so a subsequent
-                    // toggle back-and-forth still tracks correctly.
-                    originalStatus.put(record.getStudentId(), record.getStatus());
-                    currentUploadIndex++;
-                    updateProgress();
-                    uploadNext();
-                }),
-                () -> Platform.runLater(() -> {
-                    setStatus("Update paused — backend rejected row "
-                            + (currentUploadIndex + 1) + ". "
-                            + ApiContext.getInstance().errorMessageContainer
-                            + " Click 'Continue' to retry.");
-                    saveButton.setText("Continue");
-                    saveButton.setDisable(false);
-                }),
-                () -> Platform.runLater(() -> {
-                    setStatus("Update paused — network unavailable at row "
-                            + (currentUploadIndex + 1) + ". Fix connection and click 'Continue'.");
-                    saveButton.setText("Continue");
-                    saveButton.setDisable(false);
-                }));
-    }
-
-    private void updateProgress() {
-        if (pendingUpdates.isEmpty()) { progressBar.setProgress(0); return; }
-        double frac = (double) currentUploadIndex / pendingUpdates.size();
-        progressBar.setProgress(frac);
-        progressLabel.setText("Updated " + currentUploadIndex + " of " + pendingUpdates.size());
-    }
-
-    private void onSaveComplete() {
-        progressBar.setProgress(1);
-        progressLabel.setText("All updates applied.");
-        setStatus("Attendance updated.");
-        pendingUpdates.clear();
-        currentUploadIndex = 0;
-        saveButton.setText("Save changes");
-        cancelButton.setDisable(false);
-        fetchButton.setDisable(false);
-        classChoice.setDisable(false);
-        datePicker.setDisable(false);
-        refreshDirtyCount();   // recompute (now zero, since we updated baselines)
     }
 
     // ====================================================================
@@ -310,8 +210,6 @@ public class ViewAttendanceController {
         recordInfoBanner.setManaged(false);
         progressBox.setVisible(false);
         progressBox.setManaged(false);
-        saveButton.setText("Save changes");
-        saveButton.setDisable(true);
         setStatus("");
     }
 
