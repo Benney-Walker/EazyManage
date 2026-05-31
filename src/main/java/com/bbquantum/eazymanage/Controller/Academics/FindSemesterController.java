@@ -73,7 +73,7 @@ public class FindSemesterController {
         setStatus("Loading…");
         hideForm();
 
-        academicsService.searchSemester(picked.getSemesterId(),
+        academicsService.searchSemester(picked.getSemesterId(), staffId,
                 result -> Platform.runLater(() -> {
                     loadButton.setDisable(false);
                     if (result == null) {
@@ -143,11 +143,11 @@ public class FindSemesterController {
         saveButton.setDisable(true);
         setSaveStatus("Saving…");
 
-        academicsService.updateSemesterInfo(out,
+        academicsService.updateSemesterInfo(semesterInfo, staffId,
                 () -> Platform.runLater(() -> {
                     saveButton.setDisable(false);
                     setSaveStatus("Saved.");
-                    currentSemester = out;
+                    currentSemester = semesterInfo;
                 }),
                 () -> Platform.runLater(() -> {
                     saveButton.setDisable(false);
