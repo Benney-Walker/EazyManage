@@ -6,6 +6,7 @@ import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
 import com.bbquantum.eazymanage.Services.AcademicsService;
+import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
@@ -59,10 +60,6 @@ public class ClassResultsReportController implements ReportViewerController {
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> descriptionCol;
 
     // ---- action bar
-    @FXML private Label    promotionLabel;
-    @FXML private ChoiceBox<GradeCaching> promotionGradeChoice;
-    @FXML private Label    passScoreLabel;
-    @FXML private TextField passScoreField;
     @FXML private Label    statusLabel;
     @FXML private Button   downloadButton;
 
@@ -89,15 +86,10 @@ public class ClassResultsReportController implements ReportViewerController {
             @Override public String toString(SemesterCaching s) { return s == null ? "" : s.getSemesterName(); }
             @Override public SemesterCaching fromString(String s) { return null; }
         });
-        promotionGradeChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
-        });
 
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
         if (grades != null) {
             classChoice.getItems().setAll(grades);
-            promotionGradeChoice.getItems().setAll(grades);
         }
         List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
@@ -108,9 +100,9 @@ public class ClassResultsReportController implements ReportViewerController {
         studentNameCol.setCellValueFactory(c ->
                 new SimpleStringProperty(c.getValue().getStudentName()));
         totalCol.setCellValueFactory(c ->
-                new SimpleStringProperty(c.getValue().getTotal()));
+                new SimpleStringProperty(c.getValue().getTotalScore()));
         averageCol.setCellValueFactory(c ->
-                new SimpleStringProperty(c.getValue().getAverage()));
+                new SimpleStringProperty(c.getValue().getAverageScore()));
         positionCol.setCellValueFactory(c ->
                 new SimpleStringProperty(c.getValue().getClassPosition()));
 
@@ -160,13 +152,6 @@ public class ClassResultsReportController implements ReportViewerController {
         this.role    = role;
         this.onBack  = onBack;
 
-        // Show promotion controls only to administrators (matching legacy).
-        boolean admin = "ADMINISTRATOR".equals(role);
-        for (Node n : List.of(promotionLabel, promotionGradeChoice, passScoreLabel, passScoreField)) {
-            n.setVisible(admin);
-            n.setManaged(admin);
-        }
-
         // Auto-pick first available class / semester so the screen feels populated.
         if (!classChoice.getItems().isEmpty() && classChoice.getValue() == null) {
             classChoice.getSelectionModel().selectFirst();
@@ -195,7 +180,7 @@ public class ClassResultsReportController implements ReportViewerController {
         downloadButton.setDisable(true);
         loadButton.setDisable(true);
 
-        academicsService.loadClassResults(grade.getLevelId(), semester.getSemesterId(),
+        academicsService.loadClassResults(grade.getLevelId(), semester.getSemesterId(), staffId,
                 () -> Platform.runLater(() -> {
                     populate(UtilityClass.classResults);
                     setStatus(rows.isEmpty()
@@ -220,32 +205,18 @@ public class ClassResultsReportController implements ReportViewerController {
         SemesterCaching semester = semesterChoice.getValue();
         if (grade == null || semester == null) return;
 
-        // Promotion fields default to the legacy "no_promotion" sentinel unless
-        // an administrator picked a target grade and a numeric pass score.
-        String promotionGradeId = "no_promotion";
-        String passScore = "0";
-        if ("ADMINISTRATOR".equals(role)) {
-            if (promotionGradeChoice.getValue() != null) {
-                promotionGradeId = promotionGradeChoice.getValue().getLevelId();
-            }
-            if (passScoreField.getText() != null && !passScoreField.getText().isBlank()) {
-                passScore = passScoreField.getText().trim();
-            }
-        }
-
         downloadButton.setDisable(true);
         setStatus("Requesting PDF…");
 
-        academicsService.downloadStudentsReport(
+        academicsService.downloadClassReportCards(
                 staffId, grade.getLevelId(), semester.getSemesterId(),
-                promotionGradeId, passScore,
                 this::parentWindow,
                 () -> Platform.runLater(() -> {
-                    setStatus("Saved.");
+                    setStatus(ApiContext.getInstance().successMessageContainer);
                     downloadButton.setDisable(false);
                 }),
                 () -> Platform.runLater(() -> {
-                    setStatus("Could not generate report.");
+                    setStatus(ApiContext.getInstance().errorMessageContainer);
                     downloadButton.setDisable(false);
                 }),
                 () -> Platform.runLater(() -> {
@@ -271,8 +242,8 @@ public class ClassResultsReportController implements ReportViewerController {
         expandedRow = row;
         breakdownHeadingLabel.setText("Subject breakdown — " + safe(row.getStudentName())
                 + "  ·  " + safe(row.getStudentId()));
-        List<ViewStudentsSubjectsResults> subjects = row.getSubjects() == null
-                ? new ArrayList<>() : row.getSubjects();
+        List<ViewStudentsSubjectsResults> subjects = row.getScoresList() == null
+                ? new ArrayList<>() : row.getScoresList();
         subjectBreakdownTable.getItems().setAll(subjects);
         subjectBreakdownBox.setVisible(true);
         subjectBreakdownBox.setManaged(true);
