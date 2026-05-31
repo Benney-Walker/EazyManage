@@ -1,6 +1,5 @@
 package com.bbquantum.eazymanage.Controller.Auth;
 
-import com.bbquantum.eazymanage.Controller.EnrollStaffController;
 import com.bbquantum.eazymanage.DTO.Auth.LoginResponse;
 import com.bbquantum.eazymanage.DTO.Auth.SubscriptionResponse;
 import com.bbquantum.eazymanage.Utitity.SSLHelper;
@@ -116,7 +115,7 @@ public class AuthController {
             String institutionId = institutionIdLabel.getText();
 
             // Load principal enrollment view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Authentication/enroll-staff.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/bbquantum/eazymanage/Shell/enroll-staff.fxml"));
             Scene scene = new Scene(loader.load(), 600, 700);
 
             // Pass institution ID to the enrollment controller
@@ -128,7 +127,7 @@ public class AuthController {
             Stage stage = new Stage();
             stage.getIcons().add(
                     new Image(getClass().getResourceAsStream(
-                            "/com/bbquantum/eazymanage/Assets/EazyManage.png"
+                            "/com/bbquantum/eazymanage/Icons/EazyManage.png"
                     ))
             );
             stage.setTitle("Enroll Principal");

@@ -38,7 +38,7 @@ public class ShellLauncher {
         try {
             stage.getIcons().setAll(new Image(
                     ShellLauncher.class.getResourceAsStream(
-                            "/com/bbquantum/eazymanage/Assets/EazyManage.png")));
+                            "/com/bbquantum/eazymanage/Icons/EazyManage.png")));
         } catch (Exception ignored) {
             //Exception ignored
         }
