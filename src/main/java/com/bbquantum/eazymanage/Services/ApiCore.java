@@ -6,8 +6,11 @@ import com.bbquantum.eazymanage.Utitity.SessionManager;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
 
 public class ApiCore {
@@ -35,4 +38,37 @@ public class ApiCore {
 
     // --- Auth ---------------------------------------------------------------
     public final String token = SessionManager.getToken();
+
+    /*
+    Apply this method too to catch all 404 and 500 responses
+    and update all backend responses to parse "message"
+     */
+    public void checkApiResponse(HttpResponse<String> response) {
+        if (response.statusCode() == 404) {
+            JsonObject jsonObject =
+                    JsonParser.parseString(response.body()).getAsJsonObject();
+
+            ApiContext.getInstance().errorMessageContainer = jsonObject.get("message").getAsString();
+        } else if (response.statusCode() == 500) {
+            JsonObject jsonObject =
+                    JsonParser.parseString(response.body()).getAsJsonObject();
+
+            ApiContext.getInstance().errorMessageContainer = jsonObject.get("message").getAsString();
+        } else {
+            ApiContext.getInstance().errorMessageContainer = response.body();
+        }
+    }
+
+    /*
+    Apply this method in all api calls to catch 401 status codes
+    like this if (core.handleSessionExpired(response)) return null;
+    */
+    public boolean handleSessionExpired(HttpResponse<?> response) {
+        if (response != null && response.statusCode() == 401) {
+            ApiContext.getInstance().sessionExpired = true;
+            ApiContext.getInstance().errorMessageContainer = "Your session has expired. Please log in again.";
+            return true;
+        }
+        return false;
+    }
 }

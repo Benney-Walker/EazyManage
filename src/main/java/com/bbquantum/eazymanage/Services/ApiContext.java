@@ -24,4 +24,6 @@ public class ApiContext {
     /** Most-recently-loaded per-student result set. Read by controllers
      *  rendering the results screen. */
     public StudentResult studentResult;
+
+    public volatile boolean sessionExpired = false;
 }
