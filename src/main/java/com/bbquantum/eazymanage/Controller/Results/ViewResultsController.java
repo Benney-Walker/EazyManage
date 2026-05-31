@@ -60,7 +60,7 @@ public class ViewResultsController {
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> calcExamCol;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> subjectTotalCol;
     @FXML private TableColumn<ViewStudentsSubjectsResults, String> gradeCol;
-    @FXML private TableColumn<ViewStudentsSubjectsResults, String> teacherRemarkCol;
+    @FXML private TableColumn<ViewStudentsSubjectsResults, String> gradeDescriptor;
 
     // ---- identity (read for future audit/headers; not actively used here)
     @SuppressWarnings("unused")
@@ -107,10 +107,10 @@ public class ViewResultsController {
                 new SimpleStringProperty(safe(c.getValue().getStudentName())));
 
         totalCol.setCellValueFactory(c ->
-                new SimpleStringProperty(safe(c.getValue().getTotal())));
+                new SimpleStringProperty(safe(c.getValue().getTotalScore())));
 
         averageCol.setCellValueFactory(c ->
-                new SimpleStringProperty(safe(c.getValue().getAverage())));
+                new SimpleStringProperty(safe(c.getValue().getAverageScore())));
 
         positionCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getClassPosition())));
@@ -120,10 +120,12 @@ public class ViewResultsController {
 
         // ---- Row click → populate detail
         classResultsTable.getSelectionModel().selectedItemProperty()
-                .addListener((obs, oldSel, newSel) -> applyDetail(newSel));
+                .addListener((obs, oldSel, newSel) ->
+                        applyDetail(newSel));
 
         // ---- Detail table wiring
         subjectsTable.setItems(subjectRows);
+
         subjectNameCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getSubjectName())));
 
@@ -154,8 +156,8 @@ public class ViewResultsController {
         gradeCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getGrade())));
 
-        teacherRemarkCol.setCellValueFactory(c ->
-                new SimpleStringProperty(safe(c.getValue().getTeacherRemark())));
+        gradeDescriptor.setCellValueFactory(c ->
+                new SimpleStringProperty(safe(c.getValue().getDescription())));
     }
 
     public void attach(String role, String staffId) {
@@ -186,7 +188,7 @@ public class ViewResultsController {
         detailBanner.setVisible(false);
         detailBanner.setManaged(false);
 
-        academicsService.loadClassResults(grade.getLevelId(), semester.getSemesterId(),
+        academicsService.loadClassResults(grade.getLevelId(), semester.getSemesterId(), staffId,
                 () -> Platform.runLater(() -> {
                     fetchButton.setDisable(false);
                     List<ViewClassSemesterReport> reports = UtilityClass.classResults;
@@ -232,7 +234,7 @@ public class ViewResultsController {
             detailBanner.setManaged(false);
             return;
         }
-        List<ViewStudentsSubjectsResults> subjects = selected.getSubjects();
+        List<ViewStudentsSubjectsResults> subjects = selected.getScoresList();
         if (subjects == null) {
             subjectRows.clear();
         } else {
@@ -241,8 +243,8 @@ public class ViewResultsController {
         detailBanner.setVisible(true);
         detailBanner.setManaged(true);
         detailNameLabel.setText(safe(selected.getStudentName()) + " — " + safe(selected.getStudentId()));
-        detailMetaLabel.setText("Total " + safe(selected.getTotal())
-                + "   ·   Average " + safe(selected.getAverage())
+        detailMetaLabel.setText("Total " + safe(selected.getTotalScore())
+                + "   ·   Average " + safe(selected.getAverageScore())
                 + "   ·   Position " + safe(selected.getClassPosition()));
         subjectCountLabel.setText(subjectRows.size() + " subject" + (subjectRows.size() == 1 ? "" : "s"));
     }
