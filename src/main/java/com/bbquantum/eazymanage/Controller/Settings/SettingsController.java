@@ -1,6 +1,5 @@
 package com.bbquantum.eazymanage.Controller.Settings;
 
-import com.bbquantum.eazymanage.Services.WebSocketService;
 import com.bbquantum.eazymanage.Shell.ShellLauncher;
 import com.bbquantum.eazymanage.Utitity.SessionManager;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
@@ -36,9 +35,7 @@ public class SettingsController {
 
     @FXML
     private void initialize() {
-        // Wire the choice listener once. Re-enabling/disabling the switch
-        // button is purely a function of "is this a different role from
-        // what we're currently acting as?"
+
         roleChoice.valueProperty().addListener((obs, oldVal, newVal) -> {
             boolean differs = newVal != null && !newVal.equals(currentActiveRole);
             switchButton.setDisable(!differs);
@@ -48,10 +45,7 @@ public class SettingsController {
         versionLabel.setText(UtilityClass.APPLICATION_VERSION);
     }
 
-    /**
-     * Inject identity from the shell after FXML load. Same convention as
-     * the other shell-native controllers (Conduct, Reports, Attendance).
-     */
+
     public void attach(String role, String staffId, String organizationName, String username) {
         this.currentActiveRole = role;
 
@@ -86,16 +80,7 @@ public class SettingsController {
         roleChoice.setDisable(true);
         switchStatusLabel.setText("Switching…");
 
-        // Disconnect realtime BEFORE relaunching — the shell relaunch tears
-        // down the current scene, and we don't want an orphaned STOMP
-        // session attached to a dead scene. The new shell will reconnect
-        // automatically when boot() runs.
-        WebSocketService.getInstance().disconnect();
 
-        // Defer the relaunch one FX tick so the status label paints first;
-        // ShellLauncher.launch swaps the scene synchronously, which would
-        // otherwise leave the user staring at the old screen until the
-        // new one is ready.
         Platform.runLater(() -> {
             try {
                 Stage stage = (Stage) switchButton.getScene().getWindow();
