@@ -15,14 +15,18 @@ import com.bbquantum.eazymanage.Controller.Broadcasts.BroadcastsController;
 import com.bbquantum.eazymanage.EazyManage;
 import com.bbquantum.eazymanage.Records.NavItem;
 import com.bbquantum.eazymanage.Records.Section;
+import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.OfflineMode;
 import com.bbquantum.eazymanage.Services.OfflineQueue;
+import com.bbquantum.eazymanage.Services.OfflineReplayer;
 import com.bbquantum.eazymanage.Shell.Navigation.NavRegistry;
 import com.bbquantum.eazymanage.Shell.Navigation.WorkSpaceTab;
 import com.bbquantum.eazymanage.Shell.Notification.Notification;
 import com.bbquantum.eazymanage.Shell.Notification.NotificationCenter;
 import com.bbquantum.eazymanage.Utitity.ThemeManager;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -33,10 +37,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -87,6 +88,11 @@ public class AppShellController {
     private String staffId;
     private String organizationName;
     private String username;
+
+    /** Polling timer; nullable so we can defensively stop it during logout. */
+    private Timeline sessionWatcher;
+
+    private boolean sessionExpiryHandled = false;
 
     // ====================================================================
     // Internal state
@@ -157,7 +163,7 @@ public class AppShellController {
             refreshStyle.run();
             // Coming back online: drain whatever's queued.
             if (was && !is) {
-                com.bbquantum.eazymanage.Services.OfflineReplayer.getInstance().drainNow();
+                OfflineReplayer.getInstance().drainNow();
             }
         });
 
@@ -198,22 +204,30 @@ public class AppShellController {
 
         // Open the dashboard as the first tab
         NavRegistry.findById("dashboard").ifPresent(this::openTab);
+
+        ApiContext.getInstance().sessionExpired = false;
+        sessionExpiryHandled = false;
+        startSessionWatcher();
     }
 
     /** Re-route to the auth screen after clearing the session. */
     @FXML
     private void onLogout() {
         UtilityClass.clearSession();
+        routeToAuthScreen();
+    }
+
+    private void routeToAuthScreen() {
         Stage stage = (Stage) logoutButton.getScene().getWindow();
         try {
             FXMLLoader loader = new FXMLLoader(
                     EazyManage.class.getResource("Shell/Auth/auth-container.fxml"));
             Scene authScene = new Scene(loader.load());
             ThemeManager.getInstance().register(authScene);
-            stage.setTitle("EAZY MANAGE - Authentication");
+            stage.setTitle("EAZY MANAGE");
             stage.getIcons().clear();
             stage.getIcons().add(new Image(
-                    EazyManage.class.getResourceAsStream("Assets/EazyManage.png")));
+                    EazyManage.class.getResourceAsStream("Icons/EazyManage.png")));
             stage.setScene(authScene);
             stage.setMaximized(false);
             stage.sizeToScene();
@@ -222,6 +236,42 @@ public class AppShellController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // ====================================================================
+    // Session-expiry watcher
+    // ====================================================================
+
+    private void startSessionWatcher() {
+        sessionWatcher = new Timeline(new KeyFrame(javafx.util.Duration.seconds(1), e -> {
+            if (sessionExpiryHandled) return;
+            if (ApiContext.getInstance().sessionExpired) {
+                sessionExpiryHandled = true;
+                handleSessionExpiry();
+            }
+        }));
+        sessionWatcher.setCycleCount(Timeline.INDEFINITE);
+        sessionWatcher.play();
+    }
+
+    private void handleSessionExpiry() {
+        if (sessionWatcher != null) sessionWatcher.stop();
+
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Session expired");
+        alert.setHeaderText("Your session has expired");
+        alert.setContentText("For your security, you've been signed out after the maximum session length. "
+                + "Please log in again to continue.");
+        alert.getButtonTypes().setAll(ButtonType.OK);
+        // Show modally then route on dismissal — keeps the user's
+        // attention on the message before the screen swap.
+        alert.showAndWait();
+
+        // Clear the flag so a future fresh session starts clean, then
+        // clear session storage and swap to auth.
+        ApiContext.getInstance().sessionExpired = false;
+        UtilityClass.clearSession();
+        routeToAuthScreen();
     }
 
     // ====================================================================
@@ -430,39 +480,10 @@ public class AppShellController {
         if (item.status() == NavItemStatus.FUNCTIONAL && "broadcasts".equals(item.id())) {
             return loadBroadcastsScreen();
         }
-        if (item.status() == NavItemStatus.FUNCTIONAL && "active-sessions".equals(item.id())) {
-            return loadActiveSessionsScreen();
-        }
         if (item.status() == NavItemStatus.FUNCTIONAL && "offline".equals(item.id())) {
             return loadOfflineSettingsScreen();
         }
         return placeholderFor(item);
-    }
-
-    //Dead code
-    private Parent loadLegacyDashboard() {
-        String fxml = switch (role) {
-            case "PRINCIPAL"      -> "/com/bbquantum/eazymanage/Principal/principal-main-dashboard.fxml";
-            case "ACCOUNTANT"     -> "/com/bbquantum/eazymanage/Accountant/accountant-dashboard.fxml";
-            case "TEACHING_STAFF" -> "/com/bbquantum/eazymanage/Staff/staff-dashboard.fxml";
-            case "ADMINISTRATOR"  -> "/com/bbquantum/eazymanage/Admin/Admin-dashboard.fxml";
-            default -> null;
-        };
-        if (fxml == null) {
-            return errorPlaceholder("Unknown role", "No dashboard mapping for role '" + role + "'.");
-        }
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
-            Parent root = loader.load();
-            // Drive the existing init path exactly as before — preserves every
-            // legacy workflow (login data, caches, post-login initialise).
-            UtilityClass.findController(role, staffId, organizationName, username, loader);
-            return root;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return errorPlaceholder("Could not load dashboard",
-                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
-        }
     }
 
     private Parent loadShellDashboard() {
@@ -647,19 +668,6 @@ public class AppShellController {
         } catch (Exception e) {
             e.printStackTrace();
             return errorPlaceholder("Could not load Broadcasts",
-                    e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
-        }
-    }
-
-    /** Load the Phase 6 Active Sessions view. No identity injection needed. */
-    private Parent loadActiveSessionsScreen() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Messaging/ActiveSessions.fxml"));
-            return loader.load();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return errorPlaceholder("Could not load Active Sessions",
                     e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage());
         }
     }
