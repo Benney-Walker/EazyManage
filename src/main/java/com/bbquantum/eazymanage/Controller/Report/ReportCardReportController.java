@@ -16,6 +16,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Window;
@@ -138,10 +139,20 @@ public class ReportCardReportController implements ReportViewerController {
             }
         });
 
+        promotionGradeChoice.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
+        });
+
         // Populate filters from caches
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
-        if (grades != null)
+        if (grades != null) {
             classChoice.getItems().setAll(grades);
+            promotionGradeChoice.getItems().setAll(grades);
+        }
 
         List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null)
@@ -185,6 +196,13 @@ public class ReportCardReportController implements ReportViewerController {
         this.staffId = staffId;
         this.role    = role;
         this.onBack  = onBack;
+
+        // Show promotion controls only to administrators (matching legacy).
+        boolean teacher = "TEACHING_STAFF".equals(role);
+        for (Node n : List.of(promotionLabel, promotionGradeChoice)) {
+            n.setVisible(teacher);
+            n.setManaged(teacher);
+        }
 
         // Auto-pick first class / semester so something is on screen.
         if (!classChoice.getItems().isEmpty() && classChoice.getValue() == null) {
