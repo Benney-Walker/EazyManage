@@ -300,12 +300,12 @@ public class ReportsService {
     }
 
     public void loadReportCard(String studentId, String semesterId, String staffId,
-                               Consumer<com.bbquantum.eazymanage.DTO.Academics.StudentReportCard> onResult,
+                               Consumer<StudentReportCard> onResult,
                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
-        Task<com.bbquantum.eazymanage.DTO.Academics.StudentReportCard> task = new Task<>() {
+        Task<StudentReportCard> task = new Task<>() {
             @Override
-            protected com.bbquantum.eazymanage.DTO.Academics.StudentReportCard call() throws Exception {
+            protected StudentReportCard call() throws Exception {
                 String url = core.STAFF_URL + core.API_VERSION_1
                         + "/report-card/" + studentId + "/" + semesterId;
 
@@ -319,7 +319,7 @@ public class ReportsService {
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(),
-                            com.bbquantum.eazymanage.DTO.Academics.StudentReportCard.class);
+                            StudentReportCard.class);
                 }
                 ApiContext.getInstance().errorMessageContainer = response.body();
                 return null;
@@ -327,7 +327,7 @@ public class ReportsService {
         };
 
         task.setOnSucceeded(event -> {
-            com.bbquantum.eazymanage.DTO.Academics.StudentReportCard result = task.getValue();
+            StudentReportCard result = task.getValue();
             onResult.accept(result);
             if (result == null) {
                 onFailure.run();
