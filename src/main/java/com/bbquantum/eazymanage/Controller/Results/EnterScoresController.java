@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Results;
 
-import com.bbquantum.eazymanage.DTO.Academics.StudentsScoresTable;
-import com.bbquantum.eazymanage.DTO.Academics.SubjectsHolder;
+import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
+import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Services.AcademicsService;

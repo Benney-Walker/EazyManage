@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Academics.Subject.SubjectsSectionController"
+      styleClass="academic-section" spacing="0">
+
+    <StackPane fx:id="contentSlot" VBox.vgrow="ALWAYS">
+
+        <VBox fx:id="pickerView" alignment="CENTER" spacing="24">
+            <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+            <Label text="What would you like to do with subjects?" styleClass="picker-prompt"/>
+            <HBox spacing="24" alignment="CENTER" styleClass="picker-card-row">
+                <VBox styleClass="picker-card" alignment="CENTER" spacing="14"
+                      prefWidth="260" minHeight="200" onMouseClicked="#onPickAdd">
+                    <Label text="📚" styleClass="picker-card-icon"/>
+                    <Label text="Add Subject" styleClass="picker-card-title"/>
+                    <Label text="Assign a new subject to a class."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+                <VBox styleClass="picker-card" alignment="CENTER" spacing="14"
+                      prefWidth="260" minHeight="200" onMouseClicked="#onPickFind">
+                    <Label text="🔎" styleClass="picker-card-icon"/>
+                    <Label text="Find, Update or Delete" styleClass="picker-card-title"/>
+                    <Label text="Edit a subject's name or class, or remove it."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+            </HBox>
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <TabPane fx:id="innerTabs" visible="false" managed="false"
+                 tabClosingPolicy="UNAVAILABLE" styleClass="inner-tabs">
+            <tabs>
+                <Tab fx:id="addTab"  text="Add Subject"/>
+                <Tab fx:id="findTab" text="Find, Update or Delete"/>
+            </tabs>
+        </TabPane>
+    </StackPane>
+</VBox>

@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Dashboard;
 
-import com.bbquantum.eazymanage.DTO.Academics.GradeInformation;
-import com.bbquantum.eazymanage.DTO.Academics.StudentsRoaster;
+import com.bbquantum.eazymanage.DTO.Academics.Classes.ClassInformation;
+import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsRoaster;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.DashboardService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;

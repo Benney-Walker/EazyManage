@@ -10,20 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Results shell tab — host (Phase 9b).
 
-    Same two-state pattern as Attendance:
-      State A — picker: cards for "Enter Scores" (TEACHING_STAFF /
-                ADMINISTRATOR only) and "View Results" (everyone except
-                ACCOUNTANT). The Enter Scores card is hidden for
-                PRINCIPAL, who only has read access.
-      State B — inner tabs: persistent "Enter Scores" / "View Results"
-                tabs. Picker disappears after first entry.
-
-    For PRINCIPAL, only the "View Results" card and tab are visible.
-    The host controller hides the Enter Scores card/tab based on role.
--->
 <?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Results.ResultsTabController"

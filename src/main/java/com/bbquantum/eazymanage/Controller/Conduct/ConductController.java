@@ -1,9 +1,10 @@
 package com.bbquantum.eazymanage.Controller.Conduct;
 
 import com.bbquantum.eazymanage.Constants.ConductRatings;
-import com.bbquantum.eazymanage.DTO.Academics.StudentConductRecord;
+import com.bbquantum.eazymanage.DTO.Academics.Conduct.StudentConductRecord;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
+import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.ConductService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
@@ -20,7 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ConductController {
 

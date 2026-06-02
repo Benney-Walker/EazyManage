@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Conduct;
 
-import com.bbquantum.eazymanage.DTO.Academics.StudentConductRecord;
+import com.bbquantum.eazymanage.DTO.Academics.Conduct.StudentConductRecord;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;

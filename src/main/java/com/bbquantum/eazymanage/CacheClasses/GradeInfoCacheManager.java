@@ -1,14 +1,13 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.Academics.GradeInformation;
+import com.bbquantum.eazymanage.DTO.Academics.Classes.ClassInformation;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class GradeInfoCacheManager {
     private static GradeInfoCacheManager instance;
 
-    private List<GradeInformation> gradesInformation;
+    private List<ClassInformation> gradesInformation;
 
     private GradeInfoCacheManager() {}
 
@@ -18,12 +17,12 @@ public class GradeInfoCacheManager {
         return instance;
     }
 
-    public List<GradeInformation> getGradesInformation() {
+    public List<ClassInformation> getGradesInformation() {
 
         return gradesInformation;
     }
 
-    public void setGradesInformation(List<GradeInformation> gradesInformation) {
+    public void setGradesInformation(List<ClassInformation> gradesInformation) {
         this.gradesInformation = gradesInformation;
     }
 

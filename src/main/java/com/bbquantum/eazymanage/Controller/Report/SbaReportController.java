@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Report;
 
-import com.bbquantum.eazymanage.DTO.Academics.SbaRecord;
-import com.bbquantum.eazymanage.DTO.Academics.SubjectsHolder;
+import com.bbquantum.eazymanage.DTO.Academics.Results.SbaRecord;
+import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;

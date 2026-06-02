@@ -1,7 +1,8 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.DTO.Academics.MasterScoreSheet;
-import com.bbquantum.eazymanage.DTO.Academics.SbaRecord;
+import com.bbquantum.eazymanage.DTO.Academics.Results.MasterScoreSheet;
+import com.bbquantum.eazymanage.DTO.Academics.Results.SbaRecord;
+import com.bbquantum.eazymanage.DTO.Academics.Report.StudentReportCard;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.concurrent.Task;

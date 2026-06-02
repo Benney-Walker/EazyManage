@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.DTO.Offline;
 
-import com.bbquantum.eazymanage.DTO.Academics.StudentsScoresTable;
+import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
 
 public class ScoresPayload {
 

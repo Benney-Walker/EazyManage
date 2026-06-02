@@ -1,8 +1,8 @@
 package com.bbquantum.eazymanage.Controller.Report;
 
-import com.bbquantum.eazymanage.DTO.Academics.MasterScoreRow;
-import com.bbquantum.eazymanage.DTO.Academics.MasterScoreSheet;
-import com.bbquantum.eazymanage.DTO.Academics.MasterSheetSubjectColumn;
+import com.bbquantum.eazymanage.DTO.Academics.Results.MasterScoreRow;
+import com.bbquantum.eazymanage.DTO.Academics.Results.MasterScoreSheet;
+import com.bbquantum.eazymanage.DTO.Academics.Results.MasterSheetSubjectColumn;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;

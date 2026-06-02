@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Report;
 
-import com.bbquantum.eazymanage.DTO.Academics.ViewClassSemesterReport;
-import com.bbquantum.eazymanage.DTO.Academics.ViewStudentsSubjectsResults;
+import com.bbquantum.eazymanage.DTO.Academics.Report.ViewClassSemesterReport;
+import com.bbquantum.eazymanage.DTO.Academics.Results.ViewStudentsSubjectsResults;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
@@ -14,7 +14,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;

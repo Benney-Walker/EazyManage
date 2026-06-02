@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.DTO.Academics.GradeInformation;
+import com.bbquantum.eazymanage.DTO.Academics.Classes.ClassInformation;
 import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
 import com.bbquantum.eazymanage.DTO.Finance.RecentPaymentTable;
 import com.bbquantum.eazymanage.DTO.Institution.*;

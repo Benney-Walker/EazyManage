@@ -1,5 +1,9 @@
 package com.bbquantum.eazymanage.Controller.Academics;
 
+import com.bbquantum.eazymanage.Controller.Academics.Classes.ClassesSectionController;
+import com.bbquantum.eazymanage.Controller.Academics.Grade.GradingSectionController;
+import com.bbquantum.eazymanage.Controller.Academics.Semester.SemestersSectionController;
+import com.bbquantum.eazymanage.Controller.Academics.Subject.SubjectsSectionController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

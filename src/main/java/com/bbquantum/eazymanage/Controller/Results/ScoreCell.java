@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Results;
 
-import com.bbquantum.eazymanage.DTO.Academics.StudentsScoresTable;
+import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
 import javafx.application.Platform;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;

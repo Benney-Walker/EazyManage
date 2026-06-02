@@ -1,9 +1,16 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.DTO.Academics.*;
+import com.bbquantum.eazymanage.DTO.Academics.Report.ViewClassSemesterReport;
+import com.bbquantum.eazymanage.DTO.Academics.Results.StudentResult;
+import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
+import com.bbquantum.eazymanage.DTO.Academics.Subject.AddNewSubject;
+import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectDTO;
+import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectScores;
+import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
 import com.bbquantum.eazymanage.DTO.Institution.FindAndUpdateClassInfo;
 import com.bbquantum.eazymanage.DTO.Institution.FindSemester;
-import com.bbquantum.eazymanage.DTO.Institution.GradingCriteria;
+import com.bbquantum.eazymanage.DTO.Academics.Grading.SaveGradingCriteria;
+import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.DTO.Offline.ScoresPayload;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;

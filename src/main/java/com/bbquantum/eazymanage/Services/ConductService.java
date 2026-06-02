@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.DTO.Academics.StudentConductRecord;
+import com.bbquantum.eazymanage.DTO.Academics.Conduct.StudentConductRecord;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import javafx.concurrent.Task;
