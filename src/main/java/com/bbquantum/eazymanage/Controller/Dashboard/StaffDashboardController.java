@@ -109,7 +109,7 @@ public class StaffDashboardController {
     }
 
     private void renderFromGlobals() {
-        List<GradeInformation> grades = UtilityClass.gradeInfoCacheManager.getGradesInformation();
+        List<ClassInformation> grades = UtilityClass.gradeInfoCacheManager.getGradesInformation();
         if (grades == null || grades.isEmpty()) {
             classNameLabel.setText("No class assigned");
             classHintLabel.setText("Contact your administrator to be assigned a class.");
@@ -122,7 +122,7 @@ public class StaffDashboardController {
         // Teaching staff are typically assigned one class — take the first.
         // If multiple are ever assigned, the others are visible via the
         // Students tab.
-        GradeInformation grade = grades.get(0);
+        ClassInformation grade = grades.get(0);
         classNameLabel.setText(safe(grade.getGradeName()));
         classHintLabel.setText("Roster size: " + safe(grade.getGradeSize()) + " students");
         studentCountLabel.setText(safe(grade.getGradeSize()));
