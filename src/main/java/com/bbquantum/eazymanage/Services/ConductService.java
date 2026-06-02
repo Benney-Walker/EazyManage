@@ -44,7 +44,9 @@ public class ConductService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -81,7 +83,7 @@ public class ConductService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/conduct-record";
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/save-conduct-record";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", record.getStudentId());
@@ -136,13 +138,5 @@ public class ConductService {
         });
 
         new Thread(task).start();
-    }
-
-    private static void addNullable(JsonObject obj, String key, Boolean value) {
-        if (value == null) {
-            obj.add(key, com.google.gson.JsonNull.INSTANCE);
-        } else {
-            obj.addProperty(key, value);
-        }
     }
 }
