@@ -934,7 +934,7 @@ public class AcademicsService {
     }
 
     /** Persist the grading criteria (letter-grade ranges). */
-    public void saveGradingCriteria(GradingCriteria gradingCriteria, String staffId,
+    public void saveGradingCriteria(String staffId, SaveGradingCriteria saveGradingCriteria,
                                     Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
@@ -942,10 +942,11 @@ public class AcademicsService {
                 String url = core.ADMIN_URL + core.API_VERSION_1 + "/new-grading-criteria";
 
                 JsonObject responseBody = new JsonObject();
-                responseBody.addProperty("lowerRange", gradingCriteria.getLowerRange());
-                responseBody.addProperty("upperRange", gradingCriteria.getUpperRange());
-                responseBody.addProperty("grade", gradingCriteria.getGrade());
-                responseBody.addProperty("gradeDescription", gradingCriteria.getGradeDescription());
+                responseBody.addProperty("id", saveGradingCriteria.getId());
+                responseBody.addProperty("lowerRange", saveGradingCriteria.getLowerRange());
+                responseBody.addProperty("upperRange", saveGradingCriteria.getUpperRange());
+                responseBody.addProperty("grade", saveGradingCriteria.getGrade());
+                responseBody.addProperty("gradeDescription", saveGradingCriteria.getGradeDescription());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
