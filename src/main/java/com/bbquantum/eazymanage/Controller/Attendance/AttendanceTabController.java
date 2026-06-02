@@ -55,6 +55,40 @@ public class AttendanceTabController {
     public void attach(String role, String staffId) {
         this.role    = role;
         this.staffId = staffId;
+        applyRoleFilter();
+    }
+
+    /** Hide entry surfaces the user isn't allowed to use. */
+    private void applyRoleFilter() {
+        boolean canEnter = canMarkAttendance(role);
+        boolean canView = canViewAttendance(role);
+        if (!canEnter) {
+            // Hide the Enter Scores card so the picker shows only View.
+            markCard.setVisible(false);
+            markCard.setManaged(false);
+            // Drop the Enter Scores tab entirely. Once removed it's not
+            // accessible even by URL/keyboard, and the View tab becomes
+            // the only selectable one.
+            innerTabs.getTabs().remove(markTab);
+        }
+
+        if (!canView) {
+            // Hide the Enter Scores card so the picker shows only View.
+            viewCard.setVisible(false);
+            viewCard.setManaged(false);
+            // Drop the Enter Scores tab entirely. Once removed it's not
+            // accessible even by URL/keyboard, and the View tab becomes
+            // the only selectable one.
+            innerTabs.getTabs().remove(viewTab);
+        }
+    }
+
+    private static boolean canMarkAttendance(String role) {
+        return "TEACHING_STAFF".equals(role) || "ADMINISTRATOR".equals(role);
+    }
+
+    private static boolean canViewAttendance(String role) {
+        return "PRINCIPAL".equals(role);
     }
 
     // ====================================================================

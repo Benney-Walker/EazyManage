@@ -55,6 +55,17 @@
             <Label fx:id="recordTitleLabel" styleClass="info-title"/>
             <Label fx:id="recordSubtitleLabel" styleClass="info-subtitle"/>
         </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+        <VBox spacing="2">
+            <Label text="PRESENT COUNT: " styleClass="info-title"/>
+            <Label text="ABSENT COUNT: " styleClass="info-title"/>
+        </VBox>
+        <VBox spacing="2">
+            <Label fx:id="studentsPresent" styleClass="info-subtitle"/>
+            <Label fx:id="studentsAbsent" styleClass="info-subtitle"/>
+        </VBox>
+
         <Region HBox.hgrow="ALWAYS"/>
         <Label text="View only. You can't save changes" styleClass="info-subtitle"/>
     </HBox>

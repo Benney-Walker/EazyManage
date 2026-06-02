@@ -36,6 +36,8 @@ public class ViewAttendanceController {
     @FXML private HBox recordInfoBanner;
     @FXML private Label recordTitleLabel;
     @FXML private Label recordSubtitleLabel;
+    @FXML private Label studentsPresent;
+    @FXML private Label studentsAbsent;
 
     // ---- table
     @FXML private TableView<StudentAttendanceUI> attendanceTable;
@@ -110,6 +112,7 @@ public class ViewAttendanceController {
     public void attach(String role, String staffId) {
         this.role    = role;
         this.staffId = staffId;
+
     }
 
     // ====================================================================
@@ -163,10 +166,19 @@ public class ViewAttendanceController {
             return;
         }
 
+        int present = 0;
+        int absent = 0;
         for (StudentAttendance sa : list) {
             if (sa.getStatus() == null || sa.getStatus().isBlank()) {
                 sa.setStatus(AttendanceStatus.PRESENT.name());
             }
+
+            if (sa.getStatus().equals(AttendanceStatus.ABSENT.name())) {
+                absent++;
+            } else {
+                present++;
+            }
+
             StudentAttendanceUI row = new StudentAttendanceUI(sa);
             rows.add(row);
             originalStatus.put(sa.getStudentId(), sa.getStatus());
@@ -177,6 +189,8 @@ public class ViewAttendanceController {
 
         recordInfoBanner.setVisible(true);
         recordInfoBanner.setManaged(true);
+        studentsAbsent.setText(String.valueOf(absent));
+        studentsPresent.setText(String.valueOf(present));
         recordTitleLabel.setText(safe(currentClass.getLevelName()));
         recordSubtitleLabel.setText(currentDate.toString());
         refreshDirtyCount();
