@@ -29,8 +29,9 @@ public class ConductService {
         Task<List<StudentConductRecord>> task = new Task<>() {
             @Override
             protected List<StudentConductRecord> call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/conduct-records/"
-                        + levelId + "/" + semesterId;
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/conduct-records?" +
+                        "levelId=" + levelId +
+                        "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
