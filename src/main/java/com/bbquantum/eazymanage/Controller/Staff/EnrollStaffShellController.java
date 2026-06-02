@@ -74,8 +74,12 @@ public class EnrollStaffShellController {
         List<String> roles = collectRoles();
 
         if (firstName.isEmpty() || lastName.isEmpty() || gender == null || dob == null
-                || email.isEmpty() || phone.isEmpty() || password == null || password.isEmpty()) {
+                || email.isEmpty() || password == null || password.isEmpty()) {
             setStatus("Fill every field before enrolling.");
+            return;
+        }
+        if (phone.length() != 10 || phone.matches("\\d+")) {
+            setStatus("Phone number is invalid.");
             return;
         }
         if (!password.equals(confirm)) {
@@ -86,19 +90,14 @@ public class EnrollStaffShellController {
             setStatus("Pick at least one role for this staff member.");
             return;
         }
-        if (organizationId == null || organizationId.isBlank()) {
-            setStatus("Organization id missing from session — cannot enroll.");
-            return;
-        }
 
         enrollButton.setDisable(true);
         resetButton.setDisable(true);
         setStatus("Enrolling…");
         hideSuccessBanner();
 
-        authService.enrollNewStaff(
-                firstName, lastName, gender, dob, email, phone,
-                organizationId, password, roles,
+        authService.enrollNewStaff(firstName, lastName, gender, dob, email, phone,
+                password, roles, staffId,
                 response -> Platform.runLater(() -> {
                     enrollButton.setDisable(false);
                     resetButton.setDisable(false);
