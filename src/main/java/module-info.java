@@ -22,8 +22,6 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Shell to javafx.fxml;
 
     opens com.bbquantum.eazymanage.CacheClasses to com.google.gson;
-    exports com.bbquantum.eazymanage.DTO.Academics;
-    opens com.bbquantum.eazymanage.DTO.Academics to com.google.gson;
     exports com.bbquantum.eazymanage.DTO.Offline;
     opens com.bbquantum.eazymanage.DTO.Offline to com.google.gson;
     exports com.bbquantum.eazymanage.DTO.Messaging;
@@ -63,4 +61,26 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.Controller.Auth to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.Broadcasts;
     opens com.bbquantum.eazymanage.Controller.Broadcasts to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Academics.Semester;
+    opens com.bbquantum.eazymanage.Controller.Academics.Semester to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Academics.Classes;
+    opens com.bbquantum.eazymanage.Controller.Academics.Classes to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Academics.Subject;
+    opens com.bbquantum.eazymanage.Controller.Academics.Subject to javafx.fxml;
+    exports com.bbquantum.eazymanage.Controller.Academics.Grade;
+    opens com.bbquantum.eazymanage.Controller.Academics.Grade to javafx.fxml;
+    exports com.bbquantum.eazymanage.DTO.Academics.Subject;
+    opens com.bbquantum.eazymanage.DTO.Academics.Subject to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Academics.Classes;
+    opens com.bbquantum.eazymanage.DTO.Academics.Classes to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Academics.Results;
+    opens com.bbquantum.eazymanage.DTO.Academics.Results to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Academics.Conduct;
+    opens com.bbquantum.eazymanage.DTO.Academics.Conduct to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Academics.Report;
+    opens com.bbquantum.eazymanage.DTO.Academics.Report to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Academics.Students;
+    opens com.bbquantum.eazymanage.DTO.Academics.Students to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Academics.Grading;
+    opens com.bbquantum.eazymanage.DTO.Academics.Grading to com.google.gson;
 }
