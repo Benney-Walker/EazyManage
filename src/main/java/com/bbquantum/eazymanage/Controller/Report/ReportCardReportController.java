@@ -71,6 +71,8 @@ public class ReportCardReportController implements ReportViewerController {
     @FXML private GridPane conductGrid;
 
     // ---- action bar
+    @FXML private Label    promotionLabel;
+    @FXML private ChoiceBox<GradeCaching> promotionGradeChoice;
     @FXML private Label  statusLabel;
     @FXML private Button downloadButton;
 
