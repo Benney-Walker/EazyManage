@@ -17,8 +17,9 @@ public class AcademicSetupTabController {
 
     @FXML private TabPane sectionTabs;
     @FXML private Tab classesTab;
-    @FXML private Tab     semestersTab;
-    @FXML private Tab     subjectsTab;
+    @FXML private Tab semestersTab;
+    @FXML private Tab subjectsTab;
+    @FXML private Tab gradingTab;
 
     private String role;
     private String staffId;
@@ -31,6 +32,8 @@ public class AcademicSetupTabController {
             else if (newTab == semestersTab && semestersTab.getContent() == null) loadSemesters();
 
             else if (newTab == subjectsTab  && subjectsTab.getContent()  == null) loadSubjects();
+
+            else if (newTab == gradingTab && gradingTab.getContent() == null) loadGradingSetup();
         });
     }
 
@@ -50,7 +53,7 @@ public class AcademicSetupTabController {
     private void loadClasses() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Academics/ClassesSection.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Academics/Classes/ClassesSection.fxml"));
             Parent content = loader.load();
             ClassesSectionController controller = loader.getController();
             controller.attach(role, staffId);
@@ -64,7 +67,7 @@ public class AcademicSetupTabController {
     private void loadSemesters() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Academics/SemesterSection.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Academics/Semester/SemesterSection.fxml"));
             Parent content = loader.load();
             SemestersSectionController controller = loader.getController();
             controller.attach(role, staffId);
@@ -78,7 +81,7 @@ public class AcademicSetupTabController {
     private void loadSubjects() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Academics/SubjectsSection.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Academics/Subject/SubjectsSection.fxml"));
             Parent content = loader.load();
             SubjectsSectionController controller = loader.getController();
             controller.attach(role, staffId);
@@ -86,6 +89,20 @@ public class AcademicSetupTabController {
         } catch (Exception ex) {
             ex.printStackTrace();
             subjectsTab.setContent(errorContent("Could not load Subjects", ex));
+        }
+    }
+
+    private void loadGradingSetup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Academics/Grades/GradingSection.fxml"));
+            Parent content = loader.load();
+            GradingSectionController controller = loader.getController();
+            controller.attach(role, staffId);
+            gradingTab.setContent(content);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            gradingTab.setContent(errorContent("Could not load grading setup", ex));
         }
     }
 
