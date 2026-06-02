@@ -79,15 +79,15 @@ public class AuthService {
         new Thread(task).start();
     }
 
-    public void enrollNewStaff(String firstName, String lastName, String gender,
-                               LocalDate dateOfBirth, String email, String phoneNumber,
-                               String institutionId, String password, List<String> roles,
-                               Consumer<EnrollmentResponse> onResult,
+    public void enrollNewStaff(String firstName, String lastName, String gender, LocalDate dateOfBirth,
+                               String email, String phoneNumber, String password, List<String> roles,
+                               String staffId, Consumer<EnrollmentResponse> onResult,
                                Runnable onNetworkIssue) {
+
         Task<EnrollmentResponse> task = new Task<>() {
             @Override
             protected EnrollmentResponse call() throws Exception {
-                String url = apiCore.BASE_URL + "/auth/v1/enroll-new-staff";
+                String url = apiCore.STAFF_URL + apiCore.API_VERSION_1 +"/add-new-staff";
 
                 JsonObject body = new JsonObject();
                 body.addProperty("firstName", firstName);
