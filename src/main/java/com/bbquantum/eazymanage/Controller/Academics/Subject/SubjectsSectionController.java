@@ -51,7 +51,7 @@ public class SubjectsSectionController {
     private void loadAdd() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Academics/AddSubject.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Academics/Subject/AddSubject.fxml"));
             Parent content = loader.load();
             AddSubjectController controller = loader.getController();
             controller.attach(role, staffId);
@@ -65,7 +65,7 @@ public class SubjectsSectionController {
     private void loadFind() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Academics/FindSubject.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Academics/Subject/FindSubject.fxml"));
             Parent content = loader.load();
             FindSubjectController controller = loader.getController();
             controller.attach(role, staffId);
