@@ -213,7 +213,7 @@ public class ConductController {
         conductService.loadClassConduct(grade.getLevelId(), semester.getSemesterId(), staffId,
                 list -> Platform.runLater(() -> populateRecords(list)),
                 () -> Platform.runLater(() -> setStatus("Loaded " + records.size() + " student(s)")),
-                () -> Platform.runLater(() -> setStatus("Could not load records")),
+                () -> Platform.runLater(() -> setStatus(ApiContext.getInstance().errorMessageContainer)),
                 () -> Platform.runLater(() -> setStatus("Network issue — try again")));
     }
 
