@@ -96,7 +96,6 @@ public class AuthService {
                 body.addProperty("dateOfBirth", dateOfBirth == null ? "" : dateOfBirth.toString());
                 body.addProperty("email", email);
                 body.addProperty("phoneNumber", phoneNumber);
-                body.addProperty("institutionId", institutionId);
                 body.addProperty("password", password);
 
                 JsonArray rolesArr = new JsonArray();
