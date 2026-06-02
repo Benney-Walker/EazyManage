@@ -100,7 +100,7 @@ public class AcademicsService {
     }
 
     /** Add a new subject and assign it to a grade/level. */
-    public void addNewSubject(AssignSubject assignment, String staffId,
+    public void addNewSubject(AddNewSubject assignment, String staffId,
                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
