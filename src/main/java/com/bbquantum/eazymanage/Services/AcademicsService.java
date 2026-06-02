@@ -993,6 +993,62 @@ public class AcademicsService {
         new Thread(task).start();
     }
 
+    public void loadGradingCriteria(String staffId, Consumer<List<SaveGradingCriteria>> onResult,
+                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        Type listType = new TypeToken<List<SaveGradingCriteria>>() {}.getType();
+
+        Task<List<SaveGradingCriteria>> task = new Task<>() {
+            @Override
+            protected List<SaveGradingCriteria> call() throws Exception {
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/load-grading-criteria";
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId
+                        )
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return core.gson.fromJson(response.body(), listType);
+                }
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<SaveGradingCriteria> result = task.getValue();
+            onResult.accept(result);            // controller field assignment happens in the consumer
+            if (result == null) {
+                onFailure.run();
+                return;
+            }
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
     /**
      * Look up one student's results for a semester/class.
      * Result is delivered to {@code facade.studentResult} before {@code onSuccess}.

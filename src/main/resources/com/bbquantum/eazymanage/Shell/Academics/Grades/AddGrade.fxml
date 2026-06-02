@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Academics.Grade.AddGradeController"
+      styleClass="add-grade" spacing="0">
+
+    <VBox spacing="14" styleClass="form-card">
+        <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+
+        <Label text="New Grade Criterion" styleClass="form-section-title"/>
+        <Label text="Define one mark band at a time. Lower must not exceed upper."
+               styleClass="form-hint" wrapText="true"/>
+
+        <GridPane hgap="16" vgap="12">
+            <columnConstraints>
+                <javafx.scene.layout.ColumnConstraints minWidth="160" prefWidth="200" hgrow="SOMETIMES"/>
+                <javafx.scene.layout.ColumnConstraints minWidth="160" prefWidth="200" hgrow="SOMETIMES"/>
+                <javafx.scene.layout.ColumnConstraints minWidth="160" prefWidth="200" hgrow="SOMETIMES"/>
+            </columnConstraints>
+
+            <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label text="Grade letter" styleClass="field-label"/>
+                <TextField fx:id="gradeField" promptText="e.g. A, B+, C, F"/>
+            </VBox>
+            <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label text="Lower mark" styleClass="field-label"/>
+                <TextField fx:id="lowerRangeField" promptText="e.g. 80"/>
+            </VBox>
+            <VBox spacing="4" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                <Label text="Upper mark" styleClass="field-label"/>
+                <TextField fx:id="upperRangeField" promptText="e.g. 100"/>
+            </VBox>
+
+            <VBox spacing="4"
+                  GridPane.columnIndex="0" GridPane.rowIndex="1"
+                  GridPane.columnSpan="3">
+                <Label text="Remark" styleClass="field-label"/>
+                <TextField fx:id="remarkField" promptText="e.g. Excellent, Very Good, Pass, Fail"/>
+            </VBox>
+        </GridPane>
+    </VBox>
+
+    <VBox styleClass="action-bar">
+        <Separator/>
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <Label fx:id="statusLabel" styleClass="save-status"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="resetButton" text="Reset" onAction="#onReset" styleClass="btn,btn-ghost"/>
+            <Button fx:id="saveButton" text="Add grade criterion"
+                    onAction="#onSave" styleClass="btn,btn-primary"/>
+        </HBox>
+    </VBox>
+</VBox>
