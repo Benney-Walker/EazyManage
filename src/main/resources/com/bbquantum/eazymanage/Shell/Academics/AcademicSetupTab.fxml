@@ -22,7 +22,7 @@
     <VBox styleClass="page-header" spacing="4">
         <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
         <Label text="Academic Setup" styleClass="page-title"/>
-        <Label text="Configure the classes, semesters, and subjects that anchor every other workflow."
+        <Label text="Configure the classes, semesters, subjects and grading criteria that anchor every other workflow."
                styleClass="page-subtitle" wrapText="true"/>
     </VBox>
 
@@ -34,6 +34,7 @@
             <Tab fx:id="classesTab"    text="Classes"/>
             <Tab fx:id="semestersTab"  text="Semesters"/>
             <Tab fx:id="subjectsTab"   text="Subjects"/>
+            <Tab fx:id="gradingTab" text="Grades"/>
         </tabs>
     </TabPane>
 </VBox>
