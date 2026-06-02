@@ -28,7 +28,6 @@ public class AuthService {
             @Override
             protected String call() throws Exception {
                 String url = apiCore.ADMIN_URL + apiCore.API_VERSION_1 + "/reset-staff-password?" +
-                        "staffId=" + staffId +
                         "&newPasswordStaffId=" + newPasswordStaffId +
                         "&newPassword=" + newPassword;
 
@@ -44,11 +43,11 @@ public class AuthService {
                 HttpResponse<String> response = apiCore.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Password reset successful";
                 }
 
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (apiCore.handleSessionExpired(response)) return null;
+                apiCore.handleSessionExpired(response);
                 return null;
             }
         };
