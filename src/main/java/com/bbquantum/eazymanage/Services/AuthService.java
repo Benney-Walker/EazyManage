@@ -34,7 +34,10 @@ public class AuthService {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + apiCore.token)
+                        .headers(
+                                "Authorization", "Bearer " + apiCore.token,
+                                "staffId", staffId
+                                )
                         .POST(HttpRequest.BodyPublishers.noBody())
                         .build();
 
@@ -103,7 +106,10 @@ public class AuthService {
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Content-Type", "application/json")
+                        .headers(
+                                "Content-Type", "application/json",
+                                "staffId", staffId
+                        )
                         .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
                         .build();
 
