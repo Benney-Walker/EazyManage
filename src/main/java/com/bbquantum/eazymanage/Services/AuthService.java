@@ -21,16 +21,8 @@ public class AuthService {
         this.apiCore = apiCore;
     }
 
-    /**
-     * Reset another staff member's password.
-     *
-     * <p>The {@code staffId} header identifies the <i>actor</i> (typically an
-     * Administrator), while {@code newPasswordStaffId} names the account being
-     * reset. The two are deliberately distinct: an administrator resetting a
-     * teacher's password is a common workflow and the backend logs both
-     * identities for audit.
-     */
-    public void recoverPassword(String staffId, String newPasswordStaffId, String newPassword,
+
+    public void resetPassword(String staffId, String newPasswordStaffId, String newPassword,
                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
