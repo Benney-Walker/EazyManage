@@ -635,11 +635,11 @@ public class DashboardService {
 
     public void loadStaffGrades(LoadCounter counter, String staffId, StackPane notification,
                                 Runnable onSuccess, Runnable onFailure) {
-        Type studentList = new TypeToken<ArrayList<GradeInformation>>() {}.getType();
+        Type studentList = new TypeToken<ArrayList<ClassInformation>>() {}.getType();
 
-        Task<List<GradeInformation>> task = new Task<>() {
+        Task<List<ClassInformation>> task = new Task<>() {
             @Override
-            protected List<GradeInformation> call() throws Exception {
+            protected List<ClassInformation> call() throws Exception {
                 String url = core.STAFF_URL + core.API_VERSION_1 + "/load-staff-grades/" + staffId;
 
                 HttpRequest request = HttpRequest.newBuilder()
@@ -658,7 +658,7 @@ public class DashboardService {
         };
 
         task.setOnSucceeded(event -> {
-            List<GradeInformation> gradesInformation = task.getValue();
+            List<ClassInformation> gradesInformation = task.getValue();
             if (gradesInformation != null && !gradesInformation.isEmpty()) {
                 UtilityClass.gradeInfoCacheManager.setGradesInformation(gradesInformation);
                 counter.tick(onSuccess, null);
