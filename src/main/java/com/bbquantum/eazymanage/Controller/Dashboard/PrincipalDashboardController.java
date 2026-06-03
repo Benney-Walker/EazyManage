@@ -25,6 +25,7 @@ public class PrincipalDashboardController {
 
     @FXML private Label totalStudentsLabel;
     @FXML private Label totalStaffLabel;
+    @FXML private Label totalTeachingStaffLabel;
     @FXML private Label semesterFeesLabel;
     @FXML private Label feesPaidLabel;
     @FXML private Label feesPaidHintLabel;
@@ -101,7 +102,9 @@ public class PrincipalDashboardController {
     private void renderFromGlobals() {
         long totalStudents = UtilityClass.totalStudentsFromBackend == null ? 0L : UtilityClass.totalStudentsFromBackend;
 
-        long totalStaff    = UtilityClass.totalStaffFromBackend    == null ? 0L : UtilityClass.totalStaffFromBackend;
+        long totalStaff    = UtilityClass.totalStaffFromBackend == null ? 0L : UtilityClass.totalStaffFromBackend;
+
+        long totalTeachingStaff = UtilityClass.totalTeachingStaff == null ? 0L : UtilityClass.totalTeachingStaff;
 
         double totalFees   = UtilityClass.totalSemesterFeesFromBackend == null ? 0d : UtilityClass.totalSemesterFeesFromBackend;
 
@@ -109,6 +112,7 @@ public class PrincipalDashboardController {
 
         totalStudentsLabel.setText(String.valueOf(totalStudents));
         totalStaffLabel.setText(String.valueOf(totalStaff));
+        totalTeachingStaffLabel.setText(totalTeachingStaff + " :");
         semesterFeesLabel.setText("GH₵ " + String.format("%.2f", totalFees));
         feesPaidLabel.setText("GH₵ " + String.format("%.2f", feesPaid));
 
