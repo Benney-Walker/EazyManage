@@ -104,11 +104,13 @@ public class DashboardService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.STUDENT_URL + core.API_VERSION_1 + "/total-students/" + staffId;
+                String url = core.STUDENT_URL + core.API_VERSION_1 + "/total-students";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -116,7 +118,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -152,20 +156,23 @@ public class DashboardService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/total-staffs/" + staffId;
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/total-staffs";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println("Message: " + response.body());
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -201,11 +208,13 @@ public class DashboardService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/total-teaching-staffs/" + staffId;
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/total-teaching-staffs";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -213,7 +222,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -262,7 +273,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -311,7 +324,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -363,11 +378,13 @@ public class DashboardService {
         Task<List<AbsenteesView>> task = new Task<>() {
             @Override
             protected List<AbsenteesView> call() throws Exception {
-                String url = core.STUDENT_URL + core.API_VERSION_1 + "/absent-students/" + staffId;
+                String url = core.STUDENT_URL + core.API_VERSION_1 + "/absent-students";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -375,7 +392,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), studentListType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -428,11 +447,13 @@ public class DashboardService {
                         .build();
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println(response.body());
+
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), staffListType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -478,7 +499,7 @@ public class DashboardService {
         Task<List<GradeCaching>> task = new Task<>() {
             @Override
             protected List<GradeCaching> call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/load-levels";
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/load-classes";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -491,7 +512,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), classListType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -552,7 +575,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), semesterListType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -590,11 +615,14 @@ public class DashboardService {
         Task<List<ClassFeesSummary>> task = new Task<>() {
             @Override
             protected List<ClassFeesSummary> call() throws Exception {
-                String url = core.FINANCE_URL + core.API_VERSION_1 + "/class-summary-fees/" + staffId;
+                String url = core.FINANCE_URL + core.API_VERSION_1 + "/class-summary-fees";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId
+                        )
                         .GET()
                         .build();
 
@@ -602,7 +630,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), classFeesList);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -640,11 +670,13 @@ public class DashboardService {
         Task<List<ClassInformation>> task = new Task<>() {
             @Override
             protected List<ClassInformation> call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/load-staff-grades/" + staffId;
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/load-staff-grades";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -652,7 +684,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), studentList);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -703,7 +737,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), staffListListType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -754,7 +790,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
@@ -791,7 +829,7 @@ public class DashboardService {
         Task<List<LogsDetails>> task = new Task<>() {
             @Override
             protected List<LogsDetails> call() throws Exception {
-                String url = core.ADMIN_URL + core.API_VERSION_1 + "/recentLogs";
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/recent-logs";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -804,7 +842,9 @@ public class DashboardService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.handleSessionExpired(response);
                 return null;
             }
         };
