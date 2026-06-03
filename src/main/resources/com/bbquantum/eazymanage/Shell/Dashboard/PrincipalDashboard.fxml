@@ -50,9 +50,15 @@
             </VBox>
             <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
                 <Label text="👥" styleClass="kpi-icon"/>
-                <Label text="TOTAL STAFF" styleClass="kpi-label"/>
-                <Label fx:id="totalStaffLabel" text="0" styleClass="kpi-value"/>
-                <Label text="Active staff members" styleClass="kpi-hint"/>
+                <VBox spacing="8">
+                    <Label text="TOTAL STAFF: " styleClass="kpi-label"/>
+                    <Label fx:id="totalStaffLabel" text="0" styleClass="kpi-value"/>
+                </VBox>
+                <Separator styleClass="separator"/>
+                <HBox spacing="8">
+                    <Label fx:id="totalTeachingStaffLabel" text="0" styleClass="kpi-label"/>
+                    <Label text="active teaching staffs" styleClass="kpi-hint"/>
+                </HBox>
             </VBox>
             <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS">
                 <Label text="💵" styleClass="kpi-icon"/>
