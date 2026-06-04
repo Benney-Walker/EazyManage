@@ -17,6 +17,7 @@ public class NavRegistry {
     private static final Set<String> ADMIN_ONLY           = Set.of("ADMINISTRATOR");
     private static final Set<String> NOT_ACCOUNTANT       = Set.of("PRINCIPAL", "ADMINISTRATOR", "TEACHING_STAFF");
     private static final Set<String> ACCOUNTANT_ONLY           = Set.of("ACCOUNTANT");
+    private static final Set<String> TEACHING_STAFF_ONLY           = Set.of("TEACHING_STAFF");
 
     private static final List<Section> SECTIONS = List.of(
             new Section("OPERATIONS", List.of(
@@ -26,7 +27,7 @@ public class NavRegistry {
                     new NavItem("finance",     "Finance",     "\u25C6", ACCOUNTANT_ONLY, NavItemStatus.FUNCTIONAL, ""),
                     new NavItem("students",    "Students",    "\u25CF", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL,  ""),
                     new NavItem("staff",       "Staff",       "\u25B2", PRINCIPAL_ADMIN,      NavItemStatus.FUNCTIONAL,  ""),
-                    new NavItem("conduct",     "Conduct",     "\u2691", NOT_ACCOUNTANT,       NavItemStatus.FUNCTIONAL,  "")
+                    new NavItem("conduct",     "Conduct",     "\u2691", TEACHING_STAFF_ONLY,       NavItemStatus.FUNCTIONAL,  "")
             )),
 
             new Section("RECORDS", List.of(
