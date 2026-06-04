@@ -54,19 +54,19 @@ public class AdminDashboardController {
     private void initialize() {
         activitiesTable.setItems(rows);
         dateCol.setCellValueFactory(c ->
-                new SimpleStringProperty(safe(c.getValue().getActionDate())));
+                new SimpleStringProperty(safe(c.getValue().getDate())));
 
         timeCol.setCellValueFactory(c ->
-                new SimpleStringProperty(safe(c.getValue().getActionTime())));
+                new SimpleStringProperty(safe(c.getValue().getTime())));
 
         actorCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getCreatedBy())));
 
         typeCol.setCellValueFactory(c ->
-                new SimpleStringProperty(safe(c.getValue().getActionType())));
+                new SimpleStringProperty(safe(c.getValue().getType())));
 
         actionCol.setCellValueFactory(c ->
-                new SimpleStringProperty(safe(c.getValue().getActionData())));
+                new SimpleStringProperty(safe(c.getValue().getMessage())));
 
         statusCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getStatus())));
