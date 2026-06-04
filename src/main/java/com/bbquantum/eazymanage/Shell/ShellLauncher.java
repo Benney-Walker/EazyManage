@@ -43,10 +43,12 @@ public class ShellLauncher {
             //Exception ignored
         }
         stage.setScene(scene);
+
         if (wasMaximized) {
             stage.setMaximized(false);
         }
         stage.setMaximized(true);
+        stage.setResizable(false);
 
         shell.boot();
     }
