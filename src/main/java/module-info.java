@@ -68,6 +68,8 @@ module com.bbquantum.eazymanage {
     exports com.bbquantum.eazymanage.Controller.Academics.Subject;
     opens com.bbquantum.eazymanage.Controller.Academics.Subject to javafx.fxml;
     exports com.bbquantum.eazymanage.Controller.Academics.Grade;
+    exports com.bbquantum.eazymanage.Controller.Academics.Holiday;
+    opens com.bbquantum.eazymanage.Controller.Academics.Holiday to javafx.fxml;
     opens com.bbquantum.eazymanage.Controller.Academics.Grade to javafx.fxml;
     exports com.bbquantum.eazymanage.DTO.Academics.Subject;
     opens com.bbquantum.eazymanage.DTO.Academics.Subject to com.google.gson;
@@ -83,4 +85,6 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.DTO.Academics.Students to com.google.gson;
     exports com.bbquantum.eazymanage.DTO.Academics.Grading;
     opens com.bbquantum.eazymanage.DTO.Academics.Grading to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Academics.Holiday;
+    opens com.bbquantum.eazymanage.DTO.Academics.Holiday to com.google.gson;
 }
