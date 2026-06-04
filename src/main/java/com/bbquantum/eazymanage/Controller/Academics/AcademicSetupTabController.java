@@ -2,6 +2,7 @@ package com.bbquantum.eazymanage.Controller.Academics;
 
 import com.bbquantum.eazymanage.Controller.Academics.Classes.ClassesSectionController;
 import com.bbquantum.eazymanage.Controller.Academics.Grade.GradingSectionController;
+import com.bbquantum.eazymanage.Controller.Academics.Holiday.HolidaysSectionController;
 import com.bbquantum.eazymanage.Controller.Academics.Semester.SemestersSectionController;
 import com.bbquantum.eazymanage.Controller.Academics.Subject.SubjectsSectionController;
 import javafx.fxml.FXML;
@@ -20,6 +21,7 @@ public class AcademicSetupTabController {
     @FXML private Tab semestersTab;
     @FXML private Tab subjectsTab;
     @FXML private Tab gradingTab;
+    @FXML private Tab holidaysTab;
 
     private String role;
     private String staffId;
@@ -34,6 +36,8 @@ public class AcademicSetupTabController {
             else if (newTab == subjectsTab  && subjectsTab.getContent()  == null) loadSubjects();
 
             else if (newTab == gradingTab && gradingTab.getContent() == null) loadGradingSetup();
+
+            else if (newTab == holidaysTab  && holidaysTab.getContent()  == null) loadHolidays();
         });
     }
 
@@ -103,6 +107,20 @@ public class AcademicSetupTabController {
         } catch (Exception ex) {
             ex.printStackTrace();
             gradingTab.setContent(errorContent("Could not load grading setup", ex));
+        }
+    }
+
+    private void loadHolidays() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Academics/Holiday/HolidaySection.fxml"));
+            Parent content = loader.load();
+            HolidaysSectionController controller = loader.getController();
+            controller.attach(role, staffId);
+            holidaysTab.setContent(content);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            holidaysTab.setContent(errorContent("Could not load Holidays", ex));
         }
     }
 
