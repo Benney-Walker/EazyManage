@@ -3,6 +3,7 @@ package com.bbquantum.eazymanage.Controller.Staff;
 import com.bbquantum.eazymanage.DTO.Institution.FindStaffResponse;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
+import com.bbquantum.eazymanage.Services.AuthService;
 import com.bbquantum.eazymanage.Services.StaffService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -40,6 +41,7 @@ public class FindStaffShellController {
     @FXML private CheckBox roleGeneralStaff;
 
     @FXML private Label  saveStatusLabel;
+    @FXML private Button resetPasswordButton;
     @FXML private Button resetButton;
     @FXML private Button saveButton;
 
@@ -49,6 +51,7 @@ public class FindStaffShellController {
 
     private final ApiCore apiCore = new ApiCore();
     private final StaffService staffService = new StaffService(apiCore);
+    private final AuthService authService  = new AuthService(apiCore);
 
     private FindStaffResponse currentStaff;
 
@@ -58,7 +61,7 @@ public class FindStaffShellController {
         // Staff statuses observed across the legacy code. Edit here if your
         // backend uses different names.
         statusChoice.setItems(FXCollections.observableArrayList(
-                "ACTIVE", "INACTIVE", "SUSPENDED"));
+                "ACTIVE", "INACTIVE"));
     }
 
     public void attach(String role, String staffId) {
@@ -213,6 +216,58 @@ public class FindStaffShellController {
         if (roleTeachingStaff.isSelected()) out.add("TEACHING_STAFF");
         if (roleGeneralStaff.isSelected())  out.add("GENERAL_STAFF");
         return out;
+    }
+
+    @FXML
+    private void onResetPasswordClick() {
+        if (currentStaff == null) {
+            setSaveStatus("Search for a staff member first.");
+            return;
+        }
+
+        String targetStaffId   = currentStaff.getStaffId();
+        String targetStaffName = displayName(currentStaff);
+
+
+        javafx.stage.Stage owner =
+                (javafx.stage.Stage) resetPasswordButton.getScene().getWindow();
+
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Staff/PasswordResetDialog.fxml"));
+            javafx.scene.Parent root = loader.load();
+
+            PasswordResetDialogController dialog = loader.getController();
+            dialog.attach(staffId, targetStaffId, targetStaffName, authService,
+                    finalMessage -> Platform.runLater(() ->
+                            setSaveStatus(finalMessage == null
+                                    ? "Password reset for " + targetStaffId + "."
+                                    : finalMessage)));
+
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            stage.initOwner(owner);
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            stage.setTitle("Reset password");
+
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            com.bbquantum.eazymanage.Utitity.ThemeManager.getInstance().register(scene);
+
+            stage.setScene(scene);
+            dialog.setDialogStage(stage);
+            stage.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            setSaveStatus("Could not open password reset dialog.");
+        }
+    }
+
+    private static String displayName(FindStaffResponse s) {
+        String first = safe(s.getFirstName()).trim();
+        String last  = safe(s.getSurname()).trim();
+        String full  = (first + " " + last).trim();
+        return full.isEmpty() ? s.getStaffId() : full;
     }
 
     @FXML
