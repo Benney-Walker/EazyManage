@@ -1,5 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
+import com.bbquantum.eazymanage.DTO.Academics.Holiday.Holiday;
 import com.bbquantum.eazymanage.DTO.Academics.Report.ViewClassSemesterReport;
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentResult;
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
@@ -1246,122 +1247,173 @@ public class AcademicsService {
         thread.start();
     }
 
-    /*/ ====================================================================
-    // Teacher remarks (Phase 4)
-    // ====================================================================
-
-    public void saveSubjectTeacherRemark(String studentId, String teacherRemark,
-                                         String subjectId, String semesterId, String staffId,
-                                         Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+    public void addNewHoliday(String staffId, Holiday holiday,
+                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/subject-remark";
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/add-holiday";
 
                 JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("studentId", studentId);
-                requestBody.addProperty("teacherRemark", teacherRemark);
+                requestBody.addProperty("holidayId", holiday.getHolidayId());
+                requestBody.addProperty("holidayName", holiday.getHolidayName());
+                requestBody.addProperty("startDate",   holiday.getStartDate());
+                requestBody.addProperty("endDate",     holiday.getEndDate());
+                requestBody.addProperty("semesterId",  holiday.getSemesterId());
+                requestBody.addProperty("semesterName",  holiday.getSemesterName());
+                requestBody.addProperty("academicYear",  holiday.getAcademicYear());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + core.token,
                                 "Content-Type", "application/json",
-                                "staffId", staffId,
-                                "subjectId", subjectId,
-                                "semesterId", semesterId)
-                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                                "staffId", staffId)
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
                         .build();
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Holiday added successfully";
                 }
 
+                if (core.handleSessionExpired(response)) return null;
                 core.checkApiResponse(response);
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            String status = task.getValue();
-            if (status == null) {
-                onFailure.run();
-                return;
-            }
-            ApiContext.getInstance().successMessageContainer = "Teacher remark saved";
+            String response = task.getValue();
+            if (response == null) { onFailure.run(); return; }
+            ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
 
         task.setOnFailed(event -> {
             Throwable ex = task.getException();
-            ex.printStackTrace();
-            String msg = ex.getMessage();
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
+            if (ex != null) ex.printStackTrace();
+            String msg = ex == null ? null : ex.getMessage();
+            if (ex instanceof java.net.ConnectException
+                    || (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
                 return;
             }
-            ApiContext.getInstance().errorMessageContainer= "Could not save teacher remark";
+            ApiContext.getInstance().errorMessageContainer = "Could not save holiday";
             onFailure.run();
         });
 
         new Thread(task).start();
     }
 
-    public void saveSemesterTeacherRemark(String studentId, String semesterRemark,
-                                          String semesterId, String staffId,
-                                          Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/semester-remark";
+    public void loadAllHolidays(String staffId,
+                                Consumer<List<Holiday>> onResult,
+                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Type listType = new TypeToken<List<Holiday>>(){}.getType();
 
-                JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("studentId", studentId);
-                requestBody.addProperty("semesterRemark", semesterRemark);
+        Task<List<Holiday>> task = new Task<>() {
+            @Override
+            protected List<Holiday> call() throws Exception {
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/load-holidays";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers("Authorization", "Bearer " + core.token,
-                                "Content-Type", "application/json",
-                                "staffId", staffId,
-                                "semesterId", semesterId)
-                        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                                "staffId", staffId)
+                        .GET()
                         .build();
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return core.gson.fromJson(response.body(), listType);
                 }
 
+                if (core.handleSessionExpired(response)) return null;
                 core.checkApiResponse(response);
                 return null;
             }
         };
 
         task.setOnSucceeded(event -> {
-            String status = task.getValue();
-            if (status == null) {
-                onFailure.run();
+            List<Holiday> result = task.getValue();
+            if (result != null) {
+                onResult.accept(result);
+                onSuccess.run();
                 return;
             }
-            ApiContext.getInstance().successMessageContainer = "Semester remark saved";
+            onFailure.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            if (ex != null) ex.printStackTrace();
+            String msg = ex == null ? null : ex.getMessage();
+            if (ex instanceof java.net.ConnectException
+                    || (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+            ApiContext.getInstance().errorMessageContainer = "Could not load holidays";
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void updateHoliday(String staffId, Holiday holiday,
+                              Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/update-holiday";
+
+                JsonObject body = new JsonObject();
+                body.addProperty("holidayId", holiday.getHolidayId());
+                body.addProperty("holidayName", holiday.getHolidayName());
+                body.addProperty("startDate", holiday.getStartDate());
+                body.addProperty("endDate", holiday.getEndDate());
+                body.addProperty("semesterId", holiday.getSemesterId());
+                body.addProperty("semesterName", holiday.getSemesterName());
+                body.addProperty("academicYear", holiday.getAcademicYear());
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers("Authorization", "Bearer " + core.token,
+                                "Content-Type", "application/json",
+                                "staffId", staffId)
+                        .PUT(HttpRequest.BodyPublishers.ofString(body.toString()))
+                        .build();
+
+                HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return "Holiday updated successfully";
+                }
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            String response = task.getValue();
+            if (response == null) { onFailure.run(); return; }
+            ApiContext.getInstance().successMessageContainer = response;
             onSuccess.run();
         });
 
         task.setOnFailed(event -> {
             Throwable ex = task.getException();
-            ex.printStackTrace();
-            String msg = ex.getMessage();
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
+            if (ex != null) ex.printStackTrace();
+            String msg = ex == null ? null : ex.getMessage();
+            if (ex instanceof java.net.ConnectException
+                    || (msg != null && msg.contains("Connection refused"))) {
                 onNetworkIssue.run();
                 return;
             }
-            ApiContext.getInstance().errorMessageContainer= "Could not save semester remark";
+            ApiContext.getInstance().errorMessageContainer = "Could not update holiday";
             onFailure.run();
         });
 
         new Thread(task).start();
-    }*/
+    }
 }
