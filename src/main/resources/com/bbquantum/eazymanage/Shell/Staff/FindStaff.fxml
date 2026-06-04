@@ -112,6 +112,8 @@
                     <padding><Insets top="12" right="0" bottom="4" left="0"/></padding>
                     <Label fx:id="saveStatusLabel" styleClass="save-status"/>
                     <Region HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="resetPasswordButton" text="Reset password"
+                            onAction="#onResetPasswordClick" styleClass="btn,btn-ghost"/>
                     <Button fx:id="resetButton" text="Reset"
                             onAction="#onResetForm" styleClass="btn,btn-ghost"/>
                     <Button fx:id="saveButton" text="Save changes"
