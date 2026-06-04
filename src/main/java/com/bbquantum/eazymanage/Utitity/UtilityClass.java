@@ -38,7 +38,7 @@ public class UtilityClass {
     public static final String BASE_URL =  PRODUCTION_URL + "/api";
 
     /** Application version banner. Displayed on the dashboard footer. */
-    public static final String APPLICATION_VERSION = "V 3.0.0";
+    public static final String APPLICATION_VERSION = "V 3.1.0";
 
     // Cache Managers
     public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
@@ -49,6 +49,7 @@ public class UtilityClass {
     public static final StaffListCacheManager staffListCacheManager = StaffListCacheManager.getInstance();
     public static final GradeInfoCacheManager gradeInfoCacheManager = GradeInfoCacheManager.getInstance();
     public static final SystemLogsCacheManager systemLogsCacheManager = SystemLogsCacheManager.getInstance();
+    public static final HolidayCachingManager holidayCachingManager = HolidayCachingManager.getInstance();
 
     // System own variables
     public static Long totalStudentsFromBackend = 0L;
