@@ -2,68 +2,68 @@ package com.bbquantum.eazymanage.DTO.Institution;
 
 public class LogsDetails {
 
-    private String actionId;
+    private String id;
 
-    private String actionDate;
+    private String date;
 
-    private String actionTime;
+    private String time;
 
-    private String actionType;
+    private String type;
 
-    private String actionData;
+    private String message;
 
     private String createdBy;
 
     private String status;
 
-    public LogsDetails(String actionId, String actionDate, String actionTime, String actionType, String actionData, String createdBy, String status) {
-        this.actionId = actionId;
-        this.actionDate = actionDate;
-        this.actionTime = actionTime;
-        this.actionType = actionType;
-        this.actionData = actionData;
+    public LogsDetails(String id, String date, String time, String type, String message, String createdBy, String status) {
+        this.id = id;
+        this.date = date;
+        this.time = time;
+        this.type = type;
+        this.message = message;
         this.createdBy = createdBy;
         this.status = status;
     }
 
-    public String getActionId() {
-        return actionId;
+    public String getId() {
+        return id;
     }
 
-    public void setActionId(String actionId) {
-        this.actionId = actionId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getActionDate() {
-        return actionDate;
+    public String getDate() {
+        return date;
     }
 
-    public void setActionDate(String actionDate) {
-        this.actionDate = actionDate;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public String getActionTime() {
-        return actionTime;
+    public String getTime() {
+        return time;
     }
 
-    public void setActionTime(String actionTime) {
-        this.actionTime = actionTime;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public String getActionType() {
-        return actionType;
+    public String getType() {
+        return type;
     }
 
-    public void setActionType(String actionType) {
-        this.actionType = actionType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getActionData() {
-        return actionData;
+    public String getMessage() {
+        return message;
     }
 
-    public void setActionData(String actionData) {
-        this.actionData = actionData;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getCreatedBy() {
