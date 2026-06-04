@@ -499,7 +499,7 @@ public class DashboardService {
         Task<List<GradeCaching>> task = new Task<>() {
             @Override
             protected List<GradeCaching> call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/load-classes";
+                String url = core.STAFF_URL + core.API_VERSION_2 + "/load-classes";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
