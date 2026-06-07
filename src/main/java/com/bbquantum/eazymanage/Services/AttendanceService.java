@@ -2,6 +2,8 @@ package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
 import com.bbquantum.eazymanage.DTO.Offline.AttendancePayload;
+import com.bbquantum.eazymanage.Offline.OfflineMode;
+import com.bbquantum.eazymanage.Offline.OfflineQueue;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
