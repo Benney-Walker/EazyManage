@@ -52,7 +52,7 @@ public class DashboardService {
         loadTotalStudents       (counter, principalId, notification, onSuccess, showErrorToast);
         loadAbsentStudents      (counter, principalId, notification, onSuccess, showErrorToast);
         loadCachedStaffList     (counter, principalId, notification, onSuccess, showErrorToast);
-        loadGradesFromBackend   (counter, principalId, notification, onSuccess, showErrorToast);
+        loadClassesFromBackend(counter, principalId, notification, onSuccess, showErrorToast);
         loadSemestersFromBackend(counter, principalId, notification, onSuccess, showErrorToast);
         loadClassSummaryFees    (counter, principalId, notification, onSuccess, showErrorToast);
         loadAllStaffList        (counter, principalId, notification, onSuccess, showErrorToast);
@@ -66,7 +66,7 @@ public class DashboardService {
 
         loadTotalFeesPaid           (counter, financeId, notification, onSuccess, showErrorToast);
         loadTotalSemesterFees       (counter, financeId, notification, onSuccess, showErrorToast);
-        loadGradesFromBackend       (counter, financeId, notification, onSuccess, showErrorToast);
+        loadClassesFromBackend(counter, financeId, notification, onSuccess, showErrorToast);
         loadSemestersFromBackend    (counter, financeId, notification, onSuccess, showErrorToast);
         fetchRecentFeesTransactions (counter, financeId, notification, onSuccess, showErrorToast);
     }
@@ -77,7 +77,7 @@ public class DashboardService {
         Runnable showErrorToast = () -> Platform.runLater(
                 () -> UtilityClass.showError(notification, ApiContext.getInstance().errorMessageContainer));
 
-        loadGradesFromBackend    (counter, staffId, notification, onSuccess, showErrorToast);
+        loadClassesFromBackend(counter, staffId, notification, onSuccess, showErrorToast);
         loadSemestersFromBackend (counter, staffId, notification, onSuccess, showErrorToast);
         loadStaffGrades          (counter, staffId, notification, onSuccess, showErrorToast);
     }
@@ -90,7 +90,7 @@ public class DashboardService {
 
         fetchRecentSystemLogs    (counter, staffId, notification, onSuccess, showErrorToast);
         loadCachedStaffList      (counter, staffId, notification, onSuccess, showErrorToast);
-        loadGradesFromBackend    (counter, staffId, notification, onSuccess, showErrorToast);
+        loadClassesFromBackend(counter, staffId, notification, onSuccess, showErrorToast);
         loadSemestersFromBackend (counter, staffId, notification, onSuccess, showErrorToast);
         loadAllStaffList         (counter, staffId, notification, onSuccess, showErrorToast);
     }
@@ -484,8 +484,8 @@ public class DashboardService {
         new Thread(task).start();
     }
 
-    public void loadGradesFromBackend(LoadCounter counter, String staffId, StackPane notification,
-                                      Runnable onSuccess, Runnable onFailure) {
+    public void loadClassesFromBackend(LoadCounter counter, String staffId, StackPane notification,
+                                       Runnable onSuccess, Runnable onFailure) {
 
         List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()
@@ -499,7 +499,7 @@ public class DashboardService {
         Task<List<GradeCaching>> task = new Task<>() {
             @Override
             protected List<GradeCaching> call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_2 + "/load-classes";
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/load-classes";
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
