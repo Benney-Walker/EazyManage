@@ -17,11 +17,9 @@ public class MessagingService {
         this.core = core;
     }
 
-    public void sendBroadcast(String staffId,
-                              BroadcastSendRequest request,
+    public void sendBroadcast(String staffId, BroadcastSendRequest request,
                               Consumer<BroadcastSendResponse> onSuccess,
-                              Runnable onFailure,
-                              Runnable onNetworkIssue) {
+                              Runnable onFailure, Runnable onNetworkIssue) {
 
         Task<BroadcastSendResponse> task = new Task<>() {
             @Override
