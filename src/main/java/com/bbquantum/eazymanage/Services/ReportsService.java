@@ -28,6 +28,89 @@ public class ReportsService {
         this.core   = core;
     }
 
+    public void downloadClassReportCards(String staffId, String levelId, String semesterId,
+                                         Supplier<Window> parentWindow,
+                                         Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        Task<byte[]> task = new Task<>() {
+            @Override
+            protected byte[] call() throws Exception {
+                String url = core.ADMIN_URL + core.API_VERSION_2 + "/generate-class-report?" +
+                        "&levelId=" + levelId +
+                        "&semesterId=" + semesterId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId
+                        )
+                        .GET()
+                        .build();
+
+                HttpResponse<byte[]> response = core.httpClient
+                        .send(request, HttpResponse.BodyHandlers.ofByteArray());
+
+                if (response.statusCode() == 200) {
+                    return response.body();
+                }
+
+                if (core.handleSessionExpired(response)) return null;
+                ApiContext.getInstance().errorMessageContainer= new String(response.body(), StandardCharsets.UTF_8);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            byte[] pdfBytes = task.getValue();
+            if (pdfBytes == null) {
+                onFailure.run();
+                return;
+            }
+
+            Platform.runLater(() -> {
+                try {
+                    FileChooser chooser = new FileChooser();
+                    chooser.setTitle("Save Student Report");
+                    chooser.getExtensionFilters().add(
+                            new FileChooser.ExtensionFilter("PDF", "*.pdf")
+                    );
+                    chooser.setInitialFileName("Students Report.pdf");
+
+                    Window window = parentWindow.get();
+                    File file = chooser.showSaveDialog(window);
+
+                    if (file != null) {
+                        Files.write(file.toPath(), pdfBytes);
+                        onSuccess.run();
+                    } else {
+                        onFailure.run();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ApiContext.getInstance().errorMessageContainer= e.getMessage();
+                    onFailure.run();
+                }
+            });
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+            String msg = ex.getMessage();
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+            onFailure.run();
+        });
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);    // legacy: this one was daemon
+        thread.start();
+    }
+
     public void loadSbaRecords(String levelId, String subjectId, String semesterId, String staffId,
                                Consumer<List<SbaRecord>> onResult,
                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
@@ -37,8 +120,10 @@ public class ReportsService {
         Task<List<SbaRecord>> task = new Task<>() {
             @Override
             protected List<SbaRecord> call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1
-                        + "/sba/" + levelId + "/" + subjectId + "/" + semesterId;
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/view-sba?" +
+                        "classId=" + levelId +
+                        "&subjectId=" + subjectId +
+                        "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -51,7 +136,9 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -83,21 +170,21 @@ public class ReportsService {
     }
 
     public void downloadSbaReport(String staffId, String levelId, String subjectId, String semesterId,
-                                  String suggestedFileName,
-                                  Supplier<Window> parentWindow,
+                                  String suggestedFileName, Supplier<Window> parentWindow,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<byte[]> task = new Task<>() {
             @Override
             protected byte[] call() throws Exception {
                 String url = core.ADMIN_URL + core.API_VERSION_2 + "/generate-sba-report?"
-                        + "staffId=" + staffId
-                        + "&levelId=" + levelId
+                        + "levelId=" + levelId
                         + "&subjectId=" + subjectId
                         + "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -107,7 +194,9 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
+
+                if (core.handleSessionExpired(response)) return null;
+                ApiContext.getInstance().errorMessageContainer= new String(response.body(), StandardCharsets.UTF_8);
                 return null;
             }
         };
@@ -172,8 +261,9 @@ public class ReportsService {
         Task<MasterScoreSheet> task = new Task<>() {
             @Override
             protected MasterScoreSheet call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1
-                        + "/master-sheet/" + levelId + "/" + semesterId;
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/view-master-sheet?" +
+                        "levelId=" + levelId +
+                        "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -186,7 +276,9 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), MasterScoreSheet.class);
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -225,13 +317,14 @@ public class ReportsService {
             @Override
             protected byte[] call() throws Exception {
                 String url = core.ADMIN_URL + core.API_VERSION_2 + "/generate-master-sheet?"
-                        + "staffId=" + staffId
-                        + "&levelId=" + levelId
+                        + "levelId=" + levelId
                         + "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
                         .GET()
                         .build();
 
@@ -241,6 +334,8 @@ public class ReportsService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
+
+                if (core.handleSessionExpired(response)) return null;
                 ApiContext.getInstance().errorMessageContainer = new String(response.body(), StandardCharsets.UTF_8);
                 return null;
             }

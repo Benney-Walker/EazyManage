@@ -8,6 +8,7 @@ import com.bbquantum.eazymanage.Reports.ReportViewerController;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
+import com.bbquantum.eazymanage.Services.ReportsService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -69,6 +70,7 @@ public class ClassResultsReportController implements ReportViewerController {
 
     private final ApiCore           apiCore           = new ApiCore();
     private final AcademicsService  academicsService  = new AcademicsService(apiCore);
+    private final ReportsService reportsService   = new ReportsService(apiCore);
 
     // ---- model state
     private final ObservableList<ViewClassSemesterReport> rows = FXCollections.observableArrayList();
@@ -207,7 +209,7 @@ public class ClassResultsReportController implements ReportViewerController {
         downloadButton.setDisable(true);
         setStatus("Requesting PDF…");
 
-        academicsService.downloadClassReportCards(
+        reportsService.downloadClassReportCards(
                 staffId, grade.getLevelId(), semester.getSemesterId(),
                 this::parentWindow,
                 () -> Platform.runLater(() -> {
