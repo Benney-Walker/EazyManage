@@ -52,21 +52,23 @@
                            styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
                 </VBox>
 
-                <VBox fx:id="viewCard" styleClass="picker-card,picker-card-view"
-                      alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
-                      onMouseClicked="#onPickView">
-                    <Label text="📊" styleClass="picker-card-icon"/>
-                    <Label text="View Results" styleClass="picker-card-title"/>
-                    <Label text="Browse class results and per-student breakdowns."
-                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
-                </VBox>
-
-            </HBox>
-
-            <Region VBox.vgrow="ALWAYS"/>
+        <!--
+        <VBox fx:id="viewCard" styleClass="picker-card,picker-card-view"
+              alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
+              onMouseClicked="#onPickView">
+            <Label text="📊" styleClass="picker-card-icon"/>
+            <Label text="View Results" styleClass="picker-card-title"/>
+            <Label text="Browse class results and per-student breakdowns."
+                   styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
         </VBox>
+        -->
 
-        <!-- STATE B: inner tabs -->
+    </HBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+</VBox>
+
+<!-- STATE B: inner tabs -->
         <TabPane fx:id="innerTabs" visible="false" managed="false"
                  tabClosingPolicy="UNAVAILABLE" styleClass="inner-tabs">
             <tabs>
