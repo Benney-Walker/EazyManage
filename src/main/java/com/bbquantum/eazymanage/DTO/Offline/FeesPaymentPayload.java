@@ -6,6 +6,8 @@ public class FeesPaymentPayload {
 
     public String studentId;
 
+    public String classId;
+
     public String semesterId;
 
     public String amountPaid;
@@ -16,9 +18,10 @@ public class FeesPaymentPayload {
 
     public FeesPaymentPayload() {}
 
-    public FeesPaymentPayload(String staffId, String studentId, String semesterId, String amountPaid, String payerName, String payerPhone) {
+    public FeesPaymentPayload(String staffId, String studentId, String classId, String semesterId, String amountPaid, String payerName, String payerPhone) {
         this.staffId = staffId;
         this.studentId = studentId;
+        this.classId = classId;
         this.semesterId = semesterId;
         this.amountPaid = amountPaid;
         this.payerName = payerName;
