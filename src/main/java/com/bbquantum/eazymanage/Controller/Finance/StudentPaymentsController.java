@@ -4,6 +4,8 @@ import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
+import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.FinanceService;
@@ -25,7 +27,7 @@ import java.util.List;
 
 public class StudentPaymentsController {
 
-    @FXML private TextField studentIdField;
+    @FXML private ChoiceBox<StudentsHolder> studentChoice;
     @FXML private ChoiceBox<GradeCaching> classChoice;
     @FXML private ChoiceBox<SemesterCaching> semesterChoice;
     @FXML private Button fetchButton;
@@ -52,6 +54,7 @@ public class StudentPaymentsController {
 
     private final ApiCore apiCore = new ApiCore();
     private final FinanceService financeService = new FinanceService(apiCore);
+    private final AcademicsService academicsService = new AcademicsService(apiCore);
 
     private final ObservableList<PaymentHistory> rows = FXCollections.observableArrayList();
     private StudentFeesPaymentDisplay currentSnapshot;
@@ -73,17 +76,32 @@ public class StudentPaymentsController {
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
             public String toString(SemesterCaching s) {
-                return s == null ? "" : s.getSemesterName();
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
             public SemesterCaching fromString(String s) { return null; }
         });
 
+        studentChoice.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(StudentsHolder s) {
+                return s == null ? "" : s.getStudentName();
+            }
+
+            @Override
+            public StudentsHolder fromString(String s) { return null; }
+        });
+
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
         List<SemesterCaching> sems = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (grades != null) classChoice.getItems().setAll(grades);
         if (sems != null) semesterChoice.getItems().setAll(sems);
+
+        studentChoice.setDisable(true);
+
+        classChoice.valueProperty().addListener((obs,  oldVal, newVal) ->
+                cascadeLoadStudents(newVal, studentChoice, this::setStatus));
 
         historyTable.setItems(rows);
         dateCol.setCellValueFactory(c ->
@@ -108,12 +126,12 @@ public class StudentPaymentsController {
 
     @FXML
     private void onFetch() {
-        String studentId = trim(studentIdField.getText());
+        StudentsHolder student = studentChoice.getValue();
         GradeCaching cls    = classChoice.getValue();
         SemesterCaching sem = semesterChoice.getValue();
 
-        if (studentId.isEmpty() || cls == null || sem == null) {
-            setStatus("Fill all three fields.");
+        if (student == null || cls == null || sem == null) {
+            setStatus("Fill all fields");
             return;
         }
 
@@ -123,7 +141,7 @@ public class StudentPaymentsController {
         rows.clear();
         hideBanner();
 
-        financeService.fetchStudentPaymentRecords(staffId, studentId, sem.getSemesterId(), cls.getLevelId(),
+        financeService.fetchStudentPaymentRecords(staffId, student.getStudentId(), sem.getSemesterId(), cls.getLevelId(),
                 () -> Platform.runLater(() -> {
                     fetchButton.setDisable(false);
                     StudentFeesPaymentDisplay snapshot = UtilityClass.paymentRecords;
@@ -187,6 +205,36 @@ public class StudentPaymentsController {
             ex.printStackTrace();
             setStatus("Could not write CSV: " + ex.getMessage());
         }
+    }
+
+    private void cascadeLoadStudents(GradeCaching cls,
+                                     ChoiceBox<StudentsHolder> target,
+                                     java.util.function.Consumer<String> statusSink) {
+        target.getItems().clear();
+        target.getSelectionModel().clearSelection();
+        if (cls == null) {
+            target.setDisable(true);
+            return;
+        }
+        target.setDisable(true);
+        statusSink.accept("Loading students…");
+
+        academicsService.loadClassStudents(cls.getLevelId(), staffId,
+                () -> Platform.runLater(() -> {
+                    List<StudentsHolder> list = UtilityClass.studentsHolder;
+                    if (list == null || list.isEmpty()) {
+                        statusSink.accept("No students in that class.");
+                        return;
+                    }
+                    target.getItems().setAll(list);
+                    target.setDisable(false);
+                    statusSink.accept("");
+                }),
+                () -> Platform.runLater(() -> {
+                    String err = ApiContext.getInstance().errorMessageContainer;
+                    statusSink.accept(err == null || err.isBlank() ? "Could not load students." : err);
+                }),
+                () -> Platform.runLater(() -> statusSink.accept("Network unavailable.")));
     }
 
     private void showBanner() {
