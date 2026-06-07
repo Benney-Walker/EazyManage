@@ -87,4 +87,5 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.DTO.Academics.Grading to com.google.gson;
     exports com.bbquantum.eazymanage.DTO.Academics.Holiday;
     opens com.bbquantum.eazymanage.DTO.Academics.Holiday to com.google.gson;
+    exports com.bbquantum.eazymanage.Offline;
 }
