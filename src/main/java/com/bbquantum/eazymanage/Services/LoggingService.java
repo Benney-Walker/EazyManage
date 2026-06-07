@@ -19,14 +19,19 @@ public class LoggingService {
         this.core = core;
     }
 
-    public void fetchAllLogs(String staffId,
-                             Consumer<List<LogsDTO>> onResult,
-                             Runnable onFailure,
-                             Runnable onNetworkIssue) {
+    public void fetchStaffLogs(String staffId, String selectedStaffId, String fromDate, String toDate,
+                               Consumer<List<LogsDTO>> onResult, Runnable onFailure,
+                               Runnable onNetworkIssue) {
+
+        Type listType = new TypeToken<List<LogsDTO>>(){}.getType();
+
         Task<List<LogsDTO>> task = new Task<>() {
             @Override
             protected List<LogsDTO> call() throws Exception {
-                String url = core.ADMIN_URL + core.API_VERSION_1 + "/get-all-logs";
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/get-staff-logs?" +
+                        "selectedStaffId=" + selectedStaffId +
+                        "&fromDate=" + fromDate +
+                        "&toDate=" + toDate;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -37,9 +42,41 @@ public class LoggingService {
 
                 HttpResponse<String> response =
                         core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
                 if (response.statusCode() == 200) {
-                    Type listType = new TypeToken<List<LogsDTO>>(){}.getType();
+                    return core.gson.fromJson(response.body(), listType);
+                }
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<LogsDTO> result = task.getValue();
+            if (result == null) {
+                onFailure.run();
+                return;
+            }
+            onResult.accept(result);
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+            if (ex instanceof java.net.ConnectException
+                    || (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
     public void fetchTimelyLogs(String staffId, String fromDate, String toDate,
                                Consumer<List<LogsDTO>> onResult, Runnable onFailure, Runnable onNetworkIssue) {
         Type listType = new TypeToken<List<LogsDTO>>(){}.getType();
