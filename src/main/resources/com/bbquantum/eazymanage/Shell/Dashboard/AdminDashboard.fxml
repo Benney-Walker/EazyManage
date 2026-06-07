@@ -71,9 +71,9 @@
                     <columns>
                         <TableColumn fx:id="dateCol"      text="Date"        prefWidth="110"/>
                         <TableColumn fx:id="timeCol"      text="Time"        prefWidth="90"/>
-                        <TableColumn fx:id="actorCol"     text="Actor"       prefWidth="160"/>
+                        <TableColumn fx:id="actorCol"     text="Actor"       prefWidth="200"/>
                         <TableColumn fx:id="typeCol"      text="Type"        prefWidth="140"/>
-                        <TableColumn fx:id="actionCol"    text="Action"      prefWidth="280"/>
+                        <TableColumn fx:id="messageCol" text="Message" prefWidth="300"/>
                         <TableColumn fx:id="statusCol"    text="Status"      prefWidth="100"/>
                     </columns>
                     <placeholder>
