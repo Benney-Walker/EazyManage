@@ -188,12 +188,13 @@ public class RecordPaymentsController {
     @FXML
     private void onRecord() {
         StudentsHolder student = newStudentChoice.getValue();
+        GradeCaching selectedClass = newClassChoice.getValue();
         SemesterCaching sem = semesterChoice.getValue();
         String amount    = trim(amountField.getText());
         String payerName = trim(payerNameField.getText());
         String payerPhone = trim(payerPhoneField.getText());
 
-        if (newClassChoice.getValue() == null) {
+        if (selectedClass == null) {
             setRecordStatus("Pick a class first.");
             return;
         }
@@ -214,7 +215,11 @@ public class RecordPaymentsController {
         resetButton.setDisable(true);
         setRecordStatus("Recording…");
 
-        financeService.addNewFeesPayment(staffId, student.getStudentId(), sem.getSemesterId(),
+        financeService.addNewFeesPayment(
+                staffId,
+                student.getStudentId(),
+                selectedClass.getLevelId(),
+                sem.getSemesterId(),
                 amount, payerName, payerPhone,
                 () -> Platform.runLater(() -> {
                     recordButton.setDisable(false);
