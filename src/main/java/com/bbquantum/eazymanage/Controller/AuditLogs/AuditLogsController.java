@@ -79,7 +79,7 @@ public class AuditLogsController {
         // Recompute filter predicate whenever any input changes.
         fromDatePicker.valueProperty().addListener((obs, oldV, newV) -> applyFilter());
         toDatePicker.valueProperty().addListener((obs, oldV, newV) -> applyFilter());
-        actorFilterField.textProperty().addListener((obs, oldV, newV) -> applyFilter());
+
     }
 
     public void attach(String role, String staffId) {
@@ -96,7 +96,64 @@ public class AuditLogsController {
         refreshButton.setDisable(true);
         setStatus("Loading…");
 
-        loggingService.fetchAllLogs(staffId,
+        if (fromDatePicker.getValue() == null && toDatePicker.getValue() == null
+                && actorFilterField.getText().isEmpty()) {
+            setStatus("All fields can't be empty");
+            refreshButton.setDisable(false);
+            return;
+        }
+
+        if (fromDatePicker.getValue() == null && toDatePicker.getValue() == null
+                && !actorFilterField.getText().trim().isEmpty()) {
+            setStatus("Select time range");
+            refreshButton.setDisable(false);
+        }
+
+        if (fromDatePicker.getValue() != null && toDatePicker.getValue() != null
+                && actorFilterField.getText().trim().isEmpty()) {
+            fetchTimelyLogs(fromDatePicker.getValue().toString(), toDatePicker.getValue().toString());
+        }
+
+        if (fromDatePicker.getValue() != null && toDatePicker.getValue() != null
+                && !actorFilterField.getText().trim().isEmpty()) {
+            fetchStaffLogs(actorFilterField.getText().trim(),
+                    fromDatePicker.getValue().toString(), toDatePicker.getValue().toString());
+        }
+    }
+
+    private void fetchStaffLogs(String selectedStaff, String fromDate, String toDate) {
+
+        loggingService.fetchStaffLogs(staffId, selectedStaff, fromDate, toDate,
+                logs -> Platform.runLater(() -> {
+                    refreshButton.setDisable(false);
+                    if (logs == null || logs.isEmpty()) {
+                        allLogs.clear();
+                        infoBanner.setVisible(false);
+                        infoBanner.setManaged(false);
+                        setStatus("No log entries found.");
+                        return;
+                    }
+
+                    allLogs.setAll(logs);
+                    showBanner();
+                    setStatus("");
+                }),
+                () -> Platform.runLater(() -> {
+                    refreshButton.setDisable(false);
+                    String err = ApiContext.getInstance().errorMessageContainer;
+                    setStatus(err == null || err.isBlank()
+                            ? "Could not load logs."
+                            : err);
+                }),
+                () -> Platform.runLater(() -> {
+                    refreshButton.setDisable(false);
+                    setStatus("Network unavailable.");
+                }));
+    }
+
+    private void fetchTimelyLogs(String fromDate, String toDate) {
+
+        loggingService.fetchTimelyLogs(staffId, fromDate, toDate,
                 logs -> Platform.runLater(() -> {
                     refreshButton.setDisable(false);
                     if (logs == null || logs.isEmpty()) {
