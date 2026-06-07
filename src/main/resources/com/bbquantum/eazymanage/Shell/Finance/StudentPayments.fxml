@@ -19,11 +19,11 @@
     <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
         <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
 
-        <Label text="Student ID" styleClass="field-label"/>
-        <TextField fx:id="studentIdField" prefWidth="160"/>
-
         <Label text="Class" styleClass="field-label"/>
         <ChoiceBox fx:id="classChoice" prefWidth="160"/>
+
+        <Label text="Student" styleClass="field-label"/>
+        <ChoiceBox fx:id="studentChoice" prefWidth="160"/>
 
         <Label text="Semester" styleClass="field-label"/>
         <ChoiceBox fx:id="semesterChoice" prefWidth="160"/>
