@@ -13,18 +13,6 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Class Results Report viewer (Phase 5a).
-
-    Top: breadcrumb + filters (class, semester).
-    Middle: class-level table (one row per student, totals).
-            Selecting a row reveals the per-subject breakdown below.
-    Bottom: action bar with Download PDF + (admin only) promotion settings.
-
-    The promotion controls are bound to the same backend parameters the
-    legacy AdminController used (passScore + promotionGradeId), but they're
-    optional — leaving them blank submits the legacy "no_promotion" sentinel.
--->
 <?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Report.ClassResultsReportController"
