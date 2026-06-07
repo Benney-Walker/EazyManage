@@ -4,41 +4,22 @@ import java.util.List;
 
 public class MasterScoreSheet {
 
-    private String levelId;
-    private String levelName;
-    private String semesterId;
+    private String className;
+
     private String semesterName;
 
-    /** Column definitions, in render order. */
-    private List<MasterSheetSubjectColumn> subjectColumns;
+    private List<String> subjects;
 
-    /** One row per student in the class. */
-    private List<MasterScoreRow> rows;
+    private List<MasterScoreSheetRow> records;
 
     public MasterScoreSheet() {}
 
-    public String getLevelId() {
-        return levelId;
+    public String getClassName() {
+        return className;
     }
 
-    public void setLevelId(String levelId) {
-        this.levelId = levelId;
-    }
-
-    public String getLevelName() {
-        return levelName;
-    }
-
-    public void setLevelName(String levelName) {
-        this.levelName = levelName;
-    }
-
-    public String getSemesterId() {
-        return semesterId;
-    }
-
-    public void setSemesterId(String semesterId) {
-        this.semesterId = semesterId;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public String getSemesterName() {
@@ -49,19 +30,19 @@ public class MasterScoreSheet {
         this.semesterName = semesterName;
     }
 
-    public List<MasterSheetSubjectColumn> getSubjectColumns() {
-        return subjectColumns;
+    public List<String> getSubjects() {
+        return subjects;
     }
 
-    public void setSubjectColumns(List<MasterSheetSubjectColumn> subjectColumns) {
-        this.subjectColumns = subjectColumns;
+    public void setSubjects(List<String> subjects) {
+        this.subjects = subjects;
     }
 
-    public List<MasterScoreRow> getRows() {
-        return rows;
+    public List<MasterScoreSheetRow> getRecords() {
+        return records;
     }
 
-    public void setRows(List<MasterScoreRow> rows) {
-        this.rows = rows;
+    public void setRecords(List<MasterScoreSheetRow> records) {
+        this.records = records;
     }
 }
