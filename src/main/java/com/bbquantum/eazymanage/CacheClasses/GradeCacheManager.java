@@ -18,7 +18,7 @@ public class GradeCacheManager {
     private LocalDateTime cachedGradesDuration;
 
     //Time-to-Live in minutes
-    private static final long GRADES_CACHE_TTL_MINUTES = 5;
+    private static final long GRADES_CACHE_TTL_MINUTES = 30;
 
     private GradeCacheManager() {}
 
