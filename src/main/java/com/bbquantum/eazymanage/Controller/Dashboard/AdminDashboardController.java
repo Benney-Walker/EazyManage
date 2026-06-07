@@ -36,7 +36,7 @@ public class AdminDashboardController {
     @FXML private TableColumn<LogsDetails, String> timeCol;
     @FXML private TableColumn<LogsDetails, String> actorCol;
     @FXML private TableColumn<LogsDetails, String> typeCol;
-    @FXML private TableColumn<LogsDetails, String> actionCol;
+    @FXML private TableColumn<LogsDetails, String> messageCol;
     @FXML private TableColumn<LogsDetails, String> statusCol;
 
     private String staffId;
@@ -65,7 +65,7 @@ public class AdminDashboardController {
         typeCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getType())));
 
-        actionCol.setCellValueFactory(c ->
+        messageCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getMessage())));
 
         statusCol.setCellValueFactory(c ->
