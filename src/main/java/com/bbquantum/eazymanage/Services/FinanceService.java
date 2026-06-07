@@ -2,6 +2,8 @@ package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Finance.*;
 import com.bbquantum.eazymanage.DTO.Offline.FeesPaymentPayload;
+import com.bbquantum.eazymanage.Offline.OfflineMode;
+import com.bbquantum.eazymanage.Offline.OfflineQueue;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -43,11 +45,11 @@ public class FinanceService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    System.out.println("Response: " + response.body());
                     return core.gson.fromJson(response.body(), StudentFeesPaymentDisplay.class);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -72,63 +74,8 @@ public class FinanceService {
                 onNetworkIssue.run();
                 return;
             }
+
             ApiContext.getInstance().errorMessageContainer = "Could not fetch report";
-            onFailure.run();
-        });
-
-        new Thread(task).start();
-    }
-
-
-    public void getFeesFilterData(String ownUrl,
-                                  Consumer<List<FeesSummaryTable>> onResult,
-                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-
-        Type listType = new TypeToken<List<FeesSummaryTable>>() {}.getType();
-
-        Task<List<FeesSummaryTable>> task = new Task<>() {
-            @Override
-            protected List<FeesSummaryTable> call() throws Exception {
-                String url = core.FINANCE_URL + core.API_VERSION_1 + ownUrl;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return core.gson.fromJson(response.body(), listType);
-                }
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            List<FeesSummaryTable> result = task.getValue();
-            onResult.accept(result);
-            if (result != null) {
-                ApiContext.getInstance().successMessageContainer = "Successfully loaded report";
-                onSuccess.run();
-                return;
-            }
-            onFailure.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-            ApiContext.getInstance().errorMessageContainer = "Could not load report";
             onFailure.run();
         });
 
@@ -160,7 +107,8 @@ public class FinanceService {
                     return core.gson.fromJson(response.body(), FetchFeesDetails.class);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -223,7 +171,8 @@ public class FinanceService {
                     return core.gson.fromJson(response.body(), listType);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -282,7 +231,8 @@ public class FinanceService {
                     return core.gson.fromJson(response.body(), listType);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -327,8 +277,8 @@ public class FinanceService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.FINANCE_URL + core.API_VERSION_1 + "/add-new-fees" +
-                        "?gradeId=" + gradeId +
+                String url = core.FINANCE_URL + core.API_VERSION_2 + "/new-fees" +
+                        "?classId=" + gradeId +
                         "&semesterId=" + semesterId +
                         "&feesAmount=" + feesAmount;
 
@@ -341,10 +291,11 @@ public class FinanceService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Fees added successfully";
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -377,7 +328,7 @@ public class FinanceService {
     }
 
     /** Record a new fees payment for a student. */
-    public void addNewFeesPayment(String staffId, String studentId, String semesterId,
+    public void addNewFeesPayment(String staffId, String studentId, String classId, String semesterId,
                                   String amountPaid, String payerName, String payerPhone,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         // Phase 7: short-circuit to the offline queue when in offline mode.
@@ -385,7 +336,7 @@ public class FinanceService {
             try {
                 String payload = new com.google.gson.Gson().toJson(
                         new FeesPaymentPayload(
-                                staffId, studentId, semesterId, amountPaid, payerName, payerPhone));
+                                staffId, studentId, classId, semesterId, amountPaid, payerName, payerPhone));
                 OfflineQueue.getInstance().enqueue(OfflineQueue.OP_FEES_PAYMENT, payload);
 
                 ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
@@ -402,10 +353,11 @@ public class FinanceService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.FINANCE_URL + core.API_VERSION_2 + "/add-fees-payment";
+                String url = core.FINANCE_URL + core.API_VERSION_1 + "/add-fees-payment";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("studentId", studentId);
+                requestBody.addProperty("levelId", classId);
                 requestBody.addProperty("semesterId", semesterId);
                 requestBody.addProperty("amountPaid", amountPaid);
                 requestBody.addProperty("payerName", payerName);
@@ -424,7 +376,8 @@ public class FinanceService {
                     return response.body();
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -462,12 +415,12 @@ public class FinanceService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.FINANCE_URL + core.API_VERSION_1 + "/update-semester-fees";
+                String url = core.FINANCE_URL + core.API_VERSION_2 + "/update-semester-fees";
 
                 JsonObject requestBody = new JsonObject();
                 requestBody.addProperty("amount", update.getAmount());
                 requestBody.addProperty("semesterId", update.getSemesterId());
-                requestBody.addProperty("levelId", update.getLevelId());
+                requestBody.addProperty("classId", update.getLevelId());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -479,10 +432,11 @@ public class FinanceService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Fees updated successfully";
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -532,10 +486,11 @@ public class FinanceService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Payment record deleted successfully";
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -595,10 +550,11 @@ public class FinanceService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return response.body();
+                    return "Payment details updated successfully";
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
