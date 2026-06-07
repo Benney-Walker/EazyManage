@@ -1,8 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Report;
 
-import com.bbquantum.eazymanage.DTO.Academics.Results.MasterScoreRow;
 import com.bbquantum.eazymanage.DTO.Academics.Results.MasterScoreSheet;
-import com.bbquantum.eazymanage.DTO.Academics.Results.MasterSheetSubjectColumn;
+import com.bbquantum.eazymanage.DTO.Academics.Results.MasterScoreSheetRow;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
@@ -18,8 +17,8 @@ import javafx.scene.control.*;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 
 public class MasterSheetReportController implements ReportViewerController {
 
@@ -33,7 +32,7 @@ public class MasterSheetReportController implements ReportViewerController {
     @FXML private Button loadButton;
 
     // ---- table (columns added at runtime)
-    @FXML private TableView<MasterScoreRow> sheetTable;
+    @FXML private TableView<MasterScoreSheetRow> sheetTable;
 
     // ---- action bar
     @FXML private Label  sheetMetaLabel;
@@ -47,21 +46,29 @@ public class MasterSheetReportController implements ReportViewerController {
     private Runnable onBack;
 
     // Phase 8d — direct service references.
-    private final ApiCore        apiCore        = new ApiCore();
+    private final ApiCore apiCore = new ApiCore();
     private final ReportsService reportsService = new ReportsService(apiCore);
 
-    private final ObservableList<MasterScoreRow> rows = FXCollections.observableArrayList();
+    private final ObservableList<MasterScoreSheetRow> rows = FXCollections.observableArrayList();
     private MasterScoreSheet currentSheet;     // last successfully loaded sheet
 
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override
+            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
         });
+
         semesterChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SemesterCaching s) { return s == null ? "" : s.getSemesterName(); }
-            @Override public SemesterCaching fromString(String s) { return null; }
+            @Override
+            public String toString(SemesterCaching s) {
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear(); }
+
+            @Override
+            public SemesterCaching fromString(String s) { return null; }
         });
 
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
@@ -156,6 +163,10 @@ public class MasterSheetReportController implements ReportViewerController {
         );
     }
 
+    /*==================================================
+                       HELPERS
+     ==================================================*/
+
     private void applySheet(MasterScoreSheet sheet) {
         currentSheet = sheet;
         if (sheet == null) return;
@@ -163,67 +174,91 @@ public class MasterSheetReportController implements ReportViewerController {
         sheetTable.getColumns().clear();
         rows.clear();
 
+        List<MasterScoreSheetRow> records = sheet.getRecords();
+        List<String> subjects = sheet.getSubjects();
+        if (records == null || subjects == null) records = Collections.emptyList();
+
+        Set<String> subjectColumns = new LinkedHashSet<>(subjects);
+
+
         // Left fixed columns
         sheetTable.getColumns().add(makeFixedColumn("Student ID", 110,
-                MasterScoreRow::getStudentId));
+                MasterScoreSheetRow::getStudentId));
         sheetTable.getColumns().add(makeFixedColumn("Name", 200,
-                MasterScoreRow::getStudentName));
+                MasterScoreSheetRow::getStudentName));
 
-        // Dynamic subject columns
-        List<MasterSheetSubjectColumn> subjectColumns = sheet.getSubjectColumns();
-        if (subjectColumns != null) {
-            for (MasterSheetSubjectColumn col : subjectColumns) {
-                sheetTable.getColumns().add(makeSubjectColumn(col));
-            }
+        // Dynamic subject columns. Each cell looks up the row's
+        // subjectScore map by the column's subject name.
+        for (String subjectName : subjectColumns) {
+            sheetTable.getColumns().add(makeSubjectColumn(subjectName));
         }
 
-        // Right fixed aggregate columns
-        sheetTable.getColumns().add(makeFixedColumn("Total", 80,
-                MasterScoreRow::getTotal));
-        sheetTable.getColumns().add(makeFixedColumn("Average", 80,
-                MasterScoreRow::getAverage));
+        // Right fixed aggregate columns. Total + Average come from the
+        // backend; Position is computed client-side because the backend
+        // doesn't ship it.
+        sheetTable.getColumns().add(makeFixedColumn("Total", 90,
+                r -> formatDouble(r.getStudentTotalScore())));
+        sheetTable.getColumns().add(makeFixedColumn("Average", 90,
+                r -> formatDouble(r.getStudentAverageScore())));
         sheetTable.getColumns().add(makeFixedColumn("Position", 80,
-                MasterScoreRow::getPosition));
+                r -> formatInteger(r.getPosition())));
 
-        if (sheet.getRows() != null) rows.addAll(sheet.getRows());
+        rows.addAll(records);
 
-        int subjectCount = subjectColumns == null ? 0 : subjectColumns.size();
-        sheetMetaLabel.setText(rows.size() + " student(s)  ·  " + subjectCount + " subject(s)");
+        // Meta label uses the backend's class/semester names where given,
+        // falling back to the picker selection's display labels otherwise.
+        String classLabel = sheet.getClassName();
+        if (classLabel == null || classLabel.isBlank()) {
+            GradeCaching pickedClass = classChoice.getValue();
+            classLabel = pickedClass == null ? "" : safe(pickedClass.getLevelName());
+        }
+        String semesterLabel = sheet.getSemesterName();
+        if (semesterLabel == null || semesterLabel.isBlank()) {
+            SemesterCaching pickedSemester = semesterChoice.getValue();
+            semesterLabel = pickedSemester == null ? "" : safe(pickedSemester.getSemesterName());
+        }
+
+        sheetMetaLabel.setText(
+                rows.size() + " student(s)  ·  "
+                        + subjectColumns.size() + " subject(s)"
+                        + (classLabel.isBlank()    ? "" : "  ·  " + classLabel)
+                        + (semesterLabel.isBlank() ? "" : "  ·  " + semesterLabel));
     }
 
-    /**
-     * Build a column whose value is read straight off the {@code MasterScoreRow}
-     * via a getter reference.
-     */
-    private static TableColumn<MasterScoreRow, String> makeFixedColumn(
+    private static TableColumn<MasterScoreSheetRow, String> makeFixedColumn(
             String heading, double width,
-            java.util.function.Function<MasterScoreRow, String> getter) {
+            Function<MasterScoreSheetRow, String> getter) {
 
-        TableColumn<MasterScoreRow, String> col = new TableColumn<>(heading);
+        TableColumn<MasterScoreSheetRow, String> col = new TableColumn<>(heading);
         col.setPrefWidth(width);
         col.setCellValueFactory(cell -> new SimpleStringProperty(safe(getter.apply(cell.getValue()))));
         return col;
     }
 
-    private static TableColumn<MasterScoreRow, String> makeSubjectColumn(
-            MasterSheetSubjectColumn def) {
-
-        String heading = def.getShortName() != null && !def.getShortName().isBlank()
-                ? def.getShortName()
-                : def.getSubjectName();
-        final String subjectId = def.getSubjectId();
-
-        TableColumn<MasterScoreRow, String> col = new TableColumn<>(heading);
-        col.setPrefWidth(85);
+    private static TableColumn<MasterScoreSheetRow, String> makeSubjectColumn(String subjectName) {
+        TableColumn<MasterScoreSheetRow, String> col = new TableColumn<>(subjectName);
+        col.setPrefWidth(95);
         col.setCellValueFactory(cell -> {
-            Map<String, String> scores = cell.getValue().getSubjectScores();
-            String v = scores == null ? "" : scores.get(subjectId);
-            return new SimpleStringProperty(safe(v));
+            Map<String, Double> scores = cell.getValue().getSubjectScores();
+            Double v = scores == null ? null : scores.get(subjectName);
+            return new SimpleStringProperty(formatDouble(v));
         });
         return col;
     }
 
-    // ---- helpers --------------------------------------------------------
+    private static String formatDouble(Double d) {
+        if (d == null) return "";
+        if (d == Math.floor(d) && !Double.isInfinite(d)) {
+            return Integer.toString(d.intValue());
+        }
+        // One decimal place is enough precision for scores.
+        return String.format("%.1f", d);
+    }
+
+    /** A nullable Integer reads better blank than as "null". */
+    private static String formatInteger(Integer i) {
+        return i == null ? "" : Integer.toString(i);
+    }
 
     private Window parentWindow() {
         return downloadButton.getScene() == null ? null : downloadButton.getScene().getWindow();
