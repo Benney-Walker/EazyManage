@@ -4,9 +4,6 @@ public class SbaRecord {
 
     private String studentId;
     private String studentName;
-    private String subjectId;
-    private String subjectName;
-    private String semesterId;
 
     private String classTest1Score;
     private String groupWorkScore;
@@ -32,30 +29,6 @@ public class SbaRecord {
 
     public void setStudentName(String studentName) {
         this.studentName = studentName;
-    }
-
-    public String getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(String subjectId) {
-        this.subjectId = subjectId;
-    }
-
-    public String getSubjectName() {
-        return subjectName;
-    }
-
-    public void setSubjectName(String subjectName) {
-        this.subjectName = subjectName;
-    }
-
-    public String getSemesterId() {
-        return semesterId;
-    }
-
-    public void setSemesterId(String semesterId) {
-        this.semesterId = semesterId;
     }
 
     public String getClassTest1Score() {
