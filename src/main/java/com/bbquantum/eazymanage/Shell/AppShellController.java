@@ -257,21 +257,19 @@ public class AppShellController {
     private void handleSessionExpiry() {
         if (sessionWatcher != null) sessionWatcher.stop();
 
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Session expired");
-        alert.setHeaderText("Your session has expired");
-        alert.setContentText("For your security, you've been signed out after the maximum session length. "
-                + "Please log in again to continue.");
-        alert.getButtonTypes().setAll(ButtonType.OK);
-        // Show modally then route on dismissal — keeps the user's
-        // attention on the message before the screen swap.
-        alert.showAndWait();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Session expired");
+            alert.setHeaderText("Your session has expired");
+            alert.setContentText("For your security, you've been signed out after the maximum session length. "
+                    + "Please log in again to continue.");
+            alert.getButtonTypes().setAll(ButtonType.OK);
+            alert.showAndWait();
 
-        // Clear the flag so a future fresh session starts clean, then
-        // clear session storage and swap to auth.
-        ApiContext.getInstance().sessionExpired = false;
-        UtilityClass.clearSession();
-        routeToAuthScreen();
+            ApiContext.getInstance().sessionExpired = false;
+            UtilityClass.clearSession();
+            routeToAuthScreen();
+        });
     }
 
     // ====================================================================
