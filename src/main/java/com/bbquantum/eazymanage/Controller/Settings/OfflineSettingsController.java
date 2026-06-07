@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Settings;
 
-import com.bbquantum.eazymanage.Services.OfflineMode;
-import com.bbquantum.eazymanage.Services.OfflineQueue;
+import com.bbquantum.eazymanage.Offline.OfflineMode;
+import com.bbquantum.eazymanage.Offline.OfflineQueue;
 import com.bbquantum.eazymanage.Services.OfflineReplayer;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

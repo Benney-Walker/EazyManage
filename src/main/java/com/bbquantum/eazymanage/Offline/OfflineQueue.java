@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Services;
+package com.bbquantum.eazymanage.Offline;
 
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;

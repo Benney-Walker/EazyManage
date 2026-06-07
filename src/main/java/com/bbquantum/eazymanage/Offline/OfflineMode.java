@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.Services;
+package com.bbquantum.eazymanage.Offline;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

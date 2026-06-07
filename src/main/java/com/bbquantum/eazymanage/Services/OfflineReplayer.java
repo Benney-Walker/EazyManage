@@ -3,6 +3,7 @@ package com.bbquantum.eazymanage.Services;
 import com.bbquantum.eazymanage.DTO.Offline.AttendancePayload;
 import com.bbquantum.eazymanage.DTO.Offline.FeesPaymentPayload;
 import com.bbquantum.eazymanage.DTO.Offline.ScoresPayload;
+import com.bbquantum.eazymanage.Offline.OfflineQueue;
 import com.bbquantum.eazymanage.Utitity.LocalDateAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -174,6 +175,7 @@ public class OfflineReplayer {
         body.addProperty("amountPaid", p.amountPaid);
         body.addProperty("payerName",  p.payerName);
         body.addProperty("payerPhone", p.payerPhone);
+        body.addProperty("levelId", p.classId);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
