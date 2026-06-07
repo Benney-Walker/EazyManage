@@ -136,13 +136,8 @@ public class BroadcastsController {
         }
         // If either email field is filled, both should be — a subject
         // without a body or vice versa would land oddly in inboxes.
-        if (!subject.isEmpty() ^ !body.isEmpty()) {
+        if (!subject.isEmpty() && !body.isEmpty()) {
             setStatus("Email subject and body must both be filled, or both left blank.");
-            return;
-        }
-        if (subject.isEmpty() && body.isEmpty() && sms.isEmpty()) {
-            // Defensive; covered above but kept explicit.
-            setStatus("Nothing to send.");
             return;
         }
 
