@@ -11,9 +11,10 @@ import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
 import com.bbquantum.eazymanage.DTO.Institution.FindAndUpdateClassInfo;
 import com.bbquantum.eazymanage.DTO.Institution.FindSemester;
 import com.bbquantum.eazymanage.DTO.Academics.Grading.SaveGradingCriteria;
-import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.DTO.Offline.ScoresPayload;
+import com.bbquantum.eazymanage.Offline.OfflineMode;
+import com.bbquantum.eazymanage.Offline.OfflineQueue;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -1058,7 +1059,7 @@ public class AcademicsService {
         Task<List<ViewClassSemesterReport>> task = new Task<>() {
             @Override
             protected List<ViewClassSemesterReport> call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_2 + "/view-class-results?" +
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/view-class-results?" +
                         "levelId=" + levelId +
                         "&semesterId=" + semesterId;
 
