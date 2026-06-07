@@ -40,10 +40,33 @@ public class LoggingService {
 
                 if (response.statusCode() == 200) {
                     Type listType = new TypeToken<List<LogsDTO>>(){}.getType();
+    public void fetchTimelyLogs(String staffId, String fromDate, String toDate,
+                               Consumer<List<LogsDTO>> onResult, Runnable onFailure, Runnable onNetworkIssue) {
+        Type listType = new TypeToken<List<LogsDTO>>(){}.getType();
+
+        Task<List<LogsDTO>> task = new Task<>() {
+            @Override
+            protected List<LogsDTO> call() throws Exception {
+                String url = core.ADMIN_URL + core.API_VERSION_1 + "/get-timely-logs?" +
+                        "fromDate=" + fromDate +
+                        "&toDate=" + toDate;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers("Authorization", "Bearer " + core.token,
+                                "staffId", staffId)
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response =
+                        core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
                     return core.gson.fromJson(response.body(), listType);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
