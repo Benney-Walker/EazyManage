@@ -54,5 +54,5 @@
 .transparent-scroll              { -fx-background-color: transparent; }
 .transparent-scroll > .viewport  { -fx-background-color: transparent; }
 
-.btn-danger        { -fx-text-fill: #DC2626; }
-.btn-danger:hover  { -fx-text-fill: #B91C1C; }
+.btn-danger        { -fx-text-fill: -color-error; }
+.btn-danger:hover  { -fx-text-fill: -color-error; -fx-opacity: 0.85; }

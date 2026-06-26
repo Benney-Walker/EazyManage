@@ -51,8 +51,8 @@
                 </columnConstraints>
 
                 <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
-                    <Label text="Semester name" styleClass="field-label"/>
-                    <TextField fx:id="nameField"/>
+                    <Label text="Select term number" styleClass="field-label"/>
+                    <ChoiceBox fx:id="semesterNumberChoice" maxWidth="Infinity"/>
                 </VBox>
                 <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
                     <Label text="Academic year" styleClass="field-label"/>

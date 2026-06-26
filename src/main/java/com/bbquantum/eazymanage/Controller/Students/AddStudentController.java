@@ -68,8 +68,13 @@ public class AddStudentController {
         String contact   = trim(guardianContactField.getText());
 
         if (firstName.isEmpty() || lastName.isEmpty() || grade == null || gender == null
-                || dob == null || hometown.isEmpty() || parent.isEmpty() || contact.isEmpty()) {
+                || dob == null || hometown.isEmpty() || parent.isEmpty()) {
             setStatus("Fill every field before saving.");
+            return;
+        }
+
+        if (contact.length() != 10) {
+            setStatus("Invalid parent contact.");
             return;
         }
 

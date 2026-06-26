@@ -211,6 +211,11 @@ public class FindStudentController {
             return;
         }
 
+        if (out.getParentPhoneNumber().length() != 10) {
+            setSaveStatus("Invalid parent contact.");
+            return;
+        }
+
         saveButton.setDisable(true);
         resetButton.setDisable(true);
         setSaveStatus("Saving…");

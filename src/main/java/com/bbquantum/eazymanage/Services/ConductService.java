@@ -109,7 +109,9 @@ public class ConductService {
                 if (response.statusCode() == 200) {
                     return response.body();
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };

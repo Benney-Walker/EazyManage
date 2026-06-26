@@ -65,7 +65,7 @@ public class ReportCatalogue {
                     ACCOUNTANT_PRINCIPAL,
                     ReportStatus.AVAILABLE,
                     "",
-                    "/com/bbquantum/eazymanage/Shell/Reporting/GradePaymentsReport.fxml"
+                    "/com/bbquantum/eazymanage/Shell/Reporting/ClassPaymentsReport.fxml"
             ),
             new ReportDefinition(
                     "student-payments",

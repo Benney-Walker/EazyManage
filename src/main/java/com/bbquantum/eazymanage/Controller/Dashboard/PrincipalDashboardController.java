@@ -87,6 +87,7 @@ public class PrincipalDashboardController {
         refreshButton.setDisable(true);
         setStatus("Loading…");
 
+        UtilityClass.clearSessionForRefresh();
         dashboardService.loadPrincipalData(staffId, toastSink,
                 () -> Platform.runLater(() -> {
                     refreshButton.setDisable(false);

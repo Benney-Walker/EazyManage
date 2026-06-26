@@ -68,7 +68,7 @@ public class FindHolidayController {
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
             public String toString(SemesterCaching s) {
-                return s == null ? "" : s.getSemesterName() + " (" + s.getAcademicYear() + ")";
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
             @Override
             public SemesterCaching fromString(String s) { return null; }

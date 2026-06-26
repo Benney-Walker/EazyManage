@@ -38,7 +38,7 @@ public class UtilityClass {
     public static final String BASE_URL =  PRODUCTION_URL + "/api";
 
     /** Application version banner. Displayed on the dashboard footer. */
-    public static final String APPLICATION_VERSION = "V 3.1.0";
+    public static final String APPLICATION_VERSION = "V 3.1.4";
 
     // Cache Managers
     public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
@@ -91,6 +91,10 @@ public class UtilityClass {
 
         SessionManager.clearSession();
 
+        clearSessionForRefresh();
+    }
+
+    public static void clearSessionForRefresh() {
         // Clear cached backend data
         feesCacheManager.clearClassFeesSummaryCache();
         feesCacheManager.clearRecentPaymentCache();
@@ -117,152 +121,5 @@ public class UtilityClass {
         Platform.runLater(() -> {
             NotificationUtil.showError(notification, message);
         });
-    }
-
-    public static void showSuccess(StackPane notification, String message) {
-        Platform.runLater(() -> {
-            NotificationUtil.showSuccess(notification, message);
-        });
-    }
-
-    public static void processingButton(Button button) {
-        button.setText("Processing...");
-        button.setDisable(true);
-    }
-
-    public static void notProcessingButton(Button button, String buttonText) {
-        button.setText(buttonText);
-        button.setDisable(false);
-    }
-
-    public static void switchPageCards(VBox cardToShow, VBox cardToHide,
-                                 Button actionButton, Button inactiveButton) {
-        cardToHide.setVisible(false);
-        cardToHide.setManaged(false);
-
-        cardToShow.setOpacity(0);
-        cardToShow.setTranslateY(20);
-        cardToShow.setVisible(true);
-        cardToShow.setManaged(true);
-
-        FadeTransition fade = new FadeTransition(Duration.millis(180), cardToShow);
-        fade.setFromValue(0);
-        fade.setToValue(1);
-
-        TranslateTransition slide = new TranslateTransition(Duration.millis(180), cardToShow);
-        slide.setFromY(20);
-        slide.setToY(0);
-
-        new ParallelTransition(fade, slide).play();
-
-        setActiveToggle(actionButton, inactiveButton);
-    }
-
-    public static void setActiveToggle(Button active, Button inactive) {
-        active.setStyle("-fx-background-color: #4f46e5; -fx-text-fill: white;");
-        inactive.setStyle("-fx-background-color: transparent; -fx-text-fill: #334155;");
-    }
-
-    public static void saveStudentPayRecordsListToFile(List<PaymentHistory> records,
-                                                File file,
-                                                String levelName,
-                                                String semesterName,
-                                                String studentName,
-                                                String studentId) throws Exception {
-
-        try (PrintWriter writer = new PrintWriter(
-                new BufferedWriter(new FileWriter(file, false)))) {
-
-            // Header
-            writer.println("===============================================================");
-            writer.println("                    STUDENT PAYMENT RECORDS                    ");
-            writer.println("===============================================================");
-            writer.println("STUDENT ID : " + studentId);
-            writer.println("STUDENT NAME : " + studentName);
-            writer.println("GRADE : " + levelName);
-            writer.println("SEMESTER : " + semesterName);
-            writer.println("---------------------------------------------------------------");
-
-            // Column titles
-            writer.println(String.format(
-                    "%-4s | %-12s | %-10s | %-10s | %-20s | %-15s",
-                    "No",
-                    "Date",
-                    "Amount",
-                    "Balance",
-                    "Payer",
-                    "Contact"
-            ));
-
-            writer.println("---------------------------------------------------------------");
-
-            // Data rows
-            int count = 1;
-            for (PaymentHistory record : records) {
-                writer.println(String.format(
-                        "%-4d | %-12s | %-10s | %-10s | %-20s | %-15s",
-                        count++,
-                        record.getDateOfPayment(),
-                        record.getAmountPaid(),
-                        record.getFeesBalance(),
-                        record.getPersonWhoPaid(),
-                        record.getContactInfo()
-                ));
-            }
-
-            writer.println("---------------------------------------------------------------");
-            writer.println("Total Transactions: " + records.size());
-            writer.println("Generated on: " + LocalDate.now());
-        }
-    }
-
-    public static void saveGradePayRecordsListToFile(List<GradeFeesReport> records,
-                                              File file,
-                                              String levelName,
-                                              String semesterName) throws Exception {
-
-        try (PrintWriter writer = new PrintWriter(
-                new BufferedWriter(new FileWriter(file, false)))) {
-
-            // Header
-            writer.println("===============================================================");
-            writer.println("                          PAYMENT RECORDS                      ");
-            writer.println("===============================================================");
-            writer.println("GRADE : " + levelName);
-            writer.println("SEMESTER : " + semesterName);
-            writer.println("---------------------------------------------------------------");
-
-            // Column titles
-            writer.println(String.format(
-                    "%-4s | %-12s | %-15s | %-10s | %-20s | %-15s",
-                    "No",
-                    "Student Id",
-                    "Student Name",
-                    "Fees Amount",
-                    "Amount Paid",
-                    "Outstanding"
-            ));
-
-            writer.println("---------------------------------------------------------------");
-
-            // Data rows
-            int count = 1;
-            for (GradeFeesReport record : records) {
-                writer.println(String.format(
-                        "%-4d | %-12s | %-15s | %-10s | %-20s | %-15s",
-                        count++,
-                        record.getStudentId(),
-                        record.getStudentName(),
-                        record.getTotalAmountToPay(),
-                        record.getAmountPayed(),
-                        record.getOutstanding()
-
-                ));
-            }
-
-            writer.println("---------------------------------------------------------------");
-            writer.println("Total Students: " + records.size());
-            writer.println("Generated on: " + LocalDate.now());
-        }
     }
 }

@@ -1,18 +1,4 @@
-/* ============================================================================
-   EazyManage — Slate Emerald LIGHT theme
-   ----------------------------------------------------------------------------
-   Defines all design tokens as JavaFX looked-up colors on .root.
-   Components in components.css reference these names only (never raw hex),
-   so swapping to dark-theme.css re-skins the entire app.
 
-   Source palette (from the design brief):
-     Background    #F8FAFC / #F1F5F9
-     Card          #FFFFFF
-     Sidebar       #0F172A / hover #1E293B / active #10B981
-     Accent        Emerald #10B981, Sky #38BDF8
-     Text          Primary #0F172A, Secondary #64748B, Muted #94A3B8
-     States        Success #10B981, Warning #F59E0B, Error #EF4444
-============================================================================ */
 
 .root {
     /* ----- Backgrounds & surfaces ----- */
@@ -27,7 +13,7 @@
     -color-glass-border:     rgba(15, 23, 42, 0.08);
 
     /* ----- Sidebar ----- */
-    -color-sidebar:          #0F172A;
+    -color-sidebar:          #999999;
     -color-sidebar-hover:    #1E293B;
     -color-sidebar-active:   #10B981;
     -color-sidebar-text:     #CBD5E1;

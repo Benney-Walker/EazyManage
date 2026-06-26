@@ -42,7 +42,8 @@ public class StaffService {
                     return core.gson.fromJson(response.body(), FindStaffResponse.class);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -72,15 +73,6 @@ public class StaffService {
         new Thread(task).start();
     }
 
-    /**
-     * Persist edits to a staff member's record.
-     *
-     * <p><b>Note on the success string.</b> The backend returns 200 with no body
-     * payload that callers consume; the legacy code returns the literal string
-     * {@code "Successfull"} (with the typo) which is then written into
-     * {@code successMessageContainer}. Preserved verbatim because some
-     * controllers may compare against that exact string.
-     */
     public void updateStaffInfo(FindStaffResponse info, String staffId,
                                 Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<String> task = new Task<>() {
@@ -116,10 +108,11 @@ public class StaffService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return "Successfull";   // legacy spelling preserved
+                    return "Successfull";
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };

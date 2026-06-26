@@ -48,12 +48,15 @@ public class AcademicsService {
     // ====================================================================
 
     /** Load all students enrolled in one subject. */
-    public void loadSubjectStudents(String subjectId, String staffId,
+    public void loadSubjectStudents(String staffId, String subjectId, String semesterId,
                                     Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        System.out.println("SubjectId: " + subjectId + " staffId: " + staffId);
         Task<SubjectScores> task = new Task<>() {
             @Override
             protected SubjectScores call() throws Exception {
-                String url = core.STUDENT_URL + core.API_VERSION_1 + "/load-subject-students/" + subjectId;
+                String url = core.STUDENT_URL + core.API_VERSION_1 + "/load-subject-students/"
+                        + subjectId + "/" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -68,7 +71,6 @@ public class AcademicsService {
                 }
 
                 if (core.handleSessionExpired(response)) return null;
-
                 core.checkApiResponse(response);
                 return null;
             }

@@ -73,7 +73,7 @@
                  tabClosingPolicy="UNAVAILABLE" styleClass="inner-tabs">
             <tabs>
                 <Tab fx:id="enterTab" text="Enter Scores"/>
-                <Tab fx:id="viewTab" text="View Results"/>
+                <!--<Tab fx:id="viewTab" text="View Results"/>-->
             </tabs>
         </TabPane>
 

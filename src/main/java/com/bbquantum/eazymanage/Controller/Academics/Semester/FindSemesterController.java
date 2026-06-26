@@ -1,5 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Academics.Semester;
 
+import com.bbquantum.eazymanage.Constants.TERMS;
 import com.bbquantum.eazymanage.DTO.Institution.FindSemester;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.Services.AcademicsService;
@@ -23,7 +24,7 @@ public class FindSemesterController {
 
     @FXML private ScrollPane formScroll;
     @FXML private Label      headerLabel;
-    @FXML private TextField nameField;
+    @FXML private ChoiceBox<TERMS> semesterNumberChoice;
     @FXML private TextField  academicYearField;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
@@ -45,7 +46,8 @@ public class FindSemesterController {
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
             public String toString(SemesterCaching s) {
-                return s == null ? "" : s.getSemesterName();
+
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
@@ -57,6 +59,8 @@ public class FindSemesterController {
 
         semesterChoice.valueProperty().addListener((obs, oldVal, newVal) ->
                 loadButton.setDisable(newVal == null));
+
+        semesterNumberChoice.getItems().addAll(TERMS.values());
     }
 
     public void attach(String role, String staffId) {
@@ -97,7 +101,13 @@ public class FindSemesterController {
 
     private void populateForm(FindSemester data) {
         currentSemester = data;
-        nameField.setText(safe(data.getSemesterName()));
+
+        String[] semesterNameSplit = data.getSemesterName().split("_");
+        String name = "";
+        if (semesterNameSplit.length == 2) {
+            name = semesterNameSplit[0];
+        }
+        semesterNumberChoice.getSelectionModel().select(TERMS.valueOf(name));
         academicYearField.setText(safe(data.getAcademicYear()));
         startDatePicker.setValue(parse(data.getSemesterStartDate()));
         endDatePicker.setValue(parse(data.getSemesterEndDate()));
@@ -119,12 +129,12 @@ public class FindSemesterController {
             setSaveStatus("Load a semester first.");
             return;
         }
-        String name  = trim(nameField.getText());
+        TERMS selectedNumber  = semesterNumberChoice.getValue();
         String year  = trim(academicYearField.getText());
         LocalDate s  = startDatePicker.getValue();
         LocalDate e  = endDatePicker.getValue();
 
-        if (name.isEmpty() || year.isEmpty() || s == null || e == null) {
+        if (selectedNumber == null || year.isEmpty() || s == null || e == null) {
             setSaveStatus("All fields are required.");
             return;
         }
@@ -132,6 +142,8 @@ public class FindSemesterController {
             setSaveStatus("End date must be after start date.");
             return;
         }
+
+        String name = selectedNumber.name() + "_" + "TERM";
 
         FindSemester semesterInfo = new FindSemester();
         semesterInfo.setSemesterID(currentSemester.getSemesterID());

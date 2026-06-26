@@ -73,7 +73,8 @@ public class RecordPaymentsController {
         StringConverter<SemesterCaching> semConv = new StringConverter<>() {
             @Override
             public String toString(SemesterCaching s) {
-                return s == null ? "" : s.getSemesterName();
+
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
@@ -275,11 +276,11 @@ public class RecordPaymentsController {
         rows.clear();
         hideEditBlock();
 
-        financeService.fetchPaymentRecord(staffId, student.getStudentId(), cls.getLevelId(), sem.getSemesterId(),
+        financeService.fetchPaymentRecords(staffId, student.getStudentId(), cls.getLevelId(), sem.getSemesterId(),
                 list -> Platform.runLater(() -> {
                     loadButton.setDisable(false);
                     if (list == null || list.isEmpty()) {
-                        setLoadStatus("No payments found for that student in this class+semester.");
+                        setLoadStatus("No payments found for that student in this class + semester.");
                         return;
                     }
                     rows.setAll(list);

@@ -50,7 +50,8 @@ public class StudentService {
                     return response.body();
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -102,7 +103,8 @@ public class StudentService {
                     return core.gson.fromJson(response.body(), UpdateStudentPersonalData.class);
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -166,7 +168,8 @@ public class StudentService {
                     return response.body();
                 }
 
-                ApiContext.getInstance().errorMessageContainer = response.body();
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -197,58 +200,4 @@ public class StudentService {
         new Thread(task).start();
     }
 
-    /**
-     * Resolve a student's name from their id (for headers, dialogs, etc.).
-     * On success the name is placed in {@code ApiContext.getInstance().successMessageContainer},
-     * matching legacy callers that read it straight after their {@code onSuccess}.
-     */
-    public void getStudentName(String studentId,
-                               Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        Task<String> task = new Task<>() {
-            @Override
-            protected String call() throws Exception {
-                String url = core.BASE_URL + core.API_VERSION_2 + "/get-student-name/" + studentId;
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return response.body();
-                }
-
-                ApiContext.getInstance().errorMessageContainer = response.body();
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            String response = task.getValue();
-            if (response == null) {
-                onFailure.run();
-                return;
-            }
-            ApiContext.getInstance().successMessageContainer = response;
-            onSuccess.run();
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-
-            String msg = ex.getMessage();
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                onNetworkIssue.run();
-                return;
-            }
-            ApiContext.getInstance().errorMessageContainer = "Could not get Student name";
-            onFailure.run();
-        });
-
-        new Thread(task).start();
-    }
 }

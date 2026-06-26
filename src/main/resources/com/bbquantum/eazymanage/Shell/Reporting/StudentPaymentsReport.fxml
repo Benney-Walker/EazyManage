@@ -30,16 +30,23 @@
 
     <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
         <padding><Insets top="12" right="24" bottom="10" left="24"/></padding>
-        <Label text="Student ID" styleClass="field-label"/>
-        <TextField fx:id="studentIdField" prefWidth="160"/>
+
         <Label text="Class" styleClass="field-label"/>
         <ChoiceBox fx:id="classChoice" prefWidth="160"/>
+
+        <Label text="Select student" styleClass="field-label"/>
+        <ChoiceBox fx:id="studentChoice" prefWidth="160"/>
+
         <Label text="Semester" styleClass="field-label"/>
         <ChoiceBox fx:id="semesterChoice" prefWidth="160"/>
+
         <Region HBox.hgrow="ALWAYS"/>
+
         <Label fx:id="statusLabel" styleClass="save-status"/>
+
         <Button fx:id="exportButton" text="Export CSV"
                 onAction="#onExportCsv" styleClass="btn,btn-ghost" disable="true"/>
+
         <Button fx:id="fetchButton" text="Fetch history"
                 onAction="#onFetch" styleClass="btn,btn-primary"/>
     </HBox>
@@ -69,7 +76,7 @@
             <TableColumn fx:id="contactCol" text="Contact"  prefWidth="160"/>
         </columns>
         <placeholder>
-            <Label text="Enter a student id, class, and semester, then click Fetch."
+            <Label text="Select a class to fetch students. Select student and semester, then click Fetch."
                    styleClass="empty-state"/>
         </placeholder>
     </TableView>

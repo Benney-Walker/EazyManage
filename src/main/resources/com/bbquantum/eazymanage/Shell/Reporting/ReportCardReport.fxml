@@ -12,10 +12,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-
-
 <?import java.net.URL?>
-<?import javafx.scene.control.TextField?>
+
+
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Report.ReportCardReportController"
       styleClass="report-viewer"
@@ -25,7 +24,7 @@
         <URL value="@../../Theme/reports.css"/>
     </stylesheets>
 
-    <!-- Header -->
+    <!-- Header / breadcrumb -->
     <VBox styleClass="page-header" spacing="4">
         <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
         <HBox spacing="6" alignment="CENTER_LEFT">
@@ -55,7 +54,7 @@
 
     <Separator/>
 
-    <!-- Main split: students on the left, card preview on the right -->
+    <!-- Two-pane: students on the left, paper preview on the right -->
     <HBox VBox.vgrow="ALWAYS" spacing="0">
 
         <!-- Left: student picker -->
@@ -77,7 +76,7 @@
 
         <Separator orientation="VERTICAL"/>
 
-        <!-- Right: rendered card preview -->
+        <!-- Right: paper preview -->
         <VBox HBox.hgrow="ALWAYS" styleClass="report-card-pane">
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="transparent-scroll">
                 <VBox fx:id="cardPaper" styleClass="report-card-paper" spacing="14">
@@ -85,88 +84,102 @@
 
                     <!-- School header -->
                     <VBox styleClass="report-card-school-header" alignment="CENTER" spacing="2">
-                        <Label fx:id="institutionNameLabel" text="School Name" styleClass="report-card-school-name"/>
-                        <Label fx:id="institutionAddressLabel" text=" "       styleClass="report-card-school-address"/>
-                        <Label text="STUDENT REPORT CARD" styleClass="report-card-doc-title"/>
+                        <Label fx:id="schoolNameLabel" text="School Name" styleClass="report-card-school-name"/>
+                        <Label text="TERMINAL REPORT" styleClass="report-card-doc-title"/>
                     </VBox>
 
                     <Separator/>
 
-                    <!-- Student info block -->
-                    <GridPane hgap="16" vgap="6" styleClass="report-card-meta">
-                        <Label text="Name:"     GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="meta-label"/>
-                        <Label fx:id="studentNameValue" text="—" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="meta-value"/>
+                    <!-- Student / term metadata, 3 rows x 6 columns
+                         (label/value pairs across three rows) -->
+                    <GridPane hgap="12" vgap="6" styleClass="report-card-meta">
+                        <!-- Row 0: NAME · POSITION · STUDENT ID -->
+                        <Label text="NAME:"       GridPane.columnIndex="0" GridPane.rowIndex="0" styleClass="meta-label"/>
+                        <Label fx:id="nameValue"      GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="meta-value"/>
+                        <Label text="POSITION:"   GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="meta-label"/>
+                        <Label fx:id="positionValue"  GridPane.columnIndex="3" GridPane.rowIndex="0" styleClass="meta-value"/>
+                        <Label text="STUDENT ID:" GridPane.columnIndex="4" GridPane.rowIndex="0" styleClass="meta-label"/>
+                        <Label fx:id="studentIdValue" GridPane.columnIndex="5" GridPane.rowIndex="0" styleClass="meta-value"/>
 
-                        <Label text="Student ID:" GridPane.columnIndex="2" GridPane.rowIndex="0" styleClass="meta-label"/>
-                        <Label fx:id="studentIdValue"   text="—" GridPane.columnIndex="3" GridPane.rowIndex="0" styleClass="meta-value"/>
+                        <!-- Row 1: GRADE · CLASS SIZE · TERM -->
+                        <Label text="GRADE:"      GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="meta-label"/>
+                        <Label fx:id="gradeValue"     GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="meta-value"/>
+                        <Label text="CLASS SIZE:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="meta-label"/>
+                        <Label fx:id="classSizeValue" GridPane.columnIndex="3" GridPane.rowIndex="1" styleClass="meta-value"/>
+                        <Label text="TERM:"       GridPane.columnIndex="4" GridPane.rowIndex="1" styleClass="meta-label"/>
+                        <Label fx:id="termValue"      GridPane.columnIndex="5" GridPane.rowIndex="1" styleClass="meta-value"/>
 
-                        <Label text="Class:"    GridPane.columnIndex="0" GridPane.rowIndex="1" styleClass="meta-label"/>
-                        <Label fx:id="classValue"       text="—" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="meta-value"/>
-
-                        <Label text="Semester:" GridPane.columnIndex="2" GridPane.rowIndex="1" styleClass="meta-label"/>
-                        <Label fx:id="semesterValue"    text="—" GridPane.columnIndex="3" GridPane.rowIndex="1" styleClass="meta-value"/>
-
-                        <Label text="Position:" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="meta-label"/>
-                        <Label fx:id="positionValue"    text="—" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="meta-value"/>
-
-                        <Label text="Issued:"   GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="meta-label"/>
-                        <Label fx:id="issueDateValue"   text="—" GridPane.columnIndex="3" GridPane.rowIndex="2" styleClass="meta-value"/>
+                        <!-- Row 2: YEAR · VACATION · RESUMPTION -->
+                        <Label text="YEAR:"       GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="meta-label"/>
+                        <Label fx:id="yearValue"      GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="meta-value"/>
+                        <Label text="VACATION:"   GridPane.columnIndex="2" GridPane.rowIndex="2" styleClass="meta-label"/>
+                        <Label fx:id="vacationValue"  GridPane.columnIndex="3" GridPane.rowIndex="2" styleClass="meta-value"/>
+                        <Label text="RESUMPTION:" GridPane.columnIndex="4" GridPane.rowIndex="2" styleClass="meta-label"/>
+                        <Label fx:id="resumptionValue" GridPane.columnIndex="5" GridPane.rowIndex="2" styleClass="meta-value"/>
                     </GridPane>
 
-                    <!-- Academic results -->
-                    <Label text="Academic Results" styleClass="report-card-section-title"/>
-                    <TableView fx:id="resultsTable" prefHeight="240" styleClass="report-card-table">
+                    <!-- Subject results table -->
+                    <TableView fx:id="subjectsTable" prefHeight="320" styleClass="report-card-table">
                         <columns>
-                            <TableColumn fx:id="subjectCol"         text="Subject"       prefWidth="160"/>
-                            <TableColumn fx:id="ct1Col"             text="CT 1"          prefWidth="55"/>
-                            <TableColumn fx:id="groupWorkCol"       text="Group Work"    prefWidth="90"/>
-                            <TableColumn fx:id="ct2Col"             text="CT 2"          prefWidth="55"/>
-                            <TableColumn fx:id="projectCol"         text="Project"       prefWidth="70"/>
-                            <TableColumn fx:id="classScoreCol"      text="Class (50%)"   prefWidth="90"/>
-                            <TableColumn fx:id="examScoreCol"       text="Exam"          prefWidth="65"/>
-                            <TableColumn fx:id="calcExamCol"        text="Exam (50%)"    prefWidth="85"/>
-                            <TableColumn fx:id="subjectTotalCol"    text="Total"         prefWidth="60"/>
-                            <TableColumn fx:id="gradeCol"           text="Grade"         prefWidth="60"/>
-                            <TableColumn fx:id="teacherRemarkCol"   text="Teacher Remark" prefWidth="160"/>
+                            <TableColumn fx:id="subjectCol"     text="SUBJECT"      prefWidth="180"/>
+                            <TableColumn fx:id="classScoreCol"  text="CLASS SCORE"  prefWidth="100"/>
+                            <TableColumn fx:id="examScoreCol"   text="EXAM SCORE"   prefWidth="100"/>
+                            <TableColumn fx:id="totalScoreCol"  text="TOTAL SCORE"  prefWidth="100"/>
+                            <TableColumn fx:id="gradeCol"       text="GRADE"        prefWidth="70"/>
+                            <TableColumn fx:id="remarksCol"     text="REMARKS"      prefWidth="140"/>
                         </columns>
                         <placeholder>
-                            <Label fx:id="resultsPlaceholder" text="No academic results recorded for this semester." styleClass="empty-state"/>
+                            <Label text="No academic results recorded for this semester." styleClass="empty-state"/>
                         </placeholder>
                     </TableView>
 
-                    <!-- Aggregate row -->
-                    <HBox alignment="CENTER_RIGHT" spacing="24" styleClass="report-card-aggregates">
-                        <Label text="Total:" styleClass="aggregate-label"/>
-                        <Label fx:id="totalValue" text="—" styleClass="aggregate-value"/>
-                        <Label text="Average:" styleClass="aggregate-label"/>
-                        <Label fx:id="averageValue" text="—" styleClass="aggregate-value"/>
+                    <!-- Grading system caption -->
+                    <VBox spacing="2">
+                        <Label text="GRADING SYSTEM:" styleClass="report-card-section-title"/>
+                        <Label text="80–100 (Highly Proficiency) | 70–79 (Proficiency) | 60–69 (Approaching Proficiency) | 50–59 (Developing) | 49–0"
+                               styleClass="report-card-grading-caption" wrapText="true"/>
+                    </VBox>
+
+                    <!-- Conduct grid — built at runtime in the controller -->
+                    <GridPane fx:id="conductGrid" styleClass="report-card-conduct-grid"/>
+
+                    <!-- Attendance / Promoted To -->
+                    <HBox spacing="32" styleClass="report-card-attendance-row" alignment="CENTER_LEFT">
+                        <Label text="ATTENDANCE:" styleClass="meta-label"/>
+                        <Label fx:id="attendancePresentValue" styleClass="meta-value"/>
+                        <Label text="OUT OF:" styleClass="meta-label"/>
+                        <Label fx:id="totalAttendanceValue"   styleClass="meta-value"/>
+                        <Label text="PROMOTED TO:" styleClass="meta-label"/>
+                        <Label fx:id="promotedToValue"        styleClass="meta-value"/>
                     </HBox>
 
-                    <!-- Conduct grid -->
-                    <Label text="Conduct" styleClass="report-card-section-title"/>
-                    <GridPane fx:id="conductGrid" hgap="24" vgap="6" styleClass="report-card-conduct"/>
+                    <!-- Peculiar issue — paper fill only, no backend field -->
+                    <HBox spacing="8" alignment="CENTER_LEFT" styleClass="report-card-fill-row">
+                        <Label text="PECULIAR ISSUE:" styleClass="meta-label"/>
+                        <Region HBox.hgrow="ALWAYS" styleClass="report-card-fill-line"/>
+                    </HBox>
 
-                    <Label fx:id="conductRemarkLabel"
-                           styleClass="report-card-conduct-remark"
-                           wrapText="true"/>
+                    <!-- Facilitator's remarks -->
+                    <VBox spacing="4">
+                        <Label text="FACILITATOR'S REMARKS:" styleClass="meta-label"/>
+                        <Label fx:id="facilitatorRemarkLabel"
+                               styleClass="report-card-remark-block"
+                               wrapText="true"/>
+                    </VBox>
 
-                    <!-- Semester remark -->
-                    <Label text="Class Teacher's Remark" styleClass="report-card-section-title"/>
-                    <Label fx:id="semesterRemarkLabel"
-                           text="—"
-                           styleClass="report-card-remark-block"
-                           wrapText="true"/>
+                    <!-- Signature lines -->
+                    <HBox spacing="24" alignment="CENTER_LEFT" styleClass="report-card-signature-row">
+                        <Label text="FACILITATOR'S SIGN:" styleClass="meta-label"/>
+                        <Region HBox.hgrow="ALWAYS" styleClass="report-card-fill-line"/>
+                        <Label text="NAME:" styleClass="meta-label"/>
+                        <Label fx:id="instructorNameValue" styleClass="meta-value"/>
+                    </HBox>
 
-                    <!-- Signature line -->
-                    <HBox styleClass="report-card-signature-row" spacing="32">
-                        <VBox HBox.hgrow="ALWAYS" spacing="4">
-                            <Region styleClass="signature-line"/>
-                            <Label fx:id="headmasterNameLabel" text="Headmaster" styleClass="signature-label"/>
-                        </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="4">
-                            <Region styleClass="signature-line"/>
-                            <Label text="Date" styleClass="signature-label"/>
-                        </VBox>
+                    <HBox spacing="24" alignment="CENTER_LEFT" styleClass="report-card-signature-row">
+                        <Label text="HEAD FACILITATOR'S SIGN:" styleClass="meta-label"/>
+                        <Region HBox.hgrow="ALWAYS" styleClass="report-card-fill-line"/>
+                        <Label text="DATE:" styleClass="meta-label"/>
+                        <Label fx:id="currentDateValue" styleClass="meta-value"/>
                     </HBox>
                 </VBox>
             </ScrollPane>

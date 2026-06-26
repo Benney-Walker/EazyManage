@@ -78,16 +78,27 @@ public class EnterScoresController {
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override
+            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
         });
         subjectChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SubjectsHolder s) { return s == null ? "" : s.getSubjectName(); }
-            @Override public SubjectsHolder fromString(String s) { return null; }
+            @Override
+            public String toString(SubjectsHolder s) { return s == null ? "" : s.getSubjectName(); }
+
+            @Override
+            public SubjectsHolder fromString(String s) { return null; }
         });
         semesterChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SemesterCaching s) { return s == null ? "" : s.getSemesterName(); }
-            @Override public SemesterCaching fromString(String s) { return null; }
+            @Override
+            public String toString(SemesterCaching s) {
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
+            }
+
+            @Override
+            public SemesterCaching fromString(String s) { return null; }
         });
 
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
@@ -246,7 +257,7 @@ public class EnterScoresController {
         setStatus("Loading students…");
         fetchButton.setDisable(true);
 
-        academicsService.loadSubjectStudents(subject.getSubjectId(), staffId,
+        academicsService.loadSubjectStudents(staffId, subject.getSubjectId(), semester.getSemesterId(),
                 () -> Platform.runLater(() -> {
                     fetchButton.setDisable(false);
                     if (UtilityClass.subjectScores == null) {
@@ -371,23 +382,18 @@ public class EnterScoresController {
 
     @FXML
     private void onReset() {
-        rows.clear();
         currentUploadIndex = 0;
-        classChoice.getSelectionModel().clearSelection();
-        subjectChoice.getSelectionModel().clearSelection();
-        semesterChoice.getSelectionModel().clearSelection();
-        subjectChoice.setDisable(true);
-        currentClass = null;
-        currentSubject = null;
-        currentSemester = null;
-        classInfoBanner.setVisible(false);
-        classInfoBanner.setManaged(false);
-        progressBox.setVisible(false);
-        progressBox.setManaged(false);
-        saveButton.setText("Save scores");
-        saveButton.setDisable(true);
-        fetchButton.setDisable(true);
-        setStatus("");
+        for (StudentsScoresTable record : UtilityClass.subjectScores.getScoresTable()) {
+            record.setClassTest1Score("0");
+            record.setClassTest2Score("0");
+            record.setGroupWorkScore("0");
+            record.setProjectScore("0");
+            record.setExamScore("0");
+            record.setClassScore("0");
+            record.setCalculatedExamScore("0");
+        }
+
+        scoresTable.refresh();
     }
 
     // ====================================================================

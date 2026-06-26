@@ -87,7 +87,7 @@ public class AuthService {
         Task<EnrollmentResponse> task = new Task<>() {
             @Override
             protected EnrollmentResponse call() throws Exception {
-                String url = apiCore.STAFF_URL + apiCore.API_VERSION_1 +"/add-new-staff";
+                String url = apiCore.STAFF_URL + apiCore.API_VERSION_1 + "/add-new-staff";
 
                 JsonObject body = new JsonObject();
                 body.addProperty("firstName", firstName);
@@ -105,6 +105,7 @@ public class AuthService {
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers(
+                                "Authorization", "Bearer " + apiCore.token,
                                 "Content-Type", "application/json",
                                 "staffId", staffId
                         )

@@ -1,13 +1,16 @@
 package com.bbquantum.eazymanage.Controller.Report;
 
+import com.bbquantum.eazymanage.DTO.Academics.Conduct.ConductReport;
 import com.bbquantum.eazymanage.DTO.Academics.Conduct.StudentConductRecord;
 import com.bbquantum.eazymanage.DTO.Academics.Report.StudentReportCard;
+import com.bbquantum.eazymanage.DTO.Academics.Report.SubjectScoresReport;
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentSubjectResults;
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
 import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
 import com.bbquantum.eazymanage.Services.AcademicsService;
+import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.ReportsService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
@@ -16,9 +19,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
 
@@ -41,35 +48,37 @@ public class ReportCardReportController implements ReportViewerController {
     @FXML private TableColumn<StudentsHolder, String> studentIdCol;
     @FXML private TableColumn<StudentsHolder, String> studentNameCol;
 
-    // ---- right: card preview
-    @FXML private Label institutionNameLabel;
-    @FXML private Label institutionAddressLabel;
-    @FXML private Label studentNameValue;
-    @FXML private Label studentIdValue;
-    @FXML private Label classValue;
-    @FXML private Label semesterValue;
-    @FXML private Label positionValue;
-    @FXML private Label issueDateValue;
-    @FXML private Label totalValue;
-    @FXML private Label averageValue;
-    @FXML private Label semesterRemarkLabel;
-    @FXML private Label headmasterNameLabel;
-    @FXML private Label conductRemarkLabel;
+    // ---- right pane: paper
+    @FXML private Label schoolNameLabel;
 
-    @FXML private TableView<StudentSubjectResults> resultsTable;
-    @FXML private TableColumn<StudentSubjectResults, String> subjectCol;
-    @FXML private TableColumn<StudentSubjectResults, String> ct1Col;
-    @FXML private TableColumn<StudentSubjectResults, String> groupWorkCol;
-    @FXML private TableColumn<StudentSubjectResults, String> ct2Col;
-    @FXML private TableColumn<StudentSubjectResults, String> projectCol;
-    @FXML private TableColumn<StudentSubjectResults, String> classScoreCol;
-    @FXML private TableColumn<StudentSubjectResults, String> examScoreCol;
-    @FXML private TableColumn<StudentSubjectResults, String> calcExamCol;
-    @FXML private TableColumn<StudentSubjectResults, String> subjectTotalCol;
-    @FXML private TableColumn<StudentSubjectResults, String> gradeCol;
-    @FXML private TableColumn<StudentSubjectResults, String> teacherRemarkCol;
+    @FXML private Label nameValue;
+    @FXML private Label positionValue;
+    @FXML private Label studentIdValue;
+    @FXML private Label gradeValue;
+    @FXML private Label classSizeValue;
+    @FXML private Label termValue;
+    @FXML private Label yearValue;
+    @FXML private Label vacationValue;
+    @FXML private Label resumptionValue;
+
+    @FXML private TableView<SubjectScoresReport>          subjectsTable;
+    @FXML private TableColumn<SubjectScoresReport, String> subjectCol;
+    @FXML private TableColumn<SubjectScoresReport, String> classScoreCol;
+    @FXML private TableColumn<SubjectScoresReport, String> examScoreCol;
+    @FXML private TableColumn<SubjectScoresReport, String> totalScoreCol;
+    @FXML private TableColumn<SubjectScoresReport, String> gradeCol;
+    @FXML private TableColumn<SubjectScoresReport, String> remarksCol;
 
     @FXML private GridPane conductGrid;
+
+    @FXML private Label attendancePresentValue;
+    @FXML private Label totalAttendanceValue;
+    @FXML private Label promotedToValue;
+
+    @FXML private Label facilitatorRemarkLabel;
+
+    @FXML private Label instructorNameValue;
+    @FXML private Label currentDateValue;
 
     // ---- action bar
     @FXML private Label    promotionLabel;
@@ -89,15 +98,16 @@ public class ReportCardReportController implements ReportViewerController {
     private final ReportsService    reportsService    = new ReportsService(apiCore);
 
     // ---- model
-    private final ObservableList<StudentsHolder> students = FXCollections.observableArrayList();
-    private final ObservableList<StudentSubjectResults> resultRows = FXCollections.observableArrayList();
+    private final ObservableList<StudentsHolder> students   = FXCollections.observableArrayList();
+    private final ObservableList<SubjectScoresReport>  subjectScoresRows = FXCollections.observableArrayList();
+
     private StudentReportCard currentCard;
 
     // Friendly labels for the six conduct categories, in printed order.
     private static final Map<String, String> CONDUCT_LABELS = new LinkedHashMap<>();
 
     // Rating enum string -> human label for display in the preview.
-    private static final Map<String, String> RATING_DISPLAY = new LinkedHashMap<>();
+    private static final Map<String, String> RATING_HEADERS = new LinkedHashMap<>();
 
     static {
         CONDUCT_LABELS.put("regular",            "Regular");
@@ -107,11 +117,11 @@ public class ReportCardReportController implements ReportViewerController {
         CONDUCT_LABELS.put("emotional",          "Emotional");
         CONDUCT_LABELS.put("cognitiveSkills",    "Cognitive Skills");
 
-        RATING_DISPLAY.put("EXCELLENT",          "Excellent");
-        RATING_DISPLAY.put("VERY_GOOD",          "Very Good");
-        RATING_DISPLAY.put("GOOD",               "Good");
-        RATING_DISPLAY.put("FAIR",               "Fair");
-        RATING_DISPLAY.put("NOT_TO_EXPECTATION", "Not to Expectation");
+        RATING_HEADERS.put("EXCELLENT",          "EXCELLENT");
+        RATING_HEADERS.put("VERY_GOOD",          "VERY GOOD");
+        RATING_HEADERS.put("GOOD",               "GOOD");
+        RATING_HEADERS.put("FAIR",               "FAIR");
+        RATING_HEADERS.put("NOT_TO_EXPECTATION", "NOT EXPECT.");
     }
 
     @FXML
@@ -130,7 +140,8 @@ public class ReportCardReportController implements ReportViewerController {
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
             public String toString(SemesterCaching s) {
-                return s == null ? "" : s.getSemesterName();
+
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
@@ -169,19 +180,15 @@ public class ReportCardReportController implements ReportViewerController {
         studentsTable.getSelectionModel().selectedItemProperty()
                 .addListener((obs, oldSel, newSel) -> loadCardFor(newSel));
 
-        // Results table
-        resultsTable.setItems(resultRows);
-        subjectCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getSubjectName())));
-        ct1Col.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getClassTest1Score())));
-        groupWorkCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getGroupWorkScore())));
-        ct2Col.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getClassTest2Score())));
-        projectCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getProjectScore())));
-        classScoreCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getClassScore())));
-        examScoreCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getExamScore())));
-        calcExamCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getCalculatedExamScore())));
-        subjectTotalCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getTotal())));
-        gradeCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getGrade())));
-        teacherRemarkCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getTeacherRemark())));
+        // Subject table
+        subjectsTable.setItems(subjectScoresRows);
+        subjectCol.setCellValueFactory(    c -> new SimpleStringProperty(safe(c.getValue().getSubjectName())));
+        classScoreCol.setCellValueFactory( c -> new SimpleStringProperty(safe(c.getValue().getClassScore())));
+        examScoreCol.setCellValueFactory(  c -> new SimpleStringProperty(safe(c.getValue().getExamScore())));
+        totalScoreCol.setCellValueFactory( c -> new SimpleStringProperty(safe(c.getValue().getTotal())));
+        gradeCol.setCellValueFactory(      c -> new SimpleStringProperty(safe(c.getValue().getGrade())));
+        // Remarks column displays gradeDescriptor (e.g. "EXCELLENT", "VERY GOOD").
+        remarksCol.setCellValueFactory(    c -> new SimpleStringProperty(safe(c.getValue().getGradeDescriptor())));
 
         // When the class changes, refresh the student list.
         classChoice.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -189,6 +196,8 @@ public class ReportCardReportController implements ReportViewerController {
             clearCardPreview();
             if (newVal != null) loadStudentsFor(newVal);
         });
+
+        clearCardPreview();
     }
 
     @Override
@@ -197,12 +206,14 @@ public class ReportCardReportController implements ReportViewerController {
         this.role    = role;
         this.onBack  = onBack;
 
-        // Show promotion controls only to administrators (matching legacy).
+        // Show promotion controls only to teaching staff (matching legacy).
         boolean teacher = "TEACHING_STAFF".equals(role);
         for (Node n : List.of(promotionLabel, promotionGradeChoice)) {
             n.setVisible(teacher);
             n.setManaged(teacher);
         }
+
+        promotionGradeChoice.setDisable(true);
 
         // Auto-pick first class / semester so something is on screen.
         if (!classChoice.getItems().isEmpty() && classChoice.getValue() == null) {
@@ -261,125 +272,141 @@ public class ReportCardReportController implements ReportViewerController {
                 card -> Platform.runLater(() -> applyCard(card)),
                 () -> Platform.runLater(() -> {
                     if (currentCard != null) {
+                        if (semester.getSemesterName().equals("THIRD_TERM"))
+                            promotionGradeChoice.setDisable(false);
+
                         downloadButton.setDisable(false);
                         setStatus("");
                     } else {
                         setStatus("No data for this student.");
                     }
                 }),
-                () -> Platform.runLater(() -> setStatus("Could not load report card.")),
+                () -> Platform.runLater(() -> setStatus(ApiContext.getInstance().errorMessageContainer)),
                 () -> Platform.runLater(() -> setStatus("Network issue while loading card.")));
     }
 
     private void applyCard(StudentReportCard card) {
+
+
         currentCard = card;
         if (card == null) {
             clearCardPreview();
             return;
         }
 
-        // School header
-        institutionNameLabel.setText(safe(card.getInstitutionName(), "School Name"));
-        institutionAddressLabel.setText(safe(card.getInstitutionAddress(), " "));
-        headmasterNameLabel.setText(card.getHeadmasterName() != null && !card.getHeadmasterName().isBlank()
-                ? card.getHeadmasterName() + "  (Headmaster)"
-                : "Headmaster");
-        issueDateValue.setText(safe(card.getIssueDate(), "—"));
+        schoolNameLabel.setText(safe(card.getSchoolName(), "School Name"));
 
-        // Academics block
-        var academics = card.getAcademics();
-        if (academics != null) {
-            studentNameValue.setText(safe(academics.getStudentName(), "—"));
-            studentIdValue.setText(safe(academics.getStudentId(), "—"));
-            classValue.setText(safe(academics.getGrade(), "—"));
-            semesterValue.setText(safe(academics.getSemesterName(), "—"));
-            positionValue.setText(safe(academics.getPosition(), "—"));
-            totalValue.setText(academics.getTotalScore() == null ? "—" : String.valueOf(academics.getTotalScore()));
-            averageValue.setText(academics.getAverageScore() == null ? "—" : String.valueOf(academics.getAverageScore()));
+        // Meta block
+        nameValue.setText(           safe(card.getStudentName(),       "—"));
+        positionValue.setText(       safe(card.getClassPosition(),     "—"));
+        studentIdValue.setText(      safe(card.getStudentId(),         "—"));
+        gradeValue.setText(          safe(card.getClassName(),         "—"));
+        classSizeValue.setText(      safe(card.getTotalStudents(),     "—"));
+        termValue.setText(           safe(card.getSemesterName(),      "—"));
+        yearValue.setText(           safe(card.getAcademicYear(),      "—"));
+        vacationValue.setText(       safe(card.getVacationDate(),      "—"));
+        resumptionValue.setText(     safe(card.getResumptionDate(),    "—"));
 
-            List<StudentSubjectResults> rows = academics.getStudentSubjectResults();
-            resultRows.setAll(rows == null ? List.of() : rows);
+        // Subject table — populated from subjectScores
+        List<SubjectScoresReport> rows = card.getSubjectScores();
+        subjectScoresRows.setAll(rows == null ? List.of() : rows);
 
-            semesterRemarkLabel.setText(safe(academics.getSemesterRemark(),
-                    "(No class teacher remark yet)"));
-        } else {
-            resultRows.clear();
-            studentNameValue.setText("—");
-            studentIdValue.setText("—");
-            classValue.setText("—");
-            semesterValue.setText("—");
-            positionValue.setText("—");
-            totalValue.setText("—");
-            averageValue.setText("—");
-            semesterRemarkLabel.setText("(No academic results recorded)");
-        }
+        // Conduct grid — built at runtime
+        rebuildConductGrid(card.getStudentConductReport());
 
-        // Conduct grid
-        rebuildConductGrid(card.getConduct());
+        // Bottom rows
+        attendancePresentValue.setText(safe(card.getAttendancePresent(), "—"));
+        totalAttendanceValue.setText(  safe(card.getTotalAttendance(),   "—"));
+        promotedToValue.setText(       safe(card.getPromotedTo(),        "—"));
+
+        ConductReport conduct = card.getStudentConductReport();
+        String remark = conduct == null ? "" : safe(conduct.getFacilitatorRemark());
+        facilitatorRemarkLabel.setText(remark.isBlank()
+                ? "(No facilitator's remark recorded)"
+                : remark);
+
+        instructorNameValue.setText(safe(card.getInstructorName(), "—"));
+        currentDateValue.setText(   safe(card.getCurrentDate(),    "—"));
     }
 
     private void clearCardPreview() {
         currentCard = null;
         downloadButton.setDisable(true);
-        resultRows.clear();
+        subjectScoresRows.clear();
         conductGrid.getChildren().clear();
+        conductGrid.getColumnConstraints().clear();
+
+        schoolNameLabel.setText("School Name");
+
         for (Label l : new Label[]{
-                studentNameValue, studentIdValue, classValue, semesterValue,
-                positionValue, issueDateValue, totalValue, averageValue}) {
-            l.setText("—");
+                nameValue, positionValue, studentIdValue, gradeValue,
+                classSizeValue, termValue, yearValue, vacationValue, resumptionValue,
+                attendancePresentValue, totalAttendanceValue, promotedToValue,
+                instructorNameValue, currentDateValue}) {
+            if (l != null) l.setText("—");
         }
-        semesterRemarkLabel.setText("—");
-        conductRemarkLabel.setText("");
-        institutionNameLabel.setText("School Name");
-        institutionAddressLabel.setText(" ");
-        headmasterNameLabel.setText("Headmaster");
+        facilitatorRemarkLabel.setText("");
     }
 
-    private void rebuildConductGrid(StudentConductRecord conduct) {
+    private void rebuildConductGrid(ConductReport conduct) {
         conductGrid.getChildren().clear();
-        // Layout: 2 columns x 3 rows of category labels (six categories),
-        // each showing "Category:  Rating".
-        int i = 0;
+        conductGrid.getColumnConstraints().clear();
+
+        // Column constraints: label column wider, rating columns equal.
+        ColumnConstraints labelCol = new ColumnConstraints();
+        labelCol.setHgrow(Priority.SOMETIMES);
+        labelCol.setMinWidth(160);
+        labelCol.setPercentWidth(28);
+        conductGrid.getColumnConstraints().add(labelCol);
+        for (int i = 0; i < RATING_HEADERS.size(); i++) {
+            ColumnConstraints c = new ColumnConstraints();
+            c.setHgrow(Priority.SOMETIMES);
+            c.setPercentWidth(14.4);  // 5 * 14.4 = 72%, balanced with the 28% label col
+            c.setHalignment(HPos.CENTER);
+            conductGrid.getColumnConstraints().add(c);
+        }
+
+        // Header row (row 0): blank label cell + 5 rating headers
+        Label cornerHeader = new Label("CONDUCT");
+        cornerHeader.getStyleClass().add("conduct-grid-header");
+        conductGrid.add(cornerHeader, 0, 0);
+
+        int colIdx = 1;
+        for (String ratingHeader : RATING_HEADERS.values()) {
+            Label h = new Label(ratingHeader);
+            h.getStyleClass().add("conduct-grid-header");
+            h.setMaxWidth(Double.MAX_VALUE);
+            h.setAlignment(Pos.CENTER);
+            conductGrid.add(h, colIdx++, 0);
+        }
+
+        // Six category rows
+        int rowIdx = 1;
         for (Map.Entry<String, String> entry : CONDUCT_LABELS.entrySet()) {
-            int row = i / 2;
-            int col = i % 2;
+            String categoryKey   = entry.getKey();
+            String categoryLabel = entry.getValue();
 
-            Label item = new Label(entry.getValue() + ":  " + markFor(conduct, entry.getKey()));
-            item.getStyleClass().add("report-card-conduct-item");
-            String rating = rawRatingFor(conduct, entry.getKey());
-            // Style by rating band: top two = positive, fair = neutral,
-            // not-to-expectation = negative, missing = unset.
-            item.getStyleClass().add(switch (rating) {
-                case "EXCELLENT", "VERY_GOOD"   -> "report-card-conduct-mark-yes";
-                case "GOOD", "FAIR"             -> "report-card-conduct-mark-neutral";
-                case "NOT_TO_EXPECTATION"       -> "report-card-conduct-mark-no";
-                default                         -> "report-card-conduct-mark-unset";
-            });
-            conductGrid.add(item, col, row);
-            i++;
+            Label catLabel = new Label(categoryLabel);
+            catLabel.getStyleClass().add("conduct-grid-row-label");
+            conductGrid.add(catLabel, 0, rowIdx);
+
+            String rating = rawRatingFor(conduct, categoryKey);
+
+            // Add one cell per rating column, ticking the one that matches.
+            int rc = 1;
+            for (String ratingKey : RATING_HEADERS.keySet()) {
+                Label cell = new Label(ratingKey.equals(rating) ? "\u2713" : "");
+                cell.getStyleClass().add("conduct-grid-cell");
+                cell.setMaxWidth(Double.MAX_VALUE);
+                cell.setAlignment(Pos.CENTER);
+                conductGrid.add(cell, rc++, rowIdx);
+            }
+            rowIdx++;
         }
-
-        // Conduct remark
-        if (conduct != null && conduct.getConductRemark() != null && !conduct.getConductRemark().isBlank()) {
-            conductRemarkLabel.setText("Observation: " + conduct.getConductRemark());
-            conductRemarkLabel.setVisible(true);
-            conductRemarkLabel.setManaged(true);
-        } else {
-            conductRemarkLabel.setText("");
-            conductRemarkLabel.setVisible(false);
-            conductRemarkLabel.setManaged(false);
-        }
-    }
-
-    /** Resolve a category key to its human rating label, or "—" if unset. */
-    private static String markFor(StudentConductRecord c, String key) {
-        String raw = rawRatingFor(c, key);
-        if (raw == null) return "—";
-        return RATING_DISPLAY.getOrDefault(raw, raw);
     }
 
     /** Read one of the six rating strings by key, or null if unset. */
-    private static String rawRatingFor(StudentConductRecord c, String key) {
+    private static String rawRatingFor(ConductReport c, String key) {
         if (c == null) return null;
         return switch (key) {
             case "regular"            -> c.getRegular();
@@ -396,12 +423,19 @@ public class ReportCardReportController implements ReportViewerController {
 
     @FXML
     private void onDownload() {
-        if (currentCard == null || currentCard.getAcademics() == null) return;
+        if (currentCard == null) return;
         SemesterCaching semester = semesterChoice.getValue();
         if (semester == null) return;
 
-        String studentId   = currentCard.getAcademics().getStudentId();
-        String studentName = currentCard.getAcademics().getStudentName();
+        GradeCaching promoGrade = promotionGradeChoice.getValue();
+        String promotionGradeId = "no_promotion";
+        if (promoGrade != null) {
+            promotionGradeId = promoGrade.getLevelId();
+        }
+
+
+        String studentId   = currentCard.getStudentId();
+        String studentName = currentCard.getStudentName();
 
         downloadButton.setDisable(true);
         setStatus("Requesting PDF…");
@@ -410,7 +444,7 @@ public class ReportCardReportController implements ReportViewerController {
                 + " - " + safe(semester.getSemesterName(), "Semester") + ".pdf";
 
         reportsService.downloadReportCard(
-                staffId, studentId, semester.getSemesterId(),
+                staffId, studentId, semester.getSemesterId(), promotionGradeId,
                 suggestedName,
                 this::parentWindow,
                 () -> Platform.runLater(() -> {
@@ -418,7 +452,7 @@ public class ReportCardReportController implements ReportViewerController {
                     downloadButton.setDisable(false);
                 }),
                 () -> Platform.runLater(() -> {
-                    setStatus("Could not generate report card.");
+                    setStatus(ApiContext.getInstance().errorMessageContainer);
                     downloadButton.setDisable(false);
                 }),
                 () -> Platform.runLater(() -> {

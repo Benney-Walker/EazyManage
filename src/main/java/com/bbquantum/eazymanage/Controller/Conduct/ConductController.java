@@ -273,8 +273,17 @@ public class ConductController {
 
     /** Read the selected rating for a category row, or null if none picked. */
     private String ratingOf(int row) {
+
         Toggle sel = rowGroups[row].getSelectedToggle();
-        return sel == null ? null : (String) sel.getUserData();
+
+        if (sel == null) {
+            return null;
+        }
+
+        ConductRatings rating =
+                (ConductRatings) sel.getUserData();
+
+        return rating.name();
     }
 
     /** Push grid state into the bound record and persist. */

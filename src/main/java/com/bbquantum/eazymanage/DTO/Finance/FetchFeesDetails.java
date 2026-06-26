@@ -1,6 +1,8 @@
 package com.bbquantum.eazymanage.DTO.Finance;
 
 public class FetchFeesDetails {
+    private int feesId;
+
     private String amount;
 
     private String semesterId;
@@ -9,10 +11,19 @@ public class FetchFeesDetails {
 
     public FetchFeesDetails() {}
 
-    public FetchFeesDetails(String amount, String semesterId, String levelId) {
+    public FetchFeesDetails(int feesId, String amount, String semesterId, String levelId) {
+        this.feesId = feesId;
         this.amount = amount;
         this.semesterId = semesterId;
         this.levelId = levelId;
+    }
+
+    public int getFeesId() {
+        return feesId;
+    }
+
+    public void setFeesId(int feesId) {
+        this.feesId = feesId;
     }
 
     public String getAmount() {

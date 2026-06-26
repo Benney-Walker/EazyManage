@@ -141,6 +141,9 @@
 
 .input,
 .input:focused,
+.text-field,
+.password-field,
+.text-area,
 .text-field.input,
 .password-field.input {
     -fx-background-color: -color-input-bg;
@@ -154,23 +157,59 @@
     -fx-font-size: 13px;
 }
 
-.input:focused {
+/* The text-area's inner content area also needs the dark background
+   otherwise Modena paints a white viewport behind the typed text. */
+.text-area .content {
+    -fx-background-color: -color-input-bg;
+}
+
+.input:focused,
+.text-field:focused,
+.password-field:focused,
+.text-area:focused {
     -fx-border-color: -color-input-border-focus;
 }
 
-.input:disabled {
+.input:disabled,
+.text-field:disabled,
+.password-field:disabled,
+.text-area:disabled {
     -fx-background-color: -color-input-disabled-bg;
     -fx-opacity: 0.85;
 }
 
-/* ComboBox & ChoiceBox styled like input */
+/* ComboBox & ChoiceBox styled like input — native selectors so
+   FXML doesn't need styleClass="input" on every instance. */
+.combo-box,
+.choice-box,
 .combo-box.input,
 .choice-box.input {
+    -fx-background-color: -color-input-bg;
+    -fx-border-color: -color-input-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
     -fx-padding: 4 8 4 8;
 }
-.combo-box.input .list-cell { -fx-text-fill: -color-text-primary; -fx-padding: 4 8 4 8; }
+.combo-box:focused,
+.choice-box:focused {
+    -fx-border-color: -color-input-border-focus;
+}
+.combo-box .list-cell,
+.choice-box .list-cell,
+.combo-box.input .list-cell {
+    -fx-text-fill: -color-text-primary;
+    -fx-background-color: transparent;
+    -fx-padding: 4 8 4 8;
+}
+.combo-box > .arrow-button > .arrow,
+.choice-box > .open-button > .arrow,
+.combo-box .arrow,
+.choice-box .arrow,
 .combo-box.input .arrow,
-.choice-box.input .arrow { -fx-background-color: -color-text-secondary; }
+.choice-box.input .arrow {
+    -fx-background-color: -color-text-secondary;
+}
 .combo-box-popup .list-view {
     -fx-background-color: -color-surface-elevated;
     -fx-border-color: -color-border;
@@ -178,17 +217,66 @@
     -fx-background-radius: 8;
     -fx-effect: dropshadow(gaussian, -color-shadow, 12, 0, 0, 4);
 }
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: -color-surface-elevated;
+    -fx-text-fill: -color-text-primary;
+}
 .combo-box-popup .list-view .list-cell:hover     { -fx-background-color: -color-hover; }
 .combo-box-popup .list-view .list-cell:selected  { -fx-background-color: -color-selected; -fx-text-fill: -color-text-primary; }
 
-/* Date picker uses input class plus tweaks */
-.date-picker.input .arrow-button { -fx-background-color: transparent; -fx-padding: 0 8 0 8; }
-.date-picker.input .arrow-button .arrow { -fx-background-color: -color-text-secondary; }
+/* DatePicker — same native + .input dual coverage. */
+.date-picker,
+.date-picker.input {
+    -fx-background-color: -color-input-bg;
+    -fx-border-color: -color-input-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+.date-picker:focused {
+    -fx-border-color: -color-input-border-focus;
+}
+.date-picker > .text-field,
+.date-picker .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: -color-text-primary;
+    -fx-prompt-text-fill: -color-input-placeholder;
+}
+.date-picker > .arrow-button,
+.date-picker.input .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 8 0 8;
+}
+.date-picker > .arrow-button > .arrow,
+.date-picker .arrow,
+.date-picker.input .arrow-button .arrow {
+    -fx-background-color: -color-text-secondary;
+}
 .date-picker-popup {
     -fx-background-color: -color-surface-elevated;
     -fx-border-color: -color-border;
     -fx-border-radius: 8;
     -fx-effect: dropshadow(gaussian, -color-shadow, 12, 0, 0, 4);
+}
+/* Calendar popup interior — dates need to read against the dark surface */
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: -color-surface-elevated;
+}
+.date-picker-popup .day-cell,
+.date-picker-popup .day-name-cell,
+.date-picker-popup .week-number-cell,
+.date-picker-popup .spinner .label,
+.date-picker-popup .month-year-pane .label {
+    -fx-text-fill: -color-text-primary;
+    -fx-background-color: -color-surface-elevated;
+}
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: -color-hover;
+}
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: -color-accent;
+    -fx-text-fill: -color-accent-on;
 }
 
 /* CheckBox / RadioButton */
@@ -217,8 +305,24 @@
    4. TABLES — modern, with row hover, sticky-feeling header
 ============================================================================ */
 
-.table {
+/* ============================================================================
+   TABLES
+   ----------------------------------------------------------------------------
+   Selectors are written as a comma-separated union so EVERY TableView in
+   the app gets themed, regardless of whether it has styleClass="table",
+   "modern-table", "master-sheet-table", "report-card-table", or no
+   styleClass at all. .table-view is JavaFX's built-in selector so plain
+   <TableView/> picks it up automatically.
+============================================================================ */
+
+.table,
+.table-view,
+.modern-table,
+.master-sheet-table,
+.report-card-table {
     -fx-background-color: -color-surface;
+    -fx-control-inner-background: -color-surface;
+    -fx-control-inner-background-alt: -color-table-row-alt;
     -fx-background-radius: 12;
     -fx-border-color: -color-border;
     -fx-border-width: 1;
@@ -227,28 +331,48 @@
     -fx-table-cell-border-color: transparent;
 }
 
-.table .column-header-background {
+.table .column-header-background,
+.table-view .column-header-background,
+.modern-table .column-header-background,
+.master-sheet-table .column-header-background,
+.report-card-table .column-header-background {
     -fx-background-color: -color-table-header-bg;
     -fx-background-radius: 12 12 0 0;
     -fx-padding: 0;
 }
 
 .table .column-header,
-.table .filler {
+.table .filler,
+.table-view .column-header,
+.table-view .filler,
+.modern-table .column-header,
+.modern-table .filler,
+.master-sheet-table .column-header,
+.master-sheet-table .filler,
+.report-card-table .column-header,
+.report-card-table .filler {
     -fx-background-color: transparent;
     -fx-border-color: transparent -color-table-border transparent transparent;
     -fx-border-width: 0 1 1 0;
     -fx-padding: 12 14 12 14;
 }
 
-.table .column-header .label {
+.table .column-header .label,
+.table-view .column-header .label,
+.modern-table .column-header .label,
+.master-sheet-table .column-header .label,
+.report-card-table .column-header .label {
     -fx-text-fill: -color-table-header-text;
     -fx-font-size: 11px;
     -fx-font-weight: bold;
     -fx-alignment: center-left;
 }
 
-.table .table-row-cell {
+.table .table-row-cell,
+.table-view .table-row-cell,
+.modern-table .table-row-cell,
+.master-sheet-table .table-row-cell,
+.report-card-table .table-row-cell {
     -fx-background-color: -color-table-row;
     -fx-border-color: transparent transparent -color-table-border transparent;
     -fx-border-width: 0 0 1 0;
@@ -256,27 +380,77 @@
     -fx-cell-size: 40;
 }
 
-.table .table-row-cell:odd { -fx-background-color: -color-table-row-alt; }
+.table .table-row-cell:odd,
+.table-view .table-row-cell:odd,
+.modern-table .table-row-cell:odd,
+.master-sheet-table .table-row-cell:odd,
+.report-card-table .table-row-cell:odd { -fx-background-color: -color-table-row-alt; }
 
-.table .table-row-cell:hover {
+.table .table-row-cell:hover,
+.table-view .table-row-cell:hover,
+.modern-table .table-row-cell:hover,
+.master-sheet-table .table-row-cell:hover,
+.report-card-table .table-row-cell:hover {
     -fx-background-color: -color-table-row-hover;
 }
 
-.table .table-row-cell:selected {
+.table .table-row-cell:selected,
+.table-view .table-row-cell:selected,
+.modern-table .table-row-cell:selected,
+.master-sheet-table .table-row-cell:selected,
+.report-card-table .table-row-cell:selected {
     -fx-background-color: -color-table-row-selected;
     -fx-text-background-color: -color-text-primary;
 }
 
-.table .table-row-cell:selected .table-cell { -fx-text-fill: -color-text-primary; }
+/* Selected-row cell text — explicit so Modena's default doesn't take over */
+.table .table-row-cell:selected .table-cell,
+.table-view .table-row-cell:selected .table-cell,
+.modern-table .table-row-cell:selected .table-cell,
+.master-sheet-table .table-row-cell:selected .table-cell,
+.report-card-table .table-row-cell:selected .table-cell { -fx-text-fill: -color-text-primary; }
 
-.table .table-cell {
+.table .table-cell,
+.table-view .table-cell,
+.modern-table .table-cell,
+.master-sheet-table .table-cell,
+.report-card-table .table-cell {
     -fx-text-fill: -color-text-primary;
     -fx-padding: 0 14 0 14;
     -fx-alignment: center-left;
     -fx-border-color: transparent;
 }
 
-.table .placeholder .label { -fx-text-fill: -color-text-muted; }
+/* Inline editor (the TextField that pops up when a cell is being edited)
+   — Modena paints it white-on-white; force the dark-mode token here. */
+.table .table-cell .text-field,
+.table-view .table-cell .text-field,
+.modern-table .table-cell .text-field,
+.master-sheet-table .table-cell .text-field,
+.report-card-table .table-cell .text-field {
+    -fx-background-color: -color-input-bg;
+    -fx-text-fill: -color-text-primary;
+    -fx-border-color: -color-input-border-focus;
+    -fx-prompt-text-fill: -color-input-placeholder;
+}
+
+.table .placeholder .label,
+.table-view .placeholder .label,
+.modern-table .placeholder .label,
+.master-sheet-table .placeholder .label,
+.report-card-table .placeholder .label { -fx-text-fill: -color-text-muted; }
+
+/* TreeTableView — same treatment in case any future surface uses it */
+.tree-table-view {
+    -fx-background-color: -color-surface;
+    -fx-control-inner-background: -color-surface;
+    -fx-control-inner-background-alt: -color-table-row-alt;
+    -fx-table-cell-border-color: transparent;
+}
+.tree-table-view .column-header .label { -fx-text-fill: -color-table-header-text; }
+.tree-table-view .tree-table-row-cell { -fx-background-color: -color-table-row; }
+.tree-table-view .tree-table-row-cell:odd { -fx-background-color: -color-table-row-alt; }
+.tree-table-view .tree-table-cell { -fx-text-fill: -color-text-primary; }
 
 /* Table toolbar — search + filters above the table */
 .table-toolbar {
@@ -772,3 +946,188 @@
     -fx-alignment: center-left;
 }
 .section-title { -fx-font-size: 15px; -fx-font-weight: 600; -fx-text-fill: -color-text-primary; }
+
+/* ============================================================================
+   Dark-mode coverage additions
+   ----------------------------------------------------------------------------
+   These are native-selector rules (no styleClass needed in FXML) for the
+   widgets the dark-mode audit found falling back to Modena defaults.
+============================================================================ */
+
+/* ScrollPane — the viewport background was painting white in dark mode */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+.scroll-pane .corner {
+    -fx-background-color: transparent;
+}
+
+/* ScrollBar — was white-on-white in dark mode. Token-driven thumb. */
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.scroll-bar .track,
+.scroll-bar .track-background {
+    -fx-background-color: transparent;
+}
+.scroll-bar .thumb {
+    -fx-background-color: -color-scrollbar-thumb;
+    -fx-background-radius: 6;
+}
+.scroll-bar .thumb:hover,
+.scroll-bar .thumb:pressed {
+    -fx-background-color: -color-scrollbar-thumb-hover;
+}
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: -color-text-secondary;
+}
+
+/* ListView — same theme as a table-row list, native selector */
+.list-view {
+    -fx-background-color: -color-surface;
+    -fx-control-inner-background: -color-surface;
+    -fx-control-inner-background-alt: -color-table-row-alt;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+.list-view .list-cell {
+    -fx-background-color: -color-table-row;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 8 12 8 12;
+}
+.list-view .list-cell:odd {
+    -fx-background-color: -color-table-row-alt;
+}
+.list-view .list-cell:empty {
+    -fx-background-color: transparent;
+}
+.list-view .list-cell:hover {
+    -fx-background-color: -color-table-row-hover;
+}
+.list-view .list-cell:selected {
+    -fx-background-color: -color-table-row-selected;
+    -fx-text-fill: -color-text-primary;
+}
+.list-view .placeholder .label {
+    -fx-text-fill: -color-text-muted;
+}
+
+/* TabPane — Modena paints a grey-on-grey strip in dark mode */
+.tab-pane {
+    -fx-background-color: transparent;
+    -fx-tab-min-height: 32;
+}
+.tab-pane > .tab-header-area {
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 0;
+}
+.tab-pane > .tab-header-area > .tab-header-background {
+    -fx-background-color: -color-tab-bg;
+    -fx-border-color: transparent transparent -color-tab-border transparent;
+    -fx-border-width: 0 0 1 0;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: transparent;
+    -fx-padding: 8 16 8 16;
+    -fx-background-radius: 0;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab .tab-label {
+    -fx-text-fill: -color-tab-text;
+    -fx-font-weight: 600;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:hover .tab-label {
+    -fx-text-fill: -color-text-primary;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: -color-tab-bg-active;
+    -fx-border-color: transparent transparent -color-tab-indicator transparent;
+    -fx-border-width: 0 0 2 0;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label {
+    -fx-text-fill: -color-tab-text-active;
+}
+.tab-pane > .tab-content-area {
+    -fx-background-color: transparent;
+}
+
+/* TitledPane — used in some accordions/forms */
+.titled-pane > .title {
+    -fx-background-color: -color-surface-alt;
+    -fx-text-fill: -color-text-primary;
+    -fx-border-color: -color-border;
+}
+.titled-pane > .title > .text {
+    -fx-fill: -color-text-primary;
+}
+.titled-pane > .content {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+}
+
+/* Plain Label — covers free-floating <Label> nodes that didn't get a
+   styleClass and would inherit Modena's near-black default text. */
+.label {
+    -fx-text-fill: -color-text-primary;
+}
+
+/* MenuBar / ContextMenu / MenuItem */
+.menu-bar,
+.context-menu {
+    -fx-background-color: -color-surface-elevated;
+    -fx-border-color: -color-border;
+}
+.menu-bar .menu .label,
+.menu .label,
+.menu-item .label {
+    -fx-text-fill: -color-text-primary;
+}
+.menu-item:focused,
+.menu-item:hover {
+    -fx-background-color: -color-hover;
+}
+
+/* Tooltip — explicit token use so it doesn't pop yellow in dark mode */
+.tooltip {
+    -fx-background-color: -color-tooltip-bg;
+    -fx-text-fill: -color-tooltip-text;
+    -fx-background-radius: 6;
+    -fx-font-size: 12px;
+    -fx-padding: 6 10 6 10;
+}
+
+/* Spinner (used in date popups, time inputs) */
+.spinner {
+    -fx-background-color: -color-input-bg;
+    -fx-border-color: -color-input-border;
+}
+.spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text-primary;
+}
+.spinner .increment-arrow-button,
+.spinner .decrement-arrow-button {
+    -fx-background-color: transparent;
+}
+.spinner .increment-arrow,
+.spinner .decrement-arrow {
+    -fx-background-color: -color-text-secondary;
+}
+
+/* Generic Pane / VBox / HBox-based surfaces sometimes get -fx-background
+   from Modena. Force transparent inheritance so child backgrounds win. */
+.scroll-pane > .scroll-pane > .viewport > * {
+    -fx-background-color: transparent;
+}

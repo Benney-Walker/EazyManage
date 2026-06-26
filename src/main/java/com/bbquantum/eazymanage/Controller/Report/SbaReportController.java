@@ -65,16 +65,27 @@ public class SbaReportController implements ReportViewerController {
     private void initialize() {
         // Choice converters
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override
+            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
         });
         subjectChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SubjectsHolder s) { return s == null ? "" : s.getSubjectName(); }
-            @Override public SubjectsHolder fromString(String s) { return null; }
+            @Override
+            public String toString(SubjectsHolder s) { return s == null ? "" : s.getSubjectName(); }
+
+            @Override
+            public SubjectsHolder fromString(String s) { return null; }
         });
         semesterChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SemesterCaching s) { return s == null ? "" : s.getSemesterName(); }
-            @Override public SemesterCaching fromString(String s) { return null; }
+            @Override
+            public String toString(SemesterCaching s) {
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
+            }
+
+            @Override
+            public SemesterCaching fromString(String s) { return null; }
         });
 
         // Pre-populate class + semester from caches

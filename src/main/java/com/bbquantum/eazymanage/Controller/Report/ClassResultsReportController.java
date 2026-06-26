@@ -84,8 +84,13 @@ public class ClassResultsReportController implements ReportViewerController {
             @Override public GradeCaching fromString(String s) { return null; }
         });
         semesterChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SemesterCaching s) { return s == null ? "" : s.getSemesterName(); }
-            @Override public SemesterCaching fromString(String s) { return null; }
+            @Override
+            public String toString(SemesterCaching s) {
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
+            }
+
+            @Override
+            public SemesterCaching fromString(String s) { return null; }
         });
 
         List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();

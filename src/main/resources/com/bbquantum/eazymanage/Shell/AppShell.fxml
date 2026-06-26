@@ -19,10 +19,6 @@
             styleClass="workspace-shell">
 
     <stylesheets>
-        <!-- Token + component sheets are added Scene-level by ThemeManager.
-             We add the shell-specific sheet at node level so adopting Phase 2
-             does not require modifying ThemeManager. Order is irrelevant
-             because shell.css references tokens only, never raw colors. -->
         <URL value="@../Theme/shell.css"/>
     </stylesheets>
 

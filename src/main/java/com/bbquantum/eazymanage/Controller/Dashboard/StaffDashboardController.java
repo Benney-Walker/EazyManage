@@ -95,6 +95,7 @@ public class StaffDashboardController {
         refreshButton.setDisable(true);
         setStatus("Loading…");
 
+        UtilityClass.clearSessionForRefresh();
         dashboardService.loadStaffDashboardData(staffId, toastSink,
                 () -> Platform.runLater(() -> {
                     refreshButton.setDisable(false);

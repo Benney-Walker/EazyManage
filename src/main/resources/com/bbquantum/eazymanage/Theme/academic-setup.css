@@ -72,10 +72,11 @@
     -fx-text-fill: white;
 }
 
-/* Destructive button variant */
+/* Destructive button variant — uses token so dark mode reads it correctly */
 .btn-danger {
-    -fx-text-fill: #DC2626;
+    -fx-text-fill: white;
 }
 .btn-danger:hover {
-    -fx-text-fill: #B91C1C;
+    -fx-text-fill: -color-error;
+    -fx-opacity: 0.85;
 }

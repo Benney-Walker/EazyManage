@@ -24,6 +24,7 @@ import javafx.util.StringConverter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class StudentPaymentsController {
 
@@ -209,7 +210,7 @@ public class StudentPaymentsController {
 
     private void cascadeLoadStudents(GradeCaching cls,
                                      ChoiceBox<StudentsHolder> target,
-                                     java.util.function.Consumer<String> statusSink) {
+                                     Consumer<String> statusSink) {
         target.getItems().clear();
         target.getSelectionModel().clearSelection();
         if (cls == null) {

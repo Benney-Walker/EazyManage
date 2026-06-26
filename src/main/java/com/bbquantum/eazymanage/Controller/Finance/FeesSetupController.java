@@ -60,7 +60,8 @@ public class FeesSetupController {
         StringConverter<SemesterCaching> semConv = new StringConverter<>() {
             @Override
             public String toString(SemesterCaching s) {
-                return s == null ? "" : s.getSemesterName();
+
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
@@ -181,19 +182,15 @@ public class FeesSetupController {
 
         // Preserve levelId / semesterId from the loaded record; only the
         // amount actually changes.
-        FetchFeesDetails out = new FetchFeesDetails();
-        out.setLevelId(currentFees.getLevelId());
-        out.setSemesterId(currentFees.getSemesterId());
-        out.setAmount(amount);
+        currentFees.setAmount(amount);
 
         updateButton.setDisable(true);
         setUpdateStatus("Saving…");
 
-        financeService.updateSemesterFees(staffId, out,
+        financeService.updateSemesterFees(staffId, currentFees,
                 () -> Platform.runLater(() -> {
                     updateButton.setDisable(false);
                     setUpdateStatus("Saved.");
-                    currentFees = out;
                 }),
                 () -> Platform.runLater(() -> {
                     updateButton.setDisable(false);

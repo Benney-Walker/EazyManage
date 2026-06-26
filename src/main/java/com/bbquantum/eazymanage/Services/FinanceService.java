@@ -82,10 +82,7 @@ public class FinanceService {
         new Thread(task).start();
     }
 
-    /**
-     * Load fees details for one (semester, level) pair.
-     * Result delivered via {@code onResult}.
-     */
+
     public void fetchFeesDetails(String staffId, String semesterId, String levelId,
                                  Consumer<FetchFeesDetails> onResult,
                                  Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
@@ -141,13 +138,9 @@ public class FinanceService {
         new Thread(task).start();
     }
 
-    /**
-     * Load all payments for one (student, level, semester) triple.
-     * Result delivered via {@code onResult}.
-     */
-    public void fetchPaymentRecord(String staffId, String studentId, String levelId, String semesterId,
-                                   Consumer<List<StudentPaymentRecords>> onResult,
-                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+    public void fetchPaymentRecords(String staffId, String studentId, String levelId, String semesterId,
+                                    Consumer<List<StudentPaymentRecords>> onResult,
+                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         Type listType = new TypeToken<List<StudentPaymentRecords>>() {}.getType();
 
@@ -178,9 +171,9 @@ public class FinanceService {
         };
 
         task.setOnSucceeded(event -> {
-            List<StudentPaymentRecords> result = task.getValue();
-            onResult.accept(result);
-            if (result == null) {
+            List<StudentPaymentRecords> response = task.getValue();
+            onResult.accept(response);
+            if (response == null) {
                 onFailure.run();
                 return;
             }
@@ -205,9 +198,6 @@ public class FinanceService {
         new Thread(task).start();
     }
 
-    /**
-     * Per-grade fees aggregation report. Result delivered via {@code onResult}.
-     */
     public void fetchGradeFeesRecords(String staffId, String levelId, String semesterId,
                                       Consumer<List<GradeFeesReport>> onResult,
                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
@@ -418,6 +408,7 @@ public class FinanceService {
                 String url = core.FINANCE_URL + core.API_VERSION_2 + "/update-semester-fees";
 
                 JsonObject requestBody = new JsonObject();
+                requestBody.addProperty("feesId", update.getFeesId());
                 requestBody.addProperty("amount", update.getAmount());
                 requestBody.addProperty("semesterId", update.getSemesterId());
                 requestBody.addProperty("classId", update.getLevelId());

@@ -1,20 +1,18 @@
 package com.bbquantum.eazymanage.Controller.Academics.Semester;
 
+import com.bbquantum.eazymanage.Constants.TERMS;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.time.LocalDate;
 
 public class AddSemesterController {
 
-    @FXML private TextField nameField;
+    @FXML private ChoiceBox<TERMS> semesterNumberChoice;
     @FXML private TextField  academicYearField;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
@@ -29,6 +27,11 @@ public class AddSemesterController {
     private final ApiCore apiCore = new ApiCore();
     private final AcademicsService academicsService = new AcademicsService(apiCore);
 
+    @FXML
+    public void initialize(){
+        semesterNumberChoice.getItems().addAll(TERMS.values());
+    }
+
     public void attach(String role, String staffId) {
         this.role    = role;
         this.staffId = staffId;
@@ -36,12 +39,12 @@ public class AddSemesterController {
 
     @FXML
     private void onSave() {
-        String name = trim(nameField.getText());
+        TERMS selected = semesterNumberChoice.getValue();
         String year = trim(academicYearField.getText());
         LocalDate start = startDatePicker.getValue();
         LocalDate end   = endDatePicker.getValue();
 
-        if (name.isEmpty() || year.isEmpty() || start == null || end == null) {
+        if (selected == null || year.isEmpty() || start == null || end == null) {
             setStatus("Fill every field.");
             return;
         }
@@ -49,6 +52,8 @@ public class AddSemesterController {
             setStatus("End date must be after start date.");
             return;
         }
+
+        String name = selected.name() + "_" + "TERM";
 
         saveButton.setDisable(true);
         resetButton.setDisable(true);
@@ -81,7 +86,7 @@ public class AddSemesterController {
     }
 
     private void clearForm() {
-        nameField.clear();
+        semesterNumberChoice.getSelectionModel().clearSelection();
         academicYearField.clear();
         startDatePicker.setValue(null);
         endDatePicker.setValue(null);

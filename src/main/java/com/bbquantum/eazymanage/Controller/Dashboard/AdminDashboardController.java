@@ -91,6 +91,7 @@ public class AdminDashboardController {
         refreshButton.setDisable(true);
         setStatus("Loading…");
 
+        UtilityClass.clearSessionForRefresh();
         dashboardService.loadAdminDashboard(staffId, toastSink,
                 () -> Platform.runLater(() -> {
                     refreshButton.setDisable(false);

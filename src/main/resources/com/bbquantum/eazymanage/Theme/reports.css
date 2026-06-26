@@ -212,3 +212,73 @@
     -fx-text-fill: -color-text-muted;
     -fx-font-weight: 700;
 }
+
+/* ============================================================
+   Report Card — paper layout additions (matches printed form)
+   ============================================================ */
+
+.report-card-grading-caption {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-text-secondary;
+    -fx-padding: 0 0 6 0;
+}
+
+/* Conduct grid: 6 categories x 5 rating columns, drawn as a bordered
+   table so it reads like the printed form. The cells use the same
+   border colour as report-card-table so the two look consistent. */
+.report-card-conduct-grid {
+    -fx-padding: 0;
+    -fx-hgap: 0;
+    -fx-vgap: 0;
+    -fx-border-color: -color-border;
+    -fx-border-width: 1;
+}
+
+.conduct-grid-header {
+    -fx-font-size: 10.5px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 6 8 6 8;
+    -fx-background-color: -color-table-row-alt;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 1 1 0;
+    -fx-max-width: infinity;
+}
+
+.conduct-grid-row-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-text-primary;
+    -fx-padding: 8 10 8 10;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 1 1 0;
+    -fx-max-width: infinity;
+}
+
+.conduct-grid-cell {
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -color-success;
+    -fx-padding: 8 6 8 6;
+    -fx-border-color: -color-border;
+    -fx-border-width: 0 1 1 0;
+    -fx-max-width: infinity;
+}
+
+.report-card-attendance-row {
+    -fx-padding: 10 0 6 0;
+}
+
+.report-card-fill-row {
+    -fx-padding: 6 0 6 0;
+}
+
+/* A horizontal fill line — used for the empty "Peculiar Issue" and
+   signature lines on the paper layout. It's a thin bottom border on a
+   stretching region so the line follows the available width. */
+.report-card-fill-line {
+    -fx-min-height: 16;
+    -fx-border-color: transparent transparent -color-text-secondary transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-style: solid;
+}

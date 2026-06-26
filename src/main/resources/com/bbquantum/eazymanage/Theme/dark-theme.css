@@ -1,16 +1,3 @@
-/* ============================================================================
-   EazyManage — Slate Emerald DARK theme
-   ----------------------------------------------------------------------------
-   Mirrors light-theme.css token names. Swap stylesheets on the Scene to
-   re-skin the entire app — components never need to change.
-
-   Source palette (from the design brief):
-     Background    #020617
-     Surface       #0F172A
-     Cards         #111827
-     Sidebar       #020617 / hover #1E293B / active #10B981
-     Text          Primary #E2E8F0, Secondary #94A3B8
-============================================================================ */
 
 .root {
     /* ----- Backgrounds & surfaces ----- */

@@ -90,6 +90,7 @@ public class AccountantDashboardController {
         refreshButton.setDisable(true);
         setStatus("Loading…");
 
+        UtilityClass.clearSessionForRefresh();
         dashboardService.loadFinanceDashboardData(staffId, toastSink,
                 () -> Platform.runLater(() -> {
                     refreshButton.setDisable(false);

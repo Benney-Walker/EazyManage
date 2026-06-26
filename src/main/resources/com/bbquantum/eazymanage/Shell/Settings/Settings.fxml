@@ -10,23 +10,6 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Settings tab (Phase 9-roles).
-
-    Initial scope: role-switcher + read-only account info.
-
-    Role-switcher behaviour:
-      - Lists every role the JWT granted this user.
-      - Marks the currently-active role with a chip.
-      - "Switch role" button picks the chosen role, persists it, and
-        full-scene-reloads the shell as if the user had logged in fresh
-        with that role.
-      - If the user only has one role, the switcher is shown disabled with
-        explanatory text so they understand why they can't switch.
-
-    Future settings (out of scope this phase): notification preferences,
-    application-wide theme override, language, font scale, etc.
--->
 <?import java.net.URL?>
 <ScrollPane fx:id="rootScroll" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.bbquantum.eazymanage.Controller.Settings.SettingsController"
@@ -109,6 +92,12 @@
                     <Label text="Version" styleClass="settings-label"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Label fx:id="versionLabel" styleClass="settings-value"/>
+                </HBox>
+
+                <HBox spacing="16" alignment="CENTER_LEFT">
+                    <Label text="Developed by" styleClass="settings-label"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Bynex Technologies" styleClass="settings-value"/>
                 </HBox>
             </VBox>
 

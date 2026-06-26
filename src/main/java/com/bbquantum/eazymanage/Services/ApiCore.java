@@ -44,7 +44,7 @@ public class ApiCore {
     and update all backend responses to parse "message"
      */
     public void checkApiResponse(HttpResponse<String> response) {
-        if (response.statusCode() == 404 || response.statusCode() == 409) {
+        if (response.statusCode() == 404 || response.statusCode() == 409 || response.statusCode() == 400) {
             JsonObject jsonObject =
                     JsonParser.parseString(response.body()).getAsJsonObject();
 

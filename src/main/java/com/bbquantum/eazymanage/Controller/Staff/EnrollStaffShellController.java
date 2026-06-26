@@ -78,7 +78,7 @@ public class EnrollStaffShellController {
             setStatus("Fill every field before enrolling.");
             return;
         }
-        if (phone.length() != 10 || phone.matches("\\d+")) {
+        if (phone.length() != 10 || !phone.matches("\\d+")) {
             setStatus("Phone number is invalid.");
             return;
         }

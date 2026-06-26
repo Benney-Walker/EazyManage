@@ -401,8 +401,9 @@ public class ReportsService {
         Task<StudentReportCard> task = new Task<>() {
             @Override
             protected StudentReportCard call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1
-                        + "/report-card/" + studentId + "/" + semesterId;
+                String url = core.STAFF_URL + core.API_VERSION_1 + "/report-card?" +
+                        "studentId=" + studentId +
+                        "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -412,11 +413,20 @@ public class ReportsService {
                         .build();
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
                 if (response.statusCode() == 200) {
-                    return core.gson.fromJson(response.body(),
+                    StudentReportCard card = core.gson.fromJson(response.body(),
                             StudentReportCard.class);
+                    if (card != null) {
+
+                        response.headers().firstValue("school-name")
+                                .ifPresent(card::setSchoolName);
+                    }
+                    return card;
                 }
-                ApiContext.getInstance().errorMessageContainer = response.body();
+
+                if (core.handleSessionExpired(response)) return null;
+                core.checkApiResponse(response);
                 return null;
             }
         };
@@ -447,21 +457,23 @@ public class ReportsService {
         new Thread(task).start();
     }
 
-    public void downloadReportCard(String staffId, String studentId, String semesterId,
+    public void downloadReportCard(String staffId, String studentId, String semesterId, String promoGradeId,
                                    String suggestedFileName,
                                    Supplier<Window> parentWindow,
                                    Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
         Task<byte[]> task = new Task<>() {
             @Override
             protected byte[] call() throws Exception {
-                String url = core.ADMIN_URL + core.API_VERSION_2 + "/generate-report-card?"
-                        + "staffId=" + staffId
-                        + "&studentId=" + studentId
+                String url = core.STUDENT_URL + core.API_VERSION_2 + "/generate-report-card?"
+                        + "studentId=" + studentId
                         + "&semesterId=" + semesterId;
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
-                        .header("Authorization", "Bearer " + core.token)
+                        .headers(
+                                "Authorization", "Bearer " + core.token,
+                                "staffId", staffId,
+                                "promotionId", promoGradeId)
                         .GET()
                         .build();
 
