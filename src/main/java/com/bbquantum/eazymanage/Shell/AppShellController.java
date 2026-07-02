@@ -6,12 +6,12 @@ import com.bbquantum.eazymanage.Controller.Attendance.AttendanceTabController;
 import com.bbquantum.eazymanage.Controller.AuditLogs.AuditLogsController;
 import com.bbquantum.eazymanage.Controller.Conduct.ConductController;
 import com.bbquantum.eazymanage.Controller.Finance.FinanceTabController;
+import com.bbquantum.eazymanage.Controller.Messaging.BroadcastTabController;
 import com.bbquantum.eazymanage.Controller.Report.ReportingCenterController;
 import com.bbquantum.eazymanage.Controller.Results.ResultsTabController;
 import com.bbquantum.eazymanage.Controller.Settings.SettingsController;
 import com.bbquantum.eazymanage.Controller.Staff.StaffTabController;
 import com.bbquantum.eazymanage.Controller.Students.StudentsTabController;
-import com.bbquantum.eazymanage.Controller.Broadcasts.BroadcastsController;
 import com.bbquantum.eazymanage.EazyManage;
 import com.bbquantum.eazymanage.Records.NavItem;
 import com.bbquantum.eazymanage.Records.Section;
@@ -659,10 +659,10 @@ public class AppShellController {
     private Parent loadBroadcastsScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
-                    "/com/bbquantum/eazymanage/Shell/Messaging/Broadcasts.fxml"));
+                    "/com/bbquantum/eazymanage/Shell/Messaging/BroadcastTab.fxml"));
             Parent root = loader.load();
-            BroadcastsController controller = loader.getController();
-            controller.setIdentity(staffId, role);
+            BroadcastTabController controller = loader.getController();
+            controller.attach(staffId, role);
             return root;
         } catch (Exception e) {
             e.printStackTrace();
