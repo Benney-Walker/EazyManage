@@ -11,26 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Attendance shell tab — host controller (Phase 9a).
 
-    Two-state layout:
-
-    State A — Picker (initial):
-      A VBox with two side-by-side action cards: "Mark Attendance" and
-      "View Attendance". This is the user's entry point the first time they
-      open the tab. Designed to match the dashboard's card-grid pattern.
-
-    State B — Working (after first pick):
-      A TabPane with two persistent inner tabs ("Mark" / "View"). The card
-      the user chose is the initially-selected tab. The picker view is
-      removed entirely once the user enters the working state, so the inner
-      tabs become the canonical navigation for the rest of the session in
-      this shell tab.
-
-    Both states render inside the same StackPane #contentSlot. The host
-    controller swaps between them.
--->
 <?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Attendance.AttendanceTabController"

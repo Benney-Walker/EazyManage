@@ -13,20 +13,10 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Add Student form (Phase 9c).
-
-    Form fields match the enrollNewStudent service signature:
-      firstName, lastName, levelId (class), gender, dateOfBirth,
-      hometown, parentName, guardianContact.
-
-    Layout: a single 2-column GridPane inside a ScrollPane so the form
-    survives small screens. Action bar at the bottom with Reset / Save.
--->
 <ScrollPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.bbquantum.eazymanage.Controller.Students.AddStudentController"
             fitToWidth="true" hbarPolicy="NEVER"
-            styleClass="add-student,transparent-scroll">
+            styleClass="transparent-scroll">
 
     <VBox spacing="0">
 

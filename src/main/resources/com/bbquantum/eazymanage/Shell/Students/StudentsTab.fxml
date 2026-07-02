@@ -10,23 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    Students shell tab — host (Phase 9c).
 
-    Same two-state pattern as Attendance / Results.
-
-    State A — picker: up to three cards depending on role.
-      Add Student          — visible to PRINCIPAL / ADMINISTRATOR
-      Find & Update        — visible to all (TEACHING_STAFF cannot save edits)
-      Browse by Class      — visible to all
-
-    State B — inner tabs: matching set, with the Add Student tab removed
-      entirely for TEACHING_STAFF.
-
-    The "view-only" flavour for teaching staff comes from the Find inner
-    controller: when role is TEACHING_STAFF, the form fields are still
-    populated by a search, but the Save button is hidden.
--->
 <?import java.net.URL?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Students.StudentsTabController"
