@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!--<?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -16,15 +16,15 @@
 
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.bbquantum.eazymanage.Controller.Broadcasts.BroadcastsController"
-      styleClass="broadcasts-screen"
+      fx:controller="com.bbquantum.eazymanage.Controller.Messaging.BroadcastsController"
+      styleClass="broadcasts-tab"
       spacing="0">
 
     <stylesheets>
         <URL value="@../../Theme/broadcasts.css"/>
     </stylesheets>
 
-    <!-- Header -->
+
     <VBox styleClass="page-header" spacing="4">
         <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
         <Label text="Broadcasts" styleClass="page-title"/>
@@ -34,19 +34,19 @@
 
     <Separator/>
 
-    <!-- Form body in a scroll pane so the screen still works on smaller windows -->
+
     <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER"
                 styleClass="transparent-scroll">
         <VBox spacing="20">
             <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
 
-            <!-- ===== Audience ===== -->
+
             <VBox spacing="14" styleClass="form-card">
                 <Label text="Audience" styleClass="form-section-title"/>
                 <Label text="Pick any combination of staff roles and classes. At least one must be selected."
                        styleClass="form-hint" wrapText="true"/>
 
-                <!-- Staff roles -->
+
                 <VBox spacing="6">
                     <Label text="Staff (by role)" styleClass="field-label"/>
                     <FlowPane fx:id="staffRolesRow" hgap="14" vgap="8"/>
@@ -54,7 +54,7 @@
 
                 <Separator/>
 
-                <!-- Guardian classes -->
+
                 <VBox spacing="6">
                     <Label text="Guardians (by student's class)" styleClass="field-label"/>
                     <HBox spacing="10" alignment="CENTER_LEFT">
@@ -66,7 +66,7 @@
                 </VBox>
             </VBox>
 
-            <!-- ===== Message ===== -->
+
             <VBox spacing="14" styleClass="form-card">
                 <Label text="Message" styleClass="form-section-title"/>
 
@@ -97,7 +97,7 @@
         </VBox>
     </ScrollPane>
 
-    <!-- Action bar -->
+
     <VBox styleClass="action-bar">
         <Separator/>
         <HBox alignment="CENTER_LEFT" spacing="12">
@@ -113,4 +113,4 @@
                     onAction="#onSend" styleClass="btn,btn-primary"/>
         </HBox>
     </VBox>
-</VBox>
+</VBox>-->

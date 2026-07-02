@@ -1,8 +1,31 @@
-/* ============================================================================
-   EazyManage — Broadcasts composer styles (Phase 6)
-============================================================================ */
 
-.broadcasts-screen { -fx-background-color: -color-bg; }
+.broadcasts-tab { -fx-background-color: -color-bg; }
+
+.picker-prompt {
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -color-text-secondary;
+}
+
+.picker-card-row { -fx-padding: 12 0 12 0; }
+
+.picker-card {
+    -fx-background-color: -color-surface;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 28 24 28 24;
+    -fx-cursor: hand;
+}
+
+.picker-card:hover {
+    -fx-border-color: -color-accent;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 16, 0, 0, 4);
+}
+
+.picker-card-icon    { -fx-font-size: 36px; }
+.picker-card-title   { -fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: -color-text-primary; }
+.picker-card-subtitle{ -fx-font-size: 12px; -fx-text-fill: -color-text-muted; }
 
 .broadcast-input {
     -fx-background-color: -color-surface;

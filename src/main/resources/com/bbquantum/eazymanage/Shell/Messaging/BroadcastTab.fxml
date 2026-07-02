@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Messaging.BroadcastTabController"
+      styleClass="broadcasts-tab"
+      spacing="0">
+
+    <stylesheets>
+        <URL value="@../../Theme/broadcasts.css"/>
+    </stylesheets>
+
+    <!-- Header -->
+    <VBox styleClass="page-header" spacing="4">
+        <padding><Insets top="20" right="24" bottom="12" left="24"/></padding>
+        <Label text="Broadcast" styleClass="page-title"/>
+        <Label fx:id="subtitleLabel"
+               text="Message guardians and staffs"
+               styleClass="page-subtitle" wrapText="true"/>
+    </VBox>
+
+    <Separator/>
+
+    <StackPane fx:id="contentSlot" VBox.vgrow="ALWAYS">
+
+        <!-- STATE A: picker -->
+        <VBox fx:id="pickerView" alignment="CENTER" spacing="24">
+            <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+            <Label text="What would you like to do?" styleClass="picker-prompt"/>
+
+            <HBox fx:id="pickerRow" spacing="20" alignment="CENTER" styleClass="picker-card-row">
+
+                <VBox fx:id="staffCard" styleClass="picker-card"
+                      alignment="CENTER" spacing="14" prefWidth="260" minHeight="220"
+                      onMouseClicked="#onPickStaff">
+                    <Label text="📧" styleClass="picker-card-icon"/>
+                    <Label text="Broadcast to staffs" styleClass="picker-card-title"/>
+                    <Label text="Communicate with your staff through emails"
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
+                <VBox fx:id="guardianCard" styleClass="picker-card"
+                      alignment="CENTER" spacing="14" prefWidth="260" minHeight="220"
+                      onMouseClicked="#onPickGuardian">
+                    <Label text="📩" styleClass="picker-card-icon"/>
+                    <Label fx:id="findCardTitle" text="Broadcast to guardians" styleClass="picker-card-title"/>
+                    <Label fx:id="findCardSubtitle"
+                           text="Communicate with the parent body through sms messages."
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+
+        <!-- STATE B: inner tabs -->
+        <TabPane fx:id="innerTabs" visible="false" managed="false"
+                 tabClosingPolicy="UNAVAILABLE" styleClass="inner-tabs">
+            <tabs>
+                <Tab fx:id="staffTab"    text="Broadcast to staff"/>
+                <Tab fx:id="guardianTab"   text="Broadcast to guardians"/>
+            </tabs>
+        </TabPane>
+
+    </StackPane>
+
+</VBox>

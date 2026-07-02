@@ -1,8 +1,7 @@
-package com.bbquantum.eazymanage.Controller.Broadcasts;
+/*package com.bbquantum.eazymanage.Controller.Messaging;
 
 import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Messaging.Audience;
-import com.bbquantum.eazymanage.DTO.Messaging.BroadcastSendRequest;
+import com.bbquantum.eazymanage.DTO.Messaging.BroadcastSmsRequest;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.MessagingService;
@@ -52,9 +51,9 @@ public class BroadcastsController {
         STAFF_ROLE_LABELS.put("General staff",   "GENERAL_STAFF");
     }
 
-    /** Backing checkboxes for staff roles, in display order. */
+
     private final List<CheckBox> staffRoleChecks = new ArrayList<>();
-    /** Backing checkboxes for classes, paired with their levelId via userData. */
+
     private final List<CheckBox> classChecks = new ArrayList<>();
 
     @FXML
@@ -92,21 +91,17 @@ public class BroadcastsController {
 
         // "Select all classes" master toggle
         allClassesCheck.selectedProperty().addListener((obs, was, now) -> {
-            // Only drive the children when the user toggled the master;
-            // the children's own listener handles flipping the master
-            // off without re-entering.
+
             if (was != null && was != now) {
                 for (CheckBox cb : classChecks) cb.setSelected(now);
             }
         });
 
-        // SMS character counter — purely informational. We don't reject
-        // long SMS at the frontend; the backend handles concatenation.
         smsTextField.textProperty().addListener((obs, was, now) -> updateSmsCounter());
         updateSmsCounter();
     }
 
-    /** Called by AppShellController after FXML load to inject identity. */
+
     public void setIdentity(String staffId, String role) {
         this.staffId = staffId;
         this.role    = role;
@@ -145,7 +140,7 @@ public class BroadcastsController {
                 selectedRoles.isEmpty()    ? null : selectedRoles,
                 selectedClassIds.isEmpty() ? null : selectedClassIds);
 
-        BroadcastSendRequest request = new BroadcastSendRequest(
+        BroadcastSmsRequest request = new BroadcastSmsRequest(
                 staffId,
                 audience,
                 subject.isEmpty() ? null : subject,
@@ -192,7 +187,7 @@ public class BroadcastsController {
     // Helpers
     // ====================================================================
 
-    /** Collect the {@code userData} of every selected checkbox in a row. */
+
     private static List<String> pickSelectedValues(List<CheckBox> boxes) {
         List<String> out = new ArrayList<>();
         for (CheckBox cb : boxes) {
@@ -249,4 +244,4 @@ public class BroadcastsController {
     private static String trim(String s) {
         return s == null ? "" : s.trim();
     }
-}
+}*/

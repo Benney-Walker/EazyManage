@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Messaging.EmailController">
+
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" hbarPolicy="NEVER"
+                styleClass="transparent-scroll">
+
+        <VBox spacing="20">
+
+            <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+
+            <!-- ===== Audience ===== -->
+            <VBox spacing="14" styleClass="form-card">
+                <Label text="Audience" styleClass="form-section-title"/>
+                <Label text="Pick any combination of staff roles. At least one must be selected."
+                       styleClass="form-hint" wrapText="true"/>
+
+                <!-- Staff roles -->
+                <VBox spacing="6">
+                    <Label text="Staff (by role)" styleClass="field-label"/>
+                    <FlowPane fx:id="staffRolesRow" hgap="14" vgap="8"/>
+                </VBox>
+
+                <Separator/>
+            </VBox>
+
+            <!-- ===== Message ===== -->
+            <VBox spacing="14" styleClass="form-card">
+                <Label text="Message" styleClass="form-section-title"/>
+
+                <VBox spacing="4">
+                    <Label text="Email subject" styleClass="field-label"/>
+                    <TextField fx:id="emailSubjectField"
+                               promptText="Short headline that becomes the email subject line"
+                               styleClass="broadcast-input"/>
+                </VBox>
+
+                <VBox spacing="4">
+                    <Label text="Email body" styleClass="field-label"/>
+                    <TextArea fx:id="emailBodyField"
+                              promptText="Full email body. Recipients with email on file receive this."
+                              wrapText="true" prefRowCount="8"
+                              styleClass="broadcast-input"/>
+                </VBox>
+            </VBox>
+        </VBox>
+
+    </ScrollPane>
+
+    <!-- Action bar -->
+    <VBox styleClass="action-bar">
+        <Separator/>
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+
+            <Label fx:id="statusLabel" styleClass="save-status"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button fx:id="clearButton" text="Clear" onAction="#onClear"
+                    styleClass="btn,btn-ghost"/>
+            <Button fx:id="sendButton" text="Send broadcast"
+                    onAction="#onSend" styleClass="btn,btn-primary"/>
+        </HBox>
+    </VBox>
+</VBox>
