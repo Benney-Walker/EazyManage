@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Students;
 
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.StudentService;

@@ -2,8 +2,8 @@ package com.bbquantum.eazymanage.Controller.Results;
 
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -16,7 +16,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.util.List;
@@ -46,13 +45,8 @@ public class EnterScoresController {
     @FXML private TableColumn<StudentsScoresTable, String> ct2Col;
     @FXML private TableColumn<StudentsScoresTable, String> projectCol;
     @FXML private TableColumn<StudentsScoresTable, String> examCol;
-    @FXML private TableColumn<StudentsScoresTable, String> classScoreCol;
-    @FXML private TableColumn<StudentsScoresTable, String> calExamScoreCol;
 
     // ---- action bar
-    @FXML private VBox progressBox;
-    @FXML private Label       progressLabel;
-    @FXML private ProgressBar progressBar;
     @FXML private Label       statusLabel;
     @FXML private Button      cancelButton;
     @FXML private Button      saveButton;
@@ -68,7 +62,6 @@ public class EnterScoresController {
 
     // ---- model
     private final ObservableList<StudentsScoresTable> rows = FXCollections.observableArrayList();
-    private int currentUploadIndex = 0;
     private GradeCaching    currentClass;
     private SubjectsHolder  currentSubject;
     private SemesterCaching currentSemester;
@@ -122,17 +115,13 @@ public class EnterScoresController {
         studentIdCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStudentId())));
         nameCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStudentName())));
 
-        configureEditableColumn(ct1Col,        StudentsScoresTable::getClassTest1Score,    StudentsScoresTable::setClassTest1Score, true);
-        configureEditableColumn(groupWorkCol,  StudentsScoresTable::getGroupWorkScore,     StudentsScoresTable::setGroupWorkScore, true);
-        configureEditableColumn(ct2Col,        StudentsScoresTable::getClassTest2Score,    StudentsScoresTable::setClassTest2Score, true);
-        configureEditableColumn(projectCol,    StudentsScoresTable::getProjectScore,       StudentsScoresTable::setProjectScore, true);
-        configureEditableColumn(examCol,       StudentsScoresTable::getExamScore,          StudentsScoresTable::setExamScore, true);
+        configureEditableColumn(ct1Col,        StudentsScoresTable::getClassTest1Score,    StudentsScoresTable::setClassTest1Score);
+        configureEditableColumn(groupWorkCol,  StudentsScoresTable::getGroupWorkScore,     StudentsScoresTable::setGroupWorkScore);
+        configureEditableColumn(ct2Col,        StudentsScoresTable::getClassTest2Score,    StudentsScoresTable::setClassTest2Score);
+        configureEditableColumn(projectCol,    StudentsScoresTable::getProjectScore,       StudentsScoresTable::setProjectScore);
+        configureEditableColumn(examCol,       StudentsScoresTable::getExamScore,          StudentsScoresTable::setExamScore);
 
         editableColumns = List.of(ct1Col, ct2Col, groupWorkCol, projectCol, examCol);
-
-        // calculated, not editable.
-        configureReadOnlyColumn(classScoreCol, StudentsScoresTable::getClassScore);
-        configureReadOnlyColumn(calExamScoreCol,   StudentsScoresTable::getCalculatedExamScore);
 
         rows.addListener((ListChangeListener<StudentsScoresTable>) c ->
                 saveButton.setDisable(rows.isEmpty()));
@@ -142,8 +131,7 @@ public class EnterScoresController {
     private void configureEditableColumn(
             TableColumn<StudentsScoresTable, String> col,
             Function<StudentsScoresTable, String> getter,
-            BiConsumer<StudentsScoresTable, String> setter,
-            boolean recalcOnCommit) {
+            BiConsumer<StudentsScoresTable, String> setter) {
 
         col.setCellValueFactory(c ->
                 new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
@@ -153,30 +141,8 @@ public class EnterScoresController {
         col.setEditable(true);
         col.setOnEditCommit(e -> {
             setter.accept(e.getRowValue(), e.getNewValue());
-            if (recalcOnCommit) {
-                recalculate(e.getRowValue());
-                scoresTable.refresh();
-            }
-        });
-    }
-
-    private void configureReadOnlyColumn(
-            TableColumn<StudentsScoresTable, String> col,
-            Function<StudentsScoresTable, String> getter) {
-
-        col.setCellValueFactory(c ->
-                new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
-        col.setEditable(false);
-        // Visually distinguish the computed cells from editable inputs.
-        col.setCellFactory(c -> {
-            TableCell<StudentsScoresTable, String> cell = new TableCell<>() {
-                @Override protected void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    setText(empty ? null : item);
-                }
-            };
-            cell.getStyleClass().add("computed-cell");
-            return cell;
+            recalculate(e.getRowValue());
+            scoresTable.refresh();
         });
     }
 
@@ -245,13 +211,13 @@ public class EnterScoresController {
 
     @FXML
     private void onFetch() {
-        GradeCaching grade       = classChoice.getValue();
-        SubjectsHolder subject   = subjectChoice.getValue();
+        GradeCaching grade = classChoice.getValue();
+        SubjectsHolder subject = subjectChoice.getValue();
         SemesterCaching semester = semesterChoice.getValue();
         if (grade == null || subject == null || semester == null) return;
 
-        currentClass    = grade;
-        currentSubject  = subject;
+        currentClass = grade;
+        currentSubject = subject;
         currentSemester = semester;
 
         setStatus("Loading students…");
@@ -285,13 +251,13 @@ public class EnterScoresController {
 
     private void populateTable(List<StudentsScoresTable> table) {
         rows.clear();
-        currentUploadIndex = 0;
         if (table == null || table.isEmpty()) {
             classInfoBanner.setVisible(false);
             classInfoBanner.setManaged(false);
             setStatus("No students.");
             return;
         }
+
         rows.setAll(table);
         classInfoBanner.setVisible(true);
         classInfoBanner.setManaged(true);
@@ -309,64 +275,33 @@ public class EnterScoresController {
     private void onSave() {
         if (rows.isEmpty() || currentSubject == null || currentSemester == null) return;
 
-        // Reset upload index when starting fresh (not a "Continue" retry).
-        if (currentUploadIndex >= rows.size()) currentUploadIndex = 0;
-
         saveButton.setDisable(true);
         cancelButton.setDisable(true);
         fetchButton.setDisable(true);
         classChoice.setDisable(true);
         subjectChoice.setDisable(true);
         semesterChoice.setDisable(true);
+        setStatus("Saving scores");
 
-        progressBox.setVisible(true);
-        progressBox.setManaged(true);
-        updateProgress();
-        uploadNext();
-    }
-
-    private void uploadNext() {
-        if (currentUploadIndex >= rows.size()) {
-            onSaveComplete();
-            return;
-        }
-        StudentsScoresTable record = rows.get(currentUploadIndex);
-
-        academicsService.saveStudentScores(
-                record, currentSubject.getSubjectId(), currentSemester.getSemesterId(), staffId,
+        academicsService.saveStudentScores(staffId, currentSubject.getSubjectId(), currentSemester.getSemesterId(),
+                rows,
                 () -> Platform.runLater(() -> {
-                    currentUploadIndex++;
-                    updateProgress();
-                    uploadNext();
+                    onSaveComplete();
+                    rows.clear();
+                    setStatus("");
                 }),
                 () -> Platform.runLater(() -> {
-                    String err = ApiContext.getInstance().errorMessageContainer;
-                    setStatus("Save paused at row " + (currentUploadIndex + 1) + ". "
-                            + (err == null ? "" : err)
-                            + " Click 'Continue' to retry.");
-                    saveButton.setText("Continue");
+                    setStatus(ApiContext.getInstance().errorMessageContainer);
                     saveButton.setDisable(false);
                 }),
                 () -> Platform.runLater(() -> {
-                    setStatus("Save paused — network unavailable at row "
-                            + (currentUploadIndex + 1) + ". Fix connection and click 'Continue'.");
-                    saveButton.setText("Continue");
+                    setStatus("Network unavailable. Turn on offline mode to save offline");
                     saveButton.setDisable(false);
                 }));
     }
 
-    private void updateProgress() {
-        if (rows.isEmpty()) { progressBar.setProgress(0); return; }
-        double frac = (double) currentUploadIndex / rows.size();
-        progressBar.setProgress(frac);
-        progressLabel.setText("Saved " + currentUploadIndex + " of " + rows.size());
-    }
-
     private void onSaveComplete() {
-        progressBar.setProgress(1);
-        progressLabel.setText("All saved.");
         setStatus("Scores saved.");
-        currentUploadIndex = 0;
         saveButton.setText("Save scores");
         saveButton.setDisable(false);
         cancelButton.setDisable(false);
@@ -382,7 +317,7 @@ public class EnterScoresController {
 
     @FXML
     private void onReset() {
-        currentUploadIndex = 0;
+
         for (StudentsScoresTable record : UtilityClass.subjectScores.getScoresTable()) {
             record.setClassTest1Score("0");
             record.setClassTest2Score("0");

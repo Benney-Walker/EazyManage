@@ -1,19 +1,23 @@
-package com.bbquantum.eazymanage.DTO.Institution;
+package com.bbquantum.eazymanage.DTO.System;
 
-public class StaffSpecificGrades {
+public class FindAndUpdateClassInfo {
     private String levelId;
 
     private String levelName;
 
-    public StaffSpecificGrades(String levelId, String levelName) {
+    private String staffId;
+
+    public FindAndUpdateClassInfo() {}
+
+    public FindAndUpdateClassInfo(String levelId, String levelName, String staffId) {
         this.levelId = levelId;
         this.levelName = levelName;
+        this.staffId = staffId;
     }
 
     public String getLevelId() {
         return levelId;
     }
-
     public void setLevelId(String levelId) {
         this.levelId = levelId;
     }
@@ -24,5 +28,13 @@ public class StaffSpecificGrades {
 
     public void setLevelName(String levelName) {
         this.levelName = levelName;
+    }
+
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
     }
 }

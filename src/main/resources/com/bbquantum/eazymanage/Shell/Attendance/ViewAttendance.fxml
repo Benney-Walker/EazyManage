@@ -13,16 +13,6 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    View Attendance flow (Phase 9a).
-
-    Differences from Mark:
-      - DatePicker controls which day's attendance to view (defaults to today).
-      - Save action calls updateAttendance instead of markStudentAttendance,
-        and only sends rows the user actually changed (dirty tracking on
-        the controller).
-      - Date is read-only during save to keep semantics clean.
--->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.bbquantum.eazymanage.Controller.Attendance.ViewAttendanceController"
       styleClass="view-attendance"
@@ -34,6 +24,9 @@
 
         <Label text="Class" styleClass="field-label"/>
         <ChoiceBox fx:id="classChoice" prefWidth="200"/>
+
+        <Label text="Term" styleClass="field-label"/>
+        <ChoiceBox fx:id="semesterChoice" prefWidth="200"/>
 
         <Label text="Date" styleClass="field-label"/>
         <DatePicker fx:id="datePicker" prefWidth="160"/>
@@ -88,12 +81,6 @@
     <!-- Action bar -->
     <VBox styleClass="action-bar">
         <Separator/>
-
-        <VBox fx:id="progressBox" visible="false" managed="false" spacing="4">
-            <padding><Insets top="8" right="24" bottom="0" left="24"/></padding>
-            <Label fx:id="progressLabel" text="Updating…" styleClass="save-status"/>
-            <ProgressBar fx:id="progressBar" prefHeight="6" maxWidth="Infinity" progress="0"/>
-        </VBox>
 
         <HBox alignment="CENTER_LEFT" spacing="12">
             <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>

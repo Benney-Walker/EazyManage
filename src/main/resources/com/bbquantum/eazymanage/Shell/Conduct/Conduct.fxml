@@ -82,16 +82,19 @@
                     <Label text="Click a cell to rate each category. One rating per row; click the selected cell again to clear it."
                            styleClass="hint-text" wrapText="true"/>
 
-                    <!-- The 6x5 rubric grid is built in the controller and
-                         dropped into this container, so the column headers
-                         and the rating cells stay in sync with the
-                         StudentConductRecord.RATINGS source of truth. -->
                     <VBox fx:id="rubricContainer" spacing="0" styleClass="rubric-grid"/>
 
                     <Separator/>
 
-                    <Label text="Additional remark (optional)" styleClass="section-heading"/>
+                    <Label text="Additional remark" styleClass="section-heading"/>
                     <TextArea fx:id="conductRemarkField"
+                              promptText="Observations that don't fit the six categories…"
+                              prefRowCount="4"
+                              wrapText="true"
+                              styleClass="conduct-remark-area"/>
+
+                    <Label text="Peculiar issue" styleClass="section-heading"/>
+                    <TextArea fx:id="peculiarIssueField"
                               promptText="Observations that don't fit the six categories…"
                               prefRowCount="4"
                               wrapText="true"

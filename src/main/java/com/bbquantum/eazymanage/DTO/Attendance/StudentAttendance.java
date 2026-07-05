@@ -1,7 +1,6 @@
-package com.bbquantum.eazymanage.DTO.Institution;
+package com.bbquantum.eazymanage.DTO.Attendance;
 
 public class StudentAttendance {
-    private String levelId;
 
     private String studentId;
 
@@ -9,19 +8,10 @@ public class StudentAttendance {
 
     private String status;
 
-    public StudentAttendance(String levelId, String studentId, String studentName, String status) {
-        this.levelId = levelId;
+    public StudentAttendance(String studentId, String studentName, String status) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.status = status;
-    }
-
-    public String getLevelId() {
-        return levelId;
-    }
-
-    public void setLevelId(String levelId) {
-        this.levelId = levelId;
     }
 
     public String getStudentId() {

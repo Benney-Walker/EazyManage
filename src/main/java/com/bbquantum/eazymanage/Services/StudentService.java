@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
+import com.bbquantum.eazymanage.DTO.Academics.Students.UpdateStudentPersonalData;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.JsonObject;
 import javafx.concurrent.Task;

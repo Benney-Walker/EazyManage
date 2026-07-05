@@ -16,7 +16,7 @@ public class FeesCacheManager {
 
     private LocalDateTime lastUpdateTime;
 
-    private static final long CACHE_TTL_MINUTES = 5;
+    private static final long CACHE_TTL_MINUTES = 60;
 
     private FeesCacheManager() {}
 

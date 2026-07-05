@@ -2,8 +2,8 @@ package com.bbquantum.eazymanage.Controller.Conduct;
 
 import com.bbquantum.eazymanage.Constants.ConductRatings;
 import com.bbquantum.eazymanage.DTO.Academics.Conduct.StudentConductRecord;
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.ConductService;
@@ -38,6 +38,7 @@ public class ConductController {
     @FXML private Label selectedStudentLabel;
     @FXML private VBox rubricContainer;
     @FXML private TextArea conductRemarkField;
+    @FXML private TextArea peculiarIssueField;
     @FXML private Label saveStatusLabel;
     @FXML private Button saveButton;
     @FXML private Button resetButton;
@@ -242,6 +243,7 @@ public class ConductController {
             selectedStudentLabel.setText("Select a student from the list to begin");
             clearGrid();
             conductRemarkField.clear();
+            peculiarIssueField.clear();
             saveButton.setDisable(true);
             resetButton.setDisable(true);
             return;
@@ -251,6 +253,7 @@ public class ConductController {
             applyRating(row, categories.get(row).getGetter().apply(r));
         }
         conductRemarkField.setText(r.getConductRemark() == null ? "" : r.getConductRemark());
+        peculiarIssueField.setText(r.getPeculiarIssue() == null ? "" : r.getPeculiarIssue());
         saveButton.setDisable(false);
         resetButton.setDisable(false);
         setStatus("");
@@ -294,6 +297,7 @@ public class ConductController {
             categories.get(row).getSetter().accept(currentlyEdited, ratingOf(row));
         }
         currentlyEdited.setConductRemark(conductRemarkField.getText());
+        currentlyEdited.setPeculiarIssue(peculiarIssueField.getText());
 
         saveButton.setDisable(true);
         setStatus("Saving…");

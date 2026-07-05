@@ -26,6 +26,8 @@ public class ApiCore {
 
     public final String ADMIN_URL   = BASE_URL + "/admin";
 
+    public final String OFFLINE_URL = BASE_URL + "/offline";
+
     // --- API versions -------------------------------------------------------
     public final String API_VERSION_1 = "/v1";
     public final String API_VERSION_2 = "/v2";

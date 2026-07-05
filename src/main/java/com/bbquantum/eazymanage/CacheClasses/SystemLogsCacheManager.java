@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.Institution.LogsDetails;
+import com.bbquantum.eazymanage.DTO.System.LogsDetails;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,7 +13,7 @@ public class SystemLogsCacheManager {
 
     private LocalDateTime lastUpdatedTime;
 
-    private static final long CACHE_TTL_MINUTES = 5;
+    private static final long CACHE_TTL_MINUTES = 30;
 
     public SystemLogsCacheManager() {}
 

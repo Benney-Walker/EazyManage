@@ -2,9 +2,9 @@ package com.bbquantum.eazymanage.Controller.Finance;
 
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
-import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsHolder;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;

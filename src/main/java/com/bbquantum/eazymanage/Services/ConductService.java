@@ -94,8 +94,9 @@ public class ConductService {
                 requestBody.addProperty("physicalAppearance", record.getPhysicalAppearance());
                 requestBody.addProperty("social", record.getSocial());
                 requestBody.addProperty("emotional", record.getEmotional());
-                requestBody.addProperty("cognitiveSkills",    record.getCognitiveSkills());
+                requestBody.addProperty("cognitiveSkills", record.getCognitiveSkills());
                 requestBody.addProperty("conductRemark", record.getConductRemark());
+                requestBody.addProperty("peculiarIssue", record.getPeculiarIssue());
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))

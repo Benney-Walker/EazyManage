@@ -64,6 +64,16 @@
                            styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
                 </VBox>
 
+                <!-- View Days Marked card -->
+                <VBox fx:id="markedDaysCard" styleClass="picker-card,picker-card-view"
+                      alignment="CENTER" spacing="14" prefWidth="280" minHeight="220"
+                      onMouseClicked="#onPickDaysMarkedView">
+                    <Label text="📅" styleClass="picker-card-icon"/>
+                    <Label text="View Days Marked" styleClass="picker-card-title"/>
+                    <Label text="Browse to see the marked days so you can mark the left out days"
+                           styleClass="picker-card-subtitle" wrapText="true" textAlignment="CENTER"/>
+                </VBox>
+
             </HBox>
 
             <Region VBox.vgrow="ALWAYS"/>
@@ -75,6 +85,7 @@
             <tabs>
                 <Tab fx:id="markTab" text="Mark Attendance"/>
                 <Tab fx:id="viewTab" text="View Attendance"/>
+                <Tab fx:id="markedDaysTab" text="View Marked Days"/>
             </tabs>
         </TabPane>
 

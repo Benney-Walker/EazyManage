@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Academics.Classes;
 
-import com.bbquantum.eazymanage.DTO.Institution.StaffCaching;
+import com.bbquantum.eazymanage.DTO.Caching.StaffCaching;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;

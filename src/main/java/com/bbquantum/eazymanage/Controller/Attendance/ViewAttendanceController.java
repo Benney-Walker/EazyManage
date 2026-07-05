@@ -1,8 +1,9 @@
 package com.bbquantum.eazymanage.Controller.Attendance;
 
 import com.bbquantum.eazymanage.Constants.AttendanceStatus;
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Attendance.StudentAttendance;
+import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.AttendanceService;
@@ -16,19 +17,17 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ViewAttendanceController {
 
     // ---- toolbar
     @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
     @FXML private DatePicker datePicker;
     @FXML private Button fetchButton;
 
@@ -47,9 +46,6 @@ public class ViewAttendanceController {
     @FXML private TableColumn<StudentAttendanceUI, com.bbquantum.eazymanage.Constants.AttendanceStatus> presentCol;
 
     // ---- action bar
-    @FXML private VBox progressBox;
-    @FXML private Label       progressLabel;
-    @FXML private ProgressBar progressBar;
     @FXML private Label       statusLabel;
     @FXML private Button      cancelButton;
 
@@ -64,24 +60,32 @@ public class ViewAttendanceController {
 
     // ---- model
     private final ObservableList<StudentAttendanceUI> rows = FXCollections.observableArrayList();
-    /** Map studentId → status string as it came from the backend. Used for
-     *  dirty-row detection at save time. */
-    private final Map<String, String> originalStatus = new HashMap<>();
-    /** Filled at save time with only the rows whose status changed. */
-    private final List<StudentAttendance> pendingUpdates = new ArrayList<>();
-    private int currentUploadIndex = 0;
-    private GradeCaching currentClass;
-    private LocalDate currentDate;
 
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override
+            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
         });
 
-        List<GradeCaching> cached = UtilityClass.gradeCacheManager.getGradesCache();
-        if (cached != null) classChoice.getItems().setAll(cached);
+        semesterChoice.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(SemesterCaching s) {
+                return s == null ? "" : s.getSemesterName() + " (" + s.getAcademicYear() + ")";
+            }
+
+            @Override
+            public SemesterCaching fromString(String s) { return null; }
+        });
+
+        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
+        if (cachedGrades != null) classChoice.getItems().setAll(cachedGrades);
+
+        List<SemesterCaching> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        if (cachedSemesters != null) semesterChoice.getItems().setAll(cachedSemesters);
 
         datePicker.setValue(LocalDate.now());
 
@@ -104,9 +108,6 @@ public class ViewAttendanceController {
                 new RadioStatusCell(AttendanceStatus.PRESENT));
 
         attendanceTable.setItems(rows);
-
-        // Recompute dirty count whenever any row's status changes.
-        // We attach the listener on each row when it's added (see populateTable).
     }
 
     public void attach(String role, String staffId) {
@@ -123,21 +124,20 @@ public class ViewAttendanceController {
     private void onFetch() {
         GradeCaching grade = classChoice.getValue();
         if (grade == null) { setStatus("Pick a class first."); return; }
+        SemesterCaching semester = semesterChoice.getValue();
+        if (semester == null) { setStatus("Pick a term first."); return; }
         LocalDate date = datePicker.getValue();
         if (date == null) { setStatus("Pick a date."); return; }
-
-        currentClass = grade;
-        currentDate  = date;
 
         setStatus("Loading records…");
         fetchButton.setDisable(true);
 
-        final List<StudentAttendance>[] holder = new List[]{null};
+        List<StudentAttendance> holder = new ArrayList<>();
 
-        attendanceService.loadStudentsForAttendance(staffId, grade.getLevelId(), date.toString(),
-                list -> holder[0] = list,
+        attendanceService.loadAttendanceRecords(staffId, grade.getLevelId(), semester.getSemesterId(), date.toString(),
+                holder::addAll,
                 () -> Platform.runLater(() -> {
-                    populateTable(holder[0]);
+                    populateTable(holder, grade.getLevelName(), date.toString());
                     fetchButton.setDisable(false);
                 }),
                 () -> Platform.runLater(() -> {
@@ -153,11 +153,8 @@ public class ViewAttendanceController {
                 }));
     }
 
-    private void populateTable(List<StudentAttendance> list) {
+    private void populateTable(List<StudentAttendance> list, String gradeName, String date) {
         rows.clear();
-        originalStatus.clear();
-        pendingUpdates.clear();
-        currentUploadIndex = 0;
 
         if (list == null || list.isEmpty()) {
             recordInfoBanner.setVisible(false);
@@ -181,29 +178,15 @@ public class ViewAttendanceController {
 
             StudentAttendanceUI row = new StudentAttendanceUI(sa);
             rows.add(row);
-            originalStatus.put(sa.getStudentId(), sa.getStatus());
-
-            // Recompute dirty count whenever this row's status changes.
-            row.statusProperty().addListener((obs, oldV, newV) -> refreshDirtyCount());
         }
 
         recordInfoBanner.setVisible(true);
         recordInfoBanner.setManaged(true);
         studentsAbsent.setText(String.valueOf(absent));
         studentsPresent.setText(String.valueOf(present));
-        recordTitleLabel.setText(safe(currentClass.getLevelName()));
-        recordSubtitleLabel.setText(currentDate.toString());
-        refreshDirtyCount();
+        recordTitleLabel.setText(safe(gradeName));
+        recordSubtitleLabel.setText(date);
         setStatus("");
-    }
-
-    private void refreshDirtyCount() {
-        int dirty = 0;
-        for (StudentAttendanceUI row : rows) {
-            String orig = originalStatus.get(row.getStudentId());
-            String now  = row.getStatus() == null ? "" : row.getStatus().name();
-            if (orig != null && !orig.equals(now)) dirty++;
-        }
     }
 
     // ====================================================================
@@ -213,17 +196,10 @@ public class ViewAttendanceController {
     @FXML
     private void onReset() {
         rows.clear();
-        originalStatus.clear();
-        pendingUpdates.clear();
-        currentUploadIndex = 0;
         classChoice.getSelectionModel().clearSelection();
         datePicker.setValue(LocalDate.now());
-        currentClass = null;
-        currentDate  = null;
         recordInfoBanner.setVisible(false);
         recordInfoBanner.setManaged(false);
-        progressBox.setVisible(false);
-        progressBox.setManaged(false);
         setStatus("");
     }
 

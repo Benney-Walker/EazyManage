@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.AuditLogs;
 
-import com.bbquantum.eazymanage.DTO.Institution.LogsDTO;
+import com.bbquantum.eazymanage.DTO.System.LogsDTO;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.LoggingService;

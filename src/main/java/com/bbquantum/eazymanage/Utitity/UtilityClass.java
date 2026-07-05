@@ -6,26 +6,13 @@ import com.bbquantum.eazymanage.DTO.Academics.Report.ViewClassSemesterReport;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectDTO;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectScores;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
-import com.bbquantum.eazymanage.DTO.Finance.GradeFeesReport;
-import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
-import com.bbquantum.eazymanage.DTO.Institution.FindAndUpdateClassInfo;
-import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
-import com.bbquantum.eazymanage.DTO.Institution.UpdateStudentPersonalData;
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
+import com.bbquantum.eazymanage.DTO.System.FindAndUpdateClassInfo;
+import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsHolder;
+import com.bbquantum.eazymanage.DTO.Academics.Students.UpdateStudentPersonalData;
 import javafx.application.Platform;
-import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +22,10 @@ public class UtilityClass {
 
     private static final String PRODUCTION_URL = "https://schoolmanagementsystem-eazymanage.up.railway.app";
 
-    public static final String BASE_URL =  PRODUCTION_URL + "/api";
+    public static final String BASE_URL =  LOCAL_URL + "/api";
 
     /** Application version banner. Displayed on the dashboard footer. */
-    public static final String APPLICATION_VERSION = "V 3.1.4";
+    public static final String APPLICATION_VERSION = "V 3.2.0.0";
 
     // Cache Managers
     public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();

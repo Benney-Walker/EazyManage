@@ -2,7 +2,7 @@ package com.bbquantum.eazymanage.Controller.Academics.Subject;
 
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectDTO;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;

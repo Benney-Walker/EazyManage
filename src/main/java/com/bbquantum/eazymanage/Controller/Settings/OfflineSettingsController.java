@@ -82,9 +82,7 @@ public class OfflineSettingsController {
 
     @FXML
     private void onDrain() {
-        // Run the drain itself on the replayer's own thread; refresh the
-        // table from a small follow-up Task so the UI updates without
-        // blocking.
+
         Task<Void> waiter = new Task<>() {
             @Override
             protected Void call() {

@@ -28,8 +28,8 @@ module com.bbquantum.eazymanage {
     opens com.bbquantum.eazymanage.DTO.Messaging to com.google.gson;
     exports com.bbquantum.eazymanage.DTO.Finance;
     opens com.bbquantum.eazymanage.DTO.Finance to com.google.gson;
-    exports com.bbquantum.eazymanage.DTO.Institution;
-    opens com.bbquantum.eazymanage.DTO.Institution to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.System;
+    opens com.bbquantum.eazymanage.DTO.System to com.google.gson;
     exports com.bbquantum.eazymanage.DTO.Auth;
     opens com.bbquantum.eazymanage.DTO.Auth to com.google.gson;
     exports com.bbquantum.eazymanage.Controller.Report;
@@ -88,4 +88,8 @@ module com.bbquantum.eazymanage {
     exports com.bbquantum.eazymanage.DTO.Academics.Holiday;
     opens com.bbquantum.eazymanage.DTO.Academics.Holiday to com.google.gson;
     exports com.bbquantum.eazymanage.Offline;
+    exports com.bbquantum.eazymanage.DTO.Attendance;
+    opens com.bbquantum.eazymanage.DTO.Attendance to com.google.gson;
+    exports com.bbquantum.eazymanage.DTO.Caching;
+    opens com.bbquantum.eazymanage.DTO.Caching to com.google.gson;
 }

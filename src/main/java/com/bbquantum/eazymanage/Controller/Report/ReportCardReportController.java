@@ -1,13 +1,11 @@
 package com.bbquantum.eazymanage.Controller.Report;
 
 import com.bbquantum.eazymanage.DTO.Academics.Conduct.ConductReport;
-import com.bbquantum.eazymanage.DTO.Academics.Conduct.StudentConductRecord;
 import com.bbquantum.eazymanage.DTO.Academics.Report.StudentReportCard;
 import com.bbquantum.eazymanage.DTO.Academics.Report.SubjectScoresReport;
-import com.bbquantum.eazymanage.DTO.Academics.Results.StudentSubjectResults;
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
-import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsHolder;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;

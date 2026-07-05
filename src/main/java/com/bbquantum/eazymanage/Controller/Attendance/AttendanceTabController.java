@@ -20,11 +20,13 @@ public class AttendanceTabController {
     @FXML private VBox pickerView;
     @FXML private VBox markCard;
     @FXML private VBox viewCard;
+    @FXML private VBox markedDaysCard;
 
     // State B
     @FXML private TabPane innerTabs;
     @FXML private Tab     markTab;
     @FXML private Tab viewTab;
+    @FXML private Tab markedDaysTab;
 
     // ---- identity injected by the shell ----
     private String role;
@@ -33,25 +35,22 @@ public class AttendanceTabController {
     // ---- lazy-loaded inner controllers ----
     private MarkAttendanceController markController;
     private ViewAttendanceController viewController;
+    private DaysMarkedController daysMarkedController;
 
     @FXML
     private void initialize() {
-        // Inner-tab selection lazily materialises content the first time
-        // the user picks that tab. This keeps cold-start of the host
-        // cheap when the user only wants one of the two flows.
+
         innerTabs.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
             if (newTab == markTab && markTab.getContent() == null) {
                 loadMarkContent();
             } else if (newTab == viewTab && viewTab.getContent() == null) {
                 loadViewContent();
+            } else if (newTab == markedDaysTab && markedDaysTab.getContent() == null) {
+                loadDaysMarkedContent();
             }
         });
     }
 
-    /**
-     * Inject identity. Must be called by {@code AppShellController.loadAttendanceScreen}
-     * before the user can interact with the picker.
-     */
     public void attach(String role, String staffId) {
         this.role    = role;
         this.staffId = staffId;
@@ -105,12 +104,11 @@ public class AttendanceTabController {
         enterWorkingState(viewTab);
     }
 
-    /**
-     * One-way transition from picker → working state. We hide the picker
-     * VBox entirely (visible=false, managed=false) so layout collapses it,
-     * and reveal the TabPane. Selecting {@code initialTab} triggers the
-     * lazy-load path in {@link #initialize()}.
-     */
+    @FXML
+    private void onPickDaysMarkedView(MouseEvent e) {
+        enterWorkingState(markedDaysTab);
+    }
+
     private void enterWorkingState(Tab initialTab) {
         pickerView.setVisible(false);
         pickerView.setManaged(false);
@@ -118,12 +116,12 @@ public class AttendanceTabController {
         innerTabs.setVisible(true);
         innerTabs.setManaged(true);
 
-        // Selecting the same tab that's already selected won't fire the
-        // listener, so load it explicitly here for the very first entry.
         if (initialTab == markTab && markTab.getContent() == null) {
             loadMarkContent();
         } else if (initialTab == viewTab && viewTab.getContent() == null) {
             loadViewContent();
+        } else if (initialTab == markedDaysTab && markedDaysTab.getContent() == null) {
+            loadDaysMarkedContent();
         }
         innerTabs.getSelectionModel().select(initialTab);
     }
@@ -154,6 +152,20 @@ public class AttendanceTabController {
             viewController = loader.getController();
             viewController.attach(role, staffId);
             viewTab.setContent(content);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            viewTab.setContent(errorContent("Could not load View Attendance", ex));
+        }
+    }
+
+    private void loadDaysMarkedContent() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/com/bbquantum/eazymanage/Shell/Attendance/ViewDaysMarked.fxml"));
+            Parent content = loader.load();
+            daysMarkedController = loader.getController();
+            daysMarkedController.attach(staffId, role);
+            markedDaysTab.setContent(content);
         } catch (Exception ex) {
             ex.printStackTrace();
             viewTab.setContent(errorContent("Could not load View Attendance", ex));

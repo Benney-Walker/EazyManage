@@ -1,6 +1,6 @@
 /*package com.bbquantum.eazymanage.Controller.Messaging;
 
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Institution.Caching.GradeCaching;
 import com.bbquantum.eazymanage.DTO.Messaging.BroadcastSmsRequest;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;

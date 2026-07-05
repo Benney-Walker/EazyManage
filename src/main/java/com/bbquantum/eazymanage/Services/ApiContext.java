@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentResult;
-import com.bbquantum.eazymanage.DTO.Institution.FindStaffResponse;
+import com.bbquantum.eazymanage.DTO.System.FindStaffResponse;
 
 public class ApiContext {
 

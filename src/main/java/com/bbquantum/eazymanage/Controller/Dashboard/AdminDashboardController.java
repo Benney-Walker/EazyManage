@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Dashboard;
 
-import com.bbquantum.eazymanage.DTO.Institution.LogsDetails;
+import com.bbquantum.eazymanage.DTO.System.LogsDetails;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.DashboardService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;

@@ -1,22 +1,30 @@
-package com.bbquantum.eazymanage.DTO.Institution;
+package com.bbquantum.eazymanage.DTO.System;
 
-public class LogsDTO {
+public class LogsDetails {
 
     private String id;
 
-    private String time;
-
     private String date;
+
+    private String time;
 
     private String type;
 
     private String message;
 
-    private String status;
-
     private String createdBy;
 
-    public LogsDTO() {}
+    private String status;
+
+    public LogsDetails(String id, String date, String time, String type, String message, String createdBy, String status) {
+        this.id = id;
+        this.date = date;
+        this.time = time;
+        this.type = type;
+        this.message = message;
+        this.createdBy = createdBy;
+        this.status = status;
+    }
 
     public String getId() {
         return id;
@@ -26,20 +34,20 @@ public class LogsDTO {
         this.id = id;
     }
 
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
     public String getDate() {
         return date;
     }
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getType() {
@@ -58,19 +66,19 @@ public class LogsDTO {
         this.message = message;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getCreatedBy() {
         return createdBy;
     }
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -97,7 +97,7 @@
                 <HBox spacing="16" alignment="CENTER_LEFT">
                     <Label text="Developed by" styleClass="settings-label"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Label text="Bynex Technologies" styleClass="settings-value"/>
+                    <Label text="Bynex Labs" styleClass="settings-value"/>
                 </HBox>
             </VBox>
 

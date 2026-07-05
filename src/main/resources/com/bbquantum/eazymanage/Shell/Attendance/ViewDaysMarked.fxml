@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.bbquantum.eazymanage.Controller.Attendance.DaysMarkedController"
+      styleClass="view-dates-marked">
+
+    <!-- Toolbar -->
+    <HBox styleClass="page-toolbar" alignment="CENTER_LEFT" spacing="12">
+        <padding><Insets top="14" right="24" bottom="10" left="24"/></padding>
+
+        <Label text="Class" styleClass="field-label"/>
+        <ChoiceBox fx:id="classChoice" prefWidth="200"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="fetchButton" text="Fetch records"
+                onAction="#onFetch" styleClass="btn,btn-primary"/>
+    </HBox>
+
+    <Separator/>
+
+    <!-- Info banner -->
+    <HBox fx:id="recordInfoBanner" visible="false" managed="false"
+          styleClass="info-banner" spacing="12" alignment="CENTER_LEFT">
+        <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+        <Label text="📅" styleClass="info-icon"/>
+        <VBox spacing="2">
+            <Label fx:id="recordTitleLabel" styleClass="info-title"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+        <VBox spacing="2">
+            <Label text="DAYS MARKED: " styleClass="info-title"/>
+        </VBox>
+        <VBox spacing="2">
+            <Label fx:id="daysMarkedCount" styleClass="info-subtitle"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Shows records of the days marked out of the whole term" styleClass="info-subtitle"/>
+    </HBox>
+
+    <!-- Table -->
+    <TableView fx:id="markedDatesTable" editable="true"
+               VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <columns>
+            <TableColumn fx:id="dateCol" text="Date" prefWidth="200"/>
+            <TableColumn fx:id="dayCol"  text="Day" prefWidth="200"/>
+            <TableColumn fx:id="staffCol" text="Marked By" prefWidth="300"/>
+        </columns>
+        <placeholder>
+            <Label text="Pick a class, then click 'Fetch records' to days marked."
+                   styleClass="empty-state"/>
+        </placeholder>
+    </TableView>
+
+    <!-- Action bar -->
+    <VBox styleClass="action-bar">
+        <Separator/>
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <Label fx:id="statusLabel" styleClass="save-status"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="cancelButton" text="Reset" onAction="#onReset"
+                    styleClass="btn,btn-ghost"/>
+        </HBox>
+    </VBox>
+</VBox>

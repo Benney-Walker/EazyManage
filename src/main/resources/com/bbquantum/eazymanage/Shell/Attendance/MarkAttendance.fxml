@@ -67,21 +67,18 @@
 
     <!-- Action bar -->
     <VBox styleClass="action-bar">
-        <Separator/>
-
-        <!-- Progress bar (visible during save) -->
-        <VBox fx:id="progressBox" visible="false" managed="false" spacing="4">
-            <padding><Insets top="8" right="24" bottom="0" left="24"/></padding>
-            <Label fx:id="progressLabel" text="Saving…" styleClass="save-status"/>
-            <ProgressBar fx:id="progressBar" prefHeight="6" maxWidth="Infinity" progress="0"/>
-        </VBox>
 
         <HBox alignment="CENTER_LEFT" spacing="12">
             <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
+            <Button fx:id="markPresentButton"   text="Mark All Present" onAction="#onMarkAllPresent"
+                    styleClass="btn,btn-primary" disable="true"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
             <Label fx:id="statusLabel" styleClass="save-status"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Button fx:id="cancelButton" text="Reset" onAction="#onReset"
-                    styleClass="btn,btn-ghost"/>
+                    styleClass="btn,btn-ghost" disable="true"/>
             <Button fx:id="saveButton"   text="Save attendance" onAction="#onSave"
                     styleClass="btn,btn-primary" disable="true"/>
         </HBox>

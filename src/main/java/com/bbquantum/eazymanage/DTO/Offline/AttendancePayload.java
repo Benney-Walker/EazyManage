@@ -16,11 +16,7 @@ public class AttendancePayload {
 
     public AttendancePayload() {}
 
-    public  AttendancePayload(String studentId, String staffId, String levelId, String status, String dateMarked) {
-        this(studentId, staffId, levelId, status, dateMarked, "update");
-    }
-
-    public AttendancePayload(String studentId, String staffId, String levelId,
+    public AttendancePayload(String staffId, String studentId, String levelId,
                              String status, String dateMarked, String operation) {
         this.studentId = studentId;
         this.staffId = staffId;

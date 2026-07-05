@@ -29,7 +29,7 @@
 
             <HBox spacing="5">
                 <Label text="EazyManage" styleClass="auth-brand-title"/>
-                <Label text="\@Bynex Technologies" wrapText="true"
+                <Label text="\@Bynex Labs" wrapText="true"
                        styleClass="auth-brand-subtitle"/>
             </HBox>
             <Label text="Smart school management — records, attendance, results and finance in one place."

@@ -1,10 +1,12 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
+import com.bbquantum.eazymanage.DTO.Attendance.DatesMarked;
+import com.bbquantum.eazymanage.DTO.Attendance.StudentAttendance;
 import com.bbquantum.eazymanage.DTO.Offline.AttendancePayload;
 import com.bbquantum.eazymanage.Offline.OfflineMode;
 import com.bbquantum.eazymanage.Offline.OfflineQueue;
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -24,11 +26,7 @@ public class AttendanceService {
         this.apiCore = apiCore;
     }
 
-    /**
-     * Fetch the list of students for an attendance session.
-     * Result is delivered via {@code onResult} on the FX thread before
-     * {@code onSuccess} fires.
-     */
+
     public void loadStudentsForAttendance(String staffId, String levelId, String date,
                                           Consumer<List<StudentAttendance>> onResult,
                                           Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
@@ -63,11 +61,12 @@ public class AttendanceService {
 
         task.setOnSucceeded(event -> {
             List<StudentAttendance> result = task.getValue();
-            onResult.accept(result);            // controller field assignment happens in the consumer
             if (result == null) {
                 onFailure.run();
                 return;
             }
+
+            onResult.accept(result);
             onSuccess.run();
         });
 
@@ -88,23 +87,30 @@ public class AttendanceService {
     }
 
     /** Mark a student's attendance for the current day's session. */
-    public void markStudentAttendance(String studentId, String staffId, String levelId,
-                                      String status, String currentDate,
+    public void markStudentAttendance(String staffId, String levelId, String currentDate,
+                                      List<StudentAttendance> records,
                                       Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
 
         if (OfflineMode.getInstance().isEnabled()) {
             try {
-                String payload = new com.google.gson.Gson().toJson(
-                        new AttendancePayload(
-                                studentId, staffId, levelId, status, currentDate, "mark"
-                        )
-                );
+                for (StudentAttendance record : records) {
+                    String payload = new com.google.gson.Gson().toJson(
+                            new AttendancePayload(
+                                    staffId,
+                                    record.getStudentId(),
+                                    levelId,
+                                    record.getStatus(),
+                                    currentDate,
+                                    "mark"
+                            )
+                    );
 
-                OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
+                    OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
+                }
 
                 ApiContext.getInstance().successMessageContainer =
                         "Saved offline — will sync when online";
-                javafx.application.Platform.runLater(onSuccess);
+                Platform.runLater(onSuccess);
             } catch (Exception e) {
                 e.printStackTrace();
                 ApiContext.getInstance().errorMessageContainer =
@@ -117,21 +123,25 @@ public class AttendanceService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = apiCore.STUDENT_URL + apiCore.API_VERSION_1 + "/mark-attendance";
+                String url = apiCore.STUDENT_URL + apiCore.API_VERSION_2 + "/mark-attendance";
 
-                JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("studentId", studentId);
-                requestBody.addProperty("levelId", levelId);
-                requestBody.addProperty("status", status);
+                Gson gson = new Gson();
+                JsonArray jsonArray = new JsonArray();
+                if (records != null) {
+                    for (StudentAttendance record : records) {
+                        jsonArray.add(gson.toJsonTree(record));
+                    }
+                }
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
                         .headers(
                                 "Authorization", "Bearer " + apiCore.token,
                                 "staffId", staffId,
-                                "selectedId", currentDate
+                                "selectedDate", currentDate,
+                                "levelId", levelId
                         )
-                        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonArray.toString()))
                         .build();
 
                 HttpResponse<String> response = apiCore.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -169,4 +179,125 @@ public class AttendanceService {
 
         new Thread(task).start();
     }
+
+    public void loadAttendanceRecords(String staffId, String levelId, String semesterId, String date, Consumer<List<StudentAttendance>> onResult,
+                                      Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        Type listType = new TypeToken<List<StudentAttendance>>() {}.getType();
+
+        Task<List<StudentAttendance>> task = new Task<>() {
+            @Override
+            protected List<StudentAttendance> call() throws Exception {
+                String url = apiCore.STUDENT_URL + apiCore.API_VERSION_1 + "/attendance-records?" +
+                        "levelId=" + levelId +
+                        "&semesterId=" + semesterId +
+                        "&date=" + date;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers(
+                                "Authorization", "Bearer " + apiCore.token,
+                                "staffId", staffId
+                        )
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = apiCore.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return apiCore.gson.fromJson(response.body(), listType);
+                }
+
+                if (apiCore.handleSessionExpired(response)) return null;
+                apiCore.checkApiResponse(response);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<StudentAttendance> result = task.getValue();
+
+            if (result == null) {
+                onFailure.run();
+                return;
+            }
+
+            onResult.accept(result);
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+    public void viewDatesMarked(String staffId, String levelId,
+                                Consumer<List<DatesMarked>> onResult,
+                                Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
+
+        Type listType = new TypeToken<List<DatesMarked>>() {}.getType();
+
+        Task<List<DatesMarked>> task = new Task<>() {
+            @Override
+            protected List<DatesMarked> call() throws Exception {
+                String url = apiCore.STUDENT_URL + apiCore.API_VERSION_1 + "/dates-marked/" + levelId;
+
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .headers(
+                                "Authorization", "Bearer " + apiCore.token,
+                                "staffId", staffId
+                        )
+                        .GET()
+                        .build();
+
+                HttpResponse<String> response = apiCore.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 200) {
+                    return apiCore.gson.fromJson(response.body(), listType);
+                }
+
+                if (apiCore.handleSessionExpired(response)) return null;
+                apiCore.checkApiResponse(response);
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+            List<DatesMarked> result = task.getValue();
+            if (result == null) {
+                onFailure.run();
+                return;
+            }
+
+            onResult.accept(result);
+            onSuccess.run();
+        });
+
+        task.setOnFailed(event -> {
+            Throwable ex = task.getException();
+            ex.printStackTrace();
+
+            String msg = ex.getMessage();
+            if (ex instanceof java.net.ConnectException ||
+                    (msg != null && msg.contains("Connection refused"))) {
+                onNetworkIssue.run();
+                return;
+            }
+            onFailure.run();
+        });
+
+        new Thread(task).start();
+    }
+
+
 }

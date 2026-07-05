@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Dashboard;
 
-import com.bbquantum.eazymanage.DTO.Institution.AbsenteesView;
+import com.bbquantum.eazymanage.DTO.Attendance.AbsenteesView;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.DashboardService;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;

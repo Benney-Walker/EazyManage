@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,7 +13,7 @@ public class SemesterCachingManager {
 
     private LocalDateTime lastUpdatedTime;
 
-    private static final long CACHE_TTL_MINUTES = 5;
+    private static final long CACHE_TTL_MINUTES = 120;
 
     private SemesterCachingManager() {}
 

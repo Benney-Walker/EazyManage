@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.DTO.Institution;
+package com.bbquantum.eazymanage.DTO.System;
 
 import java.util.List;
 

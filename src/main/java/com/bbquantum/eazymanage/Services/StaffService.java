@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.DTO.Institution.FindStaffResponse;
+import com.bbquantum.eazymanage.DTO.System.FindStaffResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import javafx.concurrent.Task;

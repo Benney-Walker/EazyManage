@@ -13,7 +13,7 @@ public class HolidayCachingManager {
     private List<Holiday> cachedHolidays;
     private LocalDateTime lastUpdatedTime;
 
-    private static final long CACHE_TTL_MINUTES = 5;
+    private static final long CACHE_TTL_MINUTES = 120;
 
     private HolidayCachingManager() {}
 

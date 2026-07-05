@@ -1,8 +1,8 @@
 package com.bbquantum.eazymanage.Controller.Attendance;
 
 import com.bbquantum.eazymanage.Constants.AttendanceStatus;
-import com.bbquantum.eazymanage.DTO.Institution.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Institution.StudentAttendance;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Attendance.StudentAttendance;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.AttendanceService;
@@ -12,6 +12,7 @@ import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -40,16 +41,14 @@ public class MarkAttendanceController {
     @FXML private TableView<StudentAttendanceUI> attendanceTable;
     @FXML private TableColumn<StudentAttendanceUI, String> studentIdCol;
     @FXML private TableColumn<StudentAttendanceUI, String> nameCol;
-    @FXML private TableColumn<StudentAttendanceUI, com.bbquantum.eazymanage.Constants.AttendanceStatus> absentCol;
-    @FXML private TableColumn<StudentAttendanceUI, com.bbquantum.eazymanage.Constants.AttendanceStatus> presentCol;
+    @FXML private TableColumn<StudentAttendanceUI, AttendanceStatus> absentCol;
+    @FXML private TableColumn<StudentAttendanceUI, AttendanceStatus> presentCol;
 
     // ---- action bar
-    @FXML private VBox progressBox;
-    @FXML private Label       progressLabel;
-    @FXML private ProgressBar progressBar;
-    @FXML private Label       statusLabel;
-    @FXML private Button      cancelButton;
-    @FXML private Button      saveButton;
+    @FXML private Button markPresentButton;
+    @FXML private Label statusLabel;
+    @FXML private Button cancelButton;
+    @FXML private Button saveButton;
 
     // ---- identity
     @SuppressWarnings("unused")
@@ -57,23 +56,23 @@ public class MarkAttendanceController {
     private String staffId;
 
     // ---- services
-    private final ApiCore apiCore           = new ApiCore();
+    private final ApiCore apiCore = new ApiCore();
     private final AttendanceService attendanceService = new AttendanceService(apiCore);
 
     // ---- model
     private final ObservableList<StudentAttendanceUI> rows = FXCollections.observableArrayList();
-    /** Snapshot of rows at save-time, in upload order. Holds the
-     *  remaining-to-upload list so retries resume from the failed row. */
-    private final List<StudentAttendance> pending = new ArrayList<>();
-    private int currentUploadIndex = 0;
+
     private GradeCaching currentClass;
     private LocalDate currentDate;
 
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override
+            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+
+            @Override
+            public GradeCaching fromString(String s) { return null; }
         });
 
         // Populate the choice from the cached grade list.
@@ -96,7 +95,7 @@ public class MarkAttendanceController {
         attendanceTable.setItems(rows);
 
         // Save button stays disabled until rows exist.
-        rows.addListener((javafx.collections.ListChangeListener<StudentAttendanceUI>) c ->
+        rows.addListener((ListChangeListener<StudentAttendanceUI>) c ->
                 saveButton.setDisable(rows.isEmpty()));
     }
 
@@ -113,10 +112,16 @@ public class MarkAttendanceController {
     @FXML
     private void onFetch() {
         GradeCaching grade = classChoice.getValue();
-        if (grade == null) {setStatus("Pick a class first."); return; }
+        if (grade == null) {
+            setStatus("Pick a class first.");
+            return;
+        }
 
         LocalDate date = datePicker.getValue();
-        if (date == null) { setStatus("Pick a date."); return; }
+        if (date == null) {
+            setStatus("Pick a date.");
+            return;
+        }
 
         currentClass = grade;
         currentDate = date;
@@ -124,12 +129,12 @@ public class MarkAttendanceController {
         setStatus("Loading students…");
         fetchButton.setDisable(true);
 
-        final List<StudentAttendance>[] holder = new List[]{null};
+        List<StudentAttendance> holder = new ArrayList<>();
 
         attendanceService.loadStudentsForAttendance(staffId, grade.getLevelId(), currentDate.toString(),
-                list -> holder[0] = list,
+                holder::addAll,
                 () -> Platform.runLater(() -> {
-                    populateTable(holder[0]);
+                    populateTable(holder);
                     fetchButton.setDisable(false);
                 }),
                 () -> Platform.runLater(() -> {
@@ -147,8 +152,6 @@ public class MarkAttendanceController {
 
     private void populateTable(List<StudentAttendance> list) {
         rows.clear();
-        pending.clear();
-        currentUploadIndex = 0;
 
         if (list == null || list.isEmpty()) {
             classInfoBanner.setVisible(false);
@@ -158,10 +161,8 @@ public class MarkAttendanceController {
         }
 
         for (StudentAttendance sa : list) {
-            // Backend's status defaults to PRESENT; if it's blank for some
-            // reason we still want a sensible default rather than a NullPointerException.
             if (sa.getStatus() == null || sa.getStatus().isBlank()) {
-                sa.setStatus(AttendanceStatus.PRESENT.name());
+                sa.setStatus(AttendanceStatus.ABSENT.name());
             }
             rows.add(new StudentAttendanceUI(sa));
         }
@@ -169,98 +170,70 @@ public class MarkAttendanceController {
         classInfoBanner.setVisible(true);
         classInfoBanner.setManaged(true);
         classNameLabel.setText(safe(currentClass.getLevelName()));
-        classMetaLabel.setText("Today");
+        classMetaLabel.setText(currentDate.getDayOfWeek().name());
         rowCountLabel.setText(rows.size() + " student" + (rows.size() == 1 ? "" : "s"));
+        markPresentButton.setDisable(false);
+        cancelButton.setDisable(false);
+        saveButton.setDisable(false);
         setStatus("");
     }
 
-    // ====================================================================
-    // Save (serial upload with retry-from-failed-row)
-    // ====================================================================
+    @FXML
+    private void onMarkAllPresent() {
+        if (!rows.isEmpty()) {
+            for (StudentAttendanceUI sa : rows) {
+                sa.statusProperty().set(AttendanceStatus.PRESENT);
+            }
+        }
+    }
 
     @FXML
     private void onSave() {
-        if (rows.isEmpty() || currentDate == null) return;
+        if (rows.isEmpty() || currentDate == null || currentClass == null) return;
 
-        if (pending.isEmpty() || currentUploadIndex >= pending.size()) {
-            pending.clear();
-            for (StudentAttendanceUI row : rows) {
-                pending.add(row.toStudentAttendance());
-            }
-            currentUploadIndex = 0;
+        List<StudentAttendance> holder = new ArrayList<>();
+        for (StudentAttendanceUI row : rows) {
+            holder.add(row.toStudentAttendance());
         }
 
         saveButton.setDisable(true);
         cancelButton.setDisable(true);
         fetchButton.setDisable(true);
         classChoice.setDisable(true);
+        markPresentButton.setDisable(true);
+        setStatus("Saving....");
 
-        progressBox.setVisible(true);
-        progressBox.setManaged(true);
-        progressLabel.setText("Saving…");
-        updateProgress();
-
-        uploadNext();
-    }
-
-    private void uploadNext() {
-        if (currentUploadIndex >= pending.size()) {
-            onSaveComplete();
-            return;
-        }
-
-        StudentAttendance record = pending.get(currentUploadIndex);
-
-        attendanceService.markStudentAttendance(
-                record.getStudentId(),
-                staffId,
-                record.getLevelId(),
-                record.getStatus(),
-                currentDate.toString(),
+        attendanceService.markStudentAttendance(staffId, currentClass.getLevelId(), currentDate.toString(),
+                holder,
                 () -> Platform.runLater(() -> {
-                    currentUploadIndex++;
-                    updateProgress();
-                    uploadNext();
+                    saveButton.setDisable(false);
+                    cancelButton.setDisable(false);
+                    fetchButton.setDisable(false);
+                    classChoice.setDisable(false);
+                    markPresentButton.setDisable(false);
+
+                    classInfoBanner.setVisible(false);
+                    classInfoBanner.setManaged(false);
+                    setStatus(ApiContext.getInstance().successMessageContainer);
+                    rows.clear();
                 }),
                 () -> Platform.runLater(() -> {
-                    setStatus("Save paused — backend rejected row "
-                            + (currentUploadIndex + 1) + ". "
-                            + ApiContext.getInstance().errorMessageContainer
-                            + " Click 'Continue' to retry.");
-                    saveButton.setText("Continue");
+                    setStatus(ApiContext.getInstance().errorMessageContainer);
                     saveButton.setDisable(false);
+                    cancelButton.setDisable(false);
+                    fetchButton.setDisable(false);
+                    classChoice.setDisable(false);
+                    markPresentButton.setDisable(false);
                 }),
                 () -> Platform.runLater(() -> {
-                    setStatus("Save paused — network unavailable at row "
-                            + (currentUploadIndex + 1) + ". Fix connection and click 'Continue'.");
-                    saveButton.setText("Continue");
+
                     saveButton.setDisable(false);
+                    cancelButton.setDisable(false);
+                    fetchButton.setDisable(false);
+                    classChoice.setDisable(false);
+                    markPresentButton.setDisable(false);
+                    setStatus("Network unavailable.");
                 }));
-    }
-
-    private void updateProgress() {
-        if (pending.isEmpty()) {
-            progressBar.setProgress(0);
-            return;
-        }
-        double frac = (double) currentUploadIndex / pending.size();
-        progressBar.setProgress(frac);
-        progressLabel.setText("Saved " + currentUploadIndex + " of " + pending.size());
-    }
-
-    private void onSaveComplete() {
-        progressLabel.setText("All saved.");
-        progressBar.setProgress(1);
-        setStatus("Attendance saved.");
-
-        // Reset for the next class
-        pending.clear();
-        currentUploadIndex = 0;
-        saveButton.setText("Save attendance");
-        saveButton.setDisable(false);
-        cancelButton.setDisable(false);
-        fetchButton.setDisable(false);
-        classChoice.setDisable(false);
     }
 
     // ====================================================================
@@ -270,15 +243,10 @@ public class MarkAttendanceController {
     @FXML
     private void onReset() {
         rows.clear();
-        pending.clear();
-        currentUploadIndex = 0;
         classChoice.getSelectionModel().clearSelection();
         currentClass = null;
         classInfoBanner.setVisible(false);
         classInfoBanner.setManaged(false);
-        progressBox.setVisible(false);
-        progressBox.setManaged(false);
-        saveButton.setText("Save attendance");
         saveButton.setDisable(true);
         setStatus("");
     }

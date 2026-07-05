@@ -1,8 +1,8 @@
 package com.bbquantum.eazymanage.Controller.Academics.Semester;
 
 import com.bbquantum.eazymanage.Constants.TERMS;
-import com.bbquantum.eazymanage.DTO.Institution.FindSemester;
-import com.bbquantum.eazymanage.DTO.Institution.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.System.FindSemester;
+import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;

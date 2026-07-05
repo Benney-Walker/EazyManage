@@ -22,23 +22,9 @@ public class StudentConductRecord {
     // Free text
     private String conductRemark;
 
-    public StudentConductRecord() {}
+    private String peculiarIssue;
 
-    public StudentConductRecord(String studentId, String studentName, String semesterId,
-                                String regular, String punctual, String physicalAppearance,
-                                String social, String emotional, String cognitiveSkills,
-                                String conductRemark) {
-        this.studentId = studentId;
-        this.studentName = studentName;
-        this.semesterId = semesterId;
-        this.regular = regular;
-        this.punctual = punctual;
-        this.physicalAppearance = physicalAppearance;
-        this.social = social;
-        this.emotional = emotional;
-        this.cognitiveSkills = cognitiveSkills;
-        this.conductRemark = conductRemark;
-    }
+    public StudentConductRecord() {}
 
     public String getStudentId() {
         return studentId;
@@ -118,5 +104,13 @@ public class StudentConductRecord {
 
     public void setConductRemark(String conductRemark) {
         this.conductRemark = conductRemark;
+    }
+
+    public String getPeculiarIssue() {
+        return peculiarIssue;
+    }
+
+    public void setPeculiarIssue(String peculiarIssue) {
+        this.peculiarIssue = peculiarIssue;
     }
 }

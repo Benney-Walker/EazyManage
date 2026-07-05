@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.Institution.AbsenteesView;
+import com.bbquantum.eazymanage.DTO.Attendance.AbsenteesView;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -16,7 +16,7 @@ public class RecentStudentCacheManager {
     //Timestamp of the last update
     private LocalDateTime lastUpdatedTime;
 
-    private static final long CACHE_TTL_MINUTES = 5;
+    private static final long CACHE_TTL_MINUTES = 60;
 
     private RecentStudentCacheManager() {}
 

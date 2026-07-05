@@ -2,38 +2,33 @@ package com.bbquantum.eazymanage.Services;
 
 import com.bbquantum.eazymanage.DTO.Academics.Holiday.Holiday;
 import com.bbquantum.eazymanage.DTO.Academics.Report.ViewClassSemesterReport;
-import com.bbquantum.eazymanage.DTO.Academics.Results.StudentResult;
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.AddNewSubject;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectDTO;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectScores;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
-import com.bbquantum.eazymanage.DTO.Institution.FindAndUpdateClassInfo;
-import com.bbquantum.eazymanage.DTO.Institution.FindSemester;
+import com.bbquantum.eazymanage.DTO.System.FindAndUpdateClassInfo;
+import com.bbquantum.eazymanage.DTO.System.FindSemester;
 import com.bbquantum.eazymanage.DTO.Academics.Grading.SaveGradingCriteria;
-import com.bbquantum.eazymanage.DTO.Institution.StudentsHolder;
+import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsHolder;
 import com.bbquantum.eazymanage.DTO.Offline.ScoresPayload;
 import com.bbquantum.eazymanage.Offline.OfflineMode;
 import com.bbquantum.eazymanage.Offline.OfflineQueue;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.stage.FileChooser;
-import javafx.stage.Window;
 
-import java.io.File;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class AcademicsService {
 
@@ -855,16 +850,18 @@ public class AcademicsService {
     // Scores, grading criteria, results
     // ====================================================================
 
-    /** Persist one student's exercise/test/exam scores for a subject. */
-    public void saveStudentScores(StudentsScoresTable scores, String subjectId, String semesterId, String staffId,
+
+    public void saveStudentScores(String staffId, String subjectId, String semesterId, List<StudentsScoresTable> scoresList,
                                   Runnable onSuccess, Runnable onFailure, Runnable onNetworkIssue) {
-        // Phase 7: short-circuit to the offline queue when in offline mode.
+
         if (OfflineMode.getInstance().isEnabled()) {
             try {
-                String payload = new com.google.gson.Gson().toJson(
-                        new ScoresPayload(
-                                subjectId, semesterId, staffId, scores));
-                OfflineQueue.getInstance().enqueue(OfflineQueue.OP_SAVE_SCORES, payload);
+                for (StudentsScoresTable score : scoresList) {
+                    String payload = new com.google.gson.Gson().toJson(
+                            new ScoresPayload(
+                                    subjectId, semesterId, staffId, score));
+                    OfflineQueue.getInstance().enqueue(OfflineQueue.OP_SAVE_SCORES, payload);
+                }
 
                 ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
                 Platform.runLater(onSuccess);
@@ -880,17 +877,15 @@ public class AcademicsService {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                String url = core.STUDENT_URL + core.API_VERSION_1 + "/save-subject-scores";
+                String url = core.STUDENT_URL + core.API_VERSION_1 + "/save-scores";
 
-                JsonObject requestBody = new JsonObject();
-                requestBody.addProperty("studentId", scores.getStudentId());
-                requestBody.addProperty("classTest1Score", scores.getClassTest1Score());
-                requestBody.addProperty("groupWorkScore", scores.getGroupWorkScore());
-                requestBody.addProperty("classTest2Score", scores.getClassTest2Score());
-                requestBody.addProperty("projectScore", scores.getProjectScore());
-                requestBody.addProperty("classScore", scores.getClassScore());
-                requestBody.addProperty("examScore", scores.getExamScore());
-                requestBody.addProperty("calculatedExamScore", scores.getCalculatedExamScore());
+                JsonArray requestBody = new JsonArray();
+                Gson gson = new Gson();
+                if (scoresList != null && !scoresList.isEmpty()) {
+                    for (StudentsScoresTable scores : scoresList) {
+                        requestBody.add(gson.toJsonTree(scores));
+                    }
+                }
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(url))
@@ -904,7 +899,7 @@ public class AcademicsService {
 
                 HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
-                    return "Successful";
+                    return "Successfully saved scores";
                 }
 
                 if (core.handleSessionExpired(response)) return null;

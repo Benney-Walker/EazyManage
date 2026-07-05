@@ -164,6 +164,7 @@ public class AppShellController {
             refreshStyle.run();
             // Coming back online: drain whatever's queued.
             if (was && !is) {
+                OfflineReplayer.getInstance().setStaffId(staffId);
                 OfflineReplayer.getInstance().drainNow();
             }
         });
@@ -177,10 +178,6 @@ public class AppShellController {
         OfflineMode.getInstance().toggle();
     }
 
-    // ====================================================================
-    // Public API — called from EazyManage.java after FXMLLoader.load()
-    // ====================================================================
-    /** Inject the post-login identity. Must be called before {@link #boot()}. */
     public void setIdentity(String role, String staffId, String organizationName, String username) {
         this.role             = role;
         this.staffId          = staffId;
@@ -671,12 +668,11 @@ public class AppShellController {
         }
     }
 
-    /** Load the Phase 7 Offline Mode panel. No identity injection needed —
-     *  the panel binds to the global OfflineMode/OfflineQueue singletons. */
     private Parent loadOfflineSettingsScreen() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(
                     "/com/bbquantum/eazymanage/Shell/Settings/OfflineSettings.fxml"));
+            OfflineReplayer.getInstance().setStaffId(staffId);
             return loader.load();
         } catch (Exception e) {
             e.printStackTrace();

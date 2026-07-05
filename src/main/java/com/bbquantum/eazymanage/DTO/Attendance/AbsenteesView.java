@@ -1,4 +1,4 @@
-package com.bbquantum.eazymanage.DTO.Institution;
+package com.bbquantum.eazymanage.DTO.Attendance;
 
 public class AbsenteesView {
     private String studentId;

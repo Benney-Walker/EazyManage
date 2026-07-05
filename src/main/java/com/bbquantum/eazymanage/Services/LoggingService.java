@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Services;
 
-import com.bbquantum.eazymanage.DTO.Institution.LogsDTO;
+import com.bbquantum.eazymanage.DTO.System.LogsDTO;
 import com.google.gson.reflect.TypeToken;
 import javafx.concurrent.Task;
 

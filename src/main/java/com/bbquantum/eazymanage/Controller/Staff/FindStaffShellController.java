@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Staff;
 
-import com.bbquantum.eazymanage.DTO.Institution.FindStaffResponse;
+import com.bbquantum.eazymanage.DTO.System.FindStaffResponse;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.AuthService;

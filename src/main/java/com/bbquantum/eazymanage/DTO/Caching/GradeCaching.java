@@ -1,27 +1,22 @@
-package com.bbquantum.eazymanage.DTO.Institution;
+package com.bbquantum.eazymanage.DTO.Caching;
 
-public class FindAndUpdateClassInfo {
+public class GradeCaching {
     private String levelId;
 
     private String levelName;
 
-    private String staffId;
-
-    public FindAndUpdateClassInfo() {}
-
-    public FindAndUpdateClassInfo(String levelId, String levelName, String staffId) {
+    public GradeCaching(String levelId, String levelName) {
         this.levelId = levelId;
         this.levelName = levelName;
-        this.staffId = staffId;
     }
 
     public String getLevelId() {
         return levelId;
     }
+
     public void setLevelId(String levelId) {
         this.levelId = levelId;
     }
-
     public String getLevelName() {
         return levelName;
     }
@@ -30,11 +25,9 @@ public class FindAndUpdateClassInfo {
         this.levelName = levelName;
     }
 
-    public String getStaffId() {
-        return staffId;
-    }
+    @Override
+    public String toString() {
 
-    public void setStaffId(String staffId) {
-        this.staffId = staffId;
+        return levelName;
     }
 }

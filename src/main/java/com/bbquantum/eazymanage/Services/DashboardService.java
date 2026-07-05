@@ -3,7 +3,12 @@ package com.bbquantum.eazymanage.Services;
 import com.bbquantum.eazymanage.DTO.Academics.Classes.ClassInformation;
 import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
 import com.bbquantum.eazymanage.DTO.Finance.RecentPaymentTable;
-import com.bbquantum.eazymanage.DTO.Institution.*;
+import com.bbquantum.eazymanage.DTO.System.*;
+import com.bbquantum.eazymanage.DTO.Attendance.AbsenteesView;
+import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.StaffCaching;
+import com.bbquantum.eazymanage.DTO.Caching.ViewStaffList;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
@@ -432,6 +437,14 @@ public class DashboardService {
 
     public void loadCachedStaffList(LoadCounter counter, String staffId, StackPane notification,
                                     Runnable onSuccess, Runnable onFailure) {
+        List<StaffCaching> cachedStaffs = UtilityClass.staffCacheManager.getCachedStaffList();
+        if (cachedStaffs != null && !cachedStaffs.isEmpty()) {
+            if (UtilityClass.cacheManager.isCacheValid()) {
+                counter.tick(onSuccess, null);
+                return;
+            }
+        }
+
         Type staffListType = new TypeToken<List<StaffCaching>>() {}.getType();
 
         Task<List<StaffCaching>> task = new Task<>() {
@@ -610,6 +623,14 @@ public class DashboardService {
 
     public void loadClassSummaryFees(LoadCounter counter, String staffId, StackPane notification,
                                      Runnable onSuccess, Runnable onFailure) {
+        List<ClassFeesSummary> cachedFeesSummary = UtilityClass.feesCacheManager.getClassFeesSummaryCache();
+        if (cachedFeesSummary != null && !cachedFeesSummary.isEmpty()) {
+            if (UtilityClass.feesCacheManager.isCachedClassFeesValid()) {
+                counter.tick(onSuccess, null);
+                return;
+            }
+        }
+
         Type classFeesList = new TypeToken<ArrayList<ClassFeesSummary>>() {}.getType();
 
         Task<List<ClassFeesSummary>> task = new Task<>() {
@@ -719,6 +740,14 @@ public class DashboardService {
 
     public void loadAllStaffList(LoadCounter counter, String staffId, StackPane notification,
                                  Runnable onSuccess, Runnable onFailure) {
+        List<ViewStaffList> cachedStaffList = UtilityClass.staffListCacheManager.getCachedStaffList();
+        if (cachedStaffList != null && !cachedStaffList.isEmpty()) {
+            if (UtilityClass.staffListCacheManager.isCacheValid()) {
+                counter.tick(onSuccess, null);
+                return;
+            }
+        }
+
         Type staffListListType = new TypeToken<ArrayList<ViewStaffList>>() {}.getType();
 
         Task<List<ViewStaffList>> task = new Task<>() {
@@ -772,6 +801,13 @@ public class DashboardService {
 
     public void fetchRecentFeesTransactions(LoadCounter counter, String staffId, StackPane notification,
                                             Runnable onSuccess, Runnable onFailure) {
+        List<RecentPaymentTable> cachedRecentPayment = UtilityClass.feesCacheManager.getRecentPaymentCache();
+        if (cachedRecentPayment != null && !cachedRecentPayment.isEmpty()) {
+            if (UtilityClass.feesCacheManager.isCachedRecentPaymentValid()) {
+                counter.tick(onSuccess, null);
+                return;
+            }
+        }
         Type listType = new TypeToken<List<RecentPaymentTable>>() {}.getType();
 
         Task<List<RecentPaymentTable>> task = new Task<>() {
@@ -824,6 +860,15 @@ public class DashboardService {
 
     public void fetchRecentSystemLogs(LoadCounter counter, String staffId, StackPane notification,
                                       Runnable onSuccess, Runnable onFailure) {
+
+        List<LogsDetails> cachedLogs = UtilityClass.systemLogsCacheManager.getCachedSystemLogs();
+        if (cachedLogs != null && !cachedLogs.isEmpty()) {
+            if (UtilityClass.systemLogsCacheManager.isCachedLogsValid()) {
+                counter.tick(onSuccess, null);
+                return;
+            }
+        }
+
         Type listType = new TypeToken<List<LogsDetails>>() {}.getType();
 
         Task<List<LogsDetails>> task = new Task<>() {
