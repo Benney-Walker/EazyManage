@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Academics.Subject;
 
 import com.bbquantum.eazymanage.DTO.Academics.Subject.AddNewSubject;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -19,7 +19,7 @@ import java.util.List;
 public class AddSubjectController {
 
     @FXML private TextField nameField;
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private Label statusLabel;
     @FXML private Button resetButton;
     @FXML private Button saveButton;
@@ -35,13 +35,13 @@ public class AddSubjectController {
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
     }
 
@@ -53,7 +53,7 @@ public class AddSubjectController {
     @FXML
     private void onSave() {
         String name = trim(nameField.getText());
-        GradeCaching cls = classChoice.getValue();
+        CachedClasses cls = classChoice.getValue();
         if (name.isEmpty()) { setStatus("Subject name is required."); return; }
         if (cls == null)    { setStatus("Pick a class."); return; }
 

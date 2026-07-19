@@ -2,8 +2,8 @@ package com.bbquantum.eazymanage.Controller.Report;
 
 import com.bbquantum.eazymanage.DTO.Academics.Results.MasterScoreSheet;
 import com.bbquantum.eazymanage.DTO.Academics.Results.MasterScoreSheetRow;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.ReportsService;
@@ -27,8 +27,8 @@ public class MasterSheetReportController implements ReportViewerController {
     @FXML private Label subtitleLabel;
 
     // ---- filters
-    @FXML private ChoiceBox<GradeCaching> classChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button loadButton;
 
     // ---- table (columns added at runtime)
@@ -56,24 +56,24 @@ public class MasterSheetReportController implements ReportViewerController {
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear(); }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
 
         sheetTable.setItems(rows);
@@ -100,8 +100,8 @@ public class MasterSheetReportController implements ReportViewerController {
 
     @FXML
     private void onLoad() {
-        GradeCaching grade = classChoice.getValue();
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (grade == null || semester == null) {
             setStatus("Pick a class and semester first.");
             return;
@@ -134,8 +134,8 @@ public class MasterSheetReportController implements ReportViewerController {
 
     @FXML
     private void onDownload() {
-        GradeCaching grade = classChoice.getValue();
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (grade == null || semester == null) return;
 
         downloadButton.setDisable(true);
@@ -209,12 +209,12 @@ public class MasterSheetReportController implements ReportViewerController {
         // falling back to the picker selection's display labels otherwise.
         String classLabel = sheet.getClassName();
         if (classLabel == null || classLabel.isBlank()) {
-            GradeCaching pickedClass = classChoice.getValue();
+            CachedClasses pickedClass = classChoice.getValue();
             classLabel = pickedClass == null ? "" : safe(pickedClass.getLevelName());
         }
         String semesterLabel = sheet.getSemesterName();
         if (semesterLabel == null || semesterLabel.isBlank()) {
-            SemesterCaching pickedSemester = semesterChoice.getValue();
+            CachedSemesters pickedSemester = semesterChoice.getValue();
             semesterLabel = pickedSemester == null ? "" : safe(pickedSemester.getSemesterName());
         }
 

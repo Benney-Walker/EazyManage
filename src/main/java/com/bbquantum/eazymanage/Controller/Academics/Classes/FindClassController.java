@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Academics.Classes;
 
 import com.bbquantum.eazymanage.DTO.System.FindAndUpdateClassInfo;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.DTO.Caching.StaffCaching;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class FindClassController {
 
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private Button loadButton;
     @FXML private Label statusLabel;
 
@@ -40,13 +40,13 @@ public class FindClassController {
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null)
             classChoice.getItems().setAll(grades);
 
@@ -75,7 +75,7 @@ public class FindClassController {
 
     @FXML
     private void onLoad() {
-        GradeCaching picked = classChoice.getValue();
+        CachedClasses picked = classChoice.getValue();
         if (picked == null) return;
 
         loadButton.setDisable(true);

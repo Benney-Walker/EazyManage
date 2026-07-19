@@ -47,7 +47,7 @@
         <ChoiceBox fx:id="semesterChoice" prefWidth="200"/>
 
         <Region HBox.hgrow="ALWAYS"/>
-
+        <Label fx:id="statusLabel" styleClass="save-status"/>
         <Button fx:id="refreshStudentsBtn" text="Reload students"
                 onAction="#onReloadStudents" styleClass="btn,btn-secondary"/>
     </HBox>
@@ -154,10 +154,12 @@
                     </HBox>
 
                     <!-- Peculiar issue — paper fill only, no backend field -->
-                    <HBox spacing="8" alignment="CENTER_LEFT" styleClass="report-card-fill-row">
+                    <VBox spacing="8" >
                         <Label text="PECULIAR ISSUE:" styleClass="meta-label"/>
-                        <Region HBox.hgrow="ALWAYS" styleClass="report-card-fill-line"/>
-                    </HBox>
+                        <Label fx:id="peculiarIssueLabel"
+                               styleClass="report-card-remark-block"
+                               wrapText="true"/>
+                    </VBox>
 
                     <!-- Facilitator's remarks -->
                     <VBox spacing="4">
@@ -191,10 +193,17 @@
                     <padding><Insets top="12" right="24" bottom="12" left="24"/></padding>
 
                     <Label fx:id="promotionLabel" text="Promotion (optional)" styleClass="field-label" visible="false" managed="false"/>
-                    <ChoiceBox fx:id="promotionGradeChoice" prefWidth="180" visible="false" managed="false"/>
+                    <ChoiceBox fx:id="promotionClassChoice" prefWidth="180" visible="false" managed="false"/>
+                    <Button fx:id="promoteButton" text="Promote Student"
+                            onAction="#onPromote" styleClass="btn,btn-primary"
+                            disable="true"/>
 
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="statusLabel" styleClass="save-status"/>
+                    <Button fx:id="repeatButton" text="Repeat Student"
+                            onAction="#onRepeat" styleClass="btn,btn-primary"
+                            disable="true"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
                     <Button fx:id="downloadButton" text="Download PDF"
                             onAction="#onDownload" styleClass="btn,btn-primary"
                             disable="true"/>

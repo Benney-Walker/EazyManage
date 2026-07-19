@@ -28,14 +28,9 @@ public class ReportingCenterController {
     /** Captured during FXML load so we can return to it after viewing a report. */
     @FXML
     private void initialize() {
-        // FXML root will be captured by the AppShellController loader; nothing
-        // to do here beyond default node setup.
+
     }
 
-    /**
-     * Inject identity and the host container into which viewer screens swap.
-     * Must be called before the first repaint.
-     */
     public void setContext(String staffId, String role, StackPane host, Parent indexRoot) {
         this.staffId   = staffId;
         this.role      = role;

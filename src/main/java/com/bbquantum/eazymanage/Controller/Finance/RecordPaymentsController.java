@@ -1,8 +1,8 @@
 package com.bbquantum.eazymanage.Controller.Finance;
 
 import com.bbquantum.eazymanage.DTO.Finance.StudentPaymentRecords;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsHolder;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
@@ -24,9 +24,9 @@ import java.util.Optional;
 public class RecordPaymentsController {
 
     // ---- New payment
-    @FXML private ChoiceBox<GradeCaching>    newClassChoice;
+    @FXML private ChoiceBox<CachedClasses>    newClassChoice;
     @FXML private ChoiceBox<StudentsHolder>  newStudentChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private TextField amountField;
     @FXML private TextField payerNameField;
     @FXML private TextField payerPhoneField;
@@ -35,9 +35,9 @@ public class RecordPaymentsController {
     @FXML private Button recordButton;
 
     // ---- Load + amend
-    @FXML private ChoiceBox<GradeCaching>    loadClassChoice;
+    @FXML private ChoiceBox<CachedClasses>    loadClassChoice;
     @FXML private ChoiceBox<StudentsHolder>  loadStudentChoice;
-    @FXML private ChoiceBox<SemesterCaching> loadSemesterChoice;
+    @FXML private ChoiceBox<CachedSemesters> loadSemesterChoice;
     @FXML private Label loadStatusLabel;
     @FXML private Button loadButton;
 
@@ -70,25 +70,25 @@ public class RecordPaymentsController {
     @FXML
     private void initialize() {
         // Converters
-        StringConverter<SemesterCaching> semConv = new StringConverter<>() {
+        StringConverter<CachedSemesters> semConv = new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
 
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         };
 
-        StringConverter<GradeCaching> gradeConv = new StringConverter<>() {
+        StringConverter<CachedClasses> gradeConv = new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) {
+            public String toString(CachedClasses g) {
                 return g == null ? "" : g.getLevelName();
             }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         };
 
         StringConverter<StudentsHolder> studentConv = new StringConverter<>() {
@@ -108,13 +108,13 @@ public class RecordPaymentsController {
         newStudentChoice.setConverter(studentConv);
         loadStudentChoice.setConverter(studentConv);
 
-        List<SemesterCaching> sems = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> sems = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (sems != null) {
             semesterChoice.getItems().setAll(sems);
             loadSemesterChoice.getItems().setAll(sems);
         }
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) {
             newClassChoice.getItems().setAll(grades);
             loadClassChoice.getItems().setAll(grades);
@@ -147,7 +147,7 @@ public class RecordPaymentsController {
         });
     }
 
-    private void cascadeLoadStudents(GradeCaching cls,
+    private void cascadeLoadStudents(CachedClasses cls,
                                      ChoiceBox<StudentsHolder> target,
                                      java.util.function.Consumer<String> statusSink) {
         target.getItems().clear();
@@ -189,8 +189,8 @@ public class RecordPaymentsController {
     @FXML
     private void onRecord() {
         StudentsHolder student = newStudentChoice.getValue();
-        GradeCaching selectedClass = newClassChoice.getValue();
-        SemesterCaching sem = semesterChoice.getValue();
+        CachedClasses selectedClass = newClassChoice.getValue();
+        CachedSemesters sem = semesterChoice.getValue();
         String amount    = trim(amountField.getText());
         String payerName = trim(payerNameField.getText());
         String payerPhone = trim(payerPhoneField.getText());
@@ -263,9 +263,9 @@ public class RecordPaymentsController {
 
     @FXML
     private void onLoad() {
-        GradeCaching cls       = loadClassChoice.getValue();
+        CachedClasses cls       = loadClassChoice.getValue();
         StudentsHolder student = loadStudentChoice.getValue();
-        SemesterCaching sem    = loadSemesterChoice.getValue();
+        CachedSemesters sem    = loadSemesterChoice.getValue();
 
         if (cls == null)     { setLoadStatus("Pick a class first."); return; }
         if (student == null) { setLoadStatus("Pick a student."); return; }

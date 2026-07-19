@@ -1,8 +1,8 @@
 package com.bbquantum.eazymanage.Controller.Report;
 
 import com.bbquantum.eazymanage.DTO.Finance.GradeFeesReport;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -27,8 +27,8 @@ public class GradePaymentsReportController implements ReportViewerController {
 
     @FXML private Button backButton;
 
-    @FXML private ChoiceBox<GradeCaching> classChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button fetchButton;
     @FXML private Button exportButton;
     @FXML private Label statusLabel;
@@ -54,34 +54,34 @@ public class GradePaymentsReportController implements ReportViewerController {
     private final FinanceService financeService = new FinanceService(apiCore);
 
     private final ObservableList<GradeFeesReport> rows = FXCollections.observableArrayList();
-    private GradeCaching    currentClass;
-    private SemesterCaching currentSemester;
+    private CachedClasses currentClass;
+    private CachedSemesters currentSemester;
 
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) {
+            public String toString(CachedClasses g) {
                 return g == null ? "" : g.getLevelName();
             }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
 
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) {
+            public CachedSemesters fromString(String s) {
                 return null;
             }
         });
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
-        List<SemesterCaching> sems = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
+        List<CachedSemesters> sems = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (grades != null) classChoice.getItems().setAll(grades);
         if (sems != null) semesterChoice.getItems().setAll(sems);
 
@@ -121,8 +121,8 @@ public class GradePaymentsReportController implements ReportViewerController {
 
     @FXML
     private void onFetch() {
-        GradeCaching cls    = classChoice.getValue();
-        SemesterCaching sem = semesterChoice.getValue();
+        CachedClasses cls    = classChoice.getValue();
+        CachedSemesters sem = semesterChoice.getValue();
         if (cls == null || sem == null) return;
 
         currentClass    = cls;

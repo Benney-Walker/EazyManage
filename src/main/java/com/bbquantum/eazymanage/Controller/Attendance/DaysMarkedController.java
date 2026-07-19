@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Attendance;
 
 import com.bbquantum.eazymanage.DTO.Attendance.DatesMarked;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.AttendanceService;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class DaysMarkedController {
 
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private Button fetchButton;
 
     @FXML private HBox recordInfoBanner;
@@ -50,13 +50,13 @@ public class DaysMarkedController {
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
-        List<GradeCaching> cached = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> cached = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (cached != null) classChoice.getItems().setAll(cached);
 
         dateCol.setCellValueFactory(cell ->
@@ -78,7 +78,7 @@ public class DaysMarkedController {
 
     @FXML
     private void onFetch() {
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         if (grade == null) {
             setStatus("Pick a class first.");
             return;

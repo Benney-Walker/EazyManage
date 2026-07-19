@@ -856,12 +856,10 @@ public class AcademicsService {
 
         if (OfflineMode.getInstance().isEnabled()) {
             try {
-                for (StudentsScoresTable score : scoresList) {
-                    String payload = new com.google.gson.Gson().toJson(
-                            new ScoresPayload(
-                                    subjectId, semesterId, staffId, score));
-                    OfflineQueue.getInstance().enqueue(OfflineQueue.OP_SAVE_SCORES, payload);
-                }
+                String payload = new com.google.gson.Gson().toJson(
+                        new ScoresPayload(
+                                subjectId, semesterId, staffId, scoresList));
+                OfflineQueue.getInstance().enqueue(OfflineQueue.OP_SAVE_SCORES, payload);
 
                 ApiContext.getInstance().successMessageContainer = "Saved offline — will sync when online";
                 Platform.runLater(onSuccess);

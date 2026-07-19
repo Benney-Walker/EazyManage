@@ -2,10 +2,7 @@ package com.bbquantum.eazymanage.Controller.Results;
 
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
 import javafx.application.Platform;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -17,17 +14,18 @@ public class ScoreCell extends TextFieldTableCell<StudentsScoresTable, String> {
 
     private final List<TableColumn<StudentsScoresTable, String>> editableColumns;
 
-    public ScoreCell(List<TableColumn<StudentsScoresTable, String>> editableColumns) {
+    private final double maxScore;
+
+    public ScoreCell(double maxScore, List<TableColumn<StudentsScoresTable, String>> editableColumns) {
         super(new DefaultStringConverter());
         this.editableColumns = editableColumns;
+        this.maxScore = maxScore;
     }
 
     @Override
     public void startEdit() {
         super.startEdit();
-        // After startEdit JavaFX swaps in the editor (a TextField). Attach
-        // a key filter so we can intercept Enter/Tab/arrows BEFORE the
-        // editor's default handler swallows them.
+
         if (getGraphic() instanceof TextField tf) {
             tf.requestFocus();
             tf.selectAll();
@@ -59,20 +57,60 @@ public class ScoreCell extends TextFieldTableCell<StudentsScoresTable, String> {
         if (!handled) return;
         ev.consume();
 
-        // Commit the in-progress edit so onEditCommit fires (which the
-        // controller hooks for recalc). commitEdit needs the editor's
-        // current text; the underlying TextField provides it.
         String typed = ((TextField) getGraphic()).getText();
+
+        typed = typed == null ? "" : typed.trim();
+
+        // Empty
+        if (typed.isEmpty()) {
+            showAlert("Score can't be empty");
+            ((TextField) getGraphic()).requestFocus();
+            return;
+        }
+
+        // Reject anything except digits with one optional decimal point
+        if (!typed.matches("\\d+(\\.\\d+)?")) {
+            showAlert("Invalid value");
+            ((TextField) getGraphic()).requestFocus();
+            return;
+        }
+
+        double value;
+
+        try {
+            value = Double.parseDouble(typed);
+        } catch (NumberFormatException ex) {
+            ((TextField) getGraphic()).requestFocus();
+            return;
+        }
+
+        // Reject negatives
+        if (value < 0) {
+            showAlert("Score cannot be negative");
+            ((TextField) getGraphic()).requestFocus();
+            return;
+        }
+
+        if (value > maxScore) {
+            showAlert("Score should not be more than " + maxScore);
+            ((TextField) getGraphic()).requestFocus();
+            return;
+        }
+
         commitEdit(typed);
 
-        // After commit, schedule the focus jump. runLater lets the table
-        // settle (cancel the current edit, refresh derived columns) before
-        // we open the next editor.
         final int curRow = getIndex();
         final TableColumn<StudentsScoresTable, String> curCol = getTableColumn();
         final int cStep = colStep;
         final int rStep = rowStep;
         Platform.runLater(() -> moveTo(curRow, curCol, cStep, rStep));
+    }
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void moveTo(int curRow,

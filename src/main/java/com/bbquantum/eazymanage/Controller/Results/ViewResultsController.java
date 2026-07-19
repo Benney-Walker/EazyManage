@@ -2,8 +2,8 @@ package com.bbquantum.eazymanage.Controller.Results;
 
 import com.bbquantum.eazymanage.DTO.Academics.Report.ViewClassSemesterReport;
 import com.bbquantum.eazymanage.DTO.Academics.Results.ViewStudentsSubjectsResults;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -22,8 +22,8 @@ import java.util.List;
 public class ViewResultsController {
 
     // ---- toolbar
-    @FXML private ChoiceBox<GradeCaching> classChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button fetchButton;
     @FXML private Label statusLabel;
 
@@ -75,24 +75,27 @@ public class ViewResultsController {
     // ---- model
     private final ObservableList<ViewClassSemesterReport> classRows   = FXCollections.observableArrayList();
     private final ObservableList<ViewStudentsSubjectsResults>  subjectRows = FXCollections.observableArrayList();
-    private GradeCaching    currentClass;
-    private SemesterCaching currentSemester;
+    private CachedClasses currentClass;
+    private CachedSemesters currentSemester;
 
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
+            @Override public CachedClasses fromString(String s) { return null; }
         });
         semesterChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(SemesterCaching s) { return s == null ? "" : s.getSemesterName(); }
-            @Override public SemesterCaching fromString(String s) { return null; }
+            @Override
+            public String toString(CachedSemesters s) { return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear(); }
+
+            @Override
+            public CachedSemesters fromString(String s) { return null; }
         });
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
 
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
 
         classChoice.valueProperty().addListener((obs, oldVal, newVal) -> refreshFetchButtonState());
@@ -175,8 +178,8 @@ public class ViewResultsController {
 
     @FXML
     private void onFetch() {
-        GradeCaching grade       = classChoice.getValue();
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedClasses grade       = classChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (grade == null || semester == null) return;
 
         currentClass    = grade;

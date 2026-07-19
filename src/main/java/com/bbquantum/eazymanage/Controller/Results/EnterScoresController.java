@@ -2,8 +2,8 @@ package com.bbquantum.eazymanage.Controller.Results;
 
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -25,9 +25,9 @@ import java.util.function.Function;
 public class EnterScoresController {
 
     // ---- toolbar
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private ChoiceBox<SubjectsHolder>  subjectChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button fetchButton;
 
     // ---- info banner
@@ -62,9 +62,9 @@ public class EnterScoresController {
 
     // ---- model
     private final ObservableList<StudentsScoresTable> rows = FXCollections.observableArrayList();
-    private GradeCaching    currentClass;
+    private CachedClasses currentClass;
     private SubjectsHolder  currentSubject;
-    private SemesterCaching currentSemester;
+    private CachedSemesters currentSemester;
 
     private List<TableColumn<StudentsScoresTable, String>> editableColumns;
 
@@ -72,10 +72,10 @@ public class EnterScoresController {
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
         subjectChoice.setConverter(new StringConverter<>() {
             @Override
@@ -86,17 +86,17 @@ public class EnterScoresController {
         });
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
 
         // Cascade: when a class is picked, load that class's subjects.
@@ -115,11 +115,21 @@ public class EnterScoresController {
         studentIdCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStudentId())));
         nameCol.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStudentName())));
 
-        configureEditableColumn(ct1Col,        StudentsScoresTable::getClassTest1Score,    StudentsScoresTable::setClassTest1Score);
-        configureEditableColumn(groupWorkCol,  StudentsScoresTable::getGroupWorkScore,     StudentsScoresTable::setGroupWorkScore);
-        configureEditableColumn(ct2Col,        StudentsScoresTable::getClassTest2Score,    StudentsScoresTable::setClassTest2Score);
-        configureEditableColumn(projectCol,    StudentsScoresTable::getProjectScore,       StudentsScoresTable::setProjectScore);
-        configureEditableColumn(examCol,       StudentsScoresTable::getExamScore,          StudentsScoresTable::setExamScore);
+        configureEditableColumn(
+                ct1Col, StudentsScoresTable::getClassTest1Score, StudentsScoresTable::setClassTest1Score, 30
+        );
+        configureEditableColumn(
+                groupWorkCol, StudentsScoresTable::getGroupWorkScore, StudentsScoresTable::setGroupWorkScore, 20
+        );
+        configureEditableColumn(
+                ct2Col, StudentsScoresTable::getClassTest2Score, StudentsScoresTable::setClassTest2Score, 30
+        );
+        configureEditableColumn(
+                projectCol, StudentsScoresTable::getProjectScore, StudentsScoresTable::setProjectScore, 20
+        );
+        configureEditableColumn(
+                examCol, StudentsScoresTable::getExamScore, StudentsScoresTable::setExamScore, 100
+        );
 
         editableColumns = List.of(ct1Col, ct2Col, groupWorkCol, projectCol, examCol);
 
@@ -131,12 +141,14 @@ public class EnterScoresController {
     private void configureEditableColumn(
             TableColumn<StudentsScoresTable, String> col,
             Function<StudentsScoresTable, String> getter,
-            BiConsumer<StudentsScoresTable, String> setter) {
+            BiConsumer<StudentsScoresTable, String> setter,
+            double maxScore) {
 
         col.setCellValueFactory(c ->
                 new SimpleStringProperty(safeStatic(getter.apply(c.getValue()))));
 
-        col.setCellFactory(c -> new ScoreCell(editableColumns));
+        col.setCellFactory(c ->
+                new ScoreCell(maxScore, editableColumns));
 
         col.setEditable(true);
         col.setOnEditCommit(e -> {
@@ -182,7 +194,7 @@ public class EnterScoresController {
     // Cascade: load subjects for picked class
     // ====================================================================
 
-    private void loadSubjectsFor(GradeCaching grade) {
+    private void loadSubjectsFor(CachedClasses grade) {
         setStatus("Loading subjects…");
         academicsService.loadClassSubjects(grade.getLevelId(), staffId,
                 () -> Platform.runLater(() -> {
@@ -211,9 +223,9 @@ public class EnterScoresController {
 
     @FXML
     private void onFetch() {
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         SubjectsHolder subject = subjectChoice.getValue();
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (grade == null || subject == null || semester == null) return;
 
         currentClass = grade;
@@ -281,7 +293,7 @@ public class EnterScoresController {
         classChoice.setDisable(true);
         subjectChoice.setDisable(true);
         semesterChoice.setDisable(true);
-        setStatus("Saving scores");
+        setStatus("Saving scores....");
 
         academicsService.saveStudentScores(staffId, currentSubject.getSubjectId(), currentSemester.getSemesterId(),
                 rows,
@@ -336,6 +348,6 @@ public class EnterScoresController {
     // ====================================================================
 
     private void setStatus(String s) { statusLabel.setText(s == null ? "" : s); }
-    private String  safe(String s)        { return s == null ? "" : s; }
+    private String  safe(String s) { return s == null ? "" : s; }
     private static String safeStatic(String s) { return s == null ? "" : s; }
 }

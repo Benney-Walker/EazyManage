@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Students;
 
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.StudentService;
@@ -18,7 +18,7 @@ public class AddStudentController {
 
     @FXML private TextField                firstNameField;
     @FXML private TextField lastNameField;
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private ChoiceBox<String>        genderChoice;
     @FXML private DatePicker dobPicker;
     @FXML private TextField                hometownField;
@@ -37,10 +37,10 @@ public class AddStudentController {
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
-            @Override public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
-            @Override public GradeCaching fromString(String s) { return null; }
+            @Override public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
+            @Override public CachedClasses fromString(String s) { return null; }
         });
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
 
         genderChoice.setItems(FXCollections.observableArrayList("MALE", "FEMALE"));
@@ -60,7 +60,7 @@ public class AddStudentController {
 
         String firstName = trim(firstNameField.getText());
         String lastName  = trim(lastNameField.getText());
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         String gender    = genderChoice.getValue();
         LocalDate dob    = dobPicker.getValue();
         String hometown  = trim(hometownField.getText());

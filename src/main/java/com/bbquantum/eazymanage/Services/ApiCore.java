@@ -32,6 +32,8 @@ public class ApiCore {
     public final String API_VERSION_1 = "/v1";
     public final String API_VERSION_2 = "/v2";
 
+    public final String API_VERSION_3 = "/v3";
+
     // --- Shared clients -----------------------------------------------------
     public final HttpClient httpClient = SSLHelper.createTrustAllHttpClient();
     public final Gson gson = new GsonBuilder()
@@ -46,12 +48,7 @@ public class ApiCore {
     and update all backend responses to parse "message"
      */
     public void checkApiResponse(HttpResponse<String> response) {
-        if (response.statusCode() == 404 || response.statusCode() == 409 || response.statusCode() == 400) {
-            JsonObject jsonObject =
-                    JsonParser.parseString(response.body()).getAsJsonObject();
-
-            ApiContext.getInstance().errorMessageContainer = jsonObject.get("message").getAsString();
-        } else if (response.statusCode() == 500) {
+        if (response.statusCode() >= 400 && response.statusCode() <= 500) {
             JsonObject jsonObject =
                     JsonParser.parseString(response.body()).getAsJsonObject();
 

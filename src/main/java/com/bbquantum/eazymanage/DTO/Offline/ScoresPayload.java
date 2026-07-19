@@ -2,6 +2,8 @@ package com.bbquantum.eazymanage.DTO.Offline;
 
 import com.bbquantum.eazymanage.DTO.Academics.Results.StudentsScoresTable;
 
+import java.util.List;
+
 public class ScoresPayload {
 
     public String subjectId;
@@ -10,11 +12,11 @@ public class ScoresPayload {
 
     public String staffId;
 
-    public StudentsScoresTable scores;
+    public List<StudentsScoresTable> scores;
 
     public ScoresPayload() {}
 
-    public ScoresPayload(String subjectId, String semesterId, String staffId, StudentsScoresTable scores) {
+    public ScoresPayload(String subjectId, String semesterId, String staffId, List<StudentsScoresTable> scores) {
         this.subjectId = subjectId;
         this.semesterId = semesterId;
         this.staffId = staffId;

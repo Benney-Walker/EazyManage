@@ -1,8 +1,8 @@
 package com.bbquantum.eazymanage.Controller.Finance;
 
 import com.bbquantum.eazymanage.DTO.Finance.FetchFeesDetails;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.FinanceService;
@@ -18,15 +18,15 @@ import java.util.List;
 public class FeesSetupController {
 
     // ---- Add card
-    @FXML private ChoiceBox<GradeCaching> addClassChoice;
-    @FXML private ChoiceBox<SemesterCaching> addSemesterChoice;
+    @FXML private ChoiceBox<CachedClasses> addClassChoice;
+    @FXML private ChoiceBox<CachedSemesters> addSemesterChoice;
     @FXML private TextField addAmountField;
     @FXML private Label addStatusLabel;
     @FXML private Button addButton;
 
     // ---- Update card
-    @FXML private ChoiceBox<GradeCaching> updateClassChoice;
-    @FXML private ChoiceBox<SemesterCaching> updateSemesterChoice;
+    @FXML private ChoiceBox<CachedClasses> updateClassChoice;
+    @FXML private ChoiceBox<CachedSemesters> updateSemesterChoice;
     @FXML private Button loadButton;
     @FXML private Separator updateSeparator;
     @FXML private VBox updateBlock;
@@ -47,25 +47,25 @@ public class FeesSetupController {
 
     @FXML
     private void initialize() {
-        StringConverter<GradeCaching> gradeConv = new StringConverter<>() {
+        StringConverter<CachedClasses> gradeConv = new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) {
+            public String toString(CachedClasses g) {
                 return g == null ? "" : g.getLevelName();
             }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         };
 
-        StringConverter<SemesterCaching> semConv = new StringConverter<>() {
+        StringConverter<CachedSemesters> semConv = new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
 
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         };
 
         addClassChoice.setConverter(gradeConv);
@@ -73,8 +73,8 @@ public class FeesSetupController {
         addSemesterChoice.setConverter(semConv);
         updateSemesterChoice.setConverter(semConv);
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (grades != null) {
             addClassChoice.getItems().setAll(grades);
             updateClassChoice.getItems().setAll(grades);
@@ -102,8 +102,8 @@ public class FeesSetupController {
 
     @FXML
     private void onAdd() {
-        GradeCaching cls    = addClassChoice.getValue();
-        SemesterCaching sem = addSemesterChoice.getValue();
+        CachedClasses cls    = addClassChoice.getValue();
+        CachedSemesters sem = addSemesterChoice.getValue();
         String amount       = trim(addAmountField.getText());
 
         if (cls == null || sem == null || amount.isEmpty()) {
@@ -141,8 +141,8 @@ public class FeesSetupController {
 
     @FXML
     private void onLoad() {
-        GradeCaching cls    = updateClassChoice.getValue();
-        SemesterCaching sem = updateSemesterChoice.getValue();
+        CachedClasses cls    = updateClassChoice.getValue();
+        CachedSemesters sem = updateSemesterChoice.getValue();
         if (cls == null || sem == null) return;
 
         loadButton.setDisable(true);

@@ -1,9 +1,9 @@
 package com.bbquantum.eazymanage.Controller.Attendance;
 
 import com.bbquantum.eazymanage.Constants.AttendanceStatus;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.DTO.Attendance.StudentAttendance;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.AttendanceService;
@@ -26,8 +26,8 @@ import java.util.List;
 public class ViewAttendanceController {
 
     // ---- toolbar
-    @FXML private ChoiceBox<GradeCaching> classChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private DatePicker datePicker;
     @FXML private Button fetchButton;
 
@@ -65,26 +65,26 @@ public class ViewAttendanceController {
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
                 return s == null ? "" : s.getSemesterName() + " (" + s.getAcademicYear() + ")";
             }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
 
-        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> cachedGrades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (cachedGrades != null) classChoice.getItems().setAll(cachedGrades);
 
-        List<SemesterCaching> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (cachedSemesters != null) semesterChoice.getItems().setAll(cachedSemesters);
 
         datePicker.setValue(LocalDate.now());
@@ -122,9 +122,9 @@ public class ViewAttendanceController {
 
     @FXML
     private void onFetch() {
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         if (grade == null) { setStatus("Pick a class first."); return; }
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (semester == null) { setStatus("Pick a term first."); return; }
         LocalDate date = datePicker.getValue();
         if (date == null) { setStatus("Pick a date."); return; }

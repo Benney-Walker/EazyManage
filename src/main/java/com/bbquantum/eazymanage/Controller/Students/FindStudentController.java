@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Students;
 
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.DTO.Academics.Students.UpdateStudentPersonalData;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -28,7 +28,7 @@ public class FindStudentController {
 
     @FXML private TextField                firstNameField;
     @FXML private TextField                lastNameField;
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private ChoiceBox<String>        genderChoice;
     @FXML private DatePicker               dobPicker;
     @FXML private TextField                hometownField;
@@ -53,13 +53,13 @@ public class FindStudentController {
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
 
         genderChoice.setItems(FXCollections.observableArrayList("MALE", "FEMALE"));
@@ -147,7 +147,7 @@ public class FindStudentController {
 
         // Find the matching grade from the cached list.
         if (data.getGradeId() != null) {
-            for (GradeCaching g : classChoice.getItems()) {
+            for (CachedClasses g : classChoice.getItems()) {
                 if (data.getGradeId().equals(g.getLevelId())) {
                     classChoice.setValue(g);
                     break;
@@ -194,7 +194,7 @@ public class FindStudentController {
         out.setStudentId(currentStudent.getStudentId());
         out.setFirstName(trim(firstNameField.getText()));
         out.setLastName(trim(lastNameField.getText()));
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         out.setGradeId(grade == null ? "" : grade.getLevelId());
         out.setGender(genderChoice.getValue());
         out.setDateOfBirth(dobPicker.getValue() == null ? "" : dobPicker.getValue().toString());

@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Academics.Holiday;
 
 import com.bbquantum.eazymanage.DTO.Academics.Holiday.Holiday;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class AddHolidayController {
 
     @FXML private ChoiceBox<String> typeChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
     @FXML private CheckBox activeCheck;
@@ -48,14 +48,14 @@ public class AddHolidayController {
 
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
 
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
     }
 
@@ -67,7 +67,7 @@ public class AddHolidayController {
     @FXML
     private void onSave() {
         String typeLabel = typeChoice.getValue();
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         LocalDate start = startDatePicker.getValue();
         LocalDate end = endDatePicker.getValue();
 

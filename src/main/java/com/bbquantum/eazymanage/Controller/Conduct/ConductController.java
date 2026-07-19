@@ -2,8 +2,8 @@ package com.bbquantum.eazymanage.Controller.Conduct;
 
 import com.bbquantum.eazymanage.Constants.ConductRatings;
 import com.bbquantum.eazymanage.DTO.Academics.Conduct.StudentConductRecord;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
 import com.bbquantum.eazymanage.Services.ConductService;
@@ -25,8 +25,8 @@ import java.util.*;
 public class ConductController {
 
     // ---- toolbar
-    @FXML private ChoiceBox<GradeCaching> classChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button refreshButton;
 
     // ---- left: student list
@@ -74,29 +74,29 @@ public class ConductController {
         // ---- choice rendering
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) {
+            public String toString(CachedClasses g) {
                 return g == null ? "" : g.getLevelName();
             }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
-                return s == null ? "" : s.getSemesterName();
+            public String toString(CachedSemesters s) {
+                return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
 
         // Populate from caches; if empty, the user has not yet loaded their
         // dashboard. Leave the choice boxes empty in that case rather than
         // crashing — the dashboard auto-loads on app start anyway.
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
 
         // ---- student table columns
@@ -206,8 +206,8 @@ public class ConductController {
     private void onReload() { reload(); }
 
     private void reload() {
-        GradeCaching grade = classChoice.getValue();
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (grade == null || semester == null || staffId == null) return;
 
         setStatus("Loading…");

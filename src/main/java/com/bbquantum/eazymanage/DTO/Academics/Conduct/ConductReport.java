@@ -16,6 +16,8 @@ public class ConductReport {
 
     private String facilitatorRemark;
 
+    private String peculiarIssue;
+
     public ConductReport() {}
 
     public String getRegular() {
@@ -72,5 +74,13 @@ public class ConductReport {
 
     public void setFacilitatorRemark(String facilitatorRemark) {
         this.facilitatorRemark = facilitatorRemark;
+    }
+
+    public String getPeculiarIssue() {
+        return peculiarIssue;
+    }
+
+    public void setPeculiarIssue(String peculiarIssue) {
+        this.peculiarIssue = peculiarIssue;
     }
 }

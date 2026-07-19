@@ -2,8 +2,8 @@ package com.bbquantum.eazymanage.Controller.Report;
 
 import com.bbquantum.eazymanage.DTO.Academics.Results.SbaRecord;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -26,9 +26,9 @@ public class SbaReportController implements ReportViewerController {
     @FXML private Button backButton;
 
     // ---- filters
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private ChoiceBox<SubjectsHolder>  subjectChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button loadButton;
 
     // ---- table
@@ -66,10 +66,10 @@ public class SbaReportController implements ReportViewerController {
         // Choice converters
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
         subjectChoice.setConverter(new StringConverter<>() {
             @Override
@@ -80,18 +80,18 @@ public class SbaReportController implements ReportViewerController {
         });
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
 
         // Pre-populate class + semester from caches
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
 
         // When class changes, reload its subjects.
@@ -144,7 +144,7 @@ public class SbaReportController implements ReportViewerController {
         if (onBack != null) onBack.run();
     }
 
-    private void loadSubjectsFor(GradeCaching grade) {
+    private void loadSubjectsFor(CachedClasses grade) {
         setStatus("Loading subjects…");
         academicsService.loadClassSubjects(grade.getLevelId(), staffId,
                 () -> Platform.runLater(() -> {
@@ -166,9 +166,9 @@ public class SbaReportController implements ReportViewerController {
 
     @FXML
     private void onLoad() {
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         SubjectsHolder subject = subjectChoice.getValue();
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (grade == null || subject == null || semester == null) {
             setStatus("Pick class, subject, and semester first.");
             return;
@@ -199,9 +199,9 @@ public class SbaReportController implements ReportViewerController {
 
     @FXML
     private void onDownload() {
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         SubjectsHolder subject = subjectChoice.getValue();
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (grade == null || subject == null || semester == null) return;
 
         downloadButton.setDisable(true);

@@ -4,16 +4,16 @@ import com.bbquantum.eazymanage.DTO.Academics.Classes.ClassInformation;
 
 import java.util.List;
 
-public class GradeInfoCacheManager {
-    private static GradeInfoCacheManager instance;
+public class ClassInfoCacheManager {
+    private static ClassInfoCacheManager instance;
 
     private List<ClassInformation> gradesInformation;
 
-    private GradeInfoCacheManager() {}
+    private ClassInfoCacheManager() {}
 
-    public static GradeInfoCacheManager getInstance() {
+    public static ClassInfoCacheManager getInstance() {
         if (instance == null)
-            instance = new GradeInfoCacheManager();
+            instance = new ClassInfoCacheManager();
         return instance;
     }
 

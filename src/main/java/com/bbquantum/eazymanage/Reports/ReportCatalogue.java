@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 
 public class ReportCatalogue {
-
-    private static final Set<String> ALL            = Set.of("PRINCIPAL", "ADMINISTRATOR", "ACCOUNTANT", "TEACHING_STAFF");
     private static final Set<String> NOT_ACCOUNTANT = Set.of("PRINCIPAL", "ADMINISTRATOR", "TEACHING_STAFF");
+    private static final Set<String> ADMIN_PRINCIPAL = Set.of("ADMINISTRATOR", "PRINCIPAL");
+    private static final Set<String> ONLY_ADMINISTRATOR = Set.of("ADMINISTRATOR");
     private static final Set<String> ACCOUNTANT_PRINCIPAL = Set.of("PRINCIPAL", "ACCOUNTANT");
 
     private ReportCatalogue() {}
@@ -22,7 +22,7 @@ public class ReportCatalogue {
                     "Class Results",
                     "End-of-term performance summary for one class and semester. Includes per-student totals, position, and per-subject breakdown.",
                     "\u25A6",
-                    NOT_ACCOUNTANT,
+                    ONLY_ADMINISTRATOR,
                     ReportStatus.AVAILABLE,
                     "",
                     "/com/bbquantum/eazymanage/Shell/Reporting/ClassResultsReport.fxml"
@@ -32,7 +32,7 @@ public class ReportCatalogue {
                     "Subject-Based Assessment (SBA)",
                     "Continuous-assessment record per student per semester: Class Test 1, Group Work, Class Test 2, Project, Class Score, Exam, and Calculated Exam Score.",
                     "\u25A4",
-                    NOT_ACCOUNTANT,
+                    ADMIN_PRINCIPAL,
                     ReportStatus.AVAILABLE,
                     "Phase 5b",
                     "/com/bbquantum/eazymanage/Shell/Reporting/SbaReport.fxml"
@@ -42,7 +42,7 @@ public class ReportCatalogue {
                     "Master Score Sheet",
                     "Wide spreadsheet view of every student in a class with every subject's total, used by class teachers at end-of-term.",
                     "\u25A8",
-                    NOT_ACCOUNTANT,
+                    ADMIN_PRINCIPAL,
                     ReportStatus.AVAILABLE,
                     "",
                     "/com/bbquantum/eazymanage/Shell/Reporting/MasterSheetReport.fxml"

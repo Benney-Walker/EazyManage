@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Students;
 
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsHolder;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 public class BrowseStudentsController {
 
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private Button fetchButton;
     @FXML private Label statusLabel;
 
@@ -42,19 +42,19 @@ public class BrowseStudentsController {
     private final AcademicsService academicsService = new AcademicsService(apiCore);
 
     private final ObservableList<StudentsHolder> rows = FXCollections.observableArrayList();
-    private GradeCaching currentClass;
+    private CachedClasses currentClass;
 
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) classChoice.getItems().setAll(grades);
 
         classChoice.valueProperty().addListener((obs, oldVal, newVal) ->
@@ -88,7 +88,7 @@ public class BrowseStudentsController {
 
     @FXML
     private void onFetch() {
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         if (grade == null) return;
 
         currentClass = grade;

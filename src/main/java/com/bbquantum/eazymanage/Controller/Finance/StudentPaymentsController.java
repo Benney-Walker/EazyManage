@@ -2,8 +2,8 @@ package com.bbquantum.eazymanage.Controller.Finance;
 
 import com.bbquantum.eazymanage.DTO.Finance.PaymentHistory;
 import com.bbquantum.eazymanage.DTO.Finance.StudentFeesPaymentDisplay;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsHolder;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 public class StudentPaymentsController {
 
     @FXML private ChoiceBox<StudentsHolder> studentChoice;
-    @FXML private ChoiceBox<GradeCaching> classChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button fetchButton;
     @FXML private Button exportButton;
     @FXML private Label statusLabel;
@@ -64,24 +64,24 @@ public class StudentPaymentsController {
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) {
+            public String toString(CachedClasses g) {
                 return g == null ? "" : g.getLevelName();
             }
 
             @Override
-            public GradeCaching fromString(String s) {
+            public CachedClasses fromString(String s) {
                 return null;
             }
         });
 
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
 
         studentChoice.setConverter(new StringConverter<>() {
@@ -94,8 +94,8 @@ public class StudentPaymentsController {
             public StudentsHolder fromString(String s) { return null; }
         });
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
-        List<SemesterCaching> sems = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
+        List<CachedSemesters> sems = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (grades != null) classChoice.getItems().setAll(grades);
         if (sems != null) semesterChoice.getItems().setAll(sems);
 
@@ -128,8 +128,8 @@ public class StudentPaymentsController {
     @FXML
     private void onFetch() {
         StudentsHolder student = studentChoice.getValue();
-        GradeCaching cls    = classChoice.getValue();
-        SemesterCaching sem = semesterChoice.getValue();
+        CachedClasses cls    = classChoice.getValue();
+        CachedSemesters sem = semesterChoice.getValue();
 
         if (student == null || cls == null || sem == null) {
             setStatus("Fill all fields");
@@ -208,7 +208,7 @@ public class StudentPaymentsController {
         }
     }
 
-    private void cascadeLoadStudents(GradeCaching cls,
+    private void cascadeLoadStudents(CachedClasses cls,
                                      ChoiceBox<StudentsHolder> target,
                                      Consumer<String> statusSink) {
         target.getItems().clear();

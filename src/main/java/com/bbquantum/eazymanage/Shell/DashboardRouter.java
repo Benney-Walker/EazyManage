@@ -42,7 +42,7 @@ public class DashboardRouter {
                 c.attach(staffId, fullName, organizationName);
 
             if (controller instanceof StaffDashboardController c)
-                c.attach(staffId, fullName, organizationName, navigateToTab);
+                c.attach(staffId, fullName, organizationName);
             return root;
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -33,12 +33,11 @@ public class StaffDashboardController {
     @FXML private Label  studentCountLabel;
 
     @FXML private Label     rosterHintLabel;
-    @FXML private Hyperlink fullRosterLink;
 
-    @FXML private TableView<StudentsRoaster> rosterTable;
+    @FXML private TableView<StudentsRoaster> attendanceCountTable;
     @FXML private TableColumn<StudentsRoaster, String> studentIdCol;
     @FXML private TableColumn<StudentsRoaster, String> studentNameCol;
-    @FXML private TableColumn<StudentsRoaster, String> genderCol;
+    @FXML private TableColumn<StudentsRoaster, String> presentCountCol;
 
     private String staffId;
     @SuppressWarnings("unused")
@@ -56,38 +55,41 @@ public class StaffDashboardController {
 
     @FXML
     private void initialize() {
-        rosterTable.setItems(rows);
+        attendanceCountTable.setItems(rows);
         studentIdCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getStudentId())));
 
         studentNameCol.setCellValueFactory(c ->
                 new SimpleStringProperty(safe(c.getValue().getStudentName())));
 
-        genderCol.setCellValueFactory(c ->
-                new SimpleStringProperty(safe(c.getValue().getStudentGender())));
+        presentCountCol.setCellValueFactory(c ->
+                new SimpleStringProperty(safe(c.getValue().getPresentCount())));
     }
 
-    public void attach(String staffId, String fullName, String organizationName,
-                       Consumer<String> navigateToTab) {
+    public void attach(String staffId, String fullName, String organizationName) {
         this.staffId          = staffId;
         this.fullName         = fullName;
         this.organizationName = organizationName;
-        this.navigateToTab    = navigateToTab;
 
         greetingLabel.setText(timeOfDayGreeting()
                 + (fullName == null ? "" : ", " + fullName.split(" ")[0]));
         subtitleLabel.setText("Your class today — "
                 + LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy")));
 
-        // Hide the navigation link entirely if the host didn't supply
-        // a callback (defensive — the link wouldn't do anything anyway).
-        if (navigateToTab == null) {
-            fullRosterLink.setVisible(false);
-            fullRosterLink.setManaged(false);
-        }
-
         renderFromGlobals();
-        onRefresh();
+        loadDashboard();
+    }
+
+    private void loadDashboard() {
+        refreshButton.setDisable(true);
+        setStatus("Loading…");
+
+        dashboardService.loadStaffDashboardData(staffId, toastSink,
+                () -> Platform.runLater(() -> {
+                    refreshButton.setDisable(false);
+                    renderFromGlobals();
+                    setStatus("Updated.");
+                }));
     }
 
     @FXML
@@ -104,13 +106,8 @@ public class StaffDashboardController {
                 }));
     }
 
-    @FXML
-    private void onOpenFullRoster() {
-        if (navigateToTab != null) navigateToTab.accept("students");
-    }
-
     private void renderFromGlobals() {
-        List<ClassInformation> grades = UtilityClass.gradeInfoCacheManager.getGradesInformation();
+        List<ClassInformation> grades = UtilityClass.CLASS_INFO_CACHE_MANAGER.getGradesInformation();
         if (grades == null || grades.isEmpty()) {
             classNameLabel.setText("No class assigned");
             classHintLabel.setText("Contact your administrator to be assigned a class.");

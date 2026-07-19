@@ -59,21 +59,19 @@
         <VBox styleClass="card" spacing="10">
             <HBox alignment="CENTER_LEFT" spacing="12">
                 <VBox spacing="2">
-                    <Label text="Class Roster (Preview)" styleClass="card-title"/>
+                    <Label text="Daily Attendance Count (Preview)" styleClass="card-title"/>
                     <Label fx:id="rosterHintLabel"
-                           text="First few students. For the full roster use the Students tab."
                            styleClass="card-subtitle" wrapText="true"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Hyperlink fx:id="fullRosterLink" text="View full roster →" onAction="#onOpenFullRoster"/>
             </HBox>
 
             <StackPane>
-                <TableView fx:id="rosterTable" styleClass="modern-table" prefHeight="280">
+                <TableView fx:id="attendanceCountTable" styleClass="modern-table" prefHeight="280">
                     <columns>
                         <TableColumn fx:id="studentIdCol"     text="Student ID"   prefWidth="160"/>
                         <TableColumn fx:id="studentNameCol"   text="Student Name" prefWidth="280"/>
-                        <TableColumn fx:id="genderCol"        text="Gender"       prefWidth="120"/>
+                        <TableColumn fx:id="presentCountCol" text="Present Count" prefWidth="150"/>
                     </columns>
                     <placeholder>
                         <Label text="No class assigned yet, or no students enrolled."

@@ -1,35 +1,32 @@
 package com.bbquantum.eazymanage.DTO.Offline;
 
-public class OfflineAttendanceReplay {
+import com.bbquantum.eazymanage.DTO.Attendance.StudentAttendance;
 
-    private String studentId;
+import java.util.List;
+
+public class OfflineAttendanceReplay {
 
     private String levelId;
 
-    private String status;
-
     private String dateMarked;
 
-    public OfflineAttendanceReplay(String staffId, String studentId, String levelId, String status, String dateMarked) {
-        this.studentId = studentId;
-        this.levelId = levelId;
-        this.status = status;
-        this.dateMarked = dateMarked;
-    }
+    private List<StudentAttendance> studentAttendance;
 
-    public String getStudentId() {
-        return studentId;
+    public OfflineAttendanceReplay(String levelId, String dateMarked, List<StudentAttendance> studentAttendance) {
+        this.levelId = levelId;
+        this.dateMarked = dateMarked;
+        this.studentAttendance = studentAttendance;
     }
 
     public String getLevelId() {
         return levelId;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public String getDateMarked() {
         return dateMarked;
+    }
+
+    public List<StudentAttendance> getStudentAttendance() {
+        return studentAttendance;
     }
 }

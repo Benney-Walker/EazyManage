@@ -1,17 +1,17 @@
 package com.bbquantum.eazymanage.CacheClasses;
 
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-public class GradeCacheManager {
+public class CachedClassManager {
     //Singleton instance
-    private static GradeCacheManager instance;
+    private static CachedClassManager instance;
 
     //Cached grade data
-    private List<GradeCaching> cachedGrades;
+    private List<CachedClasses> cachedGrades;
 
     //Timestamp of the last update
     private LocalDateTime cachedGradesDuration;
@@ -19,11 +19,11 @@ public class GradeCacheManager {
     //Time-to-Live in minutes
     private static final long GRADES_CACHE_TTL_MINUTES = 120;
 
-    private GradeCacheManager() {}
+    private CachedClassManager() {}
 
-    public static GradeCacheManager getInstance() {
+    public static CachedClassManager getInstance() {
         if (instance == null) {
-            instance = new GradeCacheManager();
+            instance = new CachedClassManager();
         }
         return instance;
     }
@@ -39,14 +39,14 @@ public class GradeCacheManager {
     }
 
     //Retrieves the cached grades list
-    public List<GradeCaching> getGradesCache() {
+    public List<CachedClasses> getGradesCache() {
         if (isCachedGradesValid()) {
             return cachedGrades;
         }
         return null;
     }
 
-    public void setCachedGrades(List<GradeCaching> grades) {
+    public void setCachedGrades(List<CachedClasses> grades) {
         this.cachedGrades = grades;
         this.cachedGradesDuration = LocalDateTime.now();
     }

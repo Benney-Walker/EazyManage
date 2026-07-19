@@ -5,7 +5,7 @@ public class StudentsRoaster {
 
     private String studentName;
 
-    private String studentGender;
+    private String presentCount;
 
     public String getStudentId() {
         return studentId;
@@ -23,11 +23,11 @@ public class StudentsRoaster {
         this.studentName = studentName;
     }
 
-    public String getStudentGender() {
-        return studentGender;
+    public String getPresentCount() {
+        return presentCount;
     }
 
-    public void setStudentGender(String studentGender) {
-        this.studentGender = studentGender;
+    public void setPresentCount(String presentCount) {
+        this.presentCount = presentCount;
     }
 }

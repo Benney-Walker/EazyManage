@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Academics.Holiday;
 
 import com.bbquantum.eazymanage.DTO.Academics.Holiday.Holiday;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -29,7 +29,7 @@ public class FindHolidayController {
     @FXML private ScrollPane formScroll;
     @FXML private Label headerLabel;
     @FXML private ChoiceBox<String>          typeChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
     @FXML private CheckBox   activeCheck;
@@ -66,13 +66,13 @@ public class FindHolidayController {
 
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
 
         // Top picker — render each holiday distinctly.
@@ -169,7 +169,7 @@ public class FindHolidayController {
         typeChoice.setValue(TYPE_BY_VALUE.get(picked.getHolidayName()));
         // Match the semester in the cache by id so the ChoiceBox sees
         // the same reference it was populated with.
-        SemesterCaching matched = findSemesterById(picked.getSemesterId());
+        CachedSemesters matched = findSemesterById(picked.getSemesterId());
         semesterChoice.setValue(matched);
 
         startDatePicker.setValue(parseDate(picked.getStartDate()));
@@ -193,7 +193,7 @@ public class FindHolidayController {
         if (loadedOriginal == null) { setSaveStatus("Load a holiday first."); return; }
 
         String          typeLabel = typeChoice.getValue();
-        SemesterCaching semester  = semesterChoice.getValue();
+        CachedSemesters semester  = semesterChoice.getValue();
         LocalDate       start     = startDatePicker.getValue();
         LocalDate       end       = endDatePicker.getValue();
         boolean         active    = activeCheck.isSelected();
@@ -244,9 +244,9 @@ public class FindHolidayController {
     // Helpers
     // ====================================================================
 
-    private SemesterCaching findSemesterById(String id) {
+    private CachedSemesters findSemesterById(String id) {
         if (id == null) return null;
-        for (SemesterCaching s : semesterChoice.getItems()) {
+        for (CachedSemesters s : semesterChoice.getItems()) {
             if (id.equals(s.getSemesterId())) return s;
         }
         return null;

@@ -1,6 +1,6 @@
 package com.bbquantum.eazymanage.Controller.Messaging;
 
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.DTO.Messaging.BroadcastSmsRequest;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -43,9 +43,9 @@ public class SmsController {
     @FXML
     private void initialize() {
         // ---- Build class checkboxes from the cache
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) {
-            for (GradeCaching g : grades) {
+            for (CachedClasses g : grades) {
                 CheckBox cb = new CheckBox(g.getLevelName());
                 cb.setUserData(g.getLevelId());
                 cb.getStyleClass().add("audience-check");

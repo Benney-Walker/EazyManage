@@ -1,11 +1,11 @@
 package com.bbquantum.eazymanage.DTO.Caching;
 
-public class GradeCaching {
+public class CachedClasses {
     private String levelId;
 
     private String levelName;
 
-    public GradeCaching(String levelId, String levelName) {
+    public CachedClasses(String levelId, String levelName) {
         this.levelId = levelId;
         this.levelName = levelName;
     }

@@ -49,6 +49,11 @@
             <Label fx:id="contextSubtitleLabel" styleClass="info-subtitle"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
+        <VBox spacing="4">
+            <Label text="CT 1 &amp; CT 2 &lt;= 30" styleClass="info-title"/>
+            <Label text="Group work &amp; Project &lt;= 20" styleClass="info-title"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
         <Label fx:id="rowCountLabel" styleClass="info-subtitle"/>
     </HBox>
 

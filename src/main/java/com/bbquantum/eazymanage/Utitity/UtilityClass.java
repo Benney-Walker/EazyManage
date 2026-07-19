@@ -22,19 +22,18 @@ public class UtilityClass {
 
     private static final String PRODUCTION_URL = "https://schoolmanagementsystem-eazymanage.up.railway.app";
 
-    public static final String BASE_URL =  LOCAL_URL + "/api";
+    public static final String BASE_URL =  PRODUCTION_URL + "/api";
 
     /** Application version banner. Displayed on the dashboard footer. */
-    public static final String APPLICATION_VERSION = "V 3.2.0.0";
+    public static final String APPLICATION_VERSION = "V 3.2.3";
 
     // Cache Managers
     public static final RecentStudentCacheManager cacheManager = RecentStudentCacheManager.getInstance();
     public static final StaffCacheManager staffCacheManager = StaffCacheManager.getInstance();
-    public static final GradeCacheManager gradeCacheManager = GradeCacheManager.getInstance();
+    public static final CachedClassManager CACHED_CLASS_MANAGER = CachedClassManager.getInstance();
     public static final FeesCacheManager feesCacheManager = FeesCacheManager.getInstance();
     public static final SemesterCachingManager semesterCachingManager = SemesterCachingManager.getInstance();
-    public static final StaffListCacheManager staffListCacheManager = StaffListCacheManager.getInstance();
-    public static final GradeInfoCacheManager gradeInfoCacheManager = GradeInfoCacheManager.getInstance();
+    public static final ClassInfoCacheManager CLASS_INFO_CACHE_MANAGER = ClassInfoCacheManager.getInstance();
     public static final SystemLogsCacheManager systemLogsCacheManager = SystemLogsCacheManager.getInstance();
     public static final HolidayCachingManager holidayCachingManager = HolidayCachingManager.getInstance();
 
@@ -86,12 +85,11 @@ public class UtilityClass {
         feesCacheManager.clearClassFeesSummaryCache();
         feesCacheManager.clearRecentPaymentCache();
 
-        gradeCacheManager.clearCache();
-        gradeInfoCacheManager.clearCachedGradeStudents();
+        CACHED_CLASS_MANAGER.clearCache();
+        CLASS_INFO_CACHE_MANAGER.clearCachedGradeStudents();
         cacheManager.clearCachedStudents();
         semesterCachingManager.clearCachedSemesters();
         staffCacheManager.clearCachedStaffList();
-        staffListCacheManager.clearCachedStaffList();
 
         // Clear dashboard numbers
         totalStudentsFromBackend = 0L;

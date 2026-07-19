@@ -3,8 +3,8 @@ package com.bbquantum.eazymanage.Controller.Report;
 import com.bbquantum.eazymanage.DTO.Academics.Conduct.ConductReport;
 import com.bbquantum.eazymanage.DTO.Academics.Report.StudentReportCard;
 import com.bbquantum.eazymanage.DTO.Academics.Report.SubjectScoresReport;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.DTO.Academics.Students.StudentsHolder;
 import com.bbquantum.eazymanage.Reports.ReportViewerController;
 import com.bbquantum.eazymanage.Services.AcademicsService;
@@ -37,8 +37,8 @@ public class ReportCardReportController implements ReportViewerController {
     @FXML private Button backButton;
 
     // ---- filters
-    @FXML private ChoiceBox<GradeCaching> classChoice;
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button refreshStudentsBtn;
 
     // ---- left: student picker
@@ -73,6 +73,7 @@ public class ReportCardReportController implements ReportViewerController {
     @FXML private Label totalAttendanceValue;
     @FXML private Label promotedToValue;
 
+    @FXML private Label peculiarIssueLabel;
     @FXML private Label facilitatorRemarkLabel;
 
     @FXML private Label instructorNameValue;
@@ -80,8 +81,10 @@ public class ReportCardReportController implements ReportViewerController {
 
     // ---- action bar
     @FXML private Label    promotionLabel;
-    @FXML private ChoiceBox<GradeCaching> promotionGradeChoice;
+    @FXML private ChoiceBox<CachedClasses> promotionClassChoice;
     @FXML private Label  statusLabel;
+    @FXML private Button promoteButton;
+    @FXML private Button repeatButton;
     @FXML private Button downloadButton;
 
     private String staffId;
@@ -127,43 +130,45 @@ public class ReportCardReportController implements ReportViewerController {
         // Choice converters
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) {
+            public String toString(CachedClasses g) {
                 return g == null ? "" : g.getLevelName();
             }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
 
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) {
+            public CachedSemesters fromString(String s) {
                 return null;
             }
         });
 
-        promotionGradeChoice.setConverter(new StringConverter<>() {
+        promotionClassChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) {
+                return g == null ? "" : g.getLevelName();
+            }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
         // Populate filters from caches
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) {
             classChoice.getItems().setAll(grades);
-            promotionGradeChoice.getItems().setAll(grades);
+            promotionClassChoice.getItems().setAll(grades);
         }
 
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null)
             semesterChoice.getItems().setAll(semesters);
 
@@ -206,12 +211,12 @@ public class ReportCardReportController implements ReportViewerController {
 
         // Show promotion controls only to teaching staff (matching legacy).
         boolean teacher = "TEACHING_STAFF".equals(role);
-        for (Node n : List.of(promotionLabel, promotionGradeChoice)) {
+        for (Node n : List.of(promotionLabel, promotionClassChoice)) {
             n.setVisible(teacher);
             n.setManaged(teacher);
         }
 
-        promotionGradeChoice.setDisable(true);
+        promotionClassChoice.setDisable(true);
 
         // Auto-pick first class / semester so something is on screen.
         if (!classChoice.getItems().isEmpty() && classChoice.getValue() == null) {
@@ -229,13 +234,15 @@ public class ReportCardReportController implements ReportViewerController {
 
     @FXML
     private void onReloadStudents() {
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         if (grade != null) loadStudentsFor(grade);
     }
 
     // ---- student list loading ------------------------------------------
 
-    private void loadStudentsFor(GradeCaching grade) {
+    private void loadStudentsFor(CachedClasses grade) {
+        refreshStudentsBtn.setDisable(true);
+
         setStatus("Loading students…");
         academicsService.loadClassStudents(grade.getLevelId(), staffId,
                 () -> Platform.runLater(() -> {
@@ -247,16 +254,17 @@ public class ReportCardReportController implements ReportViewerController {
                 }),
                 () -> Platform.runLater(() -> setStatus("Could not load students.")),
                 () -> Platform.runLater(() -> setStatus("Network issue while loading students.")));
+
+        refreshStudentsBtn.setDisable(false);
     }
 
     // ---- card loading + rendering --------------------------------------
-
     private void loadCardFor(StudentsHolder student) {
         if (student == null) {
             clearCardPreview();
             return;
         }
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (semester == null) {
             setStatus("Pick a semester first.");
             return;
@@ -264,14 +272,19 @@ public class ReportCardReportController implements ReportViewerController {
 
         setStatus("Loading report card…");
         downloadButton.setDisable(true);
+        promoteButton.setDisable(true);
+        repeatButton.setDisable(true);
         currentCard = null;
 
         reportsService.loadReportCard(student.getStudentId(), semester.getSemesterId(), staffId,
                 card -> Platform.runLater(() -> applyCard(card)),
                 () -> Platform.runLater(() -> {
                     if (currentCard != null) {
-                        if (semester.getSemesterName().equals("THIRD_TERM"))
-                            promotionGradeChoice.setDisable(false);
+                        if (semester.getSemesterName().equals("THIRD_TERM")) {
+                            promotionClassChoice.setDisable(false);
+                            promoteButton.setDisable(false);
+                            repeatButton.setDisable(false);
+                        }
 
                         downloadButton.setDisable(false);
                         setStatus("");
@@ -322,7 +335,10 @@ public class ReportCardReportController implements ReportViewerController {
         facilitatorRemarkLabel.setText(remark.isBlank()
                 ? "(No facilitator's remark recorded)"
                 : remark);
-
+        String issue = conduct == null ? "" : safe(conduct.getPeculiarIssue());
+        peculiarIssueLabel.setText(issue.isBlank()
+                ? "(No Peculiar Issue recorded)"
+                : issue);
         instructorNameValue.setText(safe(card.getInstructorName(), "—"));
         currentDateValue.setText(   safe(card.getCurrentDate(),    "—"));
     }
@@ -422,17 +438,10 @@ public class ReportCardReportController implements ReportViewerController {
     @FXML
     private void onDownload() {
         if (currentCard == null) return;
-        SemesterCaching semester = semesterChoice.getValue();
+        CachedSemesters semester = semesterChoice.getValue();
         if (semester == null) return;
 
-        GradeCaching promoGrade = promotionGradeChoice.getValue();
-        String promotionGradeId = "no_promotion";
-        if (promoGrade != null) {
-            promotionGradeId = promoGrade.getLevelId();
-        }
-
-
-        String studentId   = currentCard.getStudentId();
+        String studentId = currentCard.getStudentId();
         String studentName = currentCard.getStudentName();
 
         downloadButton.setDisable(true);
@@ -442,8 +451,7 @@ public class ReportCardReportController implements ReportViewerController {
                 + " - " + safe(semester.getSemesterName(), "Semester") + ".pdf";
 
         reportsService.downloadReportCard(
-                staffId, studentId, semester.getSemesterId(), promotionGradeId,
-                suggestedName,
+                staffId, studentId, semester.getSemesterId(), suggestedName,
                 this::parentWindow,
                 () -> Platform.runLater(() -> {
                     setStatus("Saved.");
@@ -460,6 +468,83 @@ public class ReportCardReportController implements ReportViewerController {
         );
     }
 
+    @FXML
+    private void onPromote() {
+        if (currentCard == null) return;
+        CachedSemesters semester = semesterChoice.getValue();
+        if (semester == null) return;
+
+        CachedClasses promotionClass = promotionClassChoice.getValue();
+        if (promotionClass == null) {
+            setStatus("Promotion class not selected.");
+            return;
+        }
+
+        if (promotionClass == classChoice.getValue()) {
+            setStatus("Student cannot be promoted to the same class");
+            return;
+        }
+
+        String studentId = currentCard.getStudentId();
+
+        promoteButton.setDisable(true);
+        repeatButton.setDisable(true);
+        downloadButton.setDisable(true);
+        setStatus("Processing");
+
+        reportsService.promoteStudent(staffId, studentId, semester.getSemesterId(),
+                promotionClass.getLevelId(),
+                () -> Platform.runLater(() -> {
+                    setStatus(ApiContext.getInstance().successMessageContainer);
+                    downloadButton.setDisable(false);
+                }),
+                () -> Platform.runLater(() -> {
+                    setStatus(ApiContext.getInstance().errorMessageContainer);
+                    promoteButton.setDisable(false);
+                    repeatButton.setDisable(false);
+                    downloadButton.setDisable(false);
+                }),
+                () -> Platform.runLater(() -> {
+                    setStatus("Network Unavailable");
+                    promoteButton.setDisable(false);
+                    repeatButton.setDisable(false);
+                    downloadButton.setDisable(false);
+                })
+        );
+    }
+
+    @FXML
+    private void onRepeat() {
+        if (currentCard == null) return;
+        CachedSemesters semester = semesterChoice.getValue();
+        if (semester == null) return;
+
+        String studentId = currentCard.getStudentId();
+
+        promoteButton.setDisable(true);
+        repeatButton.setDisable(true);
+        downloadButton.setDisable(true);
+        setStatus("Processing");
+
+        reportsService.repeatStudent(staffId, studentId, semester.getSemesterId(),
+                () -> Platform.runLater(() -> {
+                    setStatus(ApiContext.getInstance().successMessageContainer);
+                    downloadButton.setDisable(false);
+                }),
+                () -> Platform.runLater(() -> {
+                    setStatus(ApiContext.getInstance().errorMessageContainer);
+                    promoteButton.setDisable(false);
+                    repeatButton.setDisable(false);
+                    downloadButton.setDisable(false);
+                }),
+                () -> Platform.runLater(() -> {
+                    setStatus("Network Unavailable");
+                    promoteButton.setDisable(false);
+                    repeatButton.setDisable(false);
+                    downloadButton.setDisable(false);
+                })
+        );
+    }
     // ---- helpers --------------------------------------------------------
 
     private Window parentWindow() {

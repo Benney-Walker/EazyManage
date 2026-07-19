@@ -1,13 +1,13 @@
 package com.bbquantum.eazymanage.DTO.Caching;
 
-public class SemesterCaching {
+public class CachedSemesters {
     private String semesterId;
 
     private String semesterName;
 
     private String academicYear;
 
-    public  SemesterCaching(String semesterId, String semesterName, String academicYear) {
+    public CachedSemesters(String semesterId, String semesterName, String academicYear) {
         this.semesterId = semesterId;
         this.semesterName = semesterName;
         this.academicYear = academicYear;

@@ -2,7 +2,7 @@ package com.bbquantum.eazymanage.Controller.Academics.Semester;
 
 import com.bbquantum.eazymanage.Constants.TERMS;
 import com.bbquantum.eazymanage.DTO.System.FindSemester;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class FindSemesterController {
 
-    @FXML private ChoiceBox<SemesterCaching> semesterChoice;
+    @FXML private ChoiceBox<CachedSemesters> semesterChoice;
     @FXML private Button loadButton;
     @FXML private Label statusLabel;
 
@@ -45,16 +45,16 @@ public class FindSemesterController {
     private void initialize() {
         semesterChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(SemesterCaching s) {
+            public String toString(CachedSemesters s) {
 
                 return s == null ? "" : s.getSemesterName() + " " + s.getAcademicYear();
             }
 
             @Override
-            public SemesterCaching fromString(String s) { return null; }
+            public CachedSemesters fromString(String s) { return null; }
         });
 
-        List<SemesterCaching> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        List<CachedSemesters> semesters = UtilityClass.semesterCachingManager.getCachedSemesters();
         if (semesters != null) semesterChoice.getItems().setAll(semesters);
 
         semesterChoice.valueProperty().addListener((obs, oldVal, newVal) ->
@@ -70,7 +70,7 @@ public class FindSemesterController {
 
     @FXML
     private void onLoad() {
-        SemesterCaching picked = semesterChoice.getValue();
+        CachedSemesters picked = semesterChoice.getValue();
         if (picked == null) return;
 
         loadButton.setDisable(true);

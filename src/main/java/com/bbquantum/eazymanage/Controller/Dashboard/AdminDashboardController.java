@@ -86,6 +86,18 @@ public class AdminDashboardController {
         onRefresh();
     }
 
+    private void loadDashboard() {
+        refreshButton.setDisable(true);
+        setStatus("Loading…");
+
+        dashboardService.loadAdminDashboard(staffId, toastSink,
+                () -> Platform.runLater(() -> {
+                    refreshButton.setDisable(false);
+                    renderFromGlobals();
+                    setStatus("Updated.");
+                }));
+    }
+
     @FXML
     private void onRefresh() {
         refreshButton.setDisable(true);
@@ -101,8 +113,8 @@ public class AdminDashboardController {
     }
 
     private void renderFromGlobals() {
-        int classes  = UtilityClass.gradeCacheManager.getGradesCache() == null
-                ? 0 : UtilityClass.gradeCacheManager.getGradesCache().size();
+        int classes  = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache() == null
+                ? 0 : UtilityClass.CACHED_CLASS_MANAGER.getGradesCache().size();
 
         int semesters = UtilityClass.semesterCachingManager.getCachedSemesters() == null
                 ? 0 : UtilityClass.semesterCachingManager.getCachedSemesters().size();

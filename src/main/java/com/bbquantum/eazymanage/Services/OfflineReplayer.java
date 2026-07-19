@@ -87,21 +87,6 @@ public class OfflineReplayer {
             List<OfflineQueue.QueuedOp> rows = OfflineQueue.getInstance().listPending();
             for (OfflineQueue.QueuedOp row : rows) {
                 sortPending(row);
-
-                /*try {
-
-
-                    int status = replay(row);
-                    if (status >= 200 && status < 300) {
-                        OfflineQueue.getInstance().markSent(row.id());
-                    } else {
-                        OfflineQueue.getInstance().recordFailure(row.id(),
-                                "HTTP " + status);
-                    }
-                } catch (Exception ex) {
-                    OfflineQueue.getInstance().recordFailure(row.id(),
-                            ex.getClass().getSimpleName() + ": " + ex.getMessage());
-                }*/
             }
 
             if (!attendanceList.isEmpty()) {
@@ -118,6 +103,7 @@ public class OfflineReplayer {
                                     "HTTP " + status);
                         }
                     }
+                    attendanceIds.clear();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -137,6 +123,7 @@ public class OfflineReplayer {
                                     "HTTP " + status);
                         }
                     }
+                    scoresIds.clear();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -156,6 +143,7 @@ public class OfflineReplayer {
                                     "HTTP " + status);
                         }
                     }
+                    paymentIds.clear();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -165,26 +153,15 @@ public class OfflineReplayer {
         }
     }
 
-    private int replay(OfflineQueue.QueuedOp row) throws Exception {
-        return switch (row.opType()) {
-            case OfflineQueue.OP_ATTENDANCE   -> replayAttendance(row.payloadJson());
-            case OfflineQueue.OP_SAVE_SCORES  -> replaySaveScores(row.payloadJson());
-            case OfflineQueue.OP_FEES_PAYMENT -> replayFeesPayment(row.payloadJson());
-            default -> throw new IllegalStateException("Unknown op type: " + row.opType());
-        };
-    }
-
     private void sortPending(OfflineQueue.QueuedOp row) {
         switch (row.opType()) {
             case OfflineQueue.OP_ATTENDANCE -> {
                 AttendancePayload payload = gson.fromJson(row.payloadJson(), AttendancePayload.class);
 
                 OfflineAttendanceReplay replay = new OfflineAttendanceReplay(
-                        payload.staffId,
-                        payload.studentId,
                         payload.levelId,
-                        payload.status,
-                        payload.dateMarked
+                        payload.dateMarked,
+                        payload.studentAttendance
                 );
 
                 attendanceList.add(replay);
@@ -212,8 +189,7 @@ public class OfflineReplayer {
                 OfflineScoresReplay replay = new OfflineScoresReplay(
                         payload.subjectId,
                         payload.semesterId,
-                        payload.scores,
-                        payload.staffId
+                        payload.scores
                 );
 
                 scoresList.add(replay);
@@ -226,30 +202,6 @@ public class OfflineReplayer {
     // ====================================================================
     // Per-op-type replay (mirrors the inline HTTP code in each service).
     // ====================================================================
-
-    private int replayAttendance(String payloadJson) throws Exception {
-        AttendancePayload p = gson.fromJson(payloadJson, AttendancePayload.class);
-
-        String url = core.STUDENT_URL + core.API_VERSION_2 + "/mark-attendance";
-
-        JsonObject requestBody = new JsonObject();
-        requestBody.addProperty("studentId", enc(p.studentId));
-        requestBody.addProperty("levelId", enc(p.levelId));
-        requestBody.addProperty("status", enc(p.status));
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .headers(
-                        "Authorization", "Bearer " + core.token,
-                        "Content-Type", "application/json",
-                        "staffId", enc(p.staffId),
-                        "selectedDate", enc(p.dateMarked)
-                )
-                .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                .build();
-
-        return core.httpClient.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
-    }
 
     private int replayAttendance(List<OfflineAttendanceReplay> list) throws Exception {
 
@@ -276,33 +228,6 @@ public class OfflineReplayer {
         return core.httpClient.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
     }
 
-    private int replaySaveScores(String payloadJson) throws Exception {
-        ScoresPayload p = gson.fromJson(payloadJson, ScoresPayload.class);
-
-        String url = core.STUDENT_URL + core.API_VERSION_1 + "/save-subject-scores";
-
-        JsonObject body = new JsonObject();
-        body.addProperty("studentId",          p.scores.getStudentId());
-        body.addProperty("classTest1Score",    p.scores.getClassTest1Score());
-        body.addProperty("groupWorkScore",     p.scores.getGroupWorkScore());
-        body.addProperty("classTest2Score",    p.scores.getClassTest2Score());
-        body.addProperty("projectScore",       p.scores.getProjectScore());
-        body.addProperty("classScore",         p.scores.getClassScore());
-        body.addProperty("examScore",          p.scores.getExamScore());
-        body.addProperty("calculatedExamScore",p.scores.getCalculatedExamScore());
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .headers("Authorization", "Bearer " + core.token,
-                        "Content-Type", "application/json",
-                        "subjectId",  p.subjectId,
-                        "semesterId", p.semesterId,
-                        "staffId",    p.staffId)
-                .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
-                .build();
-        return core.httpClient.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
-    }
-
     private int replaySaveScores(List<OfflineScoresReplay> list) throws Exception {
 
         String url = core.OFFLINE_URL + core.API_VERSION_1 + "/sync-scores";
@@ -322,29 +247,6 @@ public class OfflineReplayer {
                         "staffId", staffId
                 )
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
-                .build();
-        return core.httpClient.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
-    }
-
-    private int replayFeesPayment(String payloadJson) throws Exception {
-        FeesPaymentPayload p = gson.fromJson(payloadJson, FeesPaymentPayload.class);
-
-        String url = core.FINANCE_URL + core.API_VERSION_2 + "/add-fees-payment";
-
-        JsonObject body = new JsonObject();
-        body.addProperty("studentId",  p.studentId);
-        body.addProperty("semesterId", p.semesterId);
-        body.addProperty("amountPaid", p.amountPaid);
-        body.addProperty("payerName",  p.payerName);
-        body.addProperty("payerPhone", p.payerPhone);
-        body.addProperty("levelId", p.classId);
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .headers("Authorization", "Bearer " + core.token,
-                        "Content-Type", "application/json",
-                        "staffId", p.staffId)
-                .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
                 .build();
         return core.httpClient.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
     }

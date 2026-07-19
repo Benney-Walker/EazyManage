@@ -1,28 +1,20 @@
 package com.bbquantum.eazymanage.DTO.Offline;
 
+import com.bbquantum.eazymanage.DTO.Attendance.StudentAttendance;
+
+import java.util.List;
+
 public class AttendancePayload {
-
-    public String studentId;
-
-    public String staffId;
 
     public String levelId;
 
-    public String status;
-
     public String dateMarked;
 
-    public String operation;
+    public List<StudentAttendance> studentAttendance;
 
-    public AttendancePayload() {}
-
-    public AttendancePayload(String staffId, String studentId, String levelId,
-                             String status, String dateMarked, String operation) {
-        this.studentId = studentId;
-        this.staffId = staffId;
+    public AttendancePayload(String levelId, String dateMarked, List<StudentAttendance> studentAttendance) {
         this.levelId = levelId;
-        this.status = status;
         this.dateMarked = dateMarked;
-        this.operation = operation;
+        this.studentAttendance = studentAttendance;
     }
 }

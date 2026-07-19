@@ -79,7 +79,19 @@ public class PrincipalDashboardController {
         // Render once from any pre-cached values so the screen isn't empty
         // during the first load; then trigger a refresh to refill.
         renderFromGlobals();
-        onRefresh();
+        loadDashboard();
+    }
+
+    private void loadDashboard() {
+        refreshButton.setDisable(true);
+        setStatus("Loading…");
+
+        dashboardService.loadPrincipalData(staffId, toastSink,
+                () -> Platform.runLater(() -> {
+                    refreshButton.setDisable(false);
+                    renderFromGlobals();
+                    setStatus("Updated.");
+                }));
     }
 
     @FXML

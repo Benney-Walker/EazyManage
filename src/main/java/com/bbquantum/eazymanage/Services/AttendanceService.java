@@ -93,20 +93,16 @@ public class AttendanceService {
 
         if (OfflineMode.getInstance().isEnabled()) {
             try {
-                for (StudentAttendance record : records) {
-                    String payload = new com.google.gson.Gson().toJson(
-                            new AttendancePayload(
-                                    staffId,
-                                    record.getStudentId(),
-                                    levelId,
-                                    record.getStatus(),
-                                    currentDate,
-                                    "mark"
-                            )
-                    );
 
-                    OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
-                }
+                String payload = new com.google.gson.Gson().toJson(
+                        new AttendancePayload(
+                                levelId,
+                                currentDate,
+                                records
+                        )
+                );
+
+                OfflineQueue.getInstance().enqueue(OfflineQueue.OP_ATTENDANCE, payload);
 
                 ApiContext.getInstance().successMessageContainer =
                         "Saved offline — will sync when online";

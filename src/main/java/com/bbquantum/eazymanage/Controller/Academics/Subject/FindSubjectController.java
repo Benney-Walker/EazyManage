@@ -2,7 +2,7 @@ package com.bbquantum.eazymanage.Controller.Academics.Subject;
 
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectDTO;
 import com.bbquantum.eazymanage.DTO.Academics.Subject.SubjectsHolder;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.Services.AcademicsService;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class FindSubjectController {
 
     // ---- left side
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private Button fetchButton;
     @FXML private ListView<SubjectsHolder> subjectList;
 
@@ -28,7 +28,7 @@ public class FindSubjectController {
     @FXML private ScrollPane formScroll;
     @FXML private Label headerLabel;
     @FXML private TextField                   nameField;
-    @FXML private ChoiceBox<GradeCaching>     formClassChoice;
+    @FXML private ChoiceBox<CachedClasses>     formClassChoice;
     @FXML private Label                       actionStatusLabel;
     @FXML private Button                      deleteButton;
     @FXML private Button                      saveButton;
@@ -47,20 +47,20 @@ public class FindSubjectController {
 
     @FXML
     private void initialize() {
-        StringConverter<GradeCaching> gradeConv = new StringConverter<>() {
+        StringConverter<CachedClasses> gradeConv = new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) {
+            public String toString(CachedClasses g) {
                 return g == null ? "" : g.getLevelName();
             }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         };
 
         classChoice.setConverter(gradeConv);
         formClassChoice.setConverter(gradeConv);
 
-        List<GradeCaching> grades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> grades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (grades != null) {
             classChoice.getItems().setAll(grades);
             formClassChoice.getItems().setAll(grades);
@@ -95,7 +95,7 @@ public class FindSubjectController {
 
     @FXML
     private void onFetch() {
-        GradeCaching cls = classChoice.getValue();
+        CachedClasses cls = classChoice.getValue();
         if (cls == null) return;
 
         fetchButton.setDisable(true);
@@ -156,7 +156,7 @@ public class FindSubjectController {
         headerLabel.setText("Editing: " + safe(data.getSubjectName()));
 
         if (data.getLevelId() != null) {
-            for (GradeCaching g : formClassChoice.getItems()) {
+            for (CachedClasses g : formClassChoice.getItems()) {
                 if (data.getLevelId().equals(g.getLevelId())) {
                     formClassChoice.setValue(g);
                     break;
@@ -179,7 +179,7 @@ public class FindSubjectController {
             return;
         }
         String name = trim(nameField.getText());
-        GradeCaching cls = formClassChoice.getValue();
+        CachedClasses cls = formClassChoice.getValue();
         if (name.isEmpty()) { setActionStatus("Subject name is required."); return; }
         if (cls == null)    { setActionStatus("Pick a class."); return; }
 

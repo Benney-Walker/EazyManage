@@ -1,7 +1,7 @@
 package com.bbquantum.eazymanage.Controller.Attendance;
 
 import com.bbquantum.eazymanage.Constants.AttendanceStatus;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
 import com.bbquantum.eazymanage.DTO.Attendance.StudentAttendance;
 import com.bbquantum.eazymanage.Services.ApiContext;
 import com.bbquantum.eazymanage.Services.ApiCore;
@@ -17,7 +17,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
@@ -27,7 +26,7 @@ import java.util.List;
 public class MarkAttendanceController {
 
     // ---- toolbar
-    @FXML private ChoiceBox<GradeCaching> classChoice;
+    @FXML private ChoiceBox<CachedClasses> classChoice;
     @FXML private DatePicker datePicker;
     @FXML private Button fetchButton;
 
@@ -62,21 +61,21 @@ public class MarkAttendanceController {
     // ---- model
     private final ObservableList<StudentAttendanceUI> rows = FXCollections.observableArrayList();
 
-    private GradeCaching currentClass;
+    private CachedClasses currentClass;
     private LocalDate currentDate;
 
     @FXML
     private void initialize() {
         classChoice.setConverter(new StringConverter<>() {
             @Override
-            public String toString(GradeCaching g) { return g == null ? "" : g.getLevelName(); }
+            public String toString(CachedClasses g) { return g == null ? "" : g.getLevelName(); }
 
             @Override
-            public GradeCaching fromString(String s) { return null; }
+            public CachedClasses fromString(String s) { return null; }
         });
 
         // Populate the choice from the cached grade list.
-        List<GradeCaching> cached = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> cached = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (cached != null) classChoice.getItems().setAll(cached);
 
         datePicker.setValue(LocalDate.now());
@@ -111,7 +110,7 @@ public class MarkAttendanceController {
 
     @FXML
     private void onFetch() {
-        GradeCaching grade = classChoice.getValue();
+        CachedClasses grade = classChoice.getValue();
         if (grade == null) {
             setStatus("Pick a class first.");
             return;

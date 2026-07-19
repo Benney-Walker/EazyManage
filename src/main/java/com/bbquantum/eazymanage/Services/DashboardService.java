@@ -5,10 +5,9 @@ import com.bbquantum.eazymanage.DTO.Finance.ClassFeesSummary;
 import com.bbquantum.eazymanage.DTO.Finance.RecentPaymentTable;
 import com.bbquantum.eazymanage.DTO.System.*;
 import com.bbquantum.eazymanage.DTO.Attendance.AbsenteesView;
-import com.bbquantum.eazymanage.DTO.Caching.GradeCaching;
-import com.bbquantum.eazymanage.DTO.Caching.SemesterCaching;
+import com.bbquantum.eazymanage.DTO.Caching.CachedClasses;
+import com.bbquantum.eazymanage.DTO.Caching.CachedSemesters;
 import com.bbquantum.eazymanage.DTO.Caching.StaffCaching;
-import com.bbquantum.eazymanage.DTO.Caching.ViewStaffList;
 import com.bbquantum.eazymanage.Utitity.UtilityClass;
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
@@ -26,13 +25,13 @@ public class DashboardService {
 
     // Expected fan-out totals per dashboard. Match the legacy `checkCounter`
     // initialCounter constants exactly.
-    private static final int PRINCIPAL_TOTAL  = 11;
+    private static final int PRINCIPAL_TOTAL  = 10;
 
     private static final int FINANCE_TOTAL    = 5;
 
     private static final int STAFF_TOTAL      = 3;
 
-    private static final int ADMIN_TOTAL      = 5;
+    private static final int ADMIN_TOTAL      = 4;
 
     private final ApiCore core;
 
@@ -44,7 +43,7 @@ public class DashboardService {
     // ORCHESTRATORS — one per role
     // ====================================================================
 
-    /** Fan out all 11 Principal dashboard loads in parallel. */
+    /** Fan out all 10 Principal dashboard loads in parallel. */
     public void loadPrincipalData(String principalId, StackPane notification, Runnable onSuccess) {
         LoadCounter counter = new LoadCounter(PRINCIPAL_TOTAL);
         Runnable showErrorToast = () -> Platform.runLater(
@@ -60,7 +59,6 @@ public class DashboardService {
         loadClassesFromBackend(counter, principalId, notification, onSuccess, showErrorToast);
         loadSemestersFromBackend(counter, principalId, notification, onSuccess, showErrorToast);
         loadClassSummaryFees    (counter, principalId, notification, onSuccess, showErrorToast);
-        loadAllStaffList        (counter, principalId, notification, onSuccess, showErrorToast);
     }
 
     /** Fan out all 5 Finance dashboard loads in parallel. */
@@ -84,10 +82,10 @@ public class DashboardService {
 
         loadClassesFromBackend(counter, staffId, notification, onSuccess, showErrorToast);
         loadSemestersFromBackend (counter, staffId, notification, onSuccess, showErrorToast);
-        loadStaffGrades          (counter, staffId, notification, onSuccess, showErrorToast);
+        loadStaffGrades (counter, staffId, notification, onSuccess, showErrorToast);
     }
 
-    /** Fan out all 5 Admin dashboard loads in parallel. */
+    /** Fan out all 4 Admin dashboard loads in parallel. */
     public void loadAdminDashboard(String staffId, StackPane notification, Runnable onSuccess) {
         LoadCounter counter = new LoadCounter(ADMIN_TOTAL);
         Runnable showErrorToast = () -> Platform.runLater(
@@ -97,7 +95,6 @@ public class DashboardService {
         loadCachedStaffList      (counter, staffId, notification, onSuccess, showErrorToast);
         loadClassesFromBackend(counter, staffId, notification, onSuccess, showErrorToast);
         loadSemestersFromBackend (counter, staffId, notification, onSuccess, showErrorToast);
-        loadAllStaffList         (counter, staffId, notification, onSuccess, showErrorToast);
     }
 
     // ====================================================================
@@ -500,18 +497,18 @@ public class DashboardService {
     public void loadClassesFromBackend(LoadCounter counter, String staffId, StackPane notification,
                                        Runnable onSuccess, Runnable onFailure) {
 
-        List<GradeCaching> cachedGrades = UtilityClass.gradeCacheManager.getGradesCache();
+        List<CachedClasses> cachedGrades = UtilityClass.CACHED_CLASS_MANAGER.getGradesCache();
         if (cachedGrades != null && !cachedGrades.isEmpty()
-                && UtilityClass.gradeCacheManager.isCachedGradesValid()) {
+                && UtilityClass.CACHED_CLASS_MANAGER.isCachedGradesValid()) {
             counter.tick(onSuccess, null);
             return;
         }
 
-        Type classListType = new TypeToken<List<GradeCaching>>() {}.getType();
+        Type classListType = new TypeToken<List<CachedClasses>>() {}.getType();
 
-        Task<List<GradeCaching>> task = new Task<>() {
+        Task<List<CachedClasses>> task = new Task<>() {
             @Override
-            protected List<GradeCaching> call() throws Exception {
+            protected List<CachedClasses> call() throws Exception {
                 String url = core.STAFF_URL + core.API_VERSION_1 + "/load-classes";
 
                 HttpRequest request = HttpRequest.newBuilder()
@@ -533,10 +530,10 @@ public class DashboardService {
         };
 
         task.setOnSucceeded(event -> {
-            List<GradeCaching> gradesList = task.getValue();
+            List<CachedClasses> gradesList = task.getValue();
             System.out.println("success");
             if (gradesList != null && !gradesList.isEmpty()) {
-                UtilityClass.gradeCacheManager.setCachedGrades(gradesList);
+                UtilityClass.CACHED_CLASS_MANAGER.setCachedGrades(gradesList);
                 counter.tick(onSuccess, null);
                 return;
             }
@@ -562,19 +559,19 @@ public class DashboardService {
     public void loadSemestersFromBackend(LoadCounter counter, String staffId, StackPane notification,
                                          Runnable onSuccess, Runnable onFailure) {
 
-        List<SemesterCaching> semesterCaching = UtilityClass.semesterCachingManager.getCachedSemesters();
-        if (semesterCaching != null && !semesterCaching.isEmpty()) {
+        List<CachedSemesters> cachedSemesters = UtilityClass.semesterCachingManager.getCachedSemesters();
+        if (cachedSemesters != null && !cachedSemesters.isEmpty()) {
             if (UtilityClass.semesterCachingManager.isSemesterCacheValid()) {
                 counter.tick(onSuccess, null);
                 return;
             }
         }
 
-        Type semesterListType = new TypeToken<ArrayList<SemesterCaching>>() {}.getType();
+        Type semesterListType = new TypeToken<ArrayList<CachedSemesters>>() {}.getType();
 
-        Task<List<SemesterCaching>> task = new Task<>() {
+        Task<List<CachedSemesters>> task = new Task<>() {
             @Override
-            protected List<SemesterCaching> call() throws Exception {
+            protected List<CachedSemesters> call() throws Exception {
                 String url = core.STAFF_URL + core.API_VERSION_1 + "/load-semesters";
 
                 HttpRequest request = HttpRequest.newBuilder()
@@ -596,9 +593,9 @@ public class DashboardService {
         };
 
         task.setOnSucceeded(event -> {
-            List<SemesterCaching> semesterCachingList = task.getValue();
-            if (semesterCachingList != null && !semesterCachingList.isEmpty()) {
-                UtilityClass.semesterCachingManager.setCachedSemesters(semesterCachingList);
+            List<CachedSemesters> cachedSemestersList = task.getValue();
+            if (cachedSemestersList != null && !cachedSemestersList.isEmpty()) {
+                UtilityClass.semesterCachingManager.setCachedSemesters(cachedSemestersList);
                 counter.tick(onSuccess, null);
                 return;
             }
@@ -715,7 +712,7 @@ public class DashboardService {
         task.setOnSucceeded(event -> {
             List<ClassInformation> gradesInformation = task.getValue();
             if (gradesInformation != null && !gradesInformation.isEmpty()) {
-                UtilityClass.gradeInfoCacheManager.setGradesInformation(gradesInformation);
+                UtilityClass.CLASS_INFO_CACHE_MANAGER.setGradesInformation(gradesInformation);
                 counter.tick(onSuccess, null);
                 return;
             }
@@ -730,67 +727,6 @@ public class DashboardService {
                     (msg != null && msg.contains("Connection refused"))) {
                 UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
                 counter.tick(onSuccess, null);
-                return;
-            }
-            counter.tick(onSuccess, onFailure);
-        });
-
-        new Thread(task).start();
-    }
-
-    public void loadAllStaffList(LoadCounter counter, String staffId, StackPane notification,
-                                 Runnable onSuccess, Runnable onFailure) {
-        List<ViewStaffList> cachedStaffList = UtilityClass.staffListCacheManager.getCachedStaffList();
-        if (cachedStaffList != null && !cachedStaffList.isEmpty()) {
-            if (UtilityClass.staffListCacheManager.isCacheValid()) {
-                counter.tick(onSuccess, null);
-                return;
-            }
-        }
-
-        Type staffListListType = new TypeToken<ArrayList<ViewStaffList>>() {}.getType();
-
-        Task<List<ViewStaffList>> task = new Task<>() {
-            @Override
-            protected List<ViewStaffList> call() throws Exception {
-                String url = core.STAFF_URL + core.API_VERSION_1 + "/staff-list";
-
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(url))
-                        .headers("Authorization", "Bearer " + core.token,
-                                "staffId", staffId)
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = core.httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-                if (response.statusCode() == 200) {
-                    return core.gson.fromJson(response.body(), staffListListType);
-                }
-
-                if (core.handleSessionExpired(response)) return null;
-                core.handleSessionExpired(response);
-                return null;
-            }
-        };
-
-        task.setOnSucceeded(event -> {
-            List<ViewStaffList> staffViewList = task.getValue();
-            if (staffViewList != null && !staffViewList.isEmpty()) {
-                UtilityClass.staffListCacheManager.setStaffList(staffViewList);
-                counter.tick(onSuccess, null);
-                return;
-            }
-            counter.tick(onSuccess, onFailure);
-        });
-
-        task.setOnFailed(event -> {
-            Throwable ex = task.getException();
-            ex.printStackTrace();
-            String msg = ex.getMessage();
-            if (ex instanceof java.net.ConnectException ||
-                    (msg != null && msg.contains("Connection refused"))) {
-                UtilityClass.showError(notification, "Cannot connect to server. Check your internet.");
-                counter.tick(onFailure, null);    // legacy: net-error path passed onFailure as completion
                 return;
             }
             counter.tick(onSuccess, onFailure);
